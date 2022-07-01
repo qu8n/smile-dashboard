@@ -1,5 +1,5 @@
 {
-  "name": "smile-dashboard-dev",
+  "name": "smile-dashboard",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -12,6 +12,7 @@
     "babel-plugin-transform-es2015-modules-umd": "^6.22.0",
     "babel-polyfill": "^6.22.0",
     "babel-register": "^6.22.0",
+    "json": "^9.0.6",
     "mobx": "^6.0.0",
     "mobx-logger": "^0.7.1",
     "mobx-react": "6.0.0",
@@ -27,6 +28,9 @@
     "react-router": "5.2.0",
     "react-scripts": "5.0.1",
     "typescript": "4.0.3",
+    "prettier": "1.19.1",
+    "request": "^2.88.0",
+    "swagger-js-codegen": "git+https://github.com/cBioPortal/swagger-js-codegen.git#0362f4a1e2d116ad6dffc36e4b57cdfbc93956cf",
     "web-vitals": "^2.1.4"
   },
   "engines": {
@@ -41,7 +45,14 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "fetchAPI": "./scripts/env_vars.sh && eval \"$(./scripts/env_vars.sh)\" && curl -k ${CMO_SMILE_URL}/v2/api-docs | json | grep -v basePath | grep -v termsOfService | grep -v host > packages/smile-ts-api-client/src/generated/SmileAPI-docs.json",
+    "buildAPI": "node scripts/generate-api.js packages/smile-ts-api-client/src/generated SmileAPI",
+    "updateAPI": "yarn run fetchAPI && yarn run buildAPI",
+    "prettierFixCurrentChanges": "STAGED_AND_CHANGED_FILES=$(git diff HEAD --name-only --cached --diff-filter=d) && ([ -z \"$STAGED_AND_CHANGED_FILES\" ] && echo \"Nothing to prettify\" || (yarn run prettier --write $(echo $STAGED_AND_CHANGED_FILES) && git add -f $(echo $STAGED_AND_CHANGED_FILES)))",
+    "prettierCheckCircleCI": "git remote add smile-repo https://github.com/mskcc/smile-dashboard.git && git fetch smile-repo master && CHANGED_FILES=$(git diff smile-repo/master --name-only --diff-filter=d) && [ ! -z \"$CHANGED_FILES\" ] && yarn run prettier -c $(echo $CHANGED_FILES) && git remote remove smile-repo",
+    "prettierFixLocal": "CHANGED_FILES=$(git diff master --name-only --diff-filter=d) && ([ ! -z \"$CHANGED_FILES\" ] && yarn run prettier --write $(echo $CHANGED_FILES) || echo \"Nothing to prettify\")",
+    "prettierAll": "yarn run prettier --write $(git ls-files | grep '\\(.js\\|.ts\\|.scss\\|.css\\)')"
   },
   "eslintConfig": {
     "extends": [
