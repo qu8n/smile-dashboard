@@ -4806,6 +4806,56 @@ export type ExampleQueryQuery = {
   }>;
 };
 
+export const RequestSummaryQueryDocument = gql`
+  query RequestSummaryQuery($where: RequestWhere) {
+    requests(where: $where) {
+      igoProjectId
+      igoRequestId
+      smileRequestId
+      investigatorName
+      investigatorEmail
+      dataAnalystName
+      dataAnalystEmail
+      genePanel
+      projectManagerName
+      hasMetadataRequestMetadata {
+        importDate
+      }
+      hasSampleSamples {
+        smileSampleId
+        sampleCategory
+        sampleClass
+        datasource
+        hasMetadataSampleMetadata {
+          cmoSampleName
+          igoComplete
+          importDate
+          investigatorSampleId
+          primaryId
+          sampleClass
+          cmoPatientId
+          cmoSampleIdFields
+          sampleName
+          preservation
+          tumorOrNormal
+          oncotreeCode
+          collectionYear
+          sampleOrigin
+          tissueLocation
+          sex
+        }
+        patientsHasSample {
+          smilePatientId
+          patientAliasesIsAlias {
+            namespace
+            value
+          }
+        }
+      }
+    }
+  }
+`;
+
 export const ExampleQueryDocument = gql`
   query ExampleQuery {
     requests {

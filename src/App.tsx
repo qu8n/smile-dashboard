@@ -1,7 +1,9 @@
 import * as React from "react";
+import { NavLink, Routes, Route } from "react-router-dom";
 import { Request, ExampleQueryDocument } from "./generated/graphql";
 import "./App.css";
 import { useQuery, gql } from "@apollo/client";
+import RequestSummary from "./pages/requestView/RequestSummary";
 
 function resolveLastUpdateDate(request: Request) {
   var smDataList: string[] = [];
@@ -60,12 +62,19 @@ export class RequestTableRecord extends React.Component<
     super(props);
     this.request = props.request;
   }
+  private getRequestLink() {
+    return (
+      <NavLink to={`requests/${this.request.igoRequestId}`} target="_blank">
+        {this.request.igoRequestId}
+      </NavLink>
+    );
+  }
 
   public render() {
     return (
       <tr key={this.request.smileRequestId}>
+        <td>{this.getRequestLink()}</td>
         <td>{this.request.igoProjectId}</td>
-        <td>{this.request.igoRequestId}</td>
         <td>{this.request.hasSampleSamples.length}</td>
         <td>{this.props.lastDateUpdated}</td>
         <td>{this.request.investigatorName}</td>
@@ -82,53 +91,55 @@ export class RequestTableRecord extends React.Component<
 function DisplayRequests() {
   const { loading, error, data } = useQuery(ExampleQueryDocument);
 
-  if (loading) return <p>Loading...</p>;
+  if (loading)
+    return (
+      <h1 className="h2">Loading requests delivered in last 60 days...</h1>
+    );
   if (error) return <p>Error : (</p>;
   var filteredRequests: RequestWithDate[] = transformAndFilterRequestsByDate(
     data.requests
   );
 
   return (
-    <table className="table table-bordered">
-      <thead>
-        <tr>
-          <th scope="col">IGO Request ID</th>
-          <th scope="col">IGO Project ID</th>
-          <th scope="col"># Samples</th>
-          <th scope="col">Last Updated Date</th>
-          <th scope="col">Investigator Name</th>
-          <th scope="col">Investigator Email</th>
-          <th scope="col">Data Analyst Name</th>
-          <th scope="col">Data Analyst Email</th>
-          <th scope="col">Gene Panel</th>
-          <th scope="col">Project Manager Name</th>
-        </tr>
-      </thead>
-      <tbody>
-        {filteredRequests.map((r: RequestWithDate) => (
-          <RequestTableRecord
-            key={r.smileRequest.smileRequestId}
-            request={r.smileRequest}
-            lastDateUpdated={r.lastDateUpdated}
-          />
-        ))}
-      </tbody>
-    </table>
+    <div className="container-fluid w-75">
+      <h1 className="h2">Requests updated or delivered in the last 60 days</h1>
+      <table className="table table-bordered">
+        <thead>
+          <tr>
+            <th scope="col">IGO Request ID</th>
+            <th scope="col">IGO Project ID</th>
+            <th scope="col"># Samples</th>
+            <th scope="col">Last Updated Date</th>
+            <th scope="col">Investigator Name</th>
+            <th scope="col">Investigator Email</th>
+            <th scope="col">Data Analyst Name</th>
+            <th scope="col">Data Analyst Email</th>
+            <th scope="col">Gene Panel</th>
+            <th scope="col">Project Manager Name</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filteredRequests.map((r: RequestWithDate) => (
+            <RequestTableRecord
+              key={r.smileRequest.smileRequestId}
+              request={r.smileRequest}
+              lastDateUpdated={r.lastDateUpdated}
+            />
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }
 
 function App() {
   return (
     <div className="App">
-      <img className="App-logo" alt="logo" />
       <br />
-      <h1 className="h2">
-        Requests updated or delivered in the last 60 days...
-      </h1>
-      <div className="container">
-        <br />
-        <DisplayRequests />
-      </div>
+      <Routes>
+        <Route path="/" element={<DisplayRequests />} />
+        <Route path="/requests/:igoRequestId" element={<RequestSummary />} />
+      </Routes>
     </div>
   );
 }
