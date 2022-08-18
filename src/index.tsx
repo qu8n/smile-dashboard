@@ -1,5 +1,5 @@
 import React from "react";
-import ReactDOM from "react-dom/client";
+import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./App";
 import RequestView from "./pages/requestView/RequestViewPage";
@@ -13,22 +13,24 @@ const client = new ApolloClient({
   cache: new InMemoryCache()
 });
 
-const root = ReactDOM.createRoot(
-  document.getElementById("root") as HTMLElement
-);
-root.render(
-  <BrowserRouter>
-    <ApolloProvider client={client}>
-      <Routes>
-        <Route path="/" element={<App />}>
-          <Route path="/requests" element={<RequestView />}>
-            <Route path=":igoRequestId" element={<RequestSummary />} />
+const root = ReactDOM.render(
+
+    <BrowserRouter>
+      <ApolloProvider client={client}>
+        <Routes>
+          <Route path="/" element={<App />}>
+            <Route path="/requests" element={<RequestView />}>
+              <Route path=":igoRequestId" element={<RequestSummary />} />
+            </Route>
           </Route>
-        </Route>
-      </Routes>
-    </ApolloProvider>
-  </BrowserRouter>
-);
+        </Routes>
+      </ApolloProvider>
+    </BrowserRouter>,
+
+    document.getElementById("root") as HTMLElement
+
+)
+
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))

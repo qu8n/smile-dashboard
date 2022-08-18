@@ -91,45 +91,8 @@ export class RequestTableRecord extends React.Component<
 function DisplayRequests() {
   const { loading, error, data } = useQuery(ExampleQueryDocument);
 
-  if (loading)
-    return (
-      <h1 className="h2">Loading requests delivered in last 60 days...</h1>
-    );
-  if (error) return <p>Error : (</p>;
-  var filteredRequests: RequestWithDate[] = transformAndFilterRequestsByDate(
-    data.requests
-  );
+  return <RequestSummary />
 
-  return (
-    <div className="container-fluid w-75">
-      <h1 className="h2">Requests updated or delivered in the last 60 days</h1>
-      <table className="table table-bordered">
-        <thead>
-          <tr>
-            <th scope="col">IGO Request ID</th>
-            <th scope="col">IGO Project ID</th>
-            <th scope="col"># Samples</th>
-            <th scope="col">Last Updated Date</th>
-            <th scope="col">Investigator Name</th>
-            <th scope="col">Investigator Email</th>
-            <th scope="col">Data Analyst Name</th>
-            <th scope="col">Data Analyst Email</th>
-            <th scope="col">Gene Panel</th>
-            <th scope="col">Project Manager Name</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredRequests.map((r: RequestWithDate) => (
-            <RequestTableRecord
-              key={r.smileRequest.smileRequestId}
-              request={r.smileRequest}
-              lastDateUpdated={r.lastDateUpdated}
-            />
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
 }
 
 function App() {
