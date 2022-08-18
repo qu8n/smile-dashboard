@@ -4807,8 +4807,8 @@ export type ExampleQueryQuery = {
 };
 
 export const RequestSummaryQueryDocument = gql`
-  query RequestSummaryQuery($where: RequestWhere) {
-    requests(where: $where) {
+  query RequestSummaryQuery($options: RequestOptions, $where: RequestWhere) {
+    requests(where: $where, options: $options) {
       igoProjectId
       igoRequestId
       smileRequestId

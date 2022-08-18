@@ -103,35 +103,47 @@ for (let i=0; i<200; i++) {
 
 console.log("list", list)
 
-function isRowLoaded ({ index }) {
-    console.log("isRowLoaded", index);
-    const ret = !!list[index];
-    console.log(ret);
-    return ret;
+function isRowLoaded ({ index }, requests:any[]) {
+    return index < requests.length;
 }
 
-function loadMoreRows ({ startIndex, stopIndex }) {
-    return new Promise<void>((resolve)=>{
-        console.log("promise firing");
-        setTimeout(()=>{
+function loadMoreRows ({ startIndex, stopIndex }, fetchMore:any, data:any) {
 
-            for (let i=0; i<10; i++) {
-                list.push(i);
+    return fetchMore({
+        variables: {
+            // where: {
+            //     igoRequestId_CONTAINS: "00"
+            // },
+            options: {
+                offset:startIndex,
+                limit:stopIndex
             }
+        }
+    });
 
-            console.log("promise resolvng");
-            return resolve();
-        },100);
-    })
+    // return new Promise<void>((resolve)=>{
+    //     setTimeout(()=>{
+    //
+    //         for (let i=0; i<10; i++) {
+    //             list.push(i);
+    //         }
+    //
+    //         console.log("promise resolvng");
+    //         return resolve();
+    //     },100);
+    // })
 }
 
-function rowRenderer ({ key, index, style}) {
+function rowRenderer ({ key, index, style}, data) {
+
+    if (!data[index]) return <div key={key} style={style}>{index} loading</div>;
+
     return (
         <div
             key={key}
             style={style}
         >
-            {list[index]}
+            {index} - {data[index].igoRequestId}
         </div>
     )
 }
@@ -139,29 +151,43 @@ function rowRenderer ({ key, index, style}) {
 function RequestSummary() {
   let params = useParams();
   //console.log(params.igoRequestId);
-  const { loading, error, data, fetchMore } = useQuery(RequestSummaryQueryDocument, {
+  const { loading, error, data, fetchMore, client } = useQuery(RequestSummaryQueryDocument, {
         variables: {
-            where: {
-                igoRequestId_CONTAINS: "00"
-            },
-            offset:0,
-            limit:10
+            // where: {
+            //     igoRequestId_CONTAINS: "00"
+            // },
+            options: {
+                offset:0,
+                limit:50
+            }
         }
   });
+
+  console.log(client);
+
   if (loading) return <p>Loading...</p>;
   //if (error) return <p>Error : (</p>;
   //var requestSamples: Sample[] = data.requests[0].hasSampleSamples;
-  console.log(data);
+
+  function getCacheRequests(){
+      const ret = client.readQuery({
+        query:RequestSummaryQueryDocument
+      })
+      console.log(ret);
+      return ret || []
+  }
+
   return (
     <div className="container-fluid w-75">
 
         <InfiniteLoader
-            isRowLoaded={isRowLoaded}
-            loadMoreRows={(params)=>{
-                console.log(params);
-                return loadMoreRows(params)
+            isRowLoaded={(params)=>{
+                return isRowLoaded(params, getCacheRequests());
             }}
-            rowCount={1000}
+            loadMoreRows={(params)=>{
+                return loadMoreRows(params, fetchMore, getCacheRequests())
+            }}
+            rowCount={remoteRowCount}
         >
             {({ onRowsRendered, registerChild }) => (
                 <List
@@ -171,7 +197,9 @@ function RequestSummary() {
                     ref={registerChild}
                     rowCount={remoteRowCount}
                     rowHeight={20}
-                    rowRenderer={rowRenderer}
+                    rowRenderer={(props)=>{
+                        return rowRenderer(props,getCacheRequests());
+                    }}
                     width={300}
                 />
             )}
