@@ -7,10 +7,21 @@ import RequestSummary from "./pages/requestView/RequestSummary";
 import reportWebVitals from "./reportWebVitals";
 import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import {offsetLimitPagination} from "@apollo/client/utilities";
+
+const cache = new InMemoryCache({
+    typePolicies: {
+        Query: {
+            fields: {
+                requests: offsetLimitPagination(),
+            },
+        },
+    },
+});
 
 const client = new ApolloClient({
   uri: "http://localhost:4000/graphql",
-  cache: new InMemoryCache()
+  cache: cache
 });
 
 const root = ReactDOM.render(

@@ -11,6 +11,8 @@
     "@types/react-virtualized": "^9.21.21",
     "graphql": "^16.5.0",
     "json": "^9.0.6",
+    "mobx": "^6.6.1",
+    "mobx-react-lite": "^3.4.0",
     "neo4j-graphql-cli": "^0.0.11",
     "prettier": "1.19.1",
     "react": "^17.0.2",

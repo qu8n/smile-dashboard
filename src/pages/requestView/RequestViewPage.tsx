@@ -9,9 +9,11 @@ export default function RequestView() {
     <div className="container">
       <Routes>
         <Route path={`requests/:igoRequestId`}>
-          <RequestSummary />
+            <div>
+                <RequestSummary />
+            </div>
         </Route>
       </Routes>
     </div>
   );
-}
+};
