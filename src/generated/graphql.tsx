@@ -4806,8 +4806,73 @@ export type ExampleQueryQuery = {
   }>;
 };
 
+export const RecentDeliveriesQueryDocument = gql`
+  query RecentDeliveriesQuery(
+    $options: RequestOptions
+    $where: RequestWhere
+    $requestsConnectionWhere2: RequestWhere
+  ) {
+    requestsConnection(where: $requestsConnectionWhere2) {
+      totalCount
+    }
+    requests(where: $where, options: $options) {
+      igoRequestId
+      igoProjectId
+      genePanel
+      dataAnalystName
+      dataAnalystEmail
+      dataAccessEmails
+      bicAnalysis
+      investigatorEmail
+      investigatorName
+      isCmoRequest
+      labHeadEmail
+      labHeadName
+      libraryType
+      otherContactEmails
+      piEmail
+      projectManagerName
+      qcAccessEmails
+      smileRequestId
+      hasSampleSamples {
+        sampleCategory
+        smileSampleId
+        sampleClass
+        hasMetadataSampleMetadata {
+          cmoPatientId
+          cmoSampleIdFields
+          cmoSampleName
+          collectionYear
+          genePanel
+          igoComplete
+          importDate
+          investigatorSampleId
+          oncotreeCode
+          preservation
+          primaryId
+          sampleClass
+          sampleName
+          sampleOrigin
+          sampleType
+          sex
+          species
+          tissueLocation
+          tubeId
+          tumorOrNormal
+          baitSet
+          additionalProperties
+        }
+      }
+    }
+  }
+`;
+
 export const RequestSummaryQueryDocument = gql`
-  query RequestSummaryQuery($options: RequestOptions, $where: RequestWhere, $requestsConnectionWhere2: RequestWhere) {
+  query RequestSummaryQuery(
+    $options: RequestOptions
+    $where: RequestWhere
+    $requestsConnectionWhere2: RequestWhere
+  ) {
     requestsConnection(where: $requestsConnectionWhere2) {
       totalCount
     }

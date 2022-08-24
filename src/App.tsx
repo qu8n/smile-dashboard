@@ -91,8 +91,7 @@ export class RequestTableRecord extends React.Component<
 function DisplayRequests() {
   //const { loading, error, data } = useQuery(ExampleQueryDocument);
 
-  return <RequestSummary />
-
+  return <RequestSummary />;
 }
 
 function App() {
