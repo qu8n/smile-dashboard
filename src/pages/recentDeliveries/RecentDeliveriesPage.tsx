@@ -185,6 +185,196 @@ const RecentDeliveriesObserverable = observer(() => {
                   dataKey="projectManagerName"
                   width={width / 2}
                 />
+
+                <Column
+                  headerRenderer={({ dataKey }) => {
+                    return (
+                      <TableCell component="div" variant="head">
+                        {dataKey}
+                      </TableCell>
+                    );
+                  }}
+                  cellRenderer={({
+                    cellData,
+                    columnIndex = null,
+                    rowIndex
+                  }) => {
+                    return (
+                      <TableCell
+                        component="div"
+                        variant="body"
+                        style={{ height: 50 }}
+                        height={50}
+                      >
+                        {cellData || "loading"}
+                      </TableCell>
+                    );
+                  }}
+                  headerStyle={{ display: "inline-block" }}
+                  style={{ display: "inline-block" }}
+                  label="IGO Project ID"
+                  dataKey="igoProjectId"
+                  width={width / 2}
+                />
+
+                <Column
+                  headerRenderer={({ dataKey }) => {
+                    return (
+                      <TableCell component="div" variant="head">
+                        {dataKey}
+                      </TableCell>
+                    );
+                  }}
+                  cellRenderer={({
+                    cellData,
+                    columnIndex = null,
+                    rowIndex
+                  }) => {
+                    return (
+                      <TableCell
+                        component="div"
+                        variant="body"
+                        style={{ height: 50 }}
+                        height={50}
+                      >
+                        {cellData || "loading"}
+                      </TableCell>
+                    );
+                  }}
+                  headerStyle={{ display: "inline-block" }}
+                  style={{ display: "inline-block" }}
+                  label="Investigator Name"
+                  dataKey="investigatorName"
+                  width={width / 2}
+                />
+
+
+              <Column
+                headerRenderer={({ dataKey }) => {
+                  return (
+                    <TableCell component="div" variant="head">
+                      {dataKey}
+                    </TableCell>
+                  );
+                }}
+                cellRenderer={({
+                  cellData,
+                  columnIndex = null,
+                  rowIndex
+                }) => {
+                  return (
+                    <TableCell
+                      component="div"
+                      variant="body"
+                      style={{ height: 50 }}
+                      height={50}
+                    >
+                      {cellData || "loading"}
+                    </TableCell>
+                  );
+                }}
+                headerStyle={{ display: "inline-block" }}
+                style={{ display: "inline-block" }}
+                label="Investigator Email"
+                dataKey="investigatorEmail"
+                width={width / 2}
+              />
+
+              <Column
+                headerRenderer={({ dataKey }) => {
+                  return (
+                    <TableCell component="div" variant="head">
+                      {dataKey}
+                    </TableCell>
+                  );
+                }}
+                cellRenderer={({
+                  cellData,
+                  columnIndex = null,
+                  rowIndex
+                }) => {
+                  return (
+                    <TableCell
+                      component="div"
+                      variant="body"
+                      style={{ height: 50 }}
+                      height={50}
+                    >
+                      {cellData || "loading"}
+                    </TableCell>
+                  );
+                }}
+                headerStyle={{ display: "inline-block" }}
+                style={{ display: "inline-block" }}
+                label="Data Analyst Name"
+                dataKey="dataAnalystName"
+                width={width / 2}
+              />
+
+              <Column
+                headerRenderer={({ dataKey }) => {
+                  return (
+                    <TableCell component="div" variant="head">
+                      {dataKey}
+                    </TableCell>
+                  );
+                }}
+                cellRenderer={({
+                  cellData,
+                  columnIndex = null,
+                  rowIndex
+                }) => {
+                  return (
+                    <TableCell
+                      component="div"
+                      variant="body"
+                      style={{ height: 50 }}
+                      height={50}
+                    >
+                      {cellData || "loading"}
+                    </TableCell>
+                  );
+                }}
+                headerStyle={{ display: "inline-block" }}
+                style={{ display: "inline-block" }}
+                label="Data Analyst Email"
+                dataKey="dataAnalystEmail"
+                width={width / 2}
+              />
+
+
+              <Column
+                headerRenderer={({ dataKey }) => {
+                  return (
+                    <TableCell component="div" variant="head">
+                      {dataKey}
+                    </TableCell>
+                  );
+                }}
+                cellRenderer={({
+                  cellData,
+                  columnIndex = null,
+                  rowIndex
+                }) => {
+                  return (
+                    <TableCell
+                      component="div"
+                      variant="body"
+                      style={{ height: 50 }}
+                      height={50}
+                    >
+                      {cellData || "loading"}
+                    </TableCell>
+                  );
+                }}
+                headerStyle={{ display: "inline-block" }}
+                style={{ display: "inline-block" }}
+                label="Gene Panel"
+                dataKey="genePanel"
+                width={width / 2}
+              />
+
+
               </Table>
             )}
           </AutoSizer>
