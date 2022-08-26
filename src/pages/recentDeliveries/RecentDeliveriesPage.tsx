@@ -5,22 +5,10 @@ import {
   RecentDeliveriesQueryDocument
 } from "../../generated/graphql";
 import { observer } from "mobx-react";
-import { useEffect, useMemo } from "react";
-import { makeAutoObservable, observable } from "mobx";
+import { makeAutoObservable } from "mobx";
 import { InfiniteLoader, Table, Column, AutoSizer } from "react-virtualized";
 import { Container, Form, InputGroup } from "react-bootstrap";
-import DataTable from "react-data-table-component";
 import { TableCell } from "@material-ui/core";
-
-export const RecentDeliveriesPage: React.FunctionComponent = props => {
-  return (
-    <Container>
-      <RecentDeliveriesObserverable />
-    </Container>
-  );
-};
-
-export default RecentDeliveriesPage;
 
 function createStore() {
   return makeAutoObservable({
@@ -31,6 +19,16 @@ function createStore() {
 }
 
 const store = createStore();
+
+export const RecentDeliveriesPage: React.FunctionComponent = props => {
+  return (
+    <Container>
+      <RecentDeliveriesObserverable />
+    </Container>
+  );
+};
+
+export default RecentDeliveriesPage;
 
 const RecentDeliveriesObserverable = observer(() => {
   const { client, loading, error, data, refetch, fetchMore } = useQuery(
@@ -76,6 +74,18 @@ const RecentDeliveriesObserverable = observer(() => {
     return data.requests[index];
   }
 
+  function headerRenderer({ dataKey }) {
+    return <TableCell>{dataKey}</TableCell>;
+  }
+
+  function cellRenderer({ cellData }) {
+    return (
+      <TableCell align="right" padding="normal">
+        {cellData || ""}
+      </TableCell>
+    );
+  }
+
   const remoteRowCount = data.requestsConnection.totalCount;
 
   return (
@@ -119,9 +129,10 @@ const RecentDeliveriesObserverable = observer(() => {
           <AutoSizer>
             {({ width }) => (
               <Table
-                style={{ display: "inline-block" }}
+                className="table"
+                style={{ display: "inline-block", border: "none" }}
                 ref={registerChild}
-                width={width}
+                width={width + 100}
                 height={270}
                 headerHeight={50}
                 rowHeight={40}
@@ -129,296 +140,89 @@ const RecentDeliveriesObserverable = observer(() => {
                 onRowsRendered={onRowsRendered}
                 rowGetter={rowGetter}
               >
-                <Column
-                  headerRenderer={({ dataKey }) => {
-                    return (
-                      <TableCell component="div" variant="head" height={50}>
-                        {dataKey}
-                      </TableCell>
-                    );
-                  }}
-                  cellRenderer={({
-                    cellData,
-                    columnIndex = null,
-                    rowIndex
-                  }) => {
-                    return (
-                      <TableCell component="div" variant="body" height={50}>
-                        {cellData || "loading"}
-                      </TableCell>
-                    );
-                  }}
-                  headerStyle={{ display: "inline-block", fontWeight: 500 }}
-                  style={{ display: "inline-block" }}
-                  label="IGO Request ID"
-                  dataKey="igoRequestId"
-                  width={width / 2}
-                />
-
-                <Column
-                  headerRenderer={({ dataKey }) => {
-                    return (
-                      <TableCell component="div" variant="head">
-                        {dataKey}
-                      </TableCell>
-                    );
-                  }}
-                  cellRenderer={({
-                    cellData,
-                    columnIndex = null,
-                    rowIndex
-                  }) => {
-                    return (
-                      <TableCell
-                        component="div"
-                        variant="body"
-                        style={{ height: 50 }}
-                        height={50}
-                      >
-                        {cellData || "loading"}
-                      </TableCell>
-                    );
-                  }}
-                  headerStyle={{ display: "inline-block" }}
-                  style={{ display: "inline-block" }}
-                  label="Project Manager Name"
-                  dataKey="projectManagerName"
-                  width={width / 2}
-                />
-
-                <Column
-                  headerRenderer={({ dataKey }) => {
-                    return (
-                      <TableCell component="div" variant="head">
-                        {dataKey}
-                      </TableCell>
-                    );
-                  }}
-                  cellRenderer={({
-                    cellData,
-                    columnIndex = null,
-                    rowIndex
-                  }) => {
-                    return (
-                      <TableCell
-                        component="div"
-                        variant="body"
-                        style={{ height: 50 }}
-                        height={50}
-                      >
-                        {cellData || "loading"}
-                      </TableCell>
-                    );
-                  }}
-                  headerStyle={{ display: "inline-block" }}
-                  style={{ display: "inline-block" }}
-                  label="IGO Project ID"
-                  dataKey="igoProjectId"
-                  width={width / 2}
-                />
-
-                <Column
-                  headerRenderer={({ dataKey }) => {
-                    return (
-                      <TableCell component="div" variant="head">
-                        {dataKey}
-                      </TableCell>
-                    );
-                  }}
-                  cellRenderer={({
-                    cellData,
-                    columnIndex = null,
-                    rowIndex
-                  }) => {
-                    return (
-                      <TableCell
-                        component="div"
-                        variant="body"
-                        style={{ height: 50 }}
-                        height={50}
-                      >
-                        {cellData || "loading"}
-                      </TableCell>
-                    );
-                  }}
-                  headerStyle={{ display: "inline-block" }}
-                  style={{ display: "inline-block" }}
-                  label="Investigator Name"
-                  dataKey="investigatorName"
-                  width={width / 2}
-                />
-
-
-              <Column
-                headerRenderer={({ dataKey }) => {
+                {RecentDeliveriesColumns.map(col => {
+                  console.log("column ", col);
                   return (
-                    <TableCell component="div" variant="head">
-                      {dataKey}
-                    </TableCell>
+                    <Column
+                      headerRenderer={headerRenderer}
+                      cellRenderer={({
+                        cellData,
+                        columnIndex = null,
+                        rowIndex
+                      }) => {
+                        return cellRenderer({ cellData });
+                      }}
+                      headerStyle={{ display: "inline-block" }}
+                      style={{ display: "inline-block" }}
+                      label={col.label}
+                      dataKey={`${col.dataKey}`}
+                      width={(width + 100) / 8}
+                    />
                   );
-                }}
-                cellRenderer={({
-                  cellData,
-                  columnIndex = null,
-                  rowIndex
-                }) => {
-                  return (
-                    <TableCell
-                      component="div"
-                      variant="body"
-                      style={{ height: 50 }}
-                      height={50}
-                    >
-                      {cellData || "loading"}
-                    </TableCell>
-                  );
-                }}
-                headerStyle={{ display: "inline-block" }}
-                style={{ display: "inline-block" }}
-                label="Investigator Email"
-                dataKey="investigatorEmail"
-                width={width / 2}
-              />
-
-              <Column
-                headerRenderer={({ dataKey }) => {
-                  return (
-                    <TableCell component="div" variant="head">
-                      {dataKey}
-                    </TableCell>
-                  );
-                }}
-                cellRenderer={({
-                  cellData,
-                  columnIndex = null,
-                  rowIndex
-                }) => {
-                  return (
-                    <TableCell
-                      component="div"
-                      variant="body"
-                      style={{ height: 50 }}
-                      height={50}
-                    >
-                      {cellData || "loading"}
-                    </TableCell>
-                  );
-                }}
-                headerStyle={{ display: "inline-block" }}
-                style={{ display: "inline-block" }}
-                label="Data Analyst Name"
-                dataKey="dataAnalystName"
-                width={width / 2}
-              />
-
-              <Column
-                headerRenderer={({ dataKey }) => {
-                  return (
-                    <TableCell component="div" variant="head">
-                      {dataKey}
-                    </TableCell>
-                  );
-                }}
-                cellRenderer={({
-                  cellData,
-                  columnIndex = null,
-                  rowIndex
-                }) => {
-                  return (
-                    <TableCell
-                      component="div"
-                      variant="body"
-                      style={{ height: 50 }}
-                      height={50}
-                    >
-                      {cellData || "loading"}
-                    </TableCell>
-                  );
-                }}
-                headerStyle={{ display: "inline-block" }}
-                style={{ display: "inline-block" }}
-                label="Data Analyst Email"
-                dataKey="dataAnalystEmail"
-                width={width / 2}
-              />
-
-
-              <Column
-                headerRenderer={({ dataKey }) => {
-                  return (
-                    <TableCell component="div" variant="head">
-                      {dataKey}
-                    </TableCell>
-                  );
-                }}
-                cellRenderer={({
-                  cellData,
-                  columnIndex = null,
-                  rowIndex
-                }) => {
-                  return (
-                    <TableCell
-                      component="div"
-                      variant="body"
-                      style={{ height: 50 }}
-                      height={50}
-                    >
-                      {cellData || "loading"}
-                    </TableCell>
-                  );
-                }}
-                headerStyle={{ display: "inline-block" }}
-                style={{ display: "inline-block" }}
-                label="Gene Panel"
-                dataKey="genePanel"
-                width={width / 2}
-              />
-
-
+                })}
               </Table>
             )}
           </AutoSizer>
         )}
       </InfiniteLoader>
-      {/* </tbody>
-      </table> */}
-      {/* <RecentDeliveriesTable data={filteredRequests} /> */}
     </Container>
   );
 });
 
-const columns = [
+const RecentDeliveriesColumns = [
   {
     selector: (d: Request) => d.igoRequestId,
     dataKey: "igoRequestId",
-    headerName: "IGO RequestID",
+    label: "IGO Request ID",
     sortable: true,
-    filterable: true,
-    width: 50
+    filterable: true
   },
   {
-    selector: (d: Request) => d.projectManagerName,
-    dataKey: "projectManagerName",
-    headerName: "Project Manager Name",
-    sortable: true,
-    filterable: true,
-    width: 50
-  }
-];
-
-const RecentDeliveriesColumns = [
-  {
-    priority: 1,
-    selector: (d: Request) => d.igoRequestId,
-    dataField: "igoRequestId",
-    name: "IGO Request ID",
+    selector: (d: Request) => d.igoProjectId,
+    dataKey: "igoProjectId",
+    label: "IGO Project ID",
     sortable: true,
     filterable: true
   },
   {
     selector: (d: Request) => d.projectManagerName,
-    dataField: "projectManagerName",
-    name: "Project Manager Name",
+    dataKey: "projectManagerName",
+    label: "Project Manager Name",
+    sortable: true,
+    filterable: true
+  },
+  {
+    selector: (d: Request) => d.investigatorName,
+    dataKey: "investigatorName",
+    label: "Investigator Name",
+    sortable: true,
+    filterable: true
+  },
+  {
+    selector: (d: Request) => d.investigatorEmail,
+    dataKey: "investigatorEmail",
+    label: "Investigator Email",
+    sortable: true,
+    filterable: true
+  },
+  {
+    selector: (d: Request) => d.dataAnalystName,
+    dataKey: "dataAnalystName",
+    label: "Data Analyst Name",
+    sortable: true,
+    filterable: true
+  },
+  {
+    selector: (d: Request) => d.dataAnalystEmail,
+    dataKey: "dataAnalystEmail",
+    label: "Data Analyst Email",
+    sortable: true,
+    filterable: true
+  },
+  {
+    selector: (d: Request) => d.genePanel,
+    dataKey: "genePanel",
+    label: "Gene Panel",
     sortable: true,
     filterable: true
   }
