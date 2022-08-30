@@ -1,201 +1,95 @@
 import React from "react";
-import { useParams } from "react-router-dom";
-import {
-  Request,
-  RequestWhere,
-  RequestSummaryQueryDocument,
-  Sample,
-  SampleMetadata
-} from "../../generated/graphql";
+import { RequestSummaryQueryDocument } from "../../generated/graphql";
 import { useQuery } from "@apollo/client";
-import { InfiniteLoader, List } from "react-virtualized";
-
-import { observable } from "mobx";
-import { observer } from "mobx-react-lite";
+import { InfiniteLoader, Table, Column } from "react-virtualized";
+import { Row } from "react-bootstrap";
+import { observer } from "mobx-react";
+import { makeAutoObservable } from "mobx";
+import { TableCell } from "@material-ui/core";
 
 function createStore() {
-  return observable({
-    filter: ""
+  return makeAutoObservable({
+    selectedRequest: ""
   });
 }
 
 const store = createStore();
 
-// function resolveLastUpdateDate(s: Sample) {
-//   if (s.hasMetadataSampleMetadata.length == 1) {
-//     return s.hasMetadataSampleMetadata[0];
-//   }
-//
-//   var smDataList: string[] = [];
-//   for (var j = 0; j < s.hasMetadataSampleMetadata.length; j++) {
-//     var sm = s.hasMetadataSampleMetadata[j];
-//     smDataList.push(sm.importDate);
-//   }
-//   smDataList.sort();
-//   var lastUpdate = smDataList[smDataList.length - 1];
-//   for (var j = 0; j < s.hasMetadataSampleMetadata.length; j++) {
-//     if (s.hasMetadataSampleMetadata[j].importDate == lastUpdate) {
-//       return s.hasMetadataSampleMetadata[j];
-//     }
-//   }
-//   return s.hasMetadataSampleMetadata[s.hasMetadataSampleMetadata.length - 1];
-// }
+export const RequestSummary: React.FunctionComponent = props => {
+  return <RequestSummaryObservable props={props} />;
+};
 
-// export interface IRequestSampleProps {
-//   key?: string;
-//   sample: Sample;
-// }
-//
-// export class RequestSampleTableRecord extends React.Component<
-//   IRequestSampleProps,
-//   {}
-// > {
-//   latestSampleMetadata: SampleMetadata;
-//   constructor(props: IRequestSampleProps) {
-//     super(props);
-//     this.latestSampleMetadata = resolveLastUpdateDate(props.sample);
-//   }
-//
-//   public render() {
-//     return (
-//       <tr key={this.props.sample.smileSampleId}>
-//         <td className="text-left text-nowrap">
-//           {this.latestSampleMetadata.cmoSampleName}
-//         </td>
-//         <td className="text-left text-nowrap">
-//           {this.latestSampleMetadata.investigatorSampleId}
-//         </td>
-//         <td className="text-left text-nowrap">
-//           {this.latestSampleMetadata.cmoPatientId}
-//         </td>
-//         <td className="text-left text-nowrap">
-//           {this.latestSampleMetadata.primaryId}
-//         </td>
-//         <td className="text-left text-nowrap">
-//           {this.latestSampleMetadata.sampleName}
-//         </td>
-//         <td className="text-left text-nowrap">
-//           {this.latestSampleMetadata.preservation}
-//         </td>
-//         <td className="text-left text-nowrap">
-//           {this.latestSampleMetadata.tumorOrNormal}
-//         </td>
-//         <td className="text-left text-nowrap">
-//           {this.latestSampleMetadata.sampleClass}
-//         </td>
-//         <td className="text-left text-nowrap">
-//           {this.latestSampleMetadata.oncotreeCode}
-//         </td>
-//         <td className="text-left text-nowrap">
-//           {this.latestSampleMetadata.collectionYear}
-//         </td>
-//         <td className="text-left text-nowrap">
-//           {this.latestSampleMetadata.sampleOrigin}
-//         </td>
-//         <td className="text-left text-nowrap">
-//           {this.latestSampleMetadata.tissueLocation}
-//         </td>
-//         <td className="text-left text-nowrap">
-//           {this.latestSampleMetadata.sex}
-//         </td>
-//       </tr>
-//     );
-//   }
-// }
-
-function loadMoreRows({ startIndex, stopIndex }, fetchMore: any) {
-  return fetchMore({
-    variables: {
-      // where: {
-      //     igoRequestId_CONTAINS: "00"
-      // },
-      options: {
-        offset: startIndex,
-        limit: stopIndex
-      }
-    }
-  });
-}
-
-const RequestSummary = function() {
-  let params = useParams();
-  const { loading, error, data, fetchMore, client, refetch } = useQuery(
+const RequestSummaryObservable = observer(({ props }) => {
+  const { loading, error, data, fetchMore, refetch } = useQuery(
     RequestSummaryQueryDocument,
     {
       variables: {
         where: {
-          igoRequestId_CONTAINS: store.filter
-        },
-        requestsConnectionWhere2: {
-          igoRequestId_CONTAINS: store.filter
+          igoRequestId_CONTAINS: props.selectedRequest
         },
         options: {
           offset: 0,
           limit: 50
+        },
+        hasMetadataSampleMetadataOptions2: {
+          sort: [
+            {
+              importDate: "DESC"
+            }
+          ],
+          limit: 1
         }
       }
     }
   );
 
-  console.log(data);
+  if (loading) return <Row />;
 
-  function isRowLoaded({ index }) {
-    return index < data.requests.length;
+  function loadMoreRows({ startIndex, stopIndex }, fetchMore: any) {
+    return fetchMore({
+      variables: {
+        options: {
+          offset: startIndex,
+          limit: stopIndex
+        }
+      }
+    });
   }
 
-  function rowRenderer({ key, index, style }) {
-    if (!data.requests[index]) {
-      if (index < remoteRowCount) {
-        return (
-          <div key={key} style={style}>
-            {index} loading
-          </div>
-        );
-      } else {
-        return null;
-      }
-    }
+  function isRowLoaded({ index }) {
+    return index < data.requests[0].hasSampleSamples.length;
+  }
 
+  function rowGetter({ index }) {
+    if (!data.requests[0].hasSampleSamples[index]) {
+      return "";
+    }
+    return data.requests[0].hasSampleSamples[index]
+      .hasMetadataSampleMetadata[0];
+  }
+
+  function headerRenderer({ dataKey }) {
+    return <TableCell>{dataKey}</TableCell>;
+  }
+
+  function cellRenderer({ cellData }) {
     return (
-      <div key={key} style={style}>
-        {index} - {data.requests[index].igoRequestId}
-      </div>
+      <TableCell align="right" padding="normal">
+        {cellData || ""}
+      </TableCell>
     );
   }
 
-  if (loading) return <p>Loading...</p>;
-  //if (error) return <p>Error : (</p>;
-  //var requestSamples: Sample[] = data.requests[0].hasSampleSamples;
+  const remoteRowCount = data.requests[0].hasSampleSamplesConnection.totalCount;
 
-  const remoteRowCount = data.requestsConnection.totalCount;
-
-  function getCacheRequests() {
-    const ret = client.readQuery({
-      query: RequestSummaryQueryDocument
-    });
-    return ret || [];
+  if (!props.selectedRequest) {
+    return <Row />;
   }
-
   return (
-    <div className="container-fluid w-75">
-      <input
-        onInput={inp => {
-          store.filter = inp.currentTarget.value;
-          refetch({
-            where: {
-              igoRequestId_CONTAINS: inp.currentTarget.value
-            },
-            requestsConnectionWhere2: {
-              igoRequestId_CONTAINS: inp.currentTarget.value
-            },
-            options: { limit: 20, offset: 0 }
-          });
-        }}
-        value={store.filter}
-      ></input>
-
-      <div>{store.filter}</div>
-      <div>Results: {remoteRowCount}</div>
+    <Row style={{ marginTop: "20px" }}>
+      <div>
+        <h3>Displaying Request: {props.selectedRequest}</h3>
+      </div>
       <InfiniteLoader
         isRowLoaded={isRowLoaded}
         loadMoreRows={params => {
@@ -204,51 +98,97 @@ const RequestSummary = function() {
         rowCount={remoteRowCount}
       >
         {({ onRowsRendered, registerChild }) => (
-          <List
-            height={200}
-            onRowsRendered={onRowsRendered}
+          <Table
+            className="table"
+            style={{}}
             ref={registerChild}
+            width={1100}
+            height={270}
+            headerHeight={50}
+            rowHeight={40}
             rowCount={remoteRowCount}
-            rowHeight={20}
-            rowRenderer={rowRenderer}
-            width={300}
-          />
+            onRowsRendered={onRowsRendered}
+            rowGetter={rowGetter}
+          >
+            {SampleDetailsColumns.map(col => {
+              return (
+                <Column
+                  headerRenderer={headerRenderer}
+                  cellRenderer={({
+                    cellData,
+                    columnIndex = null,
+                    rowIndex
+                  }) => {
+                    return cellRenderer({ cellData });
+                  }}
+                  headerStyle={{ display: "inline-block" }}
+                  style={{ display: "inline-block" }}
+                  label={col.label}
+                  dataKey={`${col.dataKey}`}
+                  width={1100 / 8}
+                />
+              );
+            })}
+          </Table>
         )}
       </InfiniteLoader>
-
-      {/*<div className="table-responsive">*/}
-      {/*  <h1 className="h2">*/}
-      {/*    Request summary page: {params.igoRequestId} (# samples ={" "}*/}
-      {/*    {data.requests[0].hasSampleSamples.length})*/}
-      {/*  </h1>*/}
-      {/*  <br />*/}
-      {/*  <table className="table table-striped table-fit">*/}
-      {/*    <thead>*/}
-      {/*      <tr>*/}
-      {/*        <th scope="col">CMO Sample Name</th>*/}
-      {/*        <th scope="col">Investigator Sample ID</th>*/}
-      {/*        <th scope="col">CMO Patient ID</th>*/}
-      {/*        <th scope="col">Primary ID (IGO ID)</th>*/}
-      {/*        <th scope="col">Sample Name</th>*/}
-      {/*        <th scope="col">Preservation</th>*/}
-      {/*        <th scope="col">Tumor or Normal</th>*/}
-      {/*        <th scope="col">Sample Class</th>*/}
-      {/*        <th scope="col">Oncotree Code</th>*/}
-      {/*        <th scope="col">Collection Year</th>*/}
-      {/*        <th scope="col">Sample Origin</th>*/}
-      {/*        <th scope="col">Tissue Location</th>*/}
-      {/*        <th scope="col">Sex</th>*/}
-      {/*      </tr>*/}
-      {/*    </thead>*/}
-      {/*    <tbody>*/}
-      {/*      {requestSamples.map((s: Sample) => (*/}
-      {/*        <RequestSampleTableRecord key={s.smileSampleId} sample={s} />*/}
-      {/*      ))}*/}
-      {/*    </tbody>*/}
-      {/*  </table>*/}
-      {/*</div>*/}
-    </div>
+    </Row>
   );
-};
+});
 
-export default RequestSummary;
+export { RequestSummaryObservable };
+
+const SampleDetailsColumns = [
+  {
+    dataKey: "cmoSampleName",
+    label: "CMO Sample Label"
+  },
+  {
+    dataKey: "investigatorSampleId",
+    label: "Investigator Sample ID"
+  },
+  {
+    dataKey: "cmoPatientId",
+    label: "CMO Patient ID"
+  },
+  {
+    dataKey: "primaryId",
+    label: "Primary ID"
+  },
+  {
+    dataKey: "cmoSampleName",
+    label: "CMO Sample Name"
+  },
+  {
+    dataKey: "preservation",
+    label: "Preservation"
+  },
+  {
+    dataKey: "tumorOrNormal",
+    label: "Tumor Or Normal"
+  },
+  {
+    dataKey: "sampleClass",
+    label: "Sample Class"
+  },
+  {
+    dataKey: "oncotreeCode",
+    label: "Oncotree Code"
+  },
+  {
+    dataKey: "collectionYear",
+    label: "Collection Year"
+  },
+  {
+    dataKey: "sampleOrigin",
+    label: "Sample Origin"
+  },
+  {
+    dataKey: "tissueLocation",
+    label: "Tissue Location"
+  },
+  {
+    dataKey: "sex",
+    label: "Sex"
+  }
+];

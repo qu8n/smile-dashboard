@@ -6,24 +6,40 @@ import {
 } from "../../generated/graphql";
 import { observer } from "mobx-react";
 import { makeAutoObservable } from "mobx";
-import { InfiniteLoader, Table, Column, AutoSizer } from "react-virtualized";
-import { Container, Form, InputGroup } from "react-bootstrap";
+import { InfiniteLoader, Table, Column } from "react-virtualized";
+import { Container, Form, InputGroup, Row } from "react-bootstrap";
 import { TableCell } from "@material-ui/core";
+import { RequestSummaryObservable } from "../requestView/RequestSummary";
 
 function createStore() {
   return makeAutoObservable({
     filter: "",
-    rowHeight: 0,
-    loadedData: []
+    selectedRequest: "",
+    showRequestDetails: false
   });
 }
 
 const store = createStore();
 
 export const RecentDeliveriesPage: React.FunctionComponent = props => {
+  function requestDetailsComponent() {
+    console.log("selectedRequest=", store.selectedRequest);
+    if (store.showRequestDetails) {
+      return (
+        <Row style={{ flexDirection: "column", display: "flex" }}>
+          select request to render component
+        </Row>
+      );
+    } else {
+      return <RequestSummaryObservable props={store} />;
+    }
+  }
+  console.log(store);
   return (
-    <Container>
+    <Container style={{ marginBottom: "80px", marginTop: "80px" }}>
       <RecentDeliveriesObserverable />
+      <hr />
+      {requestDetailsComponent()}
     </Container>
   );
 };
@@ -31,7 +47,7 @@ export const RecentDeliveriesPage: React.FunctionComponent = props => {
 export default RecentDeliveriesPage;
 
 const RecentDeliveriesObserverable = observer(() => {
-  const { client, loading, error, data, refetch, fetchMore } = useQuery(
+  const { loading, error, data, refetch, fetchMore } = useQuery(
     RecentDeliveriesQueryDocument,
     {
       variables: {
@@ -86,10 +102,17 @@ const RecentDeliveriesObserverable = observer(() => {
     );
   }
 
+  function onRowClick(info) {
+    console.log(info.rowData.igoRequestId);
+    store.selectedRequest = info.rowData.igoRequestId;
+    store.showRequestDetails = true;
+    console.log("onRowClick(), selectedRequest = ", store.selectedRequest);
+  }
+
   const remoteRowCount = data.requestsConnection.totalCount;
 
   return (
-    <Container>
+    <Row style={{}}>
       <InputGroup>
         <Form className="d-flex">
           <Form.Group>
@@ -126,46 +149,45 @@ const RecentDeliveriesObserverable = observer(() => {
         rowCount={remoteRowCount}
       >
         {({ onRowsRendered, registerChild }) => (
-          <AutoSizer>
-            {({ width }) => (
-              <Table
-                className="table"
-                style={{ display: "inline-block", border: "none" }}
-                ref={registerChild}
-                width={width + 100}
-                height={270}
-                headerHeight={50}
-                rowHeight={40}
-                rowCount={remoteRowCount}
-                onRowsRendered={onRowsRendered}
-                rowGetter={rowGetter}
-              >
-                {RecentDeliveriesColumns.map(col => {
-                  console.log("column ", col);
-                  return (
-                    <Column
-                      headerRenderer={headerRenderer}
-                      cellRenderer={({
-                        cellData,
-                        columnIndex = null,
-                        rowIndex
-                      }) => {
-                        return cellRenderer({ cellData });
-                      }}
-                      headerStyle={{ display: "inline-block" }}
-                      style={{ display: "inline-block" }}
-                      label={col.label}
-                      dataKey={`${col.dataKey}`}
-                      width={(width + 100) / 8}
-                    />
-                  );
-                })}
-              </Table>
-            )}
-          </AutoSizer>
+          <Table
+            className="table"
+            style={{}}
+            ref={registerChild}
+            width={1100}
+            height={270}
+            headerHeight={50}
+            rowHeight={40}
+            rowCount={remoteRowCount}
+            onRowsRendered={onRowsRendered}
+            rowGetter={rowGetter}
+            onRowClick={onRowClick}
+            onRowDoubleClick={info => {
+              store.showRequestDetails = false;
+            }}
+          >
+            {RecentDeliveriesColumns.map(col => {
+              return (
+                <Column
+                  headerRenderer={headerRenderer}
+                  cellRenderer={({
+                    cellData,
+                    columnIndex = null,
+                    rowIndex
+                  }) => {
+                    return cellRenderer({ cellData });
+                  }}
+                  headerStyle={{ display: "inline-block" }}
+                  style={{ display: "inline-block" }}
+                  label={col.label}
+                  dataKey={`${col.dataKey}`}
+                  width={1100 / 8}
+                />
+              );
+            })}
+          </Table>
         )}
       </InfiniteLoader>
-    </Container>
+    </Row>
   );
 });
 

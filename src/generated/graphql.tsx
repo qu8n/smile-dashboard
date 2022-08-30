@@ -4834,35 +4834,6 @@ export const RecentDeliveriesQueryDocument = gql`
       projectManagerName
       qcAccessEmails
       smileRequestId
-      hasSampleSamples {
-        sampleCategory
-        smileSampleId
-        sampleClass
-        hasMetadataSampleMetadata {
-          cmoPatientId
-          cmoSampleIdFields
-          cmoSampleName
-          collectionYear
-          genePanel
-          igoComplete
-          importDate
-          investigatorSampleId
-          oncotreeCode
-          preservation
-          primaryId
-          sampleClass
-          sampleName
-          sampleOrigin
-          sampleType
-          sex
-          species
-          tissueLocation
-          tubeId
-          tumorOrNormal
-          baitSet
-          additionalProperties
-        }
-      }
     }
   }
 `;
@@ -4871,30 +4842,16 @@ export const RequestSummaryQueryDocument = gql`
   query RequestSummaryQuery(
     $options: RequestOptions
     $where: RequestWhere
-    $requestsConnectionWhere2: RequestWhere
+    $hasMetadataSampleMetadataOptions2: SampleMetadataOptions
   ) {
-    requestsConnection(where: $requestsConnectionWhere2) {
-      totalCount
-    }
     requests(where: $where, options: $options) {
-      igoProjectId
       igoRequestId
-      smileRequestId
-      investigatorName
-      investigatorEmail
-      dataAnalystName
-      dataAnalystEmail
-      genePanel
-      projectManagerName
-      hasMetadataRequestMetadata {
-        importDate
-      }
       hasSampleSamples {
         smileSampleId
         sampleCategory
         sampleClass
         datasource
-        hasMetadataSampleMetadata {
+        hasMetadataSampleMetadata(options: $hasMetadataSampleMetadataOptions2) {
           cmoSampleName
           igoComplete
           importDate
@@ -4912,104 +4869,10 @@ export const RequestSummaryQueryDocument = gql`
           tissueLocation
           sex
         }
-        patientsHasSample {
-          smilePatientId
-          patientAliasesIsAlias {
-            namespace
-            value
-          }
-        }
+      }
+      hasSampleSamplesConnection {
+        totalCount
       }
     }
   }
 `;
-
-export const ExampleQueryDocument = gql`
-  query ExampleQuery {
-    requests {
-      igoProjectId
-      igoRequestId
-      smileRequestId
-      investigatorName
-      investigatorEmail
-      dataAnalystName
-      dataAnalystEmail
-      genePanel
-      projectManagerName
-      hasMetadataRequestMetadata {
-        importDate
-      }
-      hasSampleSamples {
-        smileSampleId
-        sampleCategory
-        sampleClass
-        datasource
-        hasMetadataSampleMetadata {
-          cmoSampleName
-          igoComplete
-          importDate
-          investigatorSampleId
-          primaryId
-          sampleClass
-        }
-        patientsHasSample {
-          smilePatientId
-          patientAliasesIsAlias {
-            namespace
-            value
-          }
-        }
-      }
-    }
-  }
-`;
-
-/**
- * __useExampleQueryQuery__
- *
- * To run a query within a React component, call `useExampleQueryQuery` and pass it any options that fit your needs.
- * When your component renders, `useExampleQueryQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useExampleQueryQuery({
- *   variables: {
- *   },
- * });
- */
-export function useExampleQueryQuery(
-  baseOptions?: Apollo.QueryHookOptions<
-    ExampleQueryQuery,
-    ExampleQueryQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<ExampleQueryQuery, ExampleQueryQueryVariables>(
-    ExampleQueryDocument,
-    options
-  );
-}
-export function useExampleQueryLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<
-    ExampleQueryQuery,
-    ExampleQueryQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<ExampleQueryQuery, ExampleQueryQueryVariables>(
-    ExampleQueryDocument,
-    options
-  );
-}
-export type ExampleQueryQueryHookResult = ReturnType<
-  typeof useExampleQueryQuery
->;
-export type ExampleQueryLazyQueryHookResult = ReturnType<
-  typeof useExampleQueryLazyQuery
->;
-export type ExampleQueryQueryResult = Apollo.QueryResult<
-  ExampleQueryQuery,
-  ExampleQueryQueryVariables
->;
