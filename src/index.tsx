@@ -9,6 +9,7 @@ import { Container } from "react-bootstrap";
 import HomePage from "./pages/home/HomePage";
 import SmileNavBar from "./shared/components/SmileNavBar";
 import { offsetLimitPagination } from "@apollo/client/utilities";
+import { RequestSummary } from "./pages/requestView/RequestSummary";
 
 const cache = new InMemoryCache({
   typePolicies: {
@@ -32,7 +33,9 @@ const root = ReactDOM.render(
         <SmileNavBar />
         <Routes>
           <Route path="/home" element={<HomePage />}></Route>
-          <Route path="/recentDeliveries" element={<RecentDeliveriesPage />} />
+          <Route path="/recentDeliveries/" element={<RecentDeliveriesPage />}>
+            <Route path=":requestId" />
+          </Route>
         </Routes>
       </Container>
     </ApolloProvider>

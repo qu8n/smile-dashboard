@@ -1,15 +1,15 @@
 import { useQuery } from "@apollo/client";
+import { Edit } from "@material-ui/icons";
 import "./RecentDeliveries.css";
-import {
-  Request,
-  RecentDeliveriesQueryDocument
-} from "../../generated/graphql";
+import { RecentDeliveriesQueryDocument } from "../../generated/graphql";
 import { observer } from "mobx-react";
 import { makeAutoObservable } from "mobx";
-import { InfiniteLoader, Table, Column } from "react-virtualized";
-import { Container, Form, InputGroup, Row } from "react-bootstrap";
-import { TableCell } from "@material-ui/core";
-import { RequestSummaryObservable } from "../requestView/RequestSummary";
+import { InfiniteLoader, Table, Column, AutoSizer } from "react-virtualized";
+import { Button, Col, Container, Form, InputGroup, Row } from "react-bootstrap";
+import { RequestSummary } from "../requestView/RequestSummary";
+import "react-virtualized/styles.css";
+import { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
 function createStore() {
   return makeAutoObservable({
@@ -22,40 +22,34 @@ function createStore() {
 const store = createStore();
 
 export const RecentDeliveriesPage: React.FunctionComponent = props => {
-  function requestDetailsComponent() {
-    console.log("selectedRequest=", store.selectedRequest);
-    if (store.showRequestDetails) {
-      return (
-        <Row style={{ flexDirection: "column", display: "flex" }}>
-          select request to render component
-        </Row>
-      );
-    } else {
-      return <RequestSummaryObservable props={store} />;
-    }
-  }
-  console.log(store);
   return (
-    <Container style={{ marginBottom: "80px", marginTop: "80px" }}>
+    <Container
+      style={{
+        marginBottom: "20px",
+        marginTop: "20px"
+      }}
+    >
       <RecentDeliveriesObserverable />
-      <hr />
-      {requestDetailsComponent()}
     </Container>
   );
 };
 
 export default RecentDeliveriesPage;
 
-const RecentDeliveriesObserverable = observer(() => {
+const RecentDeliveriesObserverable = () => {
+  const [val, setVal] = useState("");
+  const navigate = useNavigate();
+  const params = useParams();
+
   const { loading, error, data, refetch, fetchMore } = useQuery(
     RecentDeliveriesQueryDocument,
     {
       variables: {
         where: {
-          igoRequestId_CONTAINS: store.filter
+          requestJson_CONTAINS: store.filter
         },
         requestsConnectionWhere2: {
-          igoRequestId_CONTAINS: store.filter
+          requestJson_CONTAINS: store.filter
         },
         options: { limit: 20, offset: 0 }
       }
@@ -90,57 +84,139 @@ const RecentDeliveriesObserverable = observer(() => {
     return data.requests[index];
   }
 
-  function headerRenderer({ dataKey }) {
-    return <TableCell>{dataKey}</TableCell>;
-  }
-
-  function cellRenderer({ cellData }) {
-    return (
-      <TableCell align="right" padding="normal">
-        {cellData || ""}
-      </TableCell>
-    );
-  }
-
   function onRowClick(info) {
     console.log(info.rowData.igoRequestId);
     store.selectedRequest = info.rowData.igoRequestId;
     store.showRequestDetails = true;
-    console.log("onRowClick(), selectedRequest = ", store.selectedRequest);
   }
 
   const remoteRowCount = data.requestsConnection.totalCount;
+  // notes: cellrenderer gets rowData (sample properties)
+  // todo: add prop that we can call setState for to put us in "editing mode"
+  const RecentDeliveriesColumns = [
+    {
+      headerRender: () => {
+        return <Edit />;
+      },
+      cellRenderer: arg => {
+        return (
+          <Button
+            variant="outline-secondary"
+            size="sm"
+            onClick={() => {
+              navigate("./" + arg.rowData.igoRequestId);
+            }}
+          >
+            Edit
+          </Button>
+        );
+      }
+    },
+    {
+      dataKey: "igoRequestId",
+      label: "IGO Request ID",
+      sortable: true,
+      filterable: true
+    },
+    {
+      dataKey: "igoProjectId",
+      label: "IGO Project ID",
+      sortable: true,
+      filterable: true
+    },
+    {
+      dataKey: "projectManagerName",
+      label: "Project Manager Name",
+      sortable: true,
+      filterable: true
+    },
+    {
+      dataKey: "investigatorName",
+      label: "Investigator Name",
+      sortable: true,
+      filterable: true
+    },
+    {
+      dataKey: "investigatorEmail",
+      label: "Investigator Email",
+      sortable: true,
+      filterable: true
+    },
+    {
+      dataKey: "dataAnalystName",
+      label: "Data Analyst Name",
+      sortable: true,
+      filterable: true
+    },
+    {
+      dataKey: "dataAnalystEmail",
+      label: "Data Analyst Email",
+      sortable: true,
+      filterable: true
+    },
+    {
+      dataKey: "genePanel",
+      label: "Gene Panel",
+      sortable: true,
+      filterable: true
+    }
+  ];
+
+  // this is control logic
+  if (params.requestId) {
+    return <RequestSummary props={params} />;
+  }
+
+  // notes:
+  // form can go in another component
+  // def put the table in another component (from infinite loader --> through table)
+  // todo: sample-level detail editing mode (<path>/sampleId/edit <-- edit would indicate mode we're in)
 
   return (
-    <Row style={{}}>
+    <Row
+      id="recentDeliveriesRow"
+      style={{ flexDirection: "column", display: "flex" }}
+    >
       <InputGroup>
-        <Form className="d-flex">
-          <Form.Group>
+        <Form>
+          <Form.Group as={Col}>
             <Form.Control
+              style={{ height: "40px", width: "300px" }}
               type="search"
               placeholder="Search"
               aria-label="Search"
+              value={val}
               onInput={event => {
                 const value = String(
                   ((event.currentTarget as unknown) as HTMLInputElement).value
                 );
                 if (value !== null) {
-                  store.filter = value;
-                  refetch({
-                    where: {
-                      igoRequestId_CONTAINS: store.filter
-                    },
-                    requestsConnectionWhere2: {
-                      igoRequestId_CONTAINS: store.filter
-                    },
-                    options: { limit: 20, offset: 0 }
-                  });
+                  setVal(value);
                 }
               }}
             />
           </Form.Group>
         </Form>
+        <Button
+          style={{ height: "40px", width: "80px" }}
+          variant="primary"
+          size="sm"
+          onClick={() => {
+            refetch({
+              where: {
+                requestJson_CONTAINS: val
+              },
+              requestsConnectionWhere2: {
+                requestJson_CONTAINS: val
+              },
+              options: { limit: 20, offset: 0 }
+            });
+          }}
+        >
+          Filter
+        </Button>
       </InputGroup>
+      <hr />
       <InfiniteLoader
         isRowLoaded={isRowLoaded}
         loadMoreRows={params => {
@@ -149,103 +225,39 @@ const RecentDeliveriesObserverable = observer(() => {
         rowCount={remoteRowCount}
       >
         {({ onRowsRendered, registerChild }) => (
-          <Table
-            className="table"
-            style={{}}
-            ref={registerChild}
-            width={1100}
-            height={270}
-            headerHeight={50}
-            rowHeight={40}
-            rowCount={remoteRowCount}
-            onRowsRendered={onRowsRendered}
-            rowGetter={rowGetter}
-            onRowClick={onRowClick}
-            onRowDoubleClick={info => {
-              store.showRequestDetails = false;
-            }}
-          >
-            {RecentDeliveriesColumns.map(col => {
-              return (
-                <Column
-                  headerRenderer={headerRenderer}
-                  cellRenderer={({
-                    cellData,
-                    columnIndex = null,
-                    rowIndex
-                  }) => {
-                    return cellRenderer({ cellData });
-                  }}
-                  headerStyle={{ display: "inline-block" }}
-                  style={{ display: "inline-block" }}
-                  label={col.label}
-                  dataKey={`${col.dataKey}`}
-                  width={1100 / 8}
-                />
-              );
-            })}
-          </Table>
+          <AutoSizer>
+            {({ width }) => (
+              <Table
+                className="table"
+                ref={registerChild}
+                width={width}
+                height={540}
+                headerHeight={60}
+                rowHeight={40}
+                rowCount={remoteRowCount}
+                onRowsRendered={onRowsRendered}
+                rowGetter={rowGetter}
+                onRowClick={onRowClick}
+                onRowDoubleClick={info => {
+                  store.showRequestDetails = false;
+                }}
+              >
+                {RecentDeliveriesColumns.map(col => {
+                  return (
+                    <Column
+                      headerRenderer={col.headerRender}
+                      label={col.label}
+                      dataKey={`${col.dataKey}`}
+                      cellRenderer={col.cellRenderer}
+                      width={width / RecentDeliveriesColumns.length}
+                    />
+                  );
+                })}
+              </Table>
+            )}
+          </AutoSizer>
         )}
       </InfiniteLoader>
     </Row>
   );
-});
-
-const RecentDeliveriesColumns = [
-  {
-    selector: (d: Request) => d.igoRequestId,
-    dataKey: "igoRequestId",
-    label: "IGO Request ID",
-    sortable: true,
-    filterable: true
-  },
-  {
-    selector: (d: Request) => d.igoProjectId,
-    dataKey: "igoProjectId",
-    label: "IGO Project ID",
-    sortable: true,
-    filterable: true
-  },
-  {
-    selector: (d: Request) => d.projectManagerName,
-    dataKey: "projectManagerName",
-    label: "Project Manager Name",
-    sortable: true,
-    filterable: true
-  },
-  {
-    selector: (d: Request) => d.investigatorName,
-    dataKey: "investigatorName",
-    label: "Investigator Name",
-    sortable: true,
-    filterable: true
-  },
-  {
-    selector: (d: Request) => d.investigatorEmail,
-    dataKey: "investigatorEmail",
-    label: "Investigator Email",
-    sortable: true,
-    filterable: true
-  },
-  {
-    selector: (d: Request) => d.dataAnalystName,
-    dataKey: "dataAnalystName",
-    label: "Data Analyst Name",
-    sortable: true,
-    filterable: true
-  },
-  {
-    selector: (d: Request) => d.dataAnalystEmail,
-    dataKey: "dataAnalystEmail",
-    label: "Data Analyst Email",
-    sortable: true,
-    filterable: true
-  },
-  {
-    selector: (d: Request) => d.genePanel,
-    dataKey: "genePanel",
-    label: "Gene Panel",
-    sortable: true,
-    filterable: true
-  }
-];
+};

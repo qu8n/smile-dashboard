@@ -1,31 +1,18 @@
 import React from "react";
 import { RequestSummaryQueryDocument } from "../../generated/graphql";
 import { useQuery } from "@apollo/client";
-import { InfiniteLoader, Table, Column } from "react-virtualized";
-import { Row } from "react-bootstrap";
+import { InfiniteLoader, Table, Column, AutoSizer } from "react-virtualized";
+import { Container, Row } from "react-bootstrap";
 import { observer } from "mobx-react";
-import { makeAutoObservable } from "mobx";
-import { TableCell } from "@material-ui/core";
+import "react-virtualized/styles.css";
 
-function createStore() {
-  return makeAutoObservable({
-    selectedRequest: ""
-  });
-}
-
-const store = createStore();
-
-export const RequestSummary: React.FunctionComponent = props => {
-  return <RequestSummaryObservable props={props} />;
-};
-
-const RequestSummaryObservable = observer(({ props }) => {
-  const { loading, error, data, fetchMore, refetch } = useQuery(
+const RequestSummary = observer(({ props }) => {
+  const { loading, error, data, fetchMore } = useQuery(
     RequestSummaryQueryDocument,
     {
       variables: {
         where: {
-          igoRequestId_CONTAINS: props.selectedRequest
+          igoRequestId_CONTAINS: props.requestId
         },
         options: {
           offset: 0,
@@ -44,6 +31,7 @@ const RequestSummaryObservable = observer(({ props }) => {
   );
 
   if (loading) return <Row />;
+  if (error) return <Row>Error loading request details / request samples</Row>;
 
   function loadMoreRows({ startIndex, stopIndex }, fetchMore: any) {
     return fetchMore({
@@ -68,28 +56,10 @@ const RequestSummaryObservable = observer(({ props }) => {
       .hasMetadataSampleMetadata[0];
   }
 
-  function headerRenderer({ dataKey }) {
-    return <TableCell>{dataKey}</TableCell>;
-  }
-
-  function cellRenderer({ cellData }) {
-    return (
-      <TableCell align="right" padding="normal">
-        {cellData || ""}
-      </TableCell>
-    );
-  }
-
   const remoteRowCount = data.requests[0].hasSampleSamplesConnection.totalCount;
 
-  if (!props.selectedRequest) {
-    return <Row />;
-  }
   return (
-    <Row style={{ marginTop: "20px" }}>
-      <div>
-        <h3>Displaying Request: {props.selectedRequest}</h3>
-      </div>
+    <Container>
       <InfiniteLoader
         isRowLoaded={isRowLoaded}
         loadMoreRows={params => {
@@ -98,45 +68,38 @@ const RequestSummaryObservable = observer(({ props }) => {
         rowCount={remoteRowCount}
       >
         {({ onRowsRendered, registerChild }) => (
-          <Table
-            className="table"
-            style={{}}
-            ref={registerChild}
-            width={1100}
-            height={270}
-            headerHeight={50}
-            rowHeight={40}
-            rowCount={remoteRowCount}
-            onRowsRendered={onRowsRendered}
-            rowGetter={rowGetter}
-          >
-            {SampleDetailsColumns.map(col => {
-              return (
-                <Column
-                  headerRenderer={headerRenderer}
-                  cellRenderer={({
-                    cellData,
-                    columnIndex = null,
-                    rowIndex
-                  }) => {
-                    return cellRenderer({ cellData });
-                  }}
-                  headerStyle={{ display: "inline-block" }}
-                  style={{ display: "inline-block" }}
-                  label={col.label}
-                  dataKey={`${col.dataKey}`}
-                  width={1100 / 8}
-                />
-              );
-            })}
-          </Table>
+          <AutoSizer>
+            {({ width }) => (
+              <Table
+                className="table"
+                ref={registerChild}
+                width={width}
+                height={450}
+                headerHeight={50}
+                rowHeight={40}
+                rowCount={remoteRowCount}
+                onRowsRendered={onRowsRendered}
+                rowGetter={rowGetter}
+              >
+                {SampleDetailsColumns.map(col => {
+                  return (
+                    <Column
+                      label={col.label}
+                      dataKey={`${col.dataKey}`}
+                      width={width / SampleDetailsColumns.length}
+                    />
+                  );
+                })}
+              </Table>
+            )}
+          </AutoSizer>
         )}
       </InfiniteLoader>
-    </Row>
+    </Container>
   );
 });
 
-export { RequestSummaryObservable };
+export { RequestSummary };
 
 const SampleDetailsColumns = [
   {
