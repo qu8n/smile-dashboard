@@ -38,7 +38,6 @@ export const RecentDeliveriesPage: React.FunctionComponent = props => {
 export default RecentDeliveriesPage;
 
 const RecentDeliveriesObserverable = () => {
-
   const [val, setVal] = useState("");
 
   const [timeO, setTime0] = useState<any>(null);
@@ -48,7 +47,7 @@ const RecentDeliveriesObserverable = () => {
   const navigate = useNavigate();
   const params = useParams();
 
-  const filterField = "investigatorName_CONTAINS";
+  const filterField = "requestJson_CONTAINS";
 
   const { loading, error, data, refetch, fetchMore } = useQuery(
     RecentDeliveriesQueryDocument,
@@ -201,13 +200,13 @@ const RecentDeliveriesObserverable = () => {
                 }
 
                 if (timeO) {
-                  clearTimeout(timeO)
+                  clearTimeout(timeO);
                 }
 
                 // there will always be a promise so
                 // wait until it's resolved
-                prom.then(()=>{
-                  const to = setTimeout(()=>{
+                prom.then(() => {
+                  const to = setTimeout(() => {
                     const rf = refetch({
                       where: {
                         [filterField]: value
@@ -218,10 +217,9 @@ const RecentDeliveriesObserverable = () => {
                       options: { limit: 20, offset: 0 }
                     });
                     setProm(rf);
-                  },500);
+                  }, 500);
                   setTime0(to);
                 });
-
               }}
             />
           </Form.Group>
