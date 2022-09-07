@@ -2,7 +2,7 @@ import { useQuery } from "@apollo/client";
 import { Edit } from "@material-ui/icons";
 import "./RecentDeliveries.css";
 import { RecentDeliveriesQueryDocument } from "../../generated/graphql";
-import { observer } from "mobx-react";
+import { observer } from "mobx-react-lite";
 import { makeAutoObservable } from "mobx";
 import { InfiniteLoader, Table, Column, AutoSizer } from "react-virtualized";
 import { Button, Col, Container, Form, InputGroup, Row } from "react-bootstrap";
@@ -10,6 +10,7 @@ import { RequestSummary } from "../requestView/RequestSummary";
 import "react-virtualized/styles.css";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import _ from "lodash";
 
 function createStore() {
   return makeAutoObservable({
@@ -37,19 +38,27 @@ export const RecentDeliveriesPage: React.FunctionComponent = props => {
 export default RecentDeliveriesPage;
 
 const RecentDeliveriesObserverable = () => {
+
   const [val, setVal] = useState("");
+
+  const [timeO, setTime0] = useState<any>(null);
+
+  const [prom, setProm] = useState<any>(Promise.resolve());
+
   const navigate = useNavigate();
   const params = useParams();
+
+  const filterField = "investigatorName_CONTAINS";
 
   const { loading, error, data, refetch, fetchMore } = useQuery(
     RecentDeliveriesQueryDocument,
     {
       variables: {
         where: {
-          requestJson_CONTAINS: store.filter
+          [filterField]: store.filter
         },
         requestsConnectionWhere2: {
-          requestJson_CONTAINS: store.filter
+          [filterField]: store.filter
         },
         options: { limit: 20, offset: 0 }
       }
@@ -62,9 +71,6 @@ const RecentDeliveriesObserverable = () => {
   function loadMoreRows({ startIndex, stopIndex }, fetchMore: any) {
     return fetchMore({
       variables: {
-        // where: {
-        //   igoRequestId_CONTAINS: store.filter
-        // },
         options: {
           offset: startIndex,
           limit: stopIndex
@@ -193,30 +199,36 @@ const RecentDeliveriesObserverable = () => {
                 if (value !== null) {
                   setVal(value);
                 }
+
+                if (timeO) {
+                  clearTimeout(timeO)
+                }
+
+                // there will always be a promise so
+                // wait until it's resolved
+                prom.then(()=>{
+                  const to = setTimeout(()=>{
+                    const rf = refetch({
+                      where: {
+                        [filterField]: value
+                      },
+                      requestsConnectionWhere2: {
+                        [filterField]: value
+                      },
+                      options: { limit: 20, offset: 0 }
+                    });
+                    setProm(rf);
+                  },500);
+                  setTime0(to);
+                });
+
               }}
             />
           </Form.Group>
         </Form>
-        <Button
-          style={{ height: "40px", width: "80px" }}
-          variant="primary"
-          size="sm"
-          onClick={() => {
-            refetch({
-              where: {
-                requestJson_CONTAINS: val
-              },
-              requestsConnectionWhere2: {
-                requestJson_CONTAINS: val
-              },
-              options: { limit: 20, offset: 0 }
-            });
-          }}
-        >
-          Filter
-        </Button>
       </InputGroup>
       <hr />
+      <div>Results: {remoteRowCount}</div>
       <InfiniteLoader
         isRowLoaded={isRowLoaded}
         loadMoreRows={params => {
