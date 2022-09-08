@@ -1,9 +1,10 @@
 import { useQuery } from "@apollo/client";
 import { Edit } from "@material-ui/icons";
 import "./RecentDeliveries.css";
-import { RecentDeliveriesQueryDocument } from "../../generated/graphql";
+import { useRecentDeliveriesQuery } from "../../generated/graphql";
 import { observer } from "mobx-react-lite";
 import { makeAutoObservable } from "mobx";
+import jsdownload from "js-file-download";
 import { InfiniteLoader, Table, Column, AutoSizer } from "react-virtualized";
 import {
   Badge,
@@ -12,14 +13,19 @@ import {
   Container,
   Form,
   InputGroup,
-  Row
+  Row,
+  Modal,
+  ModalBody
 } from "react-bootstrap";
-import { RequestSummary } from "../requestView/RequestSummary";
+//import { RequestSummary } from "../requestView/RequestSummary";
 import "react-virtualized/styles.css";
 import React, { useState } from "react";
 import { NavLink, useNavigate, useParams } from "react-router-dom";
 import _ from "lodash";
 import classNames from "classnames";
+import { buildRequestTableColumns } from "./helpers";
+import { RequestSummary } from "../requestView/RequestSummary";
+import { DownloadModal } from "../../components/DownloadModal";
 
 function createStore() {
   return makeAutoObservable({
@@ -39,18 +45,17 @@ export default RecentDeliveriesPage;
 
 const RecentDeliveriesObserverable = () => {
   const [val, setVal] = useState("");
-
-  const [timeO, setTime0] = useState<any>(null);
-
+  const [showDownloadModal, setShowDownloadModal] = useState(false);
+  const [typingTimeout, setTypingTimeout] = useState<any>(null);
   const [prom, setProm] = useState<any>(Promise.resolve());
-
   const navigate = useNavigate();
   const params = useParams();
 
+  const RequestTableColumns = buildRequestTableColumns(navigate);
+
   const filterField = "requestJson_CONTAINS";
 
-  const { loading, error, data, refetch, fetchMore } = useQuery(
-    RecentDeliveriesQueryDocument,
+  const { loading, error, data, refetch, fetchMore } = useRecentDeliveriesQuery(
     {
       variables: {
         where: {
@@ -65,6 +70,7 @@ const RecentDeliveriesObserverable = () => {
   );
 
   if (loading) return <p>Loading requests...</p>;
+
   if (error) return <p>Error :(</p>;
 
   function loadMoreRows({ startIndex, stopIndex }, fetchMore: any) {
@@ -78,15 +84,31 @@ const RecentDeliveriesObserverable = () => {
     });
   }
 
+  function loadAllRows(fetchMore: any, filter: string) {
+    return () => {
+      return fetchMore({
+        variables: {
+          where: {
+            [filterField]: filter
+          },
+          options: {
+            offset: 0,
+            limit: undefined
+          }
+        }
+      });
+    };
+  }
+
   function isRowLoaded({ index }) {
-    return index < data.requests.length;
+    return index < data!.requests.length;
   }
 
   function rowGetter({ index }) {
-    if (!data.requests[index]) {
+    if (!data!.requests[index]) {
       return "";
     }
-    return data.requests[index];
+    return data!.requests[index];
   }
 
   function onRowClick(info) {
@@ -94,97 +116,36 @@ const RecentDeliveriesObserverable = () => {
     store.showRequestDetails = true;
   }
 
-  const remoteRowCount = data.requestsConnection.totalCount;
   // notes: cellrenderer gets rowData (sample properties)
   // todo: add prop that we can call setState for to put us in "editing mode"
-  const RecentDeliveriesColumns = [
-    {
-      headerRender: () => {
-        return <Edit />;
-      },
-      cellRenderer: arg => {
-        return (
-          <Button
-            variant="outline-secondary"
-            size="sm"
-            onClick={() => {
-              navigate("./" + arg.rowData.igoRequestId);
-            }}
-          >
-            Edit
-          </Button>
-        );
-      }
-    },
-    {
-      dataKey: "igoRequestId",
-      label: "IGO Request ID",
-      sortable: true,
-      filterable: true
-    },
-    {
-      dataKey: "igoProjectId",
-      label: "IGO Project ID",
-      sortable: true,
-      filterable: true
-    },
-    {
-      dataKey: "projectManagerName",
-      label: "Project Manager Name",
-      sortable: true,
-      filterable: true,
-      width: 200
-    },
-    {
-      dataKey: "investigatorName",
-      label: "Investigator Name",
-      sortable: true,
-      filterable: true,
-      width: 200
-    },
-    {
-      dataKey: "investigatorEmail",
-      label: "Investigator Email",
-      sortable: true,
-      filterable: true,
-      width: 200
-    },
-    {
-      dataKey: "dataAnalystName",
-      label: "Data Analyst Name",
-      sortable: true,
-      filterable: true,
-      width: 200
-    },
-    {
-      dataKey: "dataAnalystEmail",
-      label: "Data Analyst Email",
-      sortable: true,
-      filterable: true,
-      width: 200
-    },
-    {
-      dataKey: "genePanel",
-      label: "Gene Panel",
-      sortable: true,
-      filterable: true
-    }
-  ];
 
   // notes:
   // form can go in another component
   // def put the table in another component (from infinite loader --> through table)
   // todo: sample-level detail editing mode (<path>/sampleId/edit <-- edit would indicate mode we're in)
 
+  const title = params.requestId
+    ? `Viewing Request ${params.requestId}`
+    : "Requests";
+
+  const remoteCount = data!.requestsConnection.totalCount;
+
   return (
     <Container fluid>
+      {showDownloadModal && (
+        <DownloadModal
+          filter={val}
+          loader={loadAllRows(fetchMore, val)}
+          onComplete={() => setShowDownloadModal(false)}
+        />
+      )}
+
       <Row className="pagetitle">
         <Col>
-          <h1>Requests</h1>
           <nav>
             <ol className="breadcrumb">
               <li className="breadcrumb-item">
-                <a href="index.html">Home</a>
+                <a href="/">Home</a>
               </li>
               <li className="breadcrumb-item active">
                 <NavLink to={"/recentDeliveries"}>Requests</NavLink>
@@ -194,38 +155,35 @@ const RecentDeliveriesObserverable = () => {
               )}
             </ol>
           </nav>
+          <h1>{title}</h1>
         </Col>
       </Row>
 
-      {params.requestId && (
-        <Row>
-          <RequestSummary props={params} />
-        </Row>
-      )}
+      {params.requestId && <RequestSummary props={params} />}
 
       <Row
         className={classNames(
-          "d-flex justify-content-between align-items-center",
+          "d-flex justify-content-center align-items-center",
           { "d-none": params.requestId }
         )}
       >
-        <Col>
+        <Col className={"text-end"}>
           <Form.Control
+            className={"d-inline-block"}
             style={{ width: "300px" }}
             type="search"
             placeholder="Search Requests"
             aria-label="Search"
             value={val}
             onInput={event => {
-              const value = String(
-                ((event.currentTarget as unknown) as HTMLInputElement).value
-              );
+              const value = event.currentTarget.value;
+
               if (value !== null) {
                 setVal(value);
               }
 
-              if (timeO) {
-                clearTimeout(timeO);
+              if (typingTimeout) {
+                clearTimeout(typingTimeout);
               }
 
               // there will always be a promise so
@@ -243,21 +201,31 @@ const RecentDeliveriesObserverable = () => {
                   });
                   setProm(rf);
                 }, 500);
-                setTime0(to);
+                setTypingTimeout(to);
               });
             }}
           />
         </Col>
-        <Col className={"text-center"}>{remoteRowCount} matching requests</Col>
-        <Col className={"text-end"}></Col>
+        <Col className={"text-start"}>{remoteCount} matching requests</Col>
+
+        <Col>
+          <Button
+            onClick={() => {
+              setShowDownloadModal(true);
+            }}
+          >
+            Generate Report
+          </Button>
+        </Col>
       </Row>
+
       <Row className={classNames({ "d-none": params.requestId })}>
         <InfiniteLoader
           isRowLoaded={isRowLoaded}
           loadMoreRows={params => {
             return loadMoreRows(params, fetchMore);
           }}
-          rowCount={remoteRowCount}
+          rowCount={remoteCount}
         >
           {({ onRowsRendered, registerChild }) => (
             <AutoSizer>
@@ -269,7 +237,7 @@ const RecentDeliveriesObserverable = () => {
                   height={540}
                   headerHeight={60}
                   rowHeight={40}
-                  rowCount={remoteRowCount}
+                  rowCount={remoteCount}
                   onRowsRendered={onRowsRendered}
                   rowGetter={rowGetter}
                   onRowClick={onRowClick}
@@ -277,7 +245,7 @@ const RecentDeliveriesObserverable = () => {
                     store.showRequestDetails = false;
                   }}
                 >
-                  {RecentDeliveriesColumns.map(col => {
+                  {RequestTableColumns.map(col => {
                     return (
                       <Column
                         headerRenderer={col.headerRender}

@@ -15,12 +15,14 @@
     "@types/react-virtualized": "^9.21.21",
     "classnames": "^2.3.1",
     "graphql": "^16.5.0",
+    "js-file-download": "^0.4.12",
     "json": "^9.0.6",
     "lodash": "^4.17.21",
     "mobx": "^6.6.1",
     "mobx-react": "^7.5.2",
     "mobx-react-lite": "^3.4.0",
     "neo4j-graphql-cli": "^0.0.11",
+    "pre-commit": "^1.2.2",
     "prettier": "1.19.1",
     "react": "^17.0.2",
     "react-bootstrap": "^2.5.0",
@@ -44,11 +46,14 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "codegen": "graphql-codegen --config codegen.yml",
-    "prettierFixCurrentChanges": "STAGED_AND_CHANGED_FILES=$(git diff HEAD --name-only --cached --diff-filter=d) && ([ -z \"$STAGED_AND_CHANGED_FILES\" ] && echo \"Nothing to prettify\" || (yarn run prettier --write $(echo $STAGED_AND_CHANGED_FILES) && git add -f $(echo $STAGED_AND_CHANGED_FILES)))",
+    "prettierFixCurrentChanges": "STAGED_AND_CHANGED_FILES=$(git diff HEAD --name-only --cached --diff-filter=d) && ([ -z \"$STAGED_AND_CHANGED_FILES\" ] && echo \"Nothing to prettify\" || (yarn run prettier ./src --write $(echo $STAGED_AND_CHANGED_FILES) && git add -f $(echo $STAGED_AND_CHANGED_FILES)))",
     "prettierCheckCircleCI": "git remote add smile-repo https://github.com/mskcc/smile-dashboard.git && git fetch smile-repo master && CHANGED_FILES=$(git diff smile-repo/master --name-only --diff-filter=d) && [ ! -z \"$CHANGED_FILES\" ] && yarn run prettier -c $(echo $CHANGED_FILES) && git remote remove smile-repo",
     "prettierFixLocal": "CHANGED_FILES=$(git diff master --name-only --diff-filter=d) && ([ ! -z \"$CHANGED_FILES\" ] && yarn run prettier --write $(echo $CHANGED_FILES) || echo \"Nothing to prettify\")",
     "prettierAll": "yarn run prettier --write $(git ls-files | grep '\\(.js\\|.ts\\|.scss\\|.css\\|.ht\\)')"
   },
+  "pre-commit": [
+    "prettierFixCurrentChanges"
+  ],
   "eslintConfig": {
     "extends": [
       "react-app",

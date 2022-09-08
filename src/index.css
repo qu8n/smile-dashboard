@@ -21,3 +21,7 @@ body {
 .ReactVirtualized__Table__headerRow {
   text-transform: none !important;
 }
+
+.main {
+  padding:15px !important;
+}

@@ -8,7 +8,6 @@ import RecentDeliveriesPage from "./pages/recentDeliveries/RecentDeliveriesPage"
 import HomePage from "./pages/home/HomePage";
 import SmileNavBar from "./shared/components/SmileNavBar";
 import { offsetLimitPagination } from "@apollo/client/utilities";
-import { RequestSummary } from "./pages/requestView/RequestSummary";
 
 const cache = new InMemoryCache({
   typePolicies: {

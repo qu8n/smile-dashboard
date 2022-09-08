@@ -1,31 +1,22 @@
 import React from "react";
-import { RequestSummaryQueryDocument } from "../../generated/graphql";
-import { useQuery } from "@apollo/client";
-import { InfiniteLoader, Table, Column, AutoSizer } from "react-virtualized";
-import { Row } from "react-bootstrap";
-import { observer } from "mobx-react";
+import {SortDirection, useRecentDeliveriesQuery, useRequestWithSamplesQuery} from "../../generated/graphql";
+import {AutoSizer, Column, InfiniteLoader, Table} from "react-virtualized";
+import {Row} from "react-bootstrap";
+import {observer} from "mobx-react";
 import "react-virtualized/styles.css";
+import _ from "lodash";
 
 const RequestSummary = observer(({ props }) => {
-  const { loading, error, data, fetchMore } = useQuery(
-    RequestSummaryQueryDocument,
+  const { loading, error, data, fetchMore } = useRequestWithSamplesQuery(
     {
       variables: {
         where: {
-          igoRequestId_CONTAINS: props.requestId
+          igoRequestId: props.requestId
         },
         options: {
           offset: 0,
-          limit: 50
+          limit: undefined
         },
-        hasMetadataSampleMetadataOptions2: {
-          sort: [
-            {
-              importDate: "DESC"
-            }
-          ],
-          limit: 1
-        }
       }
     }
   );
@@ -33,51 +24,41 @@ const RequestSummary = observer(({ props }) => {
   if (loading) return <Row />;
   if (error) return <Row>Error loading request details / request samples</Row>;
 
-  function loadMoreRows({ startIndex, stopIndex }, fetchMore: any) {
-    return fetchMore({
-      variables: {
-        options: {
-          offset: startIndex,
-          limit: stopIndex
-        }
-      }
-    });
-  }
+  const request = data!.requests[0];
+  const samples = request.hasSampleSamples;
 
-  function isRowLoaded({ index }) {
-    return index < data.requests[0].hasSampleSamples.length;
-  }
+
+
+  // function loadMoreRows({ startIndex, stopIndex }, fetchMore: any) {
+  //   return fetchMore({
+  //     variables: {
+  //       options: {
+  //         offset: startIndex,
+  //         limit: stopIndex
+  //       }
+  //     }
+  //   });
+  // }
+
+  // function isRowLoaded({ index }) {
+  //   return index < data.requests[-].length;
+  // }
 
   function rowGetter({ index }) {
-    if (!data.requests[0].hasSampleSamples[index]) {
-      return "";
-    }
-    return data.requests[0].hasSampleSamples[index]
+    return request.hasSampleSamples[index]
       .hasMetadataSampleMetadata[0];
   }
 
-  const remoteRowCount = data.requests[0].hasSampleSamplesConnection.totalCount;
-
-  return (
-    <InfiniteLoader
-      isRowLoaded={isRowLoaded}
-      loadMoreRows={params => {
-        return loadMoreRows(params, fetchMore);
-      }}
-      rowCount={remoteRowCount}
-    >
-      {({ onRowsRendered, registerChild }) => (
-        <AutoSizer>
-          {({ width }) => (
+  const sampleTable =
+      <AutoSizer>
+        {({ width }) => (
             <Table
               className="table"
-              ref={registerChild}
               width={width}
               height={450}
               headerHeight={50}
               rowHeight={40}
-              rowCount={remoteRowCount}
-              onRowsRendered={onRowsRendered}
+              rowCount={request.hasSampleSamples.length}
               rowGetter={rowGetter}
             >
               {SampleDetailsColumns.map(col => {
@@ -90,11 +71,28 @@ const RequestSummary = observer(({ props }) => {
                 );
               })}
             </Table>
-          )}
-        </AutoSizer>
-      )}
-    </InfiniteLoader>
-  );
+        )}
+      </AutoSizer>;
+
+  const stringFields: any[] = [];
+
+  _.forEach(request,(val,key)=>{
+    if (typeof val === "string") {
+      stringFields.push(<tr><td>{key}</td><td>{val}</td></tr>)
+    }
+  });
+
+  return <>
+
+    <table>
+    {
+        stringFields
+    }
+    </table>
+
+    {sampleTable}
+  </>
+
 });
 
 export { RequestSummary };
