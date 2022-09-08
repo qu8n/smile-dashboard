@@ -29,7 +29,7 @@ const client = new ApolloClient({
 const root = ReactDOM.render(
   <BrowserRouter>
     <ApolloProvider client={client}>
-      <Container>
+      <div>
         <SmileNavBar />
         <Routes>
           <Route path="/home" element={<HomePage />}></Route>
@@ -37,7 +37,7 @@ const root = ReactDOM.render(
             <Route path=":requestId" />
           </Route>
         </Routes>
-      </Container>
+      </div>
     </ApolloProvider>
   </BrowserRouter>,
   document.getElementById("root") as HTMLElement

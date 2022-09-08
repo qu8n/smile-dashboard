@@ -24,14 +24,14 @@ const store = createStore();
 
 export const RecentDeliveriesPage: React.FunctionComponent = props => {
   return (
-    <Container
+    <div
       style={{
         marginBottom: "20px",
         marginTop: "20px"
       }}
     >
       <RecentDeliveriesObserverable />
-    </Container>
+    </div>
   );
 };
 
@@ -133,31 +133,36 @@ const RecentDeliveriesObserverable = () => {
       dataKey: "projectManagerName",
       label: "Project Manager Name",
       sortable: true,
-      filterable: true
+      filterable: true,
+      width:200
     },
     {
       dataKey: "investigatorName",
       label: "Investigator Name",
       sortable: true,
-      filterable: true
+      filterable: true,
+      width:200
     },
     {
       dataKey: "investigatorEmail",
       label: "Investigator Email",
       sortable: true,
-      filterable: true
+      filterable: true,
+      width:200
     },
     {
       dataKey: "dataAnalystName",
       label: "Data Analyst Name",
       sortable: true,
-      filterable: true
+      filterable: true,
+      width:200
     },
     {
       dataKey: "dataAnalystEmail",
       label: "Data Analyst Email",
       sortable: true,
-      filterable: true
+      filterable: true,
+      width:200
     },
     {
       dataKey: "genePanel",
@@ -178,7 +183,7 @@ const RecentDeliveriesObserverable = () => {
   // todo: sample-level detail editing mode (<path>/sampleId/edit <-- edit would indicate mode we're in)
 
   return (
-    <Row
+    <div
       id="recentDeliveriesRow"
       style={{ flexDirection: "column", display: "flex" }}
     >
@@ -259,7 +264,7 @@ const RecentDeliveriesObserverable = () => {
                       label={col.label}
                       dataKey={`${col.dataKey}`}
                       cellRenderer={col.cellRenderer}
-                      width={width / RecentDeliveriesColumns.length}
+                      width={col.width || 100}
                     />
                   );
                 })}
@@ -268,6 +273,6 @@ const RecentDeliveriesObserverable = () => {
           </AutoSizer>
         )}
       </InfiniteLoader>
-    </Row>
+    </div>
   );
 };
