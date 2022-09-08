@@ -5,7 +5,6 @@ import reportWebVitals from "./reportWebVitals";
 import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import RecentDeliveriesPage from "./pages/recentDeliveries/RecentDeliveriesPage";
-import { Container } from "react-bootstrap";
 import HomePage from "./pages/home/HomePage";
 import SmileNavBar from "./shared/components/SmileNavBar";
 import { offsetLimitPagination } from "@apollo/client/utilities";
@@ -31,12 +30,20 @@ const root = ReactDOM.render(
     <ApolloProvider client={client}>
       <div>
         <SmileNavBar />
-        <Routes>
-          <Route path="/home" element={<HomePage />}></Route>
-          <Route path="/recentDeliveries/" element={<RecentDeliveriesPage />}>
-            <Route path=":requestId" />
-          </Route>
-        </Routes>
+
+        <main id="main" className="main">
+          <section className="section dashboard">
+            <Routes>
+              <Route path="/home" element={<HomePage />}></Route>
+              <Route
+                path="/recentDeliveries/"
+                element={<RecentDeliveriesPage />}
+              >
+                <Route path=":requestId" />
+              </Route>
+            </Routes>
+          </section>
+        </main>
       </div>
     </ApolloProvider>
   </BrowserRouter>,

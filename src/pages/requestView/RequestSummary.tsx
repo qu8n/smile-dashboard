@@ -2,7 +2,7 @@ import React from "react";
 import { RequestSummaryQueryDocument } from "../../generated/graphql";
 import { useQuery } from "@apollo/client";
 import { InfiniteLoader, Table, Column, AutoSizer } from "react-virtualized";
-import { Container, Row } from "react-bootstrap";
+import { Row } from "react-bootstrap";
 import { observer } from "mobx-react";
 import "react-virtualized/styles.css";
 
@@ -59,43 +59,41 @@ const RequestSummary = observer(({ props }) => {
   const remoteRowCount = data.requests[0].hasSampleSamplesConnection.totalCount;
 
   return (
-    <Container>
-      <InfiniteLoader
-        isRowLoaded={isRowLoaded}
-        loadMoreRows={params => {
-          return loadMoreRows(params, fetchMore);
-        }}
-        rowCount={remoteRowCount}
-      >
-        {({ onRowsRendered, registerChild }) => (
-          <AutoSizer>
-            {({ width }) => (
-              <Table
-                className="table"
-                ref={registerChild}
-                width={width}
-                height={450}
-                headerHeight={50}
-                rowHeight={40}
-                rowCount={remoteRowCount}
-                onRowsRendered={onRowsRendered}
-                rowGetter={rowGetter}
-              >
-                {SampleDetailsColumns.map(col => {
-                  return (
-                    <Column
-                      label={col.label}
-                      dataKey={`${col.dataKey}`}
-                      width={width / SampleDetailsColumns.length}
-                    />
-                  );
-                })}
-              </Table>
-            )}
-          </AutoSizer>
-        )}
-      </InfiniteLoader>
-    </Container>
+    <InfiniteLoader
+      isRowLoaded={isRowLoaded}
+      loadMoreRows={params => {
+        return loadMoreRows(params, fetchMore);
+      }}
+      rowCount={remoteRowCount}
+    >
+      {({ onRowsRendered, registerChild }) => (
+        <AutoSizer>
+          {({ width }) => (
+            <Table
+              className="table"
+              ref={registerChild}
+              width={width}
+              height={450}
+              headerHeight={50}
+              rowHeight={40}
+              rowCount={remoteRowCount}
+              onRowsRendered={onRowsRendered}
+              rowGetter={rowGetter}
+            >
+              {SampleDetailsColumns.map(col => {
+                return (
+                  <Column
+                    label={col.label}
+                    dataKey={`${col.dataKey}`}
+                    width={width / SampleDetailsColumns.length}
+                  />
+                );
+              })}
+            </Table>
+          )}
+        </AutoSizer>
+      )}
+    </InfiniteLoader>
   );
 });
 

@@ -5,12 +5,21 @@ import { RecentDeliveriesQueryDocument } from "../../generated/graphql";
 import { observer } from "mobx-react-lite";
 import { makeAutoObservable } from "mobx";
 import { InfiniteLoader, Table, Column, AutoSizer } from "react-virtualized";
-import { Button, Col, Container, Form, InputGroup, Row } from "react-bootstrap";
+import {
+  Badge,
+  Button,
+  Col,
+  Container,
+  Form,
+  InputGroup,
+  Row
+} from "react-bootstrap";
 import { RequestSummary } from "../requestView/RequestSummary";
 import "react-virtualized/styles.css";
-import { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import React, { useState } from "react";
+import { NavLink, useNavigate, useParams } from "react-router-dom";
 import _ from "lodash";
+import classNames from "classnames";
 
 function createStore() {
   return makeAutoObservable({
@@ -23,16 +32,7 @@ function createStore() {
 const store = createStore();
 
 export const RecentDeliveriesPage: React.FunctionComponent = props => {
-  return (
-    <div
-      style={{
-        marginBottom: "20px",
-        marginTop: "20px"
-      }}
-    >
-      <RecentDeliveriesObserverable />
-    </div>
-  );
+  return <RecentDeliveriesObserverable />;
 };
 
 export default RecentDeliveriesPage;
@@ -90,7 +90,6 @@ const RecentDeliveriesObserverable = () => {
   }
 
   function onRowClick(info) {
-    console.log(info.rowData.igoRequestId);
     store.selectedRequest = info.rowData.igoRequestId;
     store.showRequestDetails = true;
   }
@@ -134,35 +133,35 @@ const RecentDeliveriesObserverable = () => {
       label: "Project Manager Name",
       sortable: true,
       filterable: true,
-      width:200
+      width: 200
     },
     {
       dataKey: "investigatorName",
       label: "Investigator Name",
       sortable: true,
       filterable: true,
-      width:200
+      width: 200
     },
     {
       dataKey: "investigatorEmail",
       label: "Investigator Email",
       sortable: true,
       filterable: true,
-      width:200
+      width: 200
     },
     {
       dataKey: "dataAnalystName",
       label: "Data Analyst Name",
       sortable: true,
       filterable: true,
-      width:200
+      width: 200
     },
     {
       dataKey: "dataAnalystEmail",
       label: "Data Analyst Email",
       sortable: true,
       filterable: true,
-      width:200
+      width: 200
     },
     {
       dataKey: "genePanel",
@@ -172,107 +171,129 @@ const RecentDeliveriesObserverable = () => {
     }
   ];
 
-  // this is control logic
-  if (params.requestId) {
-    return <RequestSummary props={params} />;
-  }
-
   // notes:
   // form can go in another component
   // def put the table in another component (from infinite loader --> through table)
   // todo: sample-level detail editing mode (<path>/sampleId/edit <-- edit would indicate mode we're in)
 
   return (
-    <div
-      id="recentDeliveriesRow"
-      style={{ flexDirection: "column", display: "flex" }}
-    >
-      <InputGroup>
-        <Form>
-          <Form.Group as={Col}>
-            <Form.Control
-              style={{ height: "40px", width: "300px" }}
-              type="search"
-              placeholder="Search"
-              aria-label="Search"
-              value={val}
-              onInput={event => {
-                const value = String(
-                  ((event.currentTarget as unknown) as HTMLInputElement).value
-                );
-                if (value !== null) {
-                  setVal(value);
-                }
+    <Container fluid>
+      <Row className="pagetitle">
+        <Col>
+          <h1>Requests</h1>
+          <nav>
+            <ol className="breadcrumb">
+              <li className="breadcrumb-item">
+                <a href="index.html">Home</a>
+              </li>
+              <li className="breadcrumb-item active">
+                <NavLink to={"/recentDeliveries"}>Requests</NavLink>
+              </li>
+              {params.requestId && (
+                <li className="breadcrumb-item active">{params.requestId}</li>
+              )}
+            </ol>
+          </nav>
+        </Col>
+      </Row>
 
-                if (timeO) {
-                  clearTimeout(timeO);
-                }
+      {params.requestId && (
+        <Row>
+          <RequestSummary props={params} />
+        </Row>
+      )}
 
-                // there will always be a promise so
-                // wait until it's resolved
-                prom.then(() => {
-                  const to = setTimeout(() => {
-                    const rf = refetch({
-                      where: {
-                        [filterField]: value
-                      },
-                      requestsConnectionWhere2: {
-                        [filterField]: value
-                      },
-                      options: { limit: 20, offset: 0 }
-                    });
-                    setProm(rf);
-                  }, 500);
-                  setTime0(to);
-                });
-              }}
-            />
-          </Form.Group>
-        </Form>
-      </InputGroup>
-      <hr />
-      <div>Results: {remoteRowCount}</div>
-      <InfiniteLoader
-        isRowLoaded={isRowLoaded}
-        loadMoreRows={params => {
-          return loadMoreRows(params, fetchMore);
-        }}
-        rowCount={remoteRowCount}
-      >
-        {({ onRowsRendered, registerChild }) => (
-          <AutoSizer>
-            {({ width }) => (
-              <Table
-                className="table"
-                ref={registerChild}
-                width={width}
-                height={540}
-                headerHeight={60}
-                rowHeight={40}
-                rowCount={remoteRowCount}
-                onRowsRendered={onRowsRendered}
-                rowGetter={rowGetter}
-                onRowClick={onRowClick}
-                onRowDoubleClick={info => {
-                  store.showRequestDetails = false;
-                }}
-              >
-                {RecentDeliveriesColumns.map(col => {
-                  return (
-                    <Column
-                      headerRenderer={col.headerRender}
-                      label={col.label}
-                      dataKey={`${col.dataKey}`}
-                      cellRenderer={col.cellRenderer}
-                      width={col.width || 100}
-                    />
-                  );
-                })}
-              </Table>
-            )}
-          </AutoSizer>
+      <Row
+        className={classNames(
+          "d-flex justify-content-between align-items-center",
+          { "d-none": params.requestId }
         )}
-      </InfiniteLoader>
-    </div>
+      >
+        <Col>
+          <Form.Control
+            style={{ width: "300px" }}
+            type="search"
+            placeholder="Search Requests"
+            aria-label="Search"
+            value={val}
+            onInput={event => {
+              const value = String(
+                ((event.currentTarget as unknown) as HTMLInputElement).value
+              );
+              if (value !== null) {
+                setVal(value);
+              }
+
+              if (timeO) {
+                clearTimeout(timeO);
+              }
+
+              // there will always be a promise so
+              // wait until it's resolved
+              prom.then(() => {
+                const to = setTimeout(() => {
+                  const rf = refetch({
+                    where: {
+                      [filterField]: value
+                    },
+                    requestsConnectionWhere2: {
+                      [filterField]: value
+                    },
+                    options: { limit: 20, offset: 0 }
+                  });
+                  setProm(rf);
+                }, 500);
+                setTime0(to);
+              });
+            }}
+          />
+        </Col>
+        <Col className={"text-center"}>{remoteRowCount} matching requests</Col>
+        <Col className={"text-end"}></Col>
+      </Row>
+      <Row className={classNames({ "d-none": params.requestId })}>
+        <InfiniteLoader
+          isRowLoaded={isRowLoaded}
+          loadMoreRows={params => {
+            return loadMoreRows(params, fetchMore);
+          }}
+          rowCount={remoteRowCount}
+        >
+          {({ onRowsRendered, registerChild }) => (
+            <AutoSizer>
+              {({ width }) => (
+                <Table
+                  className="table"
+                  ref={registerChild}
+                  width={width}
+                  height={540}
+                  headerHeight={60}
+                  rowHeight={40}
+                  rowCount={remoteRowCount}
+                  onRowsRendered={onRowsRendered}
+                  rowGetter={rowGetter}
+                  onRowClick={onRowClick}
+                  onRowDoubleClick={info => {
+                    store.showRequestDetails = false;
+                  }}
+                >
+                  {RecentDeliveriesColumns.map(col => {
+                    return (
+                      <Column
+                        headerRenderer={col.headerRender}
+                        label={col.label}
+                        dataKey={`${col.dataKey}`}
+                        cellRenderer={col.cellRenderer}
+                        width={col.width || 100}
+                      />
+                    );
+                  })}
+                </Table>
+              )}
+            </AutoSizer>
+          )}
+        </InfiniteLoader>
+      </Row>
+    </Container>
   );
 };
