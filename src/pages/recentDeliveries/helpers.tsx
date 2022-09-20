@@ -92,28 +92,3 @@ export function buildRequestTableColumns(navigate: any): ColumnDefinition[] {
     ...StaticTableColumns
   ];
 }
-
-export function buildRequestTableColumns2(navigate: any): ColumnDefinition[] {
-  return [
-    {
-      headerRender: () => {
-        return <Edit />;
-      },
-      cellRenderer: arg => {
-        return (
-          <Button
-            variant="outline-secondary"
-            size="sm"
-            onClick={() => {
-              navigate("./" + arg.rowData.igoRequestId);
-            }}
-          >
-            Edit
-          </Button>
-        );
-      }
-    },
-
-    ...StaticTableColumns
-  ];
-}
