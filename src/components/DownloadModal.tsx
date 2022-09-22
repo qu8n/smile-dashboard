@@ -1,6 +1,7 @@
 import React, { FunctionComponent } from "react";
 import Modal from "react-bootstrap/Modal";
-import { CSVGenerate } from "../lib/CSVExport";
+import { CSVFormulate } from "../lib/CSVExport";
+import jsdownload from "js-file-download";
 
 export const DownloadModal: FunctionComponent<{
   loader: () => Promise<any>;
@@ -9,7 +10,8 @@ export const DownloadModal: FunctionComponent<{
 }> = ({ loader, onComplete, filter }) => {
   loader().then(({ data }) => {
     console.log("exporting", data.requests.length);
-    CSVGenerate(data.requests);
+    const csvString = CSVFormulate(data.requests);
+    jsdownload(csvString, "report.csv");
     onComplete();
   });
 

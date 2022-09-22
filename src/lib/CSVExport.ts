@@ -1,14 +1,14 @@
-import jsdownload from "js-file-download";
 import { StaticTableColumns } from "../pages/recentDeliveries/helpers";
 
-export function CSVGenerate(requests) {
+export function CSVFormulate(requests) {
   const csvString = [
-    StaticTableColumns.map(item => item.label),
-    requests.map(req => StaticTableColumns.map(col => req[col.dataKey!]))
-  ]
+    StaticTableColumns.map(item => item.label).join("\t"),
+    ...requests
+      .map(req => StaticTableColumns.map(col => req[col.dataKey!]))
+      .map(e => e.join("\t"))
+  ].join("\n");
 
-    .map(e => e.join("\t"))
-    .join("\n");
+  console.log(csvString);
 
-  jsdownload(csvString, "report.csv");
+  return csvString;
 }
