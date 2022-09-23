@@ -23,5 +23,11 @@ body {
 }
 
 .main {
-  padding:15px !important;
+  padding: 15px !important;
+}
+
+.modal-90w {
+  width: 90%;
+  max-width: none !important ;
+  height: 1000px !important;
 }

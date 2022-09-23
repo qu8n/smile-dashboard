@@ -15,7 +15,8 @@ import {
   InputGroup,
   Row,
   Modal,
-  ModalBody
+  ModalBody,
+  CloseButton
 } from "react-bootstrap";
 //import { RequestSummary } from "../requestView/RequestSummary";
 import "react-virtualized/styles.css";
@@ -159,12 +160,24 @@ const RecentDeliveriesObserverable = () => {
         </Col>
       </Row>
 
-      {params.requestId && <RequestSummary props={params} />}
+      {params.requestId && (
+        <Modal
+          show={true}
+          dialogClassName="modal-90w"
+          onHide={() => navigate("/recentDeliveries")}
+        >
+          <Modal.Header closeButton>this is a header for testing</Modal.Header>
+          <Modal.Body>
+            <div>
+              <RequestSummary props={params} />
+            </div>
+          </Modal.Body>
+        </Modal>
+      )}
 
       <Row
         className={classNames(
-          "d-flex justify-content-center align-items-center",
-          { "d-none": params.requestId }
+          "d-flex justify-content-center align-items-center"
         )}
       >
         <Col className={"text-end"}>
@@ -219,7 +232,7 @@ const RecentDeliveriesObserverable = () => {
         </Col>
       </Row>
 
-      <Row className={classNames({ "d-none": params.requestId })}>
+      <Row>
         <InfiniteLoader
           isRowLoaded={isRowLoaded}
           loadMoreRows={params => {
