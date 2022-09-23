@@ -1,4 +1,4 @@
-import "./requests.css";
+import "./requests.scss";
 import { useRecentDeliveriesQuery } from "../../generated/graphql";
 import { makeAutoObservable } from "mobx";
 import { InfiniteLoader, Table, Column, AutoSizer } from "react-virtualized";
