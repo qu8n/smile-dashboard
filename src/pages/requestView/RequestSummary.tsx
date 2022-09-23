@@ -1,9 +1,5 @@
 import React from "react";
-import {
-  SortDirection,
-  useRecentDeliveriesQuery,
-  useRequestWithSamplesQuery
-} from "../../generated/graphql";
+import { useRequestWithSamplesQuery } from "../../../generated/graphql";
 import { AutoSizer, Column, InfiniteLoader, Table } from "react-virtualized";
 import { Row } from "react-bootstrap";
 import { observer } from "mobx-react";

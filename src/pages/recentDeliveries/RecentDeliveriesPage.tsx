@@ -1,24 +1,8 @@
-import { useQuery } from "@apollo/client";
-import { Edit } from "@material-ui/icons";
 import "./RecentDeliveries.css";
-import { useRecentDeliveriesQuery } from "../../generated/graphql";
-import { observer } from "mobx-react-lite";
+import { useRecentDeliveriesQuery } from "../../../generated/graphql";
 import { makeAutoObservable } from "mobx";
-import jsdownload from "js-file-download";
 import { InfiniteLoader, Table, Column, AutoSizer } from "react-virtualized";
-import {
-  Badge,
-  Button,
-  Col,
-  Container,
-  Form,
-  InputGroup,
-  Row,
-  Modal,
-  ModalBody,
-  CloseButton
-} from "react-bootstrap";
-//import { RequestSummary } from "../requestView/RequestSummary";
+import { Button, Col, Container, Form, Row, Modal } from "react-bootstrap";
 import "react-virtualized/styles.css";
 import React, { useState } from "react";
 import { NavLink, useNavigate, useParams } from "react-router-dom";
