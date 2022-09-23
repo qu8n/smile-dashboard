@@ -1,5 +1,5 @@
-import "./RecentDeliveries.css";
-import { useRecentDeliveriesQuery } from "../../../generated/graphql";
+import "./requests.css";
+import { useRecentDeliveriesQuery } from "../../generated/graphql";
 import { makeAutoObservable } from "mobx";
 import { InfiniteLoader, Table, Column, AutoSizer } from "react-virtualized";
 import { Button, Col, Container, Form, Row, Modal } from "react-bootstrap";
@@ -9,7 +9,7 @@ import { NavLink, useNavigate, useParams } from "react-router-dom";
 import _ from "lodash";
 import classNames from "classnames";
 import { buildRequestTableColumns } from "./helpers";
-import { RequestSummary } from "../requestView/RequestSummary";
+import { RequestSummary } from "./RequestSummary";
 import { DownloadModal } from "../../components/DownloadModal";
 
 function createStore() {
@@ -22,11 +22,11 @@ function createStore() {
 
 const store = createStore();
 
-export const RecentDeliveriesPage: React.FunctionComponent = props => {
+export const RequestsPage: React.FunctionComponent = props => {
   return <RecentDeliveriesObserverable />;
 };
 
-export default RecentDeliveriesPage;
+export default RequestsPage;
 
 const RecentDeliveriesObserverable = () => {
   const [val, setVal] = useState("");

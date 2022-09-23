@@ -1,4 +1,4 @@
-import { StaticTableColumns } from "../pages/recentDeliveries/helpers";
+import { StaticTableColumns } from "../pages/requests/helpers";
 
 export function CSVFormulate(requests) {
   const csvString = [
