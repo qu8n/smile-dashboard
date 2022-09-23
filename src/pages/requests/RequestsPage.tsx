@@ -1,5 +1,5 @@
 import "./requests.scss";
-import { useRecentDeliveriesQuery } from "../../generated/graphql";
+import { useRequestsListQuery } from "../../generated/graphql";
 import { makeAutoObservable } from "mobx";
 import { InfiniteLoader, Table, Column, AutoSizer } from "react-virtualized";
 import { Button, Col, Container, Form, Row, Modal } from "react-bootstrap";
@@ -11,6 +11,7 @@ import classNames from "classnames";
 import { buildRequestTableColumns } from "./helpers";
 import { RequestSummary } from "./RequestSummary";
 import { DownloadModal } from "../../components/DownloadModal";
+import Spinner from "react-spinkit";
 
 function createStore() {
   return makeAutoObservable({
@@ -23,12 +24,12 @@ function createStore() {
 const store = createStore();
 
 export const RequestsPage: React.FunctionComponent = props => {
-  return <RecentDeliveriesObserverable />;
+  return <Requests />;
 };
 
 export default RequestsPage;
 
-const RecentDeliveriesObserverable = () => {
+const Requests = () => {
   const [val, setVal] = useState("");
   const [showDownloadModal, setShowDownloadModal] = useState(false);
   const [typingTimeout, setTypingTimeout] = useState<any>(null);
@@ -40,21 +41,24 @@ const RecentDeliveriesObserverable = () => {
 
   const filterField = "requestJson_CONTAINS";
 
-  const { loading, error, data, refetch, fetchMore } = useRecentDeliveriesQuery(
-    {
-      variables: {
-        where: {
-          [filterField]: store.filter
-        },
-        requestsConnectionWhere2: {
-          [filterField]: store.filter
-        },
-        options: { limit: 20, offset: 0 }
-      }
+  const { loading, error, data, refetch, fetchMore } = useRequestsListQuery({
+    variables: {
+      where: {
+        [filterField]: store.filter
+      },
+      requestsConnectionWhere2: {
+        [filterField]: store.filter
+      },
+      options: { limit: 20, offset: 0 }
     }
-  );
+  });
 
-  if (loading) return <p>Loading requests...</p>;
+  if (loading)
+    return (
+      <div className={"centralSpinner"}>
+        <Spinner fadeIn={"none"} color={"lightblue"} name="ball-grid-pulse" />
+      </div>
+    );
 
   if (error) return <p>Error :(</p>;
 
@@ -133,7 +137,7 @@ const RecentDeliveriesObserverable = () => {
                 <a href="/">Home</a>
               </li>
               <li className="breadcrumb-item active">
-                <NavLink to={"/recentDeliveries"}>Requests</NavLink>
+                <NavLink to={"/requests"}>Requests</NavLink>
               </li>
               {params.requestId && (
                 <li className="breadcrumb-item active">{params.requestId}</li>
@@ -148,7 +152,7 @@ const RecentDeliveriesObserverable = () => {
         <Modal
           show={true}
           dialogClassName="modal-90w"
-          onHide={() => navigate("/recentDeliveries")}
+          onHide={() => navigate("/requests")}
         >
           <Modal.Header closeButton>
             <Modal.Title>Viewing {params.requestId}</Modal.Title>

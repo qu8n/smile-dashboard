@@ -1,86 +1,83 @@
-query RecentDeliveries(
-    $options: RequestOptions
-    $where: RequestWhere
-    $requestsConnectionWhere2: RequestWhere
-  ) {
-    requestsConnection(where: $requestsConnectionWhere2) {
-      totalCount
-    }
-    requests(where: $where, options: $options) {
-        ...RequestParts
+query RequestsList(
+  $options: RequestOptions
+  $where: RequestWhere
+  $requestsConnectionWhere2: RequestWhere
+) {
+  requestsConnection(where: $requestsConnectionWhere2) {
+    totalCount
+  }
+  requests(where: $where, options: $options) {
+    ...RequestParts
+  }
+}
+
+query RequestWithSamples($options: RequestOptions, $where: RequestWhere) {
+  requests(where: $where, options: $options) {
+    ...RequestParts
+    hasSampleSamples {
+      smileSampleId
+      sampleCategory
+      sampleClass
+      datasource
+      hasMetadataSampleMetadata {
+        cmoSampleName
+        igoComplete
+        importDate
+        investigatorSampleId
+        primaryId
+        sampleClass
+        cmoPatientId
+        cmoSampleIdFields
+        sampleName
+        preservation
+        tumorOrNormal
+        oncotreeCode
+        collectionYear
+        sampleOrigin
+        tissueLocation
+        sex
+      }
+      patientsHasSample {
+        smilePatientId
+        patientAliasesIsAlias {
+          namespace
+          value
+        }
+      }
     }
   }
-
-query RequestWithSamples(
-    $options: RequestOptions
-    $where: RequestWhere
-) {
-    requests(where: $where, options: $options) {
-        ...RequestParts
-        hasSampleSamples {
-            smileSampleId
-            sampleCategory
-            sampleClass
-            datasource
-            hasMetadataSampleMetadata {
-              cmoSampleName
-              igoComplete
-              importDate
-              investigatorSampleId
-              primaryId
-              sampleClass
-              cmoPatientId
-              cmoSampleIdFields
-              sampleName
-              preservation
-              tumorOrNormal
-              oncotreeCode
-              collectionYear
-              sampleOrigin
-              tissueLocation
-              sex
-            }
-            patientsHasSample {
-              smilePatientId
-              patientAliasesIsAlias {
-                namespace
-                value
-              }
-            }
-          }
-    }
 }
 
 fragment RequestParts on Request {
-        igoRequestId
-        igoProjectId
-        genePanel
-        dataAnalystName
-        dataAnalystEmail
-        dataAccessEmails
-        bicAnalysis
-        investigatorEmail
-        investigatorName
-        isCmoRequest
-        labHeadEmail
-        labHeadName
-        libraryType
-        otherContactEmails
-        piEmail
-        projectManagerName
-        qcAccessEmails
-        smileRequestId
+  igoRequestId
+  igoProjectId
+  genePanel
+  dataAnalystName
+  dataAnalystEmail
+  dataAccessEmails
+  bicAnalysis
+  investigatorEmail
+  investigatorName
+  isCmoRequest
+  labHeadEmail
+  labHeadName
+  libraryType
+  otherContactEmails
+  piEmail
+  projectManagerName
+  qcAccessEmails
+  smileRequestId
 }
 
 query Samples(
-      $options: SampleOptions
-      $where: SampleWhere
-      $samplesConnectionWhere2: SampleWhere
-    ) {
-      samplesConnection(where: $samplesConnectionWhere2) {
-        totalCount
-      }
-      samples(where: $where, options: $options) {
-        smileSampleId
-      }
-    }
+  $options: SampleOptions
+  $where: SampleWhere
+  $samplesConnectionWhere2: SampleWhere
+) {
+  samplesConnection(where: $samplesConnectionWhere2) {
+    totalCount
+  }
+  samples(where: $where, options: $options) {
+    smileSampleId
+  }
+}
