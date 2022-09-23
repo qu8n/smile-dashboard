@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent, useCallback } from "react";
 import Modal from "react-bootstrap/Modal";
 import { CSVFormulate } from "../lib/CSVExport";
 import jsdownload from "js-file-download";
@@ -8,12 +8,13 @@ export const DownloadModal: FunctionComponent<{
   onComplete: () => void;
   filter: string;
 }> = ({ loader, onComplete, filter }) => {
-  loader().then(({ data }) => {
-    console.log("exporting", data.requests.length);
-    const csvString = CSVFormulate(data.requests);
-    jsdownload(csvString, "report.csv");
-    onComplete();
-  });
+  const doDownload = useCallback(() => {
+    loader().then(({ data }) => {
+      const csvString = CSVFormulate(data.requests);
+      jsdownload(csvString, "requests.tsv");
+      //onComplete();
+    });
+  }, []);
 
   return (
     <Modal show={true}>

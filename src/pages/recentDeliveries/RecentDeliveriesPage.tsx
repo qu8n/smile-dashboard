@@ -166,7 +166,9 @@ const RecentDeliveriesObserverable = () => {
           dialogClassName="modal-90w"
           onHide={() => navigate("/recentDeliveries")}
         >
-          <Modal.Header closeButton>this is a header for testing</Modal.Header>
+          <Modal.Header closeButton>
+            <Modal.Title>Viewing {params.requestId}</Modal.Title>
+          </Modal.Header>
           <Modal.Body>
             <div>
               <RequestSummary props={params} />

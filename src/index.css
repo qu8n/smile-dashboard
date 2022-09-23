@@ -27,7 +27,6 @@ body {
 }
 
 .modal-90w {
-  width: 90%;
-  max-width: none !important ;
-  height: 1000px !important;
+  max-width: none !important;
+  width: 97%;
 }

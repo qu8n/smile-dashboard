@@ -48,8 +48,8 @@
     "codegen": "graphql-codegen --config codegen.yml",
     "prettierFixCurrentChanges": "STAGED_AND_CHANGED_FILES=$(git diff HEAD --name-only --cached --diff-filter=d) && ([ -z \"$STAGED_AND_CHANGED_FILES\" ] && echo \"Nothing to prettify\" || (yarn run prettier ./src --write $(echo $STAGED_AND_CHANGED_FILES) && git add -f $(echo $STAGED_AND_CHANGED_FILES)))",
     "prettierCheckCircleCI": "git remote add smile-repo https://github.com/mskcc/smile-dashboard.git && git fetch smile-repo master && CHANGED_FILES=$(git diff smile-repo/master --name-only --diff-filter=d) && [ ! -z \"$CHANGED_FILES\" ] && yarn run prettier -c $(echo $CHANGED_FILES) && git remote remove smile-repo",
-    "prettierFixLocal": "CHANGED_FILES=$(git diff master --name-only --diff-filter=d) && ([ ! -z \"$CHANGED_FILES\" ] && yarn run prettier --write $(echo $CHANGED_FILES) || echo \"Nothing to prettify\")",
-    "prettierAll": "yarn run prettier --write $(git ls-files | grep '\\(.js\\|.ts\\|.scss\\|.css\\|.ht\\)')"
+    "prettierFixLocal": "CHANGED_FILES=$(git diff master --name-only --diff-filter=d) && ([ ! -z \"$CHANGED_FILES\" ] && yarn run prettier ./src --write $(echo $CHANGED_FILES) || echo \"Nothing to prettify\")",
+    "prettierAll": "yarn run prettier ./src --write $(git ls-files | grep '\\(.js\\|.ts\\|.scss\\|.css\\|.ht\\)')"
   },
   "pre-commit": [
     "prettierFixCurrentChanges"

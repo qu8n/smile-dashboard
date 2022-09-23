@@ -17,20 +17,22 @@ export const StaticTableColumns: ColumnDefinition[] = [
     dataKey: "igoRequestId",
     label: "IGO Request ID",
     sortable: true,
-    filterable: true
+    filterable: true,
+    width: 200
   },
   {
     dataKey: "igoProjectId",
     label: "IGO Project ID",
     sortable: true,
-    filterable: true
+    filterable: true,
+    width: 175
   },
   {
     dataKey: "projectManagerName",
     label: "Project Manager Name",
     sortable: true,
     filterable: true,
-    width: 200
+    width: 175
   },
   {
     dataKey: "investigatorName",
@@ -64,7 +66,8 @@ export const StaticTableColumns: ColumnDefinition[] = [
     dataKey: "genePanel",
     label: "Gene Panel",
     sortable: true,
-    filterable: true
+    filterable: true,
+    width: 200
   }
 ];
 
