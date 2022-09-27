@@ -95,7 +95,7 @@ export type PatientAlias = {
   >;
   isAliasPatientsConnection: PatientAliasIsAliasPatientsConnection;
   namespace: Scalars["String"];
-  value: Scalars["String"];
+  value?: Maybe<Scalars["String"]>;
 };
 
 export type PatientAliasIsAliasPatientsArgs = {
@@ -121,7 +121,7 @@ export type PatientAliasAggregateSelection = {
   __typename?: "PatientAliasAggregateSelection";
   count: Scalars["Int"];
   namespace: StringAggregateSelectionNonNullable;
-  value: StringAggregateSelectionNonNullable;
+  value: StringAggregateSelectionNullable;
 };
 
 export type PatientAliasEdge = {
@@ -253,11 +253,11 @@ export type PatientAliasWhere = {
   value?: InputMaybe<Scalars["String"]>;
   value_CONTAINS?: InputMaybe<Scalars["String"]>;
   value_ENDS_WITH?: InputMaybe<Scalars["String"]>;
-  value_IN?: InputMaybe<Array<Scalars["String"]>>;
+  value_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
   value_NOT?: InputMaybe<Scalars["String"]>;
   value_NOT_CONTAINS?: InputMaybe<Scalars["String"]>;
   value_NOT_ENDS_WITH?: InputMaybe<Scalars["String"]>;
-  value_NOT_IN?: InputMaybe<Array<Scalars["String"]>>;
+  value_NOT_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
   value_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
   value_STARTS_WITH?: InputMaybe<Scalars["String"]>;
 };
@@ -411,7 +411,7 @@ export type PatientPatientAliasPatientAliasesIsAliasAggregationSelection = {
 export type PatientPatientAliasPatientAliasesIsAliasNodeAggregateSelection = {
   __typename?: "PatientPatientAliasPatientAliasesIsAliasNodeAggregateSelection";
   namespace: StringAggregateSelectionNonNullable;
-  value: StringAggregateSelectionNonNullable;
+  value: StringAggregateSelectionNullable;
 };
 
 export type PatientPatientAliasesIsAliasAggregateInput = {
@@ -856,6 +856,26 @@ export type ProjectHasRequestRequestsNodeAggregationWhereInput = {
   labHeadName_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
   labHeadName_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
   labHeadName_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  libraryType_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  libraryType_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  libraryType_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  libraryType_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  libraryType_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  libraryType_EQUAL?: InputMaybe<Scalars["String"]>;
+  libraryType_GT?: InputMaybe<Scalars["Int"]>;
+  libraryType_GTE?: InputMaybe<Scalars["Int"]>;
+  libraryType_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  libraryType_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  libraryType_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  libraryType_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  libraryType_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  libraryType_LT?: InputMaybe<Scalars["Int"]>;
+  libraryType_LTE?: InputMaybe<Scalars["Int"]>;
+  libraryType_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  libraryType_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  libraryType_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  libraryType_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  libraryType_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
   namespace_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
   namespace_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
   namespace_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
@@ -996,6 +1016,26 @@ export type ProjectHasRequestRequestsNodeAggregationWhereInput = {
   smileRequestId_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
   smileRequestId_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
   smileRequestId_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  strand_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  strand_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  strand_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  strand_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  strand_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  strand_EQUAL?: InputMaybe<Scalars["String"]>;
+  strand_GT?: InputMaybe<Scalars["Int"]>;
+  strand_GTE?: InputMaybe<Scalars["Int"]>;
+  strand_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  strand_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  strand_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  strand_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  strand_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  strand_LT?: InputMaybe<Scalars["Int"]>;
+  strand_LTE?: InputMaybe<Scalars["Int"]>;
+  strand_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  strand_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  strand_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  strand_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  strand_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
 };
 
 export type ProjectHasRequestRequestsRelationship = {
@@ -1029,6 +1069,7 @@ export type ProjectRequestHasRequestRequestsNodeAggregateSelection = {
   investigatorName: StringAggregateSelectionNonNullable;
   labHeadEmail: StringAggregateSelectionNonNullable;
   labHeadName: StringAggregateSelectionNonNullable;
+  libraryType: StringAggregateSelectionNullable;
   namespace: StringAggregateSelectionNonNullable;
   otherContactEmails: StringAggregateSelectionNonNullable;
   piEmail: StringAggregateSelectionNonNullable;
@@ -1036,6 +1077,7 @@ export type ProjectRequestHasRequestRequestsNodeAggregateSelection = {
   qcAccessEmails: StringAggregateSelectionNonNullable;
   requestJson: StringAggregateSelectionNonNullable;
   smileRequestId: StringAggregateSelectionNonNullable;
+  strand: StringAggregateSelectionNullable;
 };
 
 /** Fields to sort Projects by. The order in which sorts are applied is not guaranteed when specifying many fields in one ProjectSort object. */
@@ -1279,6 +1321,7 @@ export type Request = {
   isCmoRequest: Scalars["Boolean"];
   labHeadEmail: Scalars["String"];
   labHeadName: Scalars["String"];
+  libraryType?: Maybe<Scalars["String"]>;
   namespace: Scalars["String"];
   otherContactEmails: Scalars["String"];
   piEmail: Scalars["String"];
@@ -1292,6 +1335,7 @@ export type Request = {
   qcAccessEmails: Scalars["String"];
   requestJson: Scalars["String"];
   smileRequestId: Scalars["String"];
+  strand?: Maybe<Scalars["String"]>;
 };
 
 export type RequestHasMetadataRequestMetadataArgs = {
@@ -1364,6 +1408,7 @@ export type RequestAggregateSelection = {
   investigatorName: StringAggregateSelectionNonNullable;
   labHeadEmail: StringAggregateSelectionNonNullable;
   labHeadName: StringAggregateSelectionNonNullable;
+  libraryType: StringAggregateSelectionNullable;
   namespace: StringAggregateSelectionNonNullable;
   otherContactEmails: StringAggregateSelectionNonNullable;
   piEmail: StringAggregateSelectionNonNullable;
@@ -1371,6 +1416,7 @@ export type RequestAggregateSelection = {
   qcAccessEmails: StringAggregateSelectionNonNullable;
   requestJson: StringAggregateSelectionNonNullable;
   smileRequestId: StringAggregateSelectionNonNullable;
+  strand: StringAggregateSelectionNullable;
 };
 
 export type RequestEdge = {
@@ -1680,6 +1726,7 @@ export type RequestMetadataRequestRequestsHasMetadataNodeAggregateSelection = {
   investigatorName: StringAggregateSelectionNonNullable;
   labHeadEmail: StringAggregateSelectionNonNullable;
   labHeadName: StringAggregateSelectionNonNullable;
+  libraryType: StringAggregateSelectionNullable;
   namespace: StringAggregateSelectionNonNullable;
   otherContactEmails: StringAggregateSelectionNonNullable;
   piEmail: StringAggregateSelectionNonNullable;
@@ -1687,6 +1734,7 @@ export type RequestMetadataRequestRequestsHasMetadataNodeAggregateSelection = {
   qcAccessEmails: StringAggregateSelectionNonNullable;
   requestJson: StringAggregateSelectionNonNullable;
   smileRequestId: StringAggregateSelectionNonNullable;
+  strand: StringAggregateSelectionNullable;
 };
 
 export type RequestMetadataRequestsHasMetadataAggregateInput = {
@@ -1927,6 +1975,26 @@ export type RequestMetadataRequestsHasMetadataNodeAggregationWhereInput = {
   labHeadName_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
   labHeadName_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
   labHeadName_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  libraryType_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  libraryType_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  libraryType_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  libraryType_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  libraryType_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  libraryType_EQUAL?: InputMaybe<Scalars["String"]>;
+  libraryType_GT?: InputMaybe<Scalars["Int"]>;
+  libraryType_GTE?: InputMaybe<Scalars["Int"]>;
+  libraryType_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  libraryType_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  libraryType_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  libraryType_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  libraryType_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  libraryType_LT?: InputMaybe<Scalars["Int"]>;
+  libraryType_LTE?: InputMaybe<Scalars["Int"]>;
+  libraryType_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  libraryType_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  libraryType_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  libraryType_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  libraryType_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
   namespace_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
   namespace_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
   namespace_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
@@ -2067,6 +2135,26 @@ export type RequestMetadataRequestsHasMetadataNodeAggregationWhereInput = {
   smileRequestId_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
   smileRequestId_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
   smileRequestId_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  strand_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  strand_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  strand_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  strand_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  strand_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  strand_EQUAL?: InputMaybe<Scalars["String"]>;
+  strand_GT?: InputMaybe<Scalars["Int"]>;
+  strand_GTE?: InputMaybe<Scalars["Int"]>;
+  strand_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  strand_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  strand_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  strand_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  strand_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  strand_LT?: InputMaybe<Scalars["Int"]>;
+  strand_LTE?: InputMaybe<Scalars["Int"]>;
+  strand_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  strand_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  strand_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  strand_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  strand_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
 };
 
 export type RequestMetadataRequestsHasMetadataRelationship = {
@@ -2282,6 +2370,7 @@ export type RequestSort = {
   isCmoRequest?: InputMaybe<SortDirection>;
   labHeadEmail?: InputMaybe<SortDirection>;
   labHeadName?: InputMaybe<SortDirection>;
+  libraryType?: InputMaybe<SortDirection>;
   namespace?: InputMaybe<SortDirection>;
   otherContactEmails?: InputMaybe<SortDirection>;
   piEmail?: InputMaybe<SortDirection>;
@@ -2289,6 +2378,7 @@ export type RequestSort = {
   qcAccessEmails?: InputMaybe<SortDirection>;
   requestJson?: InputMaybe<SortDirection>;
   smileRequestId?: InputMaybe<SortDirection>;
+  strand?: InputMaybe<SortDirection>;
 };
 
 export type RequestWhere = {
@@ -2442,6 +2532,16 @@ export type RequestWhere = {
   labHeadName_NOT_IN?: InputMaybe<Array<Scalars["String"]>>;
   labHeadName_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
   labHeadName_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  libraryType?: InputMaybe<Scalars["String"]>;
+  libraryType_CONTAINS?: InputMaybe<Scalars["String"]>;
+  libraryType_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  libraryType_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  libraryType_NOT?: InputMaybe<Scalars["String"]>;
+  libraryType_NOT_CONTAINS?: InputMaybe<Scalars["String"]>;
+  libraryType_NOT_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  libraryType_NOT_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  libraryType_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  libraryType_STARTS_WITH?: InputMaybe<Scalars["String"]>;
   namespace?: InputMaybe<Scalars["String"]>;
   namespace_CONTAINS?: InputMaybe<Scalars["String"]>;
   namespace_ENDS_WITH?: InputMaybe<Scalars["String"]>;
@@ -2539,6 +2639,16 @@ export type RequestWhere = {
   smileRequestId_NOT_IN?: InputMaybe<Array<Scalars["String"]>>;
   smileRequestId_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
   smileRequestId_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  strand?: InputMaybe<Scalars["String"]>;
+  strand_CONTAINS?: InputMaybe<Scalars["String"]>;
+  strand_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  strand_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  strand_NOT?: InputMaybe<Scalars["String"]>;
+  strand_NOT_CONTAINS?: InputMaybe<Scalars["String"]>;
+  strand_NOT_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  strand_NOT_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  strand_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  strand_STARTS_WITH?: InputMaybe<Scalars["String"]>;
 };
 
 export type RequestsConnection = {
@@ -2986,6 +3096,46 @@ export type SampleHasMetadataSampleMetadataNodeAggregationWhereInput = {
   baitSet_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
   baitSet_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
   baitSet_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  cfDNA2dBarcode_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  cfDNA2dBarcode_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  cfDNA2dBarcode_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  cfDNA2dBarcode_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  cfDNA2dBarcode_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  cfDNA2dBarcode_EQUAL?: InputMaybe<Scalars["String"]>;
+  cfDNA2dBarcode_GT?: InputMaybe<Scalars["Int"]>;
+  cfDNA2dBarcode_GTE?: InputMaybe<Scalars["Int"]>;
+  cfDNA2dBarcode_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  cfDNA2dBarcode_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  cfDNA2dBarcode_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  cfDNA2dBarcode_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  cfDNA2dBarcode_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  cfDNA2dBarcode_LT?: InputMaybe<Scalars["Int"]>;
+  cfDNA2dBarcode_LTE?: InputMaybe<Scalars["Int"]>;
+  cfDNA2dBarcode_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  cfDNA2dBarcode_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  cfDNA2dBarcode_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  cfDNA2dBarcode_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  cfDNA2dBarcode_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  cmoInfoIgoId_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  cmoInfoIgoId_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  cmoInfoIgoId_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  cmoInfoIgoId_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  cmoInfoIgoId_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  cmoInfoIgoId_EQUAL?: InputMaybe<Scalars["String"]>;
+  cmoInfoIgoId_GT?: InputMaybe<Scalars["Int"]>;
+  cmoInfoIgoId_GTE?: InputMaybe<Scalars["Int"]>;
+  cmoInfoIgoId_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  cmoInfoIgoId_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  cmoInfoIgoId_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  cmoInfoIgoId_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  cmoInfoIgoId_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  cmoInfoIgoId_LT?: InputMaybe<Scalars["Int"]>;
+  cmoInfoIgoId_LTE?: InputMaybe<Scalars["Int"]>;
+  cmoInfoIgoId_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  cmoInfoIgoId_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  cmoInfoIgoId_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  cmoInfoIgoId_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  cmoInfoIgoId_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
   cmoPatientId_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
   cmoPatientId_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
   cmoPatientId_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
@@ -3437,8 +3587,10 @@ export type SampleHasMetadataSampleMetadataRelationship = {
 export type SampleMetadata = {
   __typename?: "SampleMetadata";
   additionalProperties: Scalars["String"];
-  baitSet: Scalars["String"];
-  cmoPatientId: Scalars["String"];
+  baitSet?: Maybe<Scalars["String"]>;
+  cfDNA2dBarcode?: Maybe<Scalars["String"]>;
+  cmoInfoIgoId?: Maybe<Scalars["String"]>;
+  cmoPatientId?: Maybe<Scalars["String"]>;
   cmoSampleIdFields: Scalars["String"];
   cmoSampleName?: Maybe<Scalars["String"]>;
   collectionYear: Scalars["String"];
@@ -3490,8 +3642,10 @@ export type SampleMetadataSamplesHasMetadataConnectionArgs = {
 export type SampleMetadataAggregateSelection = {
   __typename?: "SampleMetadataAggregateSelection";
   additionalProperties: StringAggregateSelectionNonNullable;
-  baitSet: StringAggregateSelectionNonNullable;
-  cmoPatientId: StringAggregateSelectionNonNullable;
+  baitSet: StringAggregateSelectionNullable;
+  cfDNA2dBarcode: StringAggregateSelectionNullable;
+  cmoInfoIgoId: StringAggregateSelectionNullable;
+  cmoPatientId: StringAggregateSelectionNullable;
   cmoSampleIdFields: StringAggregateSelectionNonNullable;
   cmoSampleName: StringAggregateSelectionNullable;
   collectionYear: StringAggregateSelectionNonNullable;
@@ -3678,6 +3832,8 @@ export type SampleMetadataSamplesHasMetadataRelationship = {
 export type SampleMetadataSort = {
   additionalProperties?: InputMaybe<SortDirection>;
   baitSet?: InputMaybe<SortDirection>;
+  cfDNA2dBarcode?: InputMaybe<SortDirection>;
+  cmoInfoIgoId?: InputMaybe<SortDirection>;
   cmoPatientId?: InputMaybe<SortDirection>;
   cmoSampleIdFields?: InputMaybe<SortDirection>;
   cmoSampleName?: InputMaybe<SortDirection>;
@@ -3719,21 +3875,41 @@ export type SampleMetadataWhere = {
   baitSet?: InputMaybe<Scalars["String"]>;
   baitSet_CONTAINS?: InputMaybe<Scalars["String"]>;
   baitSet_ENDS_WITH?: InputMaybe<Scalars["String"]>;
-  baitSet_IN?: InputMaybe<Array<Scalars["String"]>>;
+  baitSet_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
   baitSet_NOT?: InputMaybe<Scalars["String"]>;
   baitSet_NOT_CONTAINS?: InputMaybe<Scalars["String"]>;
   baitSet_NOT_ENDS_WITH?: InputMaybe<Scalars["String"]>;
-  baitSet_NOT_IN?: InputMaybe<Array<Scalars["String"]>>;
+  baitSet_NOT_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
   baitSet_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
   baitSet_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  cfDNA2dBarcode?: InputMaybe<Scalars["String"]>;
+  cfDNA2dBarcode_CONTAINS?: InputMaybe<Scalars["String"]>;
+  cfDNA2dBarcode_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  cfDNA2dBarcode_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  cfDNA2dBarcode_NOT?: InputMaybe<Scalars["String"]>;
+  cfDNA2dBarcode_NOT_CONTAINS?: InputMaybe<Scalars["String"]>;
+  cfDNA2dBarcode_NOT_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  cfDNA2dBarcode_NOT_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  cfDNA2dBarcode_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  cfDNA2dBarcode_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  cmoInfoIgoId?: InputMaybe<Scalars["String"]>;
+  cmoInfoIgoId_CONTAINS?: InputMaybe<Scalars["String"]>;
+  cmoInfoIgoId_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  cmoInfoIgoId_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  cmoInfoIgoId_NOT?: InputMaybe<Scalars["String"]>;
+  cmoInfoIgoId_NOT_CONTAINS?: InputMaybe<Scalars["String"]>;
+  cmoInfoIgoId_NOT_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  cmoInfoIgoId_NOT_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  cmoInfoIgoId_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  cmoInfoIgoId_STARTS_WITH?: InputMaybe<Scalars["String"]>;
   cmoPatientId?: InputMaybe<Scalars["String"]>;
   cmoPatientId_CONTAINS?: InputMaybe<Scalars["String"]>;
   cmoPatientId_ENDS_WITH?: InputMaybe<Scalars["String"]>;
-  cmoPatientId_IN?: InputMaybe<Array<Scalars["String"]>>;
+  cmoPatientId_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
   cmoPatientId_NOT?: InputMaybe<Scalars["String"]>;
   cmoPatientId_NOT_CONTAINS?: InputMaybe<Scalars["String"]>;
   cmoPatientId_NOT_ENDS_WITH?: InputMaybe<Scalars["String"]>;
-  cmoPatientId_NOT_IN?: InputMaybe<Array<Scalars["String"]>>;
+  cmoPatientId_NOT_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
   cmoPatientId_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
   cmoPatientId_STARTS_WITH?: InputMaybe<Scalars["String"]>;
   cmoSampleIdFields?: InputMaybe<Scalars["String"]>;
@@ -4071,6 +4247,7 @@ export type SampleRequestRequestsHasSampleNodeAggregateSelection = {
   investigatorName: StringAggregateSelectionNonNullable;
   labHeadEmail: StringAggregateSelectionNonNullable;
   labHeadName: StringAggregateSelectionNonNullable;
+  libraryType: StringAggregateSelectionNullable;
   namespace: StringAggregateSelectionNonNullable;
   otherContactEmails: StringAggregateSelectionNonNullable;
   piEmail: StringAggregateSelectionNonNullable;
@@ -4078,6 +4255,7 @@ export type SampleRequestRequestsHasSampleNodeAggregateSelection = {
   qcAccessEmails: StringAggregateSelectionNonNullable;
   requestJson: StringAggregateSelectionNonNullable;
   smileRequestId: StringAggregateSelectionNonNullable;
+  strand: StringAggregateSelectionNullable;
 };
 
 export type SampleRequestsHasSampleAggregateInput = {
@@ -4312,6 +4490,26 @@ export type SampleRequestsHasSampleNodeAggregationWhereInput = {
   labHeadName_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
   labHeadName_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
   labHeadName_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  libraryType_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  libraryType_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  libraryType_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  libraryType_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  libraryType_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  libraryType_EQUAL?: InputMaybe<Scalars["String"]>;
+  libraryType_GT?: InputMaybe<Scalars["Int"]>;
+  libraryType_GTE?: InputMaybe<Scalars["Int"]>;
+  libraryType_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  libraryType_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  libraryType_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  libraryType_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  libraryType_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  libraryType_LT?: InputMaybe<Scalars["Int"]>;
+  libraryType_LTE?: InputMaybe<Scalars["Int"]>;
+  libraryType_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  libraryType_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  libraryType_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  libraryType_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  libraryType_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
   namespace_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
   namespace_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
   namespace_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
@@ -4452,6 +4650,26 @@ export type SampleRequestsHasSampleNodeAggregationWhereInput = {
   smileRequestId_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
   smileRequestId_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
   smileRequestId_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  strand_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  strand_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  strand_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  strand_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  strand_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  strand_EQUAL?: InputMaybe<Scalars["String"]>;
+  strand_GT?: InputMaybe<Scalars["Int"]>;
+  strand_GTE?: InputMaybe<Scalars["Int"]>;
+  strand_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  strand_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  strand_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  strand_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  strand_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  strand_LT?: InputMaybe<Scalars["Int"]>;
+  strand_LTE?: InputMaybe<Scalars["Int"]>;
+  strand_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  strand_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  strand_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  strand_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  strand_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
 };
 
 export type SampleRequestsHasSampleRelationship = {
@@ -4563,8 +4781,10 @@ export type SampleSampleMetadataHasMetadataSampleMetadataAggregationSelection = 
 export type SampleSampleMetadataHasMetadataSampleMetadataNodeAggregateSelection = {
   __typename?: "SampleSampleMetadataHasMetadataSampleMetadataNodeAggregateSelection";
   additionalProperties: StringAggregateSelectionNonNullable;
-  baitSet: StringAggregateSelectionNonNullable;
-  cmoPatientId: StringAggregateSelectionNonNullable;
+  baitSet: StringAggregateSelectionNullable;
+  cfDNA2dBarcode: StringAggregateSelectionNullable;
+  cmoInfoIgoId: StringAggregateSelectionNullable;
+  cmoPatientId: StringAggregateSelectionNullable;
   cmoSampleIdFields: StringAggregateSelectionNonNullable;
   cmoSampleName: StringAggregateSelectionNullable;
   collectionYear: StringAggregateSelectionNonNullable;
@@ -4759,25 +4979,65 @@ export type StringAggregateSelectionNullable = {
   shortest?: Maybe<Scalars["String"]>;
 };
 
-export type ExampleQueryQueryVariables = Exact<{ [key: string]: never }>;
+export type RequestsListQueryVariables = Exact<{
+  options?: InputMaybe<RequestOptions>;
+  where?: InputMaybe<RequestWhere>;
+  requestsConnectionWhere2?: InputMaybe<RequestWhere>;
+}>;
 
-export type ExampleQueryQuery = {
+export type RequestsListQuery = {
+  __typename?: "Query";
+  requestsConnection: { __typename?: "RequestsConnection"; totalCount: number };
+  requests: Array<{
+    __typename?: "Request";
+    igoRequestId: string;
+    igoProjectId: string;
+    genePanel: string;
+    dataAnalystName: string;
+    dataAnalystEmail: string;
+    dataAccessEmails: string;
+    bicAnalysis: boolean;
+    investigatorEmail: string;
+    investigatorName: string;
+    isCmoRequest: boolean;
+    labHeadEmail: string;
+    labHeadName: string;
+    libraryType?: string | null;
+    otherContactEmails: string;
+    piEmail: string;
+    projectManagerName: string;
+    qcAccessEmails: string;
+    smileRequestId: string;
+  }>;
+};
+
+export type RequestWithSamplesQueryVariables = Exact<{
+  options?: InputMaybe<RequestOptions>;
+  where?: InputMaybe<RequestWhere>;
+}>;
+
+export type RequestWithSamplesQuery = {
   __typename?: "Query";
   requests: Array<{
     __typename?: "Request";
-    igoProjectId: string;
     igoRequestId: string;
-    smileRequestId: string;
-    investigatorName: string;
-    investigatorEmail: string;
+    igoProjectId: string;
+    genePanel: string;
     dataAnalystName: string;
     dataAnalystEmail: string;
-    genePanel: string;
+    dataAccessEmails: string;
+    bicAnalysis: boolean;
+    investigatorEmail: string;
+    investigatorName: string;
+    isCmoRequest: boolean;
+    labHeadEmail: string;
+    labHeadName: string;
+    libraryType?: string | null;
+    otherContactEmails: string;
+    piEmail: string;
     projectManagerName: string;
-    hasMetadataRequestMetadata: Array<{
-      __typename?: "RequestMetadata";
-      importDate: string;
-    }>;
+    qcAccessEmails: string;
+    smileRequestId: string;
     hasSampleSamples: Array<{
       __typename?: "Sample";
       smileSampleId: string;
@@ -4792,6 +5052,16 @@ export type ExampleQueryQuery = {
         investigatorSampleId?: string | null;
         primaryId: string;
         sampleClass: string;
+        cmoPatientId?: string | null;
+        cmoSampleIdFields: string;
+        sampleName?: string | null;
+        preservation?: string | null;
+        tumorOrNormal: string;
+        oncotreeCode?: string | null;
+        collectionYear: string;
+        sampleOrigin?: string | null;
+        tissueLocation?: string | null;
+        sex: string;
       }>;
       patientsHasSample: Array<{
         __typename?: "Patient";
@@ -4799,28 +5069,141 @@ export type ExampleQueryQuery = {
         patientAliasesIsAlias: Array<{
           __typename?: "PatientAlias";
           namespace: string;
-          value: string;
+          value?: string | null;
         }>;
       }>;
     }>;
   }>;
 };
 
-export const RequestSummaryQueryDocument = gql`
-  query RequestSummaryQuery($where: RequestWhere) {
-    requests(where: $where) {
-      igoProjectId
-      igoRequestId
-      smileRequestId
-      investigatorName
-      investigatorEmail
-      dataAnalystName
-      dataAnalystEmail
-      genePanel
-      projectManagerName
-      hasMetadataRequestMetadata {
-        importDate
-      }
+export type RequestPartsFragment = {
+  __typename?: "Request";
+  igoRequestId: string;
+  igoProjectId: string;
+  genePanel: string;
+  dataAnalystName: string;
+  dataAnalystEmail: string;
+  dataAccessEmails: string;
+  bicAnalysis: boolean;
+  investigatorEmail: string;
+  investigatorName: string;
+  isCmoRequest: boolean;
+  labHeadEmail: string;
+  labHeadName: string;
+  libraryType?: string | null;
+  otherContactEmails: string;
+  piEmail: string;
+  projectManagerName: string;
+  qcAccessEmails: string;
+  smileRequestId: string;
+};
+
+export type SamplesQueryVariables = Exact<{
+  options?: InputMaybe<SampleOptions>;
+  where?: InputMaybe<SampleWhere>;
+  samplesConnectionWhere2?: InputMaybe<SampleWhere>;
+}>;
+
+export type SamplesQuery = {
+  __typename?: "Query";
+  samplesConnection: { __typename?: "SamplesConnection"; totalCount: number };
+  samples: Array<{ __typename?: "Sample"; smileSampleId: string }>;
+};
+
+export const RequestPartsFragmentDoc = gql`
+  fragment RequestParts on Request {
+    igoRequestId
+    igoProjectId
+    genePanel
+    dataAnalystName
+    dataAnalystEmail
+    dataAccessEmails
+    bicAnalysis
+    investigatorEmail
+    investigatorName
+    isCmoRequest
+    labHeadEmail
+    labHeadName
+    libraryType
+    otherContactEmails
+    piEmail
+    projectManagerName
+    qcAccessEmails
+    smileRequestId
+  }
+`;
+export const RequestsListDocument = gql`
+  query RequestsList(
+    $options: RequestOptions
+    $where: RequestWhere
+    $requestsConnectionWhere2: RequestWhere
+  ) {
+    requestsConnection(where: $requestsConnectionWhere2) {
+      totalCount
+    }
+    requests(where: $where, options: $options) {
+      ...RequestParts
+    }
+  }
+  ${RequestPartsFragmentDoc}
+`;
+
+/**
+ * __useRequestsListQuery__
+ *
+ * To run a query within a React component, call `useRequestsListQuery` and pass it any options that fit your needs.
+ * When your component renders, `useRequestsListQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useRequestsListQuery({
+ *   variables: {
+ *      options: // value for 'options'
+ *      where: // value for 'where'
+ *      requestsConnectionWhere2: // value for 'requestsConnectionWhere2'
+ *   },
+ * });
+ */
+export function useRequestsListQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    RequestsListQuery,
+    RequestsListQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<RequestsListQuery, RequestsListQueryVariables>(
+    RequestsListDocument,
+    options
+  );
+}
+export function useRequestsListLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    RequestsListQuery,
+    RequestsListQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<RequestsListQuery, RequestsListQueryVariables>(
+    RequestsListDocument,
+    options
+  );
+}
+export type RequestsListQueryHookResult = ReturnType<
+  typeof useRequestsListQuery
+>;
+export type RequestsListLazyQueryHookResult = ReturnType<
+  typeof useRequestsListLazyQuery
+>;
+export type RequestsListQueryResult = Apollo.QueryResult<
+  RequestsListQuery,
+  RequestsListQueryVariables
+>;
+export const RequestWithSamplesDocument = gql`
+  query RequestWithSamples($options: RequestOptions, $where: RequestWhere) {
+    requests(where: $where, options: $options) {
+      ...RequestParts
       hasSampleSamples {
         smileSampleId
         sampleCategory
@@ -4854,94 +5237,114 @@ export const RequestSummaryQueryDocument = gql`
       }
     }
   }
-`;
-
-export const ExampleQueryDocument = gql`
-  query ExampleQuery {
-    requests {
-      igoProjectId
-      igoRequestId
-      smileRequestId
-      investigatorName
-      investigatorEmail
-      dataAnalystName
-      dataAnalystEmail
-      genePanel
-      projectManagerName
-      hasMetadataRequestMetadata {
-        importDate
-      }
-      hasSampleSamples {
-        smileSampleId
-        sampleCategory
-        sampleClass
-        datasource
-        hasMetadataSampleMetadata {
-          cmoSampleName
-          igoComplete
-          importDate
-          investigatorSampleId
-          primaryId
-          sampleClass
-        }
-        patientsHasSample {
-          smilePatientId
-          patientAliasesIsAlias {
-            namespace
-            value
-          }
-        }
-      }
-    }
-  }
+  ${RequestPartsFragmentDoc}
 `;
 
 /**
- * __useExampleQueryQuery__
+ * __useRequestWithSamplesQuery__
  *
- * To run a query within a React component, call `useExampleQueryQuery` and pass it any options that fit your needs.
- * When your component renders, `useExampleQueryQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useRequestWithSamplesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useRequestWithSamplesQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useExampleQueryQuery({
+ * const { data, loading, error } = useRequestWithSamplesQuery({
  *   variables: {
+ *      options: // value for 'options'
+ *      where: // value for 'where'
  *   },
  * });
  */
-export function useExampleQueryQuery(
+export function useRequestWithSamplesQuery(
   baseOptions?: Apollo.QueryHookOptions<
-    ExampleQueryQuery,
-    ExampleQueryQueryVariables
+    RequestWithSamplesQuery,
+    RequestWithSamplesQueryVariables
   >
 ) {
   const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<ExampleQueryQuery, ExampleQueryQueryVariables>(
-    ExampleQueryDocument,
-    options
-  );
+  return Apollo.useQuery<
+    RequestWithSamplesQuery,
+    RequestWithSamplesQueryVariables
+  >(RequestWithSamplesDocument, options);
 }
-export function useExampleQueryLazyQuery(
+export function useRequestWithSamplesLazyQuery(
   baseOptions?: Apollo.LazyQueryHookOptions<
-    ExampleQueryQuery,
-    ExampleQueryQueryVariables
+    RequestWithSamplesQuery,
+    RequestWithSamplesQueryVariables
   >
 ) {
   const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<ExampleQueryQuery, ExampleQueryQueryVariables>(
-    ExampleQueryDocument,
+  return Apollo.useLazyQuery<
+    RequestWithSamplesQuery,
+    RequestWithSamplesQueryVariables
+  >(RequestWithSamplesDocument, options);
+}
+export type RequestWithSamplesQueryHookResult = ReturnType<
+  typeof useRequestWithSamplesQuery
+>;
+export type RequestWithSamplesLazyQueryHookResult = ReturnType<
+  typeof useRequestWithSamplesLazyQuery
+>;
+export type RequestWithSamplesQueryResult = Apollo.QueryResult<
+  RequestWithSamplesQuery,
+  RequestWithSamplesQueryVariables
+>;
+export const SamplesDocument = gql`
+  query Samples(
+    $options: SampleOptions
+    $where: SampleWhere
+    $samplesConnectionWhere2: SampleWhere
+  ) {
+    samplesConnection(where: $samplesConnectionWhere2) {
+      totalCount
+    }
+    samples(where: $where, options: $options) {
+      smileSampleId
+    }
+  }
+`;
+
+/**
+ * __useSamplesQuery__
+ *
+ * To run a query within a React component, call `useSamplesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useSamplesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useSamplesQuery({
+ *   variables: {
+ *      options: // value for 'options'
+ *      where: // value for 'where'
+ *      samplesConnectionWhere2: // value for 'samplesConnectionWhere2'
+ *   },
+ * });
+ */
+export function useSamplesQuery(
+  baseOptions?: Apollo.QueryHookOptions<SamplesQuery, SamplesQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<SamplesQuery, SamplesQueryVariables>(
+    SamplesDocument,
     options
   );
 }
-export type ExampleQueryQueryHookResult = ReturnType<
-  typeof useExampleQueryQuery
->;
-export type ExampleQueryLazyQueryHookResult = ReturnType<
-  typeof useExampleQueryLazyQuery
->;
-export type ExampleQueryQueryResult = Apollo.QueryResult<
-  ExampleQueryQuery,
-  ExampleQueryQueryVariables
+export function useSamplesLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<SamplesQuery, SamplesQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<SamplesQuery, SamplesQueryVariables>(
+    SamplesDocument,
+    options
+  );
+}
+export type SamplesQueryHookResult = ReturnType<typeof useSamplesQuery>;
+export type SamplesLazyQueryHookResult = ReturnType<typeof useSamplesLazyQuery>;
+export type SamplesQueryResult = Apollo.QueryResult<
+  SamplesQuery,
+  SamplesQueryVariables
 >;

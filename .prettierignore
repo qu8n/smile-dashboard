@@ -30,3 +30,7 @@
 LICENSE
 packages/**/dist/**
 yarn.lock
+
+public/**
+generated/**
+*html

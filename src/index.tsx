@@ -1,33 +1,51 @@
 import React from "react";
-import ReactDOM from "react-dom/client";
-import "./index.css";
-import App from "./App";
-import RequestView from "./pages/requestView/RequestViewPage";
-import RequestSummary from "./pages/requestView/RequestSummary";
+import ReactDOM from "react-dom";
+import "./index.scss";
 import reportWebVitals from "./reportWebVitals";
 import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import RequestsPage from "./pages/requests/RequestsPage";
+import HomePage from "./pages/home/HomePage";
+import SmileNavBar from "./shared/components/SmileNavBar";
+import { offsetLimitPagination } from "@apollo/client/utilities";
+
+const cache = new InMemoryCache({
+  typePolicies: {
+    Query: {
+      fields: {
+        requests: offsetLimitPagination()
+      }
+    }
+  }
+});
 
 const client = new ApolloClient({
   uri: "http://localhost:4000/graphql",
-  cache: new InMemoryCache()
+  cache
 });
 
-const root = ReactDOM.createRoot(
-  document.getElementById("root") as HTMLElement
-);
-root.render(
+const root = ReactDOM.render(
   <BrowserRouter>
     <ApolloProvider client={client}>
-      <Routes>
-        <Route path="/" element={<App />}>
-          <Route path="/requests" element={<RequestView />}>
-            <Route path=":igoRequestId" element={<RequestSummary />} />
-          </Route>
-        </Route>
-      </Routes>
+      <div>
+        <SmileNavBar />
+
+        <main id="main" className="main">
+          <section className="section dashboard">
+            <Routes>
+              <Route path="/" element={<RequestsPage />}>
+                <Route path=":requestId" />
+              </Route>
+              <Route path="/requests/" element={<RequestsPage />}>
+                <Route path=":requestId" />
+              </Route>
+            </Routes>
+          </section>
+        </main>
+      </div>
     </ApolloProvider>
-  </BrowserRouter>
+  </BrowserRouter>,
+  document.getElementById("root") as HTMLElement
 );
 
 // If you want to start measuring performance in your app, pass a function

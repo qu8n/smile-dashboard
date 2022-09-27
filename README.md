@@ -46,3 +46,7 @@ Example pages:
 ```
 yarn run updateAPI
 ```
+
+## Bootstrap theme
+
+This application uses the following Bootstrap theme https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/
