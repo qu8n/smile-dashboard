@@ -167,9 +167,10 @@ const Requests = () => {
 
       <Row
         className={classNames(
-          "d-flex justify-content-center align-items-center"
+          "d-flex justify-content-between align-items-center"
         )}
       >
+        <Col></Col>
         <Col className={"text-end"}>
           <Form.Control
             className={"d-inline-block"}
@@ -211,7 +212,7 @@ const Requests = () => {
         </Col>
         <Col className={"text-start"}>{remoteCount} matching requests</Col>
 
-        <Col>
+        <Col className={"text-end"}>
           <Button
             onClick={() => {
               setShowDownloadModal(true);
