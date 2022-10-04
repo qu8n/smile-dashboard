@@ -13,6 +13,22 @@ Make sure you have installed the node version and yarn version specified in
 
 > **Windows Tip:** If you are developing on Windows, we recommend that you use [Ubuntu / Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10).
 
+### Dashboard Backend
+
+The backend for the dashboard is under `./server`.
+
+Build and launch the node app with
+
+```
+cd ./server
+npm install
+node index.js
+```
+
+If successful, the graphql client should be available at `http://localhost:4000/graphql`.
+
+### Dashboard App
+
 Remove old compiled `node_modules` if it exists
 
 ```
@@ -28,8 +44,6 @@ yarn install
 To start the dev server with hot reload enabled
 
 ```
-# set the environment variables you want based on which instance of SMILE you want to point to
-export CMO_SMILE_URL=${CMO_SMILE_URL}
 yarn run start
 ```
 
@@ -38,14 +52,6 @@ Example pages:
 - http://localhost:3006/
 
 > **Tip:** This page should open automatically through your default web browser. If not then please navigate to the web app manually.
-
-## Update API clients
-
-> **Tip:** To point to a different (i.e., local, dev, production) SMILE web service, set the environment variable `CMO_SMILE_URL` accordingly. This defaults to `http://localhost:3000` if not set.
-
-```
-yarn run updateAPI
-```
 
 ## Bootstrap theme
 

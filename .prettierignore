@@ -34,3 +34,5 @@ yarn.lock
 public/**
 generated/**
 *html
+Dockerfile
+*.properties.EXAMPLE
