@@ -1,10 +1,8 @@
-import { StaticTableColumns } from "../pages/requests/helpers";
-
-export function CSVFormulate(requests) {
+export function CSVFormulate(requests, columnDefinitions) {
   const csvString = [
-    StaticTableColumns.map(item => item.label).join("\t"),
+    columnDefinitions.map(item => item.label).join("\t"),
     ...requests
-      .map(req => StaticTableColumns.map(col => req[col.dataKey!]))
+      .map(req => columnDefinitions.map(col => req[col.dataKey!]))
       .map(e => e.join("\t"))
   ].join("\n");
 
