@@ -6,9 +6,10 @@ import Spinner from "react-spinkit";
 export const DownloadModal: FunctionComponent<{
   loader: () => Promise<string>;
   onComplete: () => void;
-}> = ({ loader, onComplete }) => {
+  exportFilename: string;
+}> = ({ loader, onComplete, exportFilename }) => {
   loader().then(str => {
-    jsdownload(str, "requests.tsv");
+    jsdownload(str, exportFilename);
     onComplete();
   });
 

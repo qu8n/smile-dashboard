@@ -7,6 +7,7 @@ import _ from "lodash";
 import { useState } from "react";
 import { DownloadModal } from "../../components/DownloadModal";
 import { CSVFormulate } from "../../lib/CSVExport";
+import { SampleDetailsColumns } from "./helpers";
 
 const RequestSummary = observer(({ props }) => {
   const { loading, error, data, fetchMore } = useRequestWithSamplesQuery({
@@ -29,8 +30,6 @@ const RequestSummary = observer(({ props }) => {
   const request = data!.requests[0];
   const samples = request.hasSampleSamples;
   const metadataList = samples.map(item => item.hasMetadataSampleMetadata[0]);
-
-  console.log(metadataList);
 
   function rowGetter({ index }) {
     return request.hasSampleSamples[index].hasMetadataSampleMetadata[0];
@@ -101,6 +100,7 @@ const RequestSummary = observer(({ props }) => {
           onComplete={() => {
             setShowDownloadModal(false);
           }}
+          exportFilename={"request_" + data?.requests[0].igoRequestId + ".tsv"}
         />
       )}
 
@@ -120,58 +120,3 @@ const RequestSummary = observer(({ props }) => {
 });
 
 export { RequestSummary };
-
-const SampleDetailsColumns = [
-  {
-    dataKey: "cmoSampleName",
-    label: "CMO Sample Label"
-  },
-  {
-    dataKey: "investigatorSampleId",
-    label: "Investigator Sample ID"
-  },
-  {
-    dataKey: "cmoPatientId",
-    label: "CMO Patient ID"
-  },
-  {
-    dataKey: "primaryId",
-    label: "Primary ID"
-  },
-  {
-    dataKey: "cmoSampleName",
-    label: "CMO Sample Name"
-  },
-  {
-    dataKey: "preservation",
-    label: "Preservation"
-  },
-  {
-    dataKey: "tumorOrNormal",
-    label: "Tumor Or Normal"
-  },
-  {
-    dataKey: "sampleClass",
-    label: "Sample Class"
-  },
-  {
-    dataKey: "oncotreeCode",
-    label: "Oncotree Code"
-  },
-  {
-    dataKey: "collectionYear",
-    label: "Collection Year"
-  },
-  {
-    dataKey: "sampleOrigin",
-    label: "Sample Origin"
-  },
-  {
-    dataKey: "tissueLocation",
-    label: "Tissue Location"
-  },
-  {
-    dataKey: "sex",
-    label: "Sex"
-  }
-];

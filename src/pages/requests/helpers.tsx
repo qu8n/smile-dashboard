@@ -85,7 +85,7 @@ export function buildRequestTableColumns(navigate: any): ColumnDefinition[] {
               navigate("./" + arg.rowData.igoRequestId);
             }}
           >
-            Edit
+            View
           </Button>
         );
       }
@@ -95,7 +95,7 @@ export function buildRequestTableColumns(navigate: any): ColumnDefinition[] {
   ];
 }
 
-const SampleDetailsColumns: ColumnDefinition[] = [
+export const SampleDetailsColumns: ColumnDefinition[] = [
   {
     dataKey: "cmoSampleName",
     label: "CMO Sample Label"

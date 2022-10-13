@@ -122,6 +122,7 @@ const Requests = () => {
             });
           }}
           onComplete={() => setShowDownloadModal(false)}
+          exportFilename={"requests.tsv"}
         />
       )}
 
