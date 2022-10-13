@@ -8,10 +8,11 @@ import React, { useState } from "react";
 import { NavLink, useNavigate, useParams } from "react-router-dom";
 import _ from "lodash";
 import classNames from "classnames";
-import { buildRequestTableColumns } from "./helpers";
+import { buildRequestTableColumns, StaticTableColumns } from "./helpers";
 import { RequestSummary } from "./RequestSummary";
 import { DownloadModal } from "../../components/DownloadModal";
 import Spinner from "react-spinkit";
+import { CSVFormulate } from "../../lib/CSVExport";
 
 function createStore() {
   return makeAutoObservable({
@@ -105,14 +106,6 @@ const Requests = () => {
     store.showRequestDetails = true;
   }
 
-  // notes: cellrenderer gets rowData (sample properties)
-  // todo: add prop that we can call setState for to put us in "editing mode"
-
-  // notes:
-  // form can go in another component
-  // def put the table in another component (from infinite loader --> through table)
-  // todo: sample-level detail editing mode (<path>/sampleId/edit <-- edit would indicate mode we're in)
-
   const title = params.requestId
     ? `Viewing Request ${params.requestId}`
     : "Requests";
@@ -123,8 +116,11 @@ const Requests = () => {
     <Container fluid>
       {showDownloadModal && (
         <DownloadModal
-          filter={val}
-          loader={loadAllRows(fetchMore, val)}
+          loader={() => {
+            return loadAllRows(fetchMore, val)().then(({ data }) => {
+              return CSVFormulate(data.requests, StaticTableColumns);
+            });
+          }}
           onComplete={() => setShowDownloadModal(false)}
         />
       )}
@@ -190,8 +186,6 @@ const Requests = () => {
                 clearTimeout(typingTimeout);
               }
 
-              // there will always be a promise so
-              // wait until it's resolved
               prom.then(() => {
                 const to = setTimeout(() => {
                   const rf = refetch({
@@ -210,6 +204,7 @@ const Requests = () => {
             }}
           />
         </Col>
+
         <Col className={"text-start"}>{remoteCount} matching requests</Col>
 
         <Col className={"text-end"}>

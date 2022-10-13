@@ -1,6 +1,5 @@
 import { Edit } from "@material-ui/icons";
 import { Button } from "react-bootstrap";
-import React from "react";
 
 type ColumnDefinition = {
   dataKey?: string;
@@ -95,3 +94,58 @@ export function buildRequestTableColumns(navigate: any): ColumnDefinition[] {
     ...StaticTableColumns
   ];
 }
+
+const SampleDetailsColumns: ColumnDefinition[] = [
+  {
+    dataKey: "cmoSampleName",
+    label: "CMO Sample Label"
+  },
+  {
+    dataKey: "investigatorSampleId",
+    label: "Investigator Sample ID"
+  },
+  {
+    dataKey: "cmoPatientId",
+    label: "CMO Patient ID"
+  },
+  {
+    dataKey: "primaryId",
+    label: "Primary ID"
+  },
+  {
+    dataKey: "cmoSampleName",
+    label: "CMO Sample Name"
+  },
+  {
+    dataKey: "preservation",
+    label: "Preservation"
+  },
+  {
+    dataKey: "tumorOrNormal",
+    label: "Tumor Or Normal"
+  },
+  {
+    dataKey: "sampleClass",
+    label: "Sample Class"
+  },
+  {
+    dataKey: "oncotreeCode",
+    label: "Oncotree Code"
+  },
+  {
+    dataKey: "collectionYear",
+    label: "Collection Year"
+  },
+  {
+    dataKey: "sampleOrigin",
+    label: "Sample Origin"
+  },
+  {
+    dataKey: "tissueLocation",
+    label: "Tissue Location"
+  },
+  {
+    dataKey: "sex",
+    label: "Sex"
+  }
+];

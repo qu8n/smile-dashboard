@@ -1,21 +1,14 @@
 import React, { FunctionComponent, useCallback } from "react";
 import Modal from "react-bootstrap/Modal";
-import { CSVFormulate } from "../lib/CSVExport";
 import jsdownload from "js-file-download";
 import Spinner from "react-spinkit";
 
 export const DownloadModal: FunctionComponent<{
-  loader: () => Promise<any>;
+  loader: () => Promise<string>;
   onComplete: () => void;
-  filter: string;
-}> = ({ loader, onComplete, filter }) => {
-  // const doDownload = useCallback(() => {
-  //
-  // }, []);
-
-  loader().then(({ data }) => {
-    const csvString = CSVFormulate(data.requests);
-    jsdownload(csvString, "requests.tsv");
+}> = ({ loader, onComplete }) => {
+  loader().then(str => {
+    jsdownload(str, "requests.tsv");
     onComplete();
   });
 
