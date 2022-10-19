@@ -98,54 +98,86 @@ export function buildRequestTableColumns(navigate: any): ColumnDefinition[] {
 export const SampleDetailsColumns: ColumnDefinition[] = [
   {
     dataKey: "cmoSampleName",
-    label: "CMO Sample Label"
-  },
-  {
-    dataKey: "investigatorSampleId",
-    label: "Investigator Sample ID"
+    label: "CMO Sample Name",
+    sortable: true,
+    filterable: true,
+    width: 200
   },
   {
     dataKey: "cmoPatientId",
-    label: "CMO Patient ID"
+    label: "CMO Patient ID",
+    sortable: true,
+    filterable: true,
+    width: 200
+  },
+  {
+    dataKey: "investigatorSampleId",
+    label: "Investigator Sample ID",
+    sortable: true,
+    filterable: true,
+    width: 200
   },
   {
     dataKey: "primaryId",
-    label: "Primary ID"
-  },
-  {
-    dataKey: "cmoSampleName",
-    label: "CMO Sample Name"
+    label: "Primary ID",
+    sortable: true,
+    filterable: true,
+    width: 200
   },
   {
     dataKey: "preservation",
-    label: "Preservation"
+    label: "Preservation",
+    sortable: true,
+    filterable: true,
+    width: 200
   },
   {
     dataKey: "tumorOrNormal",
-    label: "Tumor Or Normal"
+    label: "Tumor Or Normal",
+    sortable: true,
+    filterable: true,
+    width: 200
   },
   {
     dataKey: "sampleClass",
-    label: "Sample Class"
+    label: "Sample Class",
+    sortable: true,
+    filterable: true,
+    width: 200
   },
   {
     dataKey: "oncotreeCode",
-    label: "Oncotree Code"
+    label: "Oncotree Code",
+    sortable: true,
+    filterable: true,
+    width: 200
   },
   {
     dataKey: "collectionYear",
-    label: "Collection Year"
+    label: "Collection Year",
+    sortable: true,
+    filterable: true,
+    width: 200
   },
   {
     dataKey: "sampleOrigin",
-    label: "Sample Origin"
+    label: "Sample Origin",
+    sortable: true,
+    filterable: true,
+    width: 200
   },
   {
     dataKey: "tissueLocation",
-    label: "Tissue Location"
+    label: "Tissue Location",
+    sortable: true,
+    filterable: true,
+    width: 200
   },
   {
     dataKey: "sex",
-    label: "Sex"
+    label: "Sex",
+    sortable: true,
+    filterable: true,
+    width: 200
   }
 ];

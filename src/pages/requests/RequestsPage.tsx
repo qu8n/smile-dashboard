@@ -40,15 +40,13 @@ const Requests = () => {
 
   const RequestTableColumns = buildRequestTableColumns(navigate);
 
-  const filterField = "requestJson_CONTAINS";
-
   const { loading, error, data, refetch, fetchMore } = useRequestsListQuery({
     variables: {
       where: {
-        [filterField]: store.filter
+        OR: requestFilterWhereVariables(store.filter)
       },
       requestsConnectionWhere2: {
-        [filterField]: store.filter
+        OR: requestFilterWhereVariables(store.filter)
       },
       options: { limit: 20, offset: 0 }
     }
@@ -62,6 +60,27 @@ const Requests = () => {
     );
 
   if (error) return <p>Error :(</p>;
+
+  // returns variables to filter requests by in where clauses
+  function requestFilterWhereVariables(value: string) {
+    return [
+      { igoProjectId_CONTAINS: value },
+      { igoRequestId_CONTAINS: value },
+      { genePanel_CONTAINS: value },
+      { dataAnalystEmail_CONTAINS: value },
+      { dataAnalystName_CONTAINS: value },
+      { investigatorEmail_CONTAINS: value },
+      { investigatorName_CONTAINS: value },
+      { labHeadEmail_CONTAINS: value },
+      { libraryType_CONTAINS: value },
+      { labHeadName_CONTAINS: value },
+      { namespace_CONTAINS: value },
+      { piEmail_CONTAINS: value },
+      { otherContactEmails_CONTAINS: value },
+      { projectManagerName_CONTAINS: value },
+      { qcAccessEmails_CONTAINS: value }
+    ];
+  }
 
   function loadMoreRows({ startIndex, stopIndex }, fetchMore: any) {
     return fetchMore({
@@ -79,7 +98,7 @@ const Requests = () => {
       return fetchMore({
         variables: {
           where: {
-            [filterField]: filter
+            OR: requestFilterWhereVariables(filter)
           },
           options: {
             offset: 0,
@@ -191,10 +210,10 @@ const Requests = () => {
                 const to = setTimeout(() => {
                   const rf = refetch({
                     where: {
-                      [filterField]: value
+                      OR: requestFilterWhereVariables(value)
                     },
                     requestsConnectionWhere2: {
-                      [filterField]: value
+                      OR: requestFilterWhereVariables(value)
                     },
                     options: { limit: 20, offset: 0 }
                   });
