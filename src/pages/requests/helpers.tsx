@@ -48,6 +48,13 @@ export const StaticTableColumns: ColumnDefinition[] = [
     width: 200
   },
   {
+    dataKey: "piEmail",
+    label: "PI Email",
+    sortable: true,
+    filterable: true,
+    width: 200
+  },
+  {
     dataKey: "dataAnalystName",
     label: "Data Analyst Name",
     sortable: true,
@@ -64,6 +71,55 @@ export const StaticTableColumns: ColumnDefinition[] = [
   {
     dataKey: "genePanel",
     label: "Gene Panel",
+    sortable: true,
+    filterable: true,
+    width: 200
+  },
+  {
+    dataKey: "labHeadName",
+    label: "Lab Head Name",
+    sortable: true,
+    filterable: true,
+    width: 200
+  },
+  {
+    dataKey: "labHeadEmail",
+    label: "Lab Head Email",
+    sortable: true,
+    filterable: true,
+    width: 200
+  },
+  {
+    dataKey: "qcAccessEmails",
+    label: "QC Access Emails",
+    sortable: true,
+    filterable: true,
+    width: 200
+  },
+  {
+    dataKey: "dataAccessEmails",
+    label: "Data Access Emails",
+    sortable: true,
+    filterable: true,
+    width: 200
+  },
+  {
+    dataKey: "bicAnalysis",
+    label: "BIC Analysis",
+    sortable: true,
+    filterable: true,
+    width: 200
+  },
+  {
+    dataKey: "isCmoRequest",
+    label: "CMO Request?",
+    sortable: true,
+    filterable: true,
+    width: 200
+  },
+  {
+    dataKey: "otherContactEmails",
+    label: "Other Contact Emails",
     sortable: true,
     filterable: true,
     width: 200

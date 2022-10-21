@@ -46,6 +46,9 @@ query RequestWithSamples($options: RequestOptions, $where: RequestWhere) {
       }
     }
   }
+  samplesConnection {
+    totalCount
+  }
 }
 
 fragment RequestParts on Request {
