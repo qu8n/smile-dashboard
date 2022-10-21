@@ -6509,6 +6509,7 @@ export type RequestWithSamplesQuery = {
       }>;
     }>;
   }>;
+  samplesConnection: { __typename?: "SamplesConnection"; totalCount: number };
 };
 
 export type RequestPartsFragment = {
@@ -6670,6 +6671,9 @@ export const RequestWithSamplesDocument = gql`
           }
         }
       }
+    }
+    samplesConnection {
+      totalCount
     }
   }
   ${RequestPartsFragmentDoc}
