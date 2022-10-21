@@ -45,9 +45,9 @@ query RequestWithSamples($options: RequestOptions, $where: RequestWhere) {
         }
       }
     }
-  }
-  samplesConnection {
-    totalCount
+    hasSampleSamplesConnection {
+      totalCount
+    }
   }
 }
 
