@@ -20,7 +20,10 @@ const cache = new InMemoryCache({
 });
 
 const client = new ApolloClient({
-  uri: "http://localhost:4000/graphql",
+  uri:
+    process.env.REACT_APP_GRAPHQL_CLIENT_URI === undefined
+      ? "http://localhost:4000/graphql"
+      : process.env.REACT_APP_GRAPHQL_CLIENT_URI,
   cache
 });
 

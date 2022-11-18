@@ -44,31 +44,6 @@ const sub_cmo_sample_update = properties.get(
   "topics.sub_consumers_cmo_sample_update"
 );
 
-const tlsOptions = {
-  keyFile: nats_key_pem,
-  certFile: nats_cert_pem,
-  caFile: nats_ca_pem
-};
-
-const natsConnProperties = {
-  servers: [nats_url, "nats://localhost:4222"],
-  user: nats_username,
-  pass: nats_password,
-  tls: tlsOptions
-};
-
-const mutDefs = gql`
-  mutation UpdateRequests($update: RequestUpdateInput, $where: RequestWhere) {
-    updateRequests(update: $update, where: $where) {
-      requests {
-        smileRequestId
-        igoRequestId
-        dataStatus
-      }
-    }
-  }
-`;
-
 const sc = StringCodec();
 
 async function printMsgs(s) {
@@ -84,6 +59,19 @@ async function printMsgs(s) {
     );
   }
 }
+
+const tlsOptions = {
+  keyFile: nats_key_pem,
+  certFile: nats_cert_pem,
+  caFile: nats_ca_pem
+};
+
+const natsConnProperties = {
+  servers: [nats_url],
+  user: nats_username,
+  pass: nats_password,
+  tls: tlsOptions
+};
 
 var nc = null;
 async function establishConnection() {
@@ -125,6 +113,18 @@ async function establishConnection() {
   }
 }
 
+const mutDefs = gql`
+  mutation UpdateRequests($update: RequestUpdateInput, $where: RequestWhere) {
+    updateRequests(update: $update, where: $where) {
+      requests {
+        smileRequestId
+        igoRequestId
+        dataStatus
+      }
+    }
+  }
+`;
+
 const driver = neo4j.driver(
   neo4j_graphql_uri,
   neo4j.auth.basic(neo4j_username, neo4j_password)
@@ -153,7 +153,7 @@ const sessionFactory = () =>
 // We create a async function here until "top level await" has landed
 // so we can use async/await
 async function main() {
-  establishConnection();
+  establishConnection(); // for nats only
   const typeDefs = await toGraphQLTypeDefs(sessionFactory, false);
   const neoSchema = new Neo4jGraphQL({ typeDefs, driver });
   const ogm = new OGM({ typeDefs, driver });
@@ -164,6 +164,10 @@ async function main() {
   app.use(express.static(path.resolve(__dirname, "../build")));
 
   app.use(bodyParser.urlencoded({ extended: true }));
+  // for health check
+  app.get("/", (req, res) => {
+    res.sendStatus(200);
+  });
 
   // endpoint for updating status of a given request
   app.post("/requestStatus", async (req, res) => {

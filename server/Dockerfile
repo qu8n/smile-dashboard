@@ -1,7 +1,6 @@
 FROM node:16.10.0
-
-WORKDIR /graphql-client
-COPY ./ /graphql-client
-
+ADD ./ /server
+WORKDIR /server
 RUN npm install 
 CMD ["node", "index.js"]
+
