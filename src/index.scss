@@ -11,6 +11,8 @@
 /*    monospace;*/
 /*}*/
 
+$standardMargin: 10px;
+
 body {
 }
 
@@ -35,4 +37,8 @@ body {
   position: absolute;
   top: 50%;
   left: 50%;
+}
+
+.tableControlsRow {
+  margin-bottom: $standardMargin;
 }
