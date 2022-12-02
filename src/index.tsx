@@ -5,7 +5,6 @@ import reportWebVitals from "./reportWebVitals";
 import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import RequestsPage from "./pages/requests/RequestsPage";
-import HomePage from "./pages/home/HomePage";
 import SmileNavBar from "./shared/components/SmileNavBar";
 import { offsetLimitPagination } from "@apollo/client/utilities";
 

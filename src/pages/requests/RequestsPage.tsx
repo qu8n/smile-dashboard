@@ -1,4 +1,3 @@
-import "./requests.scss";
 import { useRequestsListLazyQuery } from "../../generated/graphql";
 import { makeAutoObservable } from "mobx";
 import AutoSizer from "react-virtualized-auto-sizer";
@@ -46,7 +45,7 @@ function createStore() {
   });
 }
 
-const store = createStore();
+//const store = createStore();
 
 export const RequestsPage: React.FunctionComponent = props => {
   return <Requests />;
@@ -54,56 +53,12 @@ export const RequestsPage: React.FunctionComponent = props => {
 
 export default RequestsPage;
 
-const createDatasource = (refetch: any, fetchMore: any, val: string) => {
-  return {
-    // called by the grid when more rows are required
-
-    getRows: (params: IServerSideGetRowsParams) => {
-      const fetchInput = {
-        where: {
-          OR: requestFilterWhereVariables(val)
-        },
-        requestsConnectionWhere2: {
-          OR: requestFilterWhereVariables(val)
-        },
-        options: {
-          offset: params.request.startRow,
-          limit: params.request.endRow,
-          sort: params.request.sortModel.map((sortModel: any) => {
-            return { [sortModel.colId]: sortModel.sort?.toUpperCase() };
-          })
-        }
-      };
-
-      // if this is NOT first call, use refetch
-      // (which is analogous in this case to the original fetch
-      const thisFetch =
-        params.request.startRow! === 0
-          ? refetch(fetchInput).then((d: any) => {
-              params.success({
-                rowData: d.data.requests,
-                rowCount: d.data.requestsConnection.totalCount
-              });
-            })
-          : fetchMore({
-              variables: fetchInput
-            });
-
-      return thisFetch.then((d: any) => {
-        params.success({
-          rowData: d.data.requests,
-          rowCount: d.data.requestsConnection.totalCount
-        });
-      });
-    }
-  };
-};
-
 const Requests: FunctionComponent = () => {
   const [val, setVal] = useState("");
   const [showDownloadModal, setShowDownloadModal] = useState(false);
-  const [typingTimeout, setTypingTimeout] = useState<any>(null);
-  const [prom, setProm] = useState<any>(Promise.resolve());
+  const [typingTimeout, setTypingTimeout] = useState<ReturnType<
+    typeof setTimeout
+  > | null>(null);
   const navigate = useNavigate();
   const params = useParams();
 
@@ -117,9 +72,44 @@ const Requests: FunctionComponent = () => {
     }
   });
 
-  const datasource = useMemo(() => createDatasource(refetch, fetchMore, val), [
-    val
-  ]);
+  const datasource = useMemo(() => {
+    return {
+      // called by the grid when more rows are required
+      getRows: (params: IServerSideGetRowsParams) => {
+        const fetchInput = {
+          where: {
+            OR: requestFilterWhereVariables(val)
+          },
+          requestsConnectionWhere2: {
+            OR: requestFilterWhereVariables(val)
+          },
+          options: {
+            offset: params.request.startRow,
+            limit: params.request.endRow,
+            sort: params.request.sortModel.map(sortModel => {
+              return { [sortModel.colId]: sortModel.sort?.toUpperCase() };
+            })
+          }
+        };
+
+        // if this is NOT first call, use refetch
+        // (which is analogous in this case to the original fetch
+        const thisFetch =
+          params.request.startRow! === 0
+            ? refetch(fetchInput)
+            : fetchMore({
+                variables: fetchInput
+              });
+
+        return thisFetch.then(d => {
+          params.success({
+            rowData: d.data.requests,
+            rowCount: d.data.requestsConnection.totalCount
+          });
+        });
+      }
+    };
+  }, [val]);
 
   if (loading)
     return (
@@ -129,10 +119,6 @@ const Requests: FunctionComponent = () => {
     );
 
   if (error) return <p>Error :(</p>;
-
-  const title = params.requestId
-    ? `Viewing Request ${params.requestId}`
-    : "Requests";
 
   const remoteCount = data?.requestsConnection.totalCount;
 
@@ -175,7 +161,7 @@ const Requests: FunctionComponent = () => {
               )}
             </ol>
           </nav>
-          <h1>{title}</h1>
+          <h1>Requests</h1>
         </Col>
       </Row>
 

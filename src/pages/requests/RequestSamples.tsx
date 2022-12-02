@@ -1,6 +1,7 @@
 import {
   useRequestWithSamplesQuery,
-  SortDirection
+  SortDirection,
+  RequestWithSamplesQuery
 } from "../../generated/graphql";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { Button, Col, Form, Row } from "react-bootstrap";
@@ -44,6 +45,12 @@ function sampleFilterWhereVariables(value: string) {
   ];
 }
 
+function getSampleMetadata(data: RequestWithSamplesQuery) {
+  return data!.requests[0].hasSampleSamples.map((s: any) => {
+    return s.hasMetadataSampleMetadata[0];
+  });
+}
+
 export const RequestSamples: FunctionComponent<IRequestSummaryProps> = ({
   params,
   height
@@ -79,12 +86,6 @@ export const RequestSamples: FunctionComponent<IRequestSummaryProps> = ({
 
   if (error) return <Row>Error loading request details / request samples</Row>;
 
-  function getSampleMetadata() {
-    return data!.requests[0].hasSampleSamples.map((s: any) => {
-      return s.hasMetadataSampleMetadata[0];
-    });
-  }
-
   const remoteCount = data!.requests[0].hasSampleSamples.length;
 
   return (
@@ -93,7 +94,7 @@ export const RequestSamples: FunctionComponent<IRequestSummaryProps> = ({
         <DownloadModal
           loader={() => {
             return Promise.resolve(
-              CSVFormulate(getSampleMetadata(), SampleDetailsColumns)
+              CSVFormulate(getSampleMetadata(data!), SampleDetailsColumns)
             );
           }}
           onComplete={() => {
@@ -172,7 +173,7 @@ export const RequestSamples: FunctionComponent<IRequestSummaryProps> = ({
           >
             <AgGridReact
               columnDefs={SampleDetailsColumns}
-              rowData={getSampleMetadata()}
+              rowData={getSampleMetadata(data!)}
             />
           </div>
         )}
