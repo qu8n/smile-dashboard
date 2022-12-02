@@ -8,18 +8,31 @@ query RequestsList(
   }
   requests(where: $where, options: $options) {
     ...RequestParts
+    hasSampleSamplesConnection {
+      totalCount
+    }
   }
 }
 
-query RequestWithSamples($options: RequestOptions, $where: RequestWhere) {
+query RequestWithSamples(
+  $options: RequestOptions
+  $where: RequestWhere
+  $hasSampleSamplesWhere2: SampleWhere
+  $hasMetadataSampleMetadataWhere2: SampleMetadataWhere
+  $hasSampleSamplesConnectionWhere2: RequestHasSampleSamplesConnectionWhere
+  $hasMetadataSampleMetadataOptions2: SampleMetadataOptions
+) {
   requests(where: $where, options: $options) {
     ...RequestParts
-    hasSampleSamples {
+    hasSampleSamples(where: $hasSampleSamplesWhere2) {
       smileSampleId
       sampleCategory
       sampleClass
       datasource
-      hasMetadataSampleMetadata {
+      hasMetadataSampleMetadata(
+        where: $hasMetadataSampleMetadataWhere2
+        options: $hasMetadataSampleMetadataOptions2
+      ) {
         cmoSampleName
         igoComplete
         importDate
@@ -36,6 +49,7 @@ query RequestWithSamples($options: RequestOptions, $where: RequestWhere) {
         sampleOrigin
         tissueLocation
         sex
+        libraries
       }
       patientsHasSample {
         smilePatientId
@@ -45,7 +59,7 @@ query RequestWithSamples($options: RequestOptions, $where: RequestWhere) {
         }
       }
     }
-    hasSampleSamplesConnection {
+    hasSampleSamplesConnection(where: $hasSampleSamplesConnectionWhere2) {
       totalCount
     }
   }

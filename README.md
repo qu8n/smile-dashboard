@@ -29,7 +29,7 @@ Build and launch the node app with
 
 ```
 cd ./server
-npm install
+yarn
 node index.js
 ```
 

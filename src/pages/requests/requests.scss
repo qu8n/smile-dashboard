@@ -21,12 +21,3 @@
 .App-link {
   color: #61dafb;
 }
-.ReactVirtualized__Table__row {
-  border-bottom: 1px solid #e0e0e0;
-}
-.ReactVirtualized__Table__row:nth-child(odd) {
-  background-color: #ffffff;
-}
-.ReactVirtualized__Table__row:nth-child(even) {
-  background-color: #fafafa;
-}
