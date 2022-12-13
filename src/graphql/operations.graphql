@@ -50,6 +50,9 @@ query RequestWithSamples(
         tissueLocation
         sex
         libraries
+        sampleType
+        species
+        genePanel
       }
       patientsHasSample {
         smilePatientId

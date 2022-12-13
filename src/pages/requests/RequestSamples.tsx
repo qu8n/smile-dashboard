@@ -41,7 +41,10 @@ function sampleFilterWhereVariables(value: string) {
     { sampleOrigin_CONTAINS: value },
     { tissueLocation_CONTAINS: value },
     { sex_CONTAINS: value },
-    { libraries_CONTAINS: value }
+    { libraries_CONTAINS: value },
+    { sampleType_CONTAINS: value },
+    { species_CONTAINS: value },
+    { genePanel_CONTAINS: value }
   ];
 }
 
