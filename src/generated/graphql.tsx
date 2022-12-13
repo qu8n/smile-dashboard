@@ -6430,6 +6430,10 @@ export type RequestWithSamplesQuery = {
         tissueLocation?: string | null;
         sex: string;
         libraries: string;
+        sampleType: string;
+        species: string;
+        genePanel: string;
+        baitSet?: string | null;
       }>;
       patientsHasSample: Array<{
         __typename?: "Patient";
@@ -6612,6 +6616,10 @@ export const RequestWithSamplesDocument = gql`
           tissueLocation
           sex
           libraries
+          sampleType
+          species
+          genePanel
+          baitSet
         }
         patientsHasSample {
           smilePatientId
