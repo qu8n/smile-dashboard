@@ -8,7 +8,7 @@ export const DownloadModal: FunctionComponent<{
   onComplete: () => void;
   exportFilename: string;
 }> = ({ loader, onComplete, exportFilename }) => {
-  loader().then(str => {
+  loader().then((str) => {
     jsdownload(str, exportFilename);
     onComplete();
   });

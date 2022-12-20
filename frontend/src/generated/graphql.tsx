@@ -5,10 +5,12 @@ export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = {
   [K in keyof T]: T[K];
 };
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> &
-  { [SubKey in K]?: Maybe<T[SubKey]> };
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> &
-  { [SubKey in K]: Maybe<T[SubKey]> };
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
+  [SubKey in K]?: Maybe<T[SubKey]>;
+};
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
+  [SubKey in K]: Maybe<T[SubKey]>;
+};
 const defaultOptions = {} as const;
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
@@ -265,14 +267,10 @@ export type PageInfo = {
 export type Patient = {
   __typename?: "Patient";
   hasSampleSamples: Array<Sample>;
-  hasSampleSamplesAggregate?: Maybe<
-    PatientSampleHasSampleSamplesAggregationSelection
-  >;
+  hasSampleSamplesAggregate?: Maybe<PatientSampleHasSampleSamplesAggregationSelection>;
   hasSampleSamplesConnection: PatientHasSampleSamplesConnection;
   patientAliasesIsAlias: Array<PatientAlias>;
-  patientAliasesIsAliasAggregate?: Maybe<
-    PatientPatientAliasPatientAliasesIsAliasAggregationSelection
-  >;
+  patientAliasesIsAliasAggregate?: Maybe<PatientPatientAliasPatientAliasesIsAliasAggregationSelection>;
   patientAliasesIsAliasConnection: PatientPatientAliasesIsAliasConnection;
   smilePatientId: Scalars["String"];
 };
@@ -324,9 +322,7 @@ export type PatientAggregateSelection = {
 export type PatientAlias = {
   __typename?: "PatientAlias";
   isAliasPatients: Array<Patient>;
-  isAliasPatientsAggregate?: Maybe<
-    PatientAliasPatientIsAliasPatientsAggregationSelection
-  >;
+  isAliasPatientsAggregate?: Maybe<PatientAliasPatientIsAliasPatientsAggregationSelection>;
   isAliasPatientsConnection: PatientAliasIsAliasPatientsConnection;
   namespace: Scalars["String"];
   value?: Maybe<Scalars["String"]>;
@@ -532,21 +528,11 @@ export type PatientAliasUpdateInput = {
 export type PatientAliasWhere = {
   AND?: InputMaybe<Array<PatientAliasWhere>>;
   OR?: InputMaybe<Array<PatientAliasWhere>>;
-  isAliasPatientsAggregate?: InputMaybe<
-    PatientAliasIsAliasPatientsAggregateInput
-  >;
-  isAliasPatientsConnection_ALL?: InputMaybe<
-    PatientAliasIsAliasPatientsConnectionWhere
-  >;
-  isAliasPatientsConnection_NONE?: InputMaybe<
-    PatientAliasIsAliasPatientsConnectionWhere
-  >;
-  isAliasPatientsConnection_SINGLE?: InputMaybe<
-    PatientAliasIsAliasPatientsConnectionWhere
-  >;
-  isAliasPatientsConnection_SOME?: InputMaybe<
-    PatientAliasIsAliasPatientsConnectionWhere
-  >;
+  isAliasPatientsAggregate?: InputMaybe<PatientAliasIsAliasPatientsAggregateInput>;
+  isAliasPatientsConnection_ALL?: InputMaybe<PatientAliasIsAliasPatientsConnectionWhere>;
+  isAliasPatientsConnection_NONE?: InputMaybe<PatientAliasIsAliasPatientsConnectionWhere>;
+  isAliasPatientsConnection_SINGLE?: InputMaybe<PatientAliasIsAliasPatientsConnectionWhere>;
+  isAliasPatientsConnection_SOME?: InputMaybe<PatientAliasIsAliasPatientsConnectionWhere>;
   /** Return PatientAliases where all of the related Patients match this filter */
   isAliasPatients_ALL?: InputMaybe<PatientWhere>;
   /** Return PatientAliases where none of the related Patients match this filter */
@@ -960,18 +946,10 @@ export type PatientWhere = {
   AND?: InputMaybe<Array<PatientWhere>>;
   OR?: InputMaybe<Array<PatientWhere>>;
   hasSampleSamplesAggregate?: InputMaybe<PatientHasSampleSamplesAggregateInput>;
-  hasSampleSamplesConnection_ALL?: InputMaybe<
-    PatientHasSampleSamplesConnectionWhere
-  >;
-  hasSampleSamplesConnection_NONE?: InputMaybe<
-    PatientHasSampleSamplesConnectionWhere
-  >;
-  hasSampleSamplesConnection_SINGLE?: InputMaybe<
-    PatientHasSampleSamplesConnectionWhere
-  >;
-  hasSampleSamplesConnection_SOME?: InputMaybe<
-    PatientHasSampleSamplesConnectionWhere
-  >;
+  hasSampleSamplesConnection_ALL?: InputMaybe<PatientHasSampleSamplesConnectionWhere>;
+  hasSampleSamplesConnection_NONE?: InputMaybe<PatientHasSampleSamplesConnectionWhere>;
+  hasSampleSamplesConnection_SINGLE?: InputMaybe<PatientHasSampleSamplesConnectionWhere>;
+  hasSampleSamplesConnection_SOME?: InputMaybe<PatientHasSampleSamplesConnectionWhere>;
   /** Return Patients where all of the related Samples match this filter */
   hasSampleSamples_ALL?: InputMaybe<SampleWhere>;
   /** Return Patients where none of the related Samples match this filter */
@@ -980,21 +958,11 @@ export type PatientWhere = {
   hasSampleSamples_SINGLE?: InputMaybe<SampleWhere>;
   /** Return Patients where some of the related Samples match this filter */
   hasSampleSamples_SOME?: InputMaybe<SampleWhere>;
-  patientAliasesIsAliasAggregate?: InputMaybe<
-    PatientPatientAliasesIsAliasAggregateInput
-  >;
-  patientAliasesIsAliasConnection_ALL?: InputMaybe<
-    PatientPatientAliasesIsAliasConnectionWhere
-  >;
-  patientAliasesIsAliasConnection_NONE?: InputMaybe<
-    PatientPatientAliasesIsAliasConnectionWhere
-  >;
-  patientAliasesIsAliasConnection_SINGLE?: InputMaybe<
-    PatientPatientAliasesIsAliasConnectionWhere
-  >;
-  patientAliasesIsAliasConnection_SOME?: InputMaybe<
-    PatientPatientAliasesIsAliasConnectionWhere
-  >;
+  patientAliasesIsAliasAggregate?: InputMaybe<PatientPatientAliasesIsAliasAggregateInput>;
+  patientAliasesIsAliasConnection_ALL?: InputMaybe<PatientPatientAliasesIsAliasConnectionWhere>;
+  patientAliasesIsAliasConnection_NONE?: InputMaybe<PatientPatientAliasesIsAliasConnectionWhere>;
+  patientAliasesIsAliasConnection_SINGLE?: InputMaybe<PatientPatientAliasesIsAliasConnectionWhere>;
+  patientAliasesIsAliasConnection_SOME?: InputMaybe<PatientPatientAliasesIsAliasConnectionWhere>;
   /** Return Patients where all of the related PatientAliases match this filter */
   patientAliasesIsAlias_ALL?: InputMaybe<PatientAliasWhere>;
   /** Return Patients where none of the related PatientAliases match this filter */
@@ -1025,9 +993,7 @@ export type PatientsConnection = {
 export type Project = {
   __typename?: "Project";
   hasRequestRequests: Array<Request>;
-  hasRequestRequestsAggregate?: Maybe<
-    ProjectRequestHasRequestRequestsAggregationSelection
-  >;
+  hasRequestRequestsAggregate?: Maybe<ProjectRequestHasRequestRequestsAggregationSelection>;
   hasRequestRequestsConnection: ProjectHasRequestRequestsConnection;
   igoProjectId: Scalars["String"];
   namespace: Scalars["String"];
@@ -1609,21 +1575,11 @@ export type ProjectUpdateInput = {
 export type ProjectWhere = {
   AND?: InputMaybe<Array<ProjectWhere>>;
   OR?: InputMaybe<Array<ProjectWhere>>;
-  hasRequestRequestsAggregate?: InputMaybe<
-    ProjectHasRequestRequestsAggregateInput
-  >;
-  hasRequestRequestsConnection_ALL?: InputMaybe<
-    ProjectHasRequestRequestsConnectionWhere
-  >;
-  hasRequestRequestsConnection_NONE?: InputMaybe<
-    ProjectHasRequestRequestsConnectionWhere
-  >;
-  hasRequestRequestsConnection_SINGLE?: InputMaybe<
-    ProjectHasRequestRequestsConnectionWhere
-  >;
-  hasRequestRequestsConnection_SOME?: InputMaybe<
-    ProjectHasRequestRequestsConnectionWhere
-  >;
+  hasRequestRequestsAggregate?: InputMaybe<ProjectHasRequestRequestsAggregateInput>;
+  hasRequestRequestsConnection_ALL?: InputMaybe<ProjectHasRequestRequestsConnectionWhere>;
+  hasRequestRequestsConnection_NONE?: InputMaybe<ProjectHasRequestRequestsConnectionWhere>;
+  hasRequestRequestsConnection_SINGLE?: InputMaybe<ProjectHasRequestRequestsConnectionWhere>;
+  hasRequestRequestsConnection_SOME?: InputMaybe<ProjectHasRequestRequestsConnectionWhere>;
   /** Return Projects where all of the related Requests match this filter */
   hasRequestRequests_ALL?: InputMaybe<RequestWhere>;
   /** Return Projects where none of the related Requests match this filter */
@@ -1825,14 +1781,10 @@ export type Request = {
   dataAnalystName: Scalars["String"];
   genePanel: Scalars["String"];
   hasMetadataRequestMetadata: Array<RequestMetadata>;
-  hasMetadataRequestMetadataAggregate?: Maybe<
-    RequestRequestMetadataHasMetadataRequestMetadataAggregationSelection
-  >;
+  hasMetadataRequestMetadataAggregate?: Maybe<RequestRequestMetadataHasMetadataRequestMetadataAggregationSelection>;
   hasMetadataRequestMetadataConnection: RequestHasMetadataRequestMetadataConnection;
   hasSampleSamples: Array<Sample>;
-  hasSampleSamplesAggregate?: Maybe<
-    RequestSampleHasSampleSamplesAggregationSelection
-  >;
+  hasSampleSamplesAggregate?: Maybe<RequestSampleHasSampleSamplesAggregationSelection>;
   hasSampleSamplesConnection: RequestHasSampleSamplesConnection;
   igoProjectId: Scalars["String"];
   igoRequestId: Scalars["String"];
@@ -1848,9 +1800,7 @@ export type Request = {
   pooledNormals: Array<Maybe<Scalars["String"]>>;
   projectManagerName: Scalars["String"];
   projectsHasRequest: Array<Project>;
-  projectsHasRequestAggregate?: Maybe<
-    RequestProjectProjectsHasRequestAggregationSelection
-  >;
+  projectsHasRequestAggregate?: Maybe<RequestProjectProjectsHasRequestAggregationSelection>;
   projectsHasRequestConnection: RequestProjectsHasRequestConnection;
   qcAccessEmails: Scalars["String"];
   requestJson: Scalars["String"];
@@ -1961,9 +1911,7 @@ export type RequestCreateInput = {
   dataAnalystEmail: Scalars["String"];
   dataAnalystName: Scalars["String"];
   genePanel: Scalars["String"];
-  hasMetadataRequestMetadata?: InputMaybe<
-    RequestHasMetadataRequestMetadataFieldInput
-  >;
+  hasMetadataRequestMetadata?: InputMaybe<RequestHasMetadataRequestMetadataFieldInput>;
   hasSampleSamples?: InputMaybe<RequestHasSampleSamplesFieldInput>;
   igoProjectId: Scalars["String"];
   igoRequestId: Scalars["String"];
@@ -2323,9 +2271,7 @@ export type RequestMetadata = {
   importDate: Scalars["String"];
   requestMetadataJson: Scalars["String"];
   requestsHasMetadata: Array<Request>;
-  requestsHasMetadataAggregate?: Maybe<
-    RequestMetadataRequestRequestsHasMetadataAggregationSelection
-  >;
+  requestsHasMetadataAggregate?: Maybe<RequestMetadataRequestRequestsHasMetadataAggregationSelection>;
   requestsHasMetadataConnection: RequestMetadataRequestsHasMetadataConnection;
 };
 
@@ -2377,9 +2323,7 @@ export type RequestMetadataCreateInput = {
   igoRequestId: Scalars["String"];
   importDate: Scalars["String"];
   requestMetadataJson: Scalars["String"];
-  requestsHasMetadata?: InputMaybe<
-    RequestMetadataRequestsHasMetadataFieldInput
-  >;
+  requestsHasMetadata?: InputMaybe<RequestMetadataRequestsHasMetadataFieldInput>;
 };
 
 export type RequestMetadataDeleteInput = {
@@ -2450,9 +2394,7 @@ export type RequestMetadataRequestsHasMetadataAggregateInput = {
   count_GTE?: InputMaybe<Scalars["Int"]>;
   count_LT?: InputMaybe<Scalars["Int"]>;
   count_LTE?: InputMaybe<Scalars["Int"]>;
-  node?: InputMaybe<
-    RequestMetadataRequestsHasMetadataNodeAggregationWhereInput
-  >;
+  node?: InputMaybe<RequestMetadataRequestsHasMetadataNodeAggregationWhereInput>;
 };
 
 export type RequestMetadataRequestsHasMetadataConnectFieldInput = {
@@ -2966,21 +2908,11 @@ export type RequestMetadataWhere = {
   requestMetadataJson_NOT_IN?: InputMaybe<Array<Scalars["String"]>>;
   requestMetadataJson_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
   requestMetadataJson_STARTS_WITH?: InputMaybe<Scalars["String"]>;
-  requestsHasMetadataAggregate?: InputMaybe<
-    RequestMetadataRequestsHasMetadataAggregateInput
-  >;
-  requestsHasMetadataConnection_ALL?: InputMaybe<
-    RequestMetadataRequestsHasMetadataConnectionWhere
-  >;
-  requestsHasMetadataConnection_NONE?: InputMaybe<
-    RequestMetadataRequestsHasMetadataConnectionWhere
-  >;
-  requestsHasMetadataConnection_SINGLE?: InputMaybe<
-    RequestMetadataRequestsHasMetadataConnectionWhere
-  >;
-  requestsHasMetadataConnection_SOME?: InputMaybe<
-    RequestMetadataRequestsHasMetadataConnectionWhere
-  >;
+  requestsHasMetadataAggregate?: InputMaybe<RequestMetadataRequestsHasMetadataAggregateInput>;
+  requestsHasMetadataConnection_ALL?: InputMaybe<RequestMetadataRequestsHasMetadataConnectionWhere>;
+  requestsHasMetadataConnection_NONE?: InputMaybe<RequestMetadataRequestsHasMetadataConnectionWhere>;
+  requestsHasMetadataConnection_SINGLE?: InputMaybe<RequestMetadataRequestsHasMetadataConnectionWhere>;
+  requestsHasMetadataConnection_SOME?: InputMaybe<RequestMetadataRequestsHasMetadataConnectionWhere>;
   /** Return RequestMetadata where all of the related Requests match this filter */
   requestsHasMetadata_ALL?: InputMaybe<RequestWhere>;
   /** Return RequestMetadata where none of the related Requests match this filter */
@@ -3137,20 +3069,20 @@ export type RequestRelationInput = {
   >;
 };
 
-export type RequestRequestMetadataHasMetadataRequestMetadataAggregationSelection = {
-  __typename?: "RequestRequestMetadataHasMetadataRequestMetadataAggregationSelection";
-  count: Scalars["Int"];
-  node?: Maybe<
-    RequestRequestMetadataHasMetadataRequestMetadataNodeAggregateSelection
-  >;
-};
+export type RequestRequestMetadataHasMetadataRequestMetadataAggregationSelection =
+  {
+    __typename?: "RequestRequestMetadataHasMetadataRequestMetadataAggregationSelection";
+    count: Scalars["Int"];
+    node?: Maybe<RequestRequestMetadataHasMetadataRequestMetadataNodeAggregateSelection>;
+  };
 
-export type RequestRequestMetadataHasMetadataRequestMetadataNodeAggregateSelection = {
-  __typename?: "RequestRequestMetadataHasMetadataRequestMetadataNodeAggregateSelection";
-  igoRequestId: StringAggregateSelectionNonNullable;
-  importDate: StringAggregateSelectionNonNullable;
-  requestMetadataJson: StringAggregateSelectionNonNullable;
-};
+export type RequestRequestMetadataHasMetadataRequestMetadataNodeAggregateSelection =
+  {
+    __typename?: "RequestRequestMetadataHasMetadataRequestMetadataNodeAggregateSelection";
+    igoRequestId: StringAggregateSelectionNonNullable;
+    importDate: StringAggregateSelectionNonNullable;
+    requestMetadataJson: StringAggregateSelectionNonNullable;
+  };
 
 export type RequestSampleHasSampleSamplesAggregationSelection = {
   __typename?: "RequestSampleHasSampleSamplesAggregationSelection";
@@ -3270,21 +3202,11 @@ export type RequestWhere = {
   genePanel_NOT_IN?: InputMaybe<Array<Scalars["String"]>>;
   genePanel_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
   genePanel_STARTS_WITH?: InputMaybe<Scalars["String"]>;
-  hasMetadataRequestMetadataAggregate?: InputMaybe<
-    RequestHasMetadataRequestMetadataAggregateInput
-  >;
-  hasMetadataRequestMetadataConnection_ALL?: InputMaybe<
-    RequestHasMetadataRequestMetadataConnectionWhere
-  >;
-  hasMetadataRequestMetadataConnection_NONE?: InputMaybe<
-    RequestHasMetadataRequestMetadataConnectionWhere
-  >;
-  hasMetadataRequestMetadataConnection_SINGLE?: InputMaybe<
-    RequestHasMetadataRequestMetadataConnectionWhere
-  >;
-  hasMetadataRequestMetadataConnection_SOME?: InputMaybe<
-    RequestHasMetadataRequestMetadataConnectionWhere
-  >;
+  hasMetadataRequestMetadataAggregate?: InputMaybe<RequestHasMetadataRequestMetadataAggregateInput>;
+  hasMetadataRequestMetadataConnection_ALL?: InputMaybe<RequestHasMetadataRequestMetadataConnectionWhere>;
+  hasMetadataRequestMetadataConnection_NONE?: InputMaybe<RequestHasMetadataRequestMetadataConnectionWhere>;
+  hasMetadataRequestMetadataConnection_SINGLE?: InputMaybe<RequestHasMetadataRequestMetadataConnectionWhere>;
+  hasMetadataRequestMetadataConnection_SOME?: InputMaybe<RequestHasMetadataRequestMetadataConnectionWhere>;
   /** Return Requests where all of the related RequestMetadata match this filter */
   hasMetadataRequestMetadata_ALL?: InputMaybe<RequestMetadataWhere>;
   /** Return Requests where none of the related RequestMetadata match this filter */
@@ -3294,18 +3216,10 @@ export type RequestWhere = {
   /** Return Requests where some of the related RequestMetadata match this filter */
   hasMetadataRequestMetadata_SOME?: InputMaybe<RequestMetadataWhere>;
   hasSampleSamplesAggregate?: InputMaybe<RequestHasSampleSamplesAggregateInput>;
-  hasSampleSamplesConnection_ALL?: InputMaybe<
-    RequestHasSampleSamplesConnectionWhere
-  >;
-  hasSampleSamplesConnection_NONE?: InputMaybe<
-    RequestHasSampleSamplesConnectionWhere
-  >;
-  hasSampleSamplesConnection_SINGLE?: InputMaybe<
-    RequestHasSampleSamplesConnectionWhere
-  >;
-  hasSampleSamplesConnection_SOME?: InputMaybe<
-    RequestHasSampleSamplesConnectionWhere
-  >;
+  hasSampleSamplesConnection_ALL?: InputMaybe<RequestHasSampleSamplesConnectionWhere>;
+  hasSampleSamplesConnection_NONE?: InputMaybe<RequestHasSampleSamplesConnectionWhere>;
+  hasSampleSamplesConnection_SINGLE?: InputMaybe<RequestHasSampleSamplesConnectionWhere>;
+  hasSampleSamplesConnection_SOME?: InputMaybe<RequestHasSampleSamplesConnectionWhere>;
   /** Return Requests where all of the related Samples match this filter */
   hasSampleSamples_ALL?: InputMaybe<SampleWhere>;
   /** Return Requests where none of the related Samples match this filter */
@@ -3430,21 +3344,11 @@ export type RequestWhere = {
   projectManagerName_NOT_IN?: InputMaybe<Array<Scalars["String"]>>;
   projectManagerName_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
   projectManagerName_STARTS_WITH?: InputMaybe<Scalars["String"]>;
-  projectsHasRequestAggregate?: InputMaybe<
-    RequestProjectsHasRequestAggregateInput
-  >;
-  projectsHasRequestConnection_ALL?: InputMaybe<
-    RequestProjectsHasRequestConnectionWhere
-  >;
-  projectsHasRequestConnection_NONE?: InputMaybe<
-    RequestProjectsHasRequestConnectionWhere
-  >;
-  projectsHasRequestConnection_SINGLE?: InputMaybe<
-    RequestProjectsHasRequestConnectionWhere
-  >;
-  projectsHasRequestConnection_SOME?: InputMaybe<
-    RequestProjectsHasRequestConnectionWhere
-  >;
+  projectsHasRequestAggregate?: InputMaybe<RequestProjectsHasRequestAggregateInput>;
+  projectsHasRequestConnection_ALL?: InputMaybe<RequestProjectsHasRequestConnectionWhere>;
+  projectsHasRequestConnection_NONE?: InputMaybe<RequestProjectsHasRequestConnectionWhere>;
+  projectsHasRequestConnection_SINGLE?: InputMaybe<RequestProjectsHasRequestConnectionWhere>;
+  projectsHasRequestConnection_SOME?: InputMaybe<RequestProjectsHasRequestConnectionWhere>;
   /** Return Requests where all of the related Projects match this filter */
   projectsHasRequest_ALL?: InputMaybe<ProjectWhere>;
   /** Return Requests where none of the related Projects match this filter */
@@ -3506,24 +3410,16 @@ export type Sample = {
   __typename?: "Sample";
   datasource: Scalars["String"];
   hasMetadataSampleMetadata: Array<SampleMetadata>;
-  hasMetadataSampleMetadataAggregate?: Maybe<
-    SampleSampleMetadataHasMetadataSampleMetadataAggregationSelection
-  >;
+  hasMetadataSampleMetadataAggregate?: Maybe<SampleSampleMetadataHasMetadataSampleMetadataAggregationSelection>;
   hasMetadataSampleMetadataConnection: SampleHasMetadataSampleMetadataConnection;
   patientsHasSample: Array<Patient>;
-  patientsHasSampleAggregate?: Maybe<
-    SamplePatientPatientsHasSampleAggregationSelection
-  >;
+  patientsHasSampleAggregate?: Maybe<SamplePatientPatientsHasSampleAggregationSelection>;
   patientsHasSampleConnection: SamplePatientsHasSampleConnection;
   requestsHasSample: Array<Request>;
-  requestsHasSampleAggregate?: Maybe<
-    SampleRequestRequestsHasSampleAggregationSelection
-  >;
+  requestsHasSampleAggregate?: Maybe<SampleRequestRequestsHasSampleAggregationSelection>;
   requestsHasSampleConnection: SampleRequestsHasSampleConnection;
   sampleAliasesIsAlias: Array<SampleAlias>;
-  sampleAliasesIsAliasAggregate?: Maybe<
-    SampleSampleAliasSampleAliasesIsAliasAggregationSelection
-  >;
+  sampleAliasesIsAliasAggregate?: Maybe<SampleSampleAliasSampleAliasesIsAliasAggregationSelection>;
   sampleAliasesIsAliasConnection: SampleSampleAliasesIsAliasConnection;
   sampleCategory: Scalars["String"];
   sampleClass: Scalars["String"];
@@ -3618,9 +3514,7 @@ export type SampleAggregateSelection = {
 export type SampleAlias = {
   __typename?: "SampleAlias";
   isAliasSamples: Array<Sample>;
-  isAliasSamplesAggregate?: Maybe<
-    SampleAliasSampleIsAliasSamplesAggregationSelection
-  >;
+  isAliasSamplesAggregate?: Maybe<SampleAliasSampleIsAliasSamplesAggregationSelection>;
   isAliasSamplesConnection: SampleAliasIsAliasSamplesConnection;
   namespace: Scalars["String"];
   value: Scalars["String"];
@@ -3882,18 +3776,10 @@ export type SampleAliasWhere = {
   AND?: InputMaybe<Array<SampleAliasWhere>>;
   OR?: InputMaybe<Array<SampleAliasWhere>>;
   isAliasSamplesAggregate?: InputMaybe<SampleAliasIsAliasSamplesAggregateInput>;
-  isAliasSamplesConnection_ALL?: InputMaybe<
-    SampleAliasIsAliasSamplesConnectionWhere
-  >;
-  isAliasSamplesConnection_NONE?: InputMaybe<
-    SampleAliasIsAliasSamplesConnectionWhere
-  >;
-  isAliasSamplesConnection_SINGLE?: InputMaybe<
-    SampleAliasIsAliasSamplesConnectionWhere
-  >;
-  isAliasSamplesConnection_SOME?: InputMaybe<
-    SampleAliasIsAliasSamplesConnectionWhere
-  >;
+  isAliasSamplesConnection_ALL?: InputMaybe<SampleAliasIsAliasSamplesConnectionWhere>;
+  isAliasSamplesConnection_NONE?: InputMaybe<SampleAliasIsAliasSamplesConnectionWhere>;
+  isAliasSamplesConnection_SINGLE?: InputMaybe<SampleAliasIsAliasSamplesConnectionWhere>;
+  isAliasSamplesConnection_SOME?: InputMaybe<SampleAliasIsAliasSamplesConnectionWhere>;
   /** Return SampleAliases where all of the related Samples match this filter */
   isAliasSamples_ALL?: InputMaybe<SampleWhere>;
   /** Return SampleAliases where none of the related Samples match this filter */
@@ -3952,9 +3838,7 @@ export type SampleConnectWhere = {
 
 export type SampleCreateInput = {
   datasource: Scalars["String"];
-  hasMetadataSampleMetadata?: InputMaybe<
-    SampleHasMetadataSampleMetadataFieldInput
-  >;
+  hasMetadataSampleMetadata?: InputMaybe<SampleHasMetadataSampleMetadataFieldInput>;
   patientsHasSample?: InputMaybe<SamplePatientsHasSampleFieldInput>;
   requestsHasSample?: InputMaybe<SampleRequestsHasSampleFieldInput>;
   sampleAliasesIsAlias?: InputMaybe<SampleSampleAliasesIsAliasFieldInput>;
@@ -4627,9 +4511,7 @@ export type SampleMetadata = {
   sampleOrigin?: Maybe<Scalars["String"]>;
   sampleType: Scalars["String"];
   samplesHasMetadata: Array<Sample>;
-  samplesHasMetadataAggregate?: Maybe<
-    SampleMetadataSampleSamplesHasMetadataAggregationSelection
-  >;
+  samplesHasMetadataAggregate?: Maybe<SampleMetadataSampleSamplesHasMetadataAggregationSelection>;
   samplesHasMetadataConnection: SampleMetadataSamplesHasMetadataConnection;
   sex: Scalars["String"];
   species: Scalars["String"];
@@ -5229,21 +5111,11 @@ export type SampleMetadataWhere = {
   sampleType_NOT_IN?: InputMaybe<Array<Scalars["String"]>>;
   sampleType_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
   sampleType_STARTS_WITH?: InputMaybe<Scalars["String"]>;
-  samplesHasMetadataAggregate?: InputMaybe<
-    SampleMetadataSamplesHasMetadataAggregateInput
-  >;
-  samplesHasMetadataConnection_ALL?: InputMaybe<
-    SampleMetadataSamplesHasMetadataConnectionWhere
-  >;
-  samplesHasMetadataConnection_NONE?: InputMaybe<
-    SampleMetadataSamplesHasMetadataConnectionWhere
-  >;
-  samplesHasMetadataConnection_SINGLE?: InputMaybe<
-    SampleMetadataSamplesHasMetadataConnectionWhere
-  >;
-  samplesHasMetadataConnection_SOME?: InputMaybe<
-    SampleMetadataSamplesHasMetadataConnectionWhere
-  >;
+  samplesHasMetadataAggregate?: InputMaybe<SampleMetadataSamplesHasMetadataAggregateInput>;
+  samplesHasMetadataConnection_ALL?: InputMaybe<SampleMetadataSamplesHasMetadataConnectionWhere>;
+  samplesHasMetadataConnection_NONE?: InputMaybe<SampleMetadataSamplesHasMetadataConnectionWhere>;
+  samplesHasMetadataConnection_SINGLE?: InputMaybe<SampleMetadataSamplesHasMetadataConnectionWhere>;
+  samplesHasMetadataConnection_SOME?: InputMaybe<SampleMetadataSamplesHasMetadataConnectionWhere>;
   /** Return SampleMetadata where all of the related Samples match this filter */
   samplesHasMetadata_ALL?: InputMaybe<SampleWhere>;
   /** Return SampleMetadata where none of the related Samples match this filter */
@@ -6051,43 +5923,43 @@ export type SampleSampleAliasesIsAliasUpdateFieldInput = {
   where?: InputMaybe<SampleSampleAliasesIsAliasConnectionWhere>;
 };
 
-export type SampleSampleMetadataHasMetadataSampleMetadataAggregationSelection = {
-  __typename?: "SampleSampleMetadataHasMetadataSampleMetadataAggregationSelection";
-  count: Scalars["Int"];
-  node?: Maybe<
-    SampleSampleMetadataHasMetadataSampleMetadataNodeAggregateSelection
-  >;
-};
+export type SampleSampleMetadataHasMetadataSampleMetadataAggregationSelection =
+  {
+    __typename?: "SampleSampleMetadataHasMetadataSampleMetadataAggregationSelection";
+    count: Scalars["Int"];
+    node?: Maybe<SampleSampleMetadataHasMetadataSampleMetadataNodeAggregateSelection>;
+  };
 
-export type SampleSampleMetadataHasMetadataSampleMetadataNodeAggregateSelection = {
-  __typename?: "SampleSampleMetadataHasMetadataSampleMetadataNodeAggregateSelection";
-  additionalProperties: StringAggregateSelectionNonNullable;
-  baitSet: StringAggregateSelectionNullable;
-  cfDNA2dBarcode: StringAggregateSelectionNullable;
-  cmoInfoIgoId: StringAggregateSelectionNullable;
-  cmoPatientId: StringAggregateSelectionNullable;
-  cmoSampleIdFields: StringAggregateSelectionNonNullable;
-  cmoSampleName: StringAggregateSelectionNullable;
-  collectionYear: StringAggregateSelectionNonNullable;
-  genePanel: StringAggregateSelectionNonNullable;
-  igoRequestId: StringAggregateSelectionNullable;
-  importDate: StringAggregateSelectionNonNullable;
-  investigatorSampleId: StringAggregateSelectionNullable;
-  libraries: StringAggregateSelectionNonNullable;
-  oncotreeCode: StringAggregateSelectionNullable;
-  preservation: StringAggregateSelectionNullable;
-  primaryId: StringAggregateSelectionNonNullable;
-  qcReports: StringAggregateSelectionNonNullable;
-  sampleClass: StringAggregateSelectionNonNullable;
-  sampleName: StringAggregateSelectionNullable;
-  sampleOrigin: StringAggregateSelectionNullable;
-  sampleType: StringAggregateSelectionNonNullable;
-  sex: StringAggregateSelectionNonNullable;
-  species: StringAggregateSelectionNonNullable;
-  tissueLocation: StringAggregateSelectionNullable;
-  tubeId: StringAggregateSelectionNullable;
-  tumorOrNormal: StringAggregateSelectionNonNullable;
-};
+export type SampleSampleMetadataHasMetadataSampleMetadataNodeAggregateSelection =
+  {
+    __typename?: "SampleSampleMetadataHasMetadataSampleMetadataNodeAggregateSelection";
+    additionalProperties: StringAggregateSelectionNonNullable;
+    baitSet: StringAggregateSelectionNullable;
+    cfDNA2dBarcode: StringAggregateSelectionNullable;
+    cmoInfoIgoId: StringAggregateSelectionNullable;
+    cmoPatientId: StringAggregateSelectionNullable;
+    cmoSampleIdFields: StringAggregateSelectionNonNullable;
+    cmoSampleName: StringAggregateSelectionNullable;
+    collectionYear: StringAggregateSelectionNonNullable;
+    genePanel: StringAggregateSelectionNonNullable;
+    igoRequestId: StringAggregateSelectionNullable;
+    importDate: StringAggregateSelectionNonNullable;
+    investigatorSampleId: StringAggregateSelectionNullable;
+    libraries: StringAggregateSelectionNonNullable;
+    oncotreeCode: StringAggregateSelectionNullable;
+    preservation: StringAggregateSelectionNullable;
+    primaryId: StringAggregateSelectionNonNullable;
+    qcReports: StringAggregateSelectionNonNullable;
+    sampleClass: StringAggregateSelectionNonNullable;
+    sampleName: StringAggregateSelectionNullable;
+    sampleOrigin: StringAggregateSelectionNullable;
+    sampleType: StringAggregateSelectionNonNullable;
+    sex: StringAggregateSelectionNonNullable;
+    species: StringAggregateSelectionNonNullable;
+    tissueLocation: StringAggregateSelectionNullable;
+    tubeId: StringAggregateSelectionNullable;
+    tumorOrNormal: StringAggregateSelectionNonNullable;
+  };
 
 /** Fields to sort Samples by. The order in which sorts are applied is not guaranteed when specifying many fields in one SampleSort object. */
 export type SampleSort = {
@@ -6129,21 +6001,11 @@ export type SampleWhere = {
   datasource_NOT_IN?: InputMaybe<Array<Scalars["String"]>>;
   datasource_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
   datasource_STARTS_WITH?: InputMaybe<Scalars["String"]>;
-  hasMetadataSampleMetadataAggregate?: InputMaybe<
-    SampleHasMetadataSampleMetadataAggregateInput
-  >;
-  hasMetadataSampleMetadataConnection_ALL?: InputMaybe<
-    SampleHasMetadataSampleMetadataConnectionWhere
-  >;
-  hasMetadataSampleMetadataConnection_NONE?: InputMaybe<
-    SampleHasMetadataSampleMetadataConnectionWhere
-  >;
-  hasMetadataSampleMetadataConnection_SINGLE?: InputMaybe<
-    SampleHasMetadataSampleMetadataConnectionWhere
-  >;
-  hasMetadataSampleMetadataConnection_SOME?: InputMaybe<
-    SampleHasMetadataSampleMetadataConnectionWhere
-  >;
+  hasMetadataSampleMetadataAggregate?: InputMaybe<SampleHasMetadataSampleMetadataAggregateInput>;
+  hasMetadataSampleMetadataConnection_ALL?: InputMaybe<SampleHasMetadataSampleMetadataConnectionWhere>;
+  hasMetadataSampleMetadataConnection_NONE?: InputMaybe<SampleHasMetadataSampleMetadataConnectionWhere>;
+  hasMetadataSampleMetadataConnection_SINGLE?: InputMaybe<SampleHasMetadataSampleMetadataConnectionWhere>;
+  hasMetadataSampleMetadataConnection_SOME?: InputMaybe<SampleHasMetadataSampleMetadataConnectionWhere>;
   /** Return Samples where all of the related SampleMetadata match this filter */
   hasMetadataSampleMetadata_ALL?: InputMaybe<SampleMetadataWhere>;
   /** Return Samples where none of the related SampleMetadata match this filter */
@@ -6152,21 +6014,11 @@ export type SampleWhere = {
   hasMetadataSampleMetadata_SINGLE?: InputMaybe<SampleMetadataWhere>;
   /** Return Samples where some of the related SampleMetadata match this filter */
   hasMetadataSampleMetadata_SOME?: InputMaybe<SampleMetadataWhere>;
-  patientsHasSampleAggregate?: InputMaybe<
-    SamplePatientsHasSampleAggregateInput
-  >;
-  patientsHasSampleConnection_ALL?: InputMaybe<
-    SamplePatientsHasSampleConnectionWhere
-  >;
-  patientsHasSampleConnection_NONE?: InputMaybe<
-    SamplePatientsHasSampleConnectionWhere
-  >;
-  patientsHasSampleConnection_SINGLE?: InputMaybe<
-    SamplePatientsHasSampleConnectionWhere
-  >;
-  patientsHasSampleConnection_SOME?: InputMaybe<
-    SamplePatientsHasSampleConnectionWhere
-  >;
+  patientsHasSampleAggregate?: InputMaybe<SamplePatientsHasSampleAggregateInput>;
+  patientsHasSampleConnection_ALL?: InputMaybe<SamplePatientsHasSampleConnectionWhere>;
+  patientsHasSampleConnection_NONE?: InputMaybe<SamplePatientsHasSampleConnectionWhere>;
+  patientsHasSampleConnection_SINGLE?: InputMaybe<SamplePatientsHasSampleConnectionWhere>;
+  patientsHasSampleConnection_SOME?: InputMaybe<SamplePatientsHasSampleConnectionWhere>;
   /** Return Samples where all of the related Patients match this filter */
   patientsHasSample_ALL?: InputMaybe<PatientWhere>;
   /** Return Samples where none of the related Patients match this filter */
@@ -6175,21 +6027,11 @@ export type SampleWhere = {
   patientsHasSample_SINGLE?: InputMaybe<PatientWhere>;
   /** Return Samples where some of the related Patients match this filter */
   patientsHasSample_SOME?: InputMaybe<PatientWhere>;
-  requestsHasSampleAggregate?: InputMaybe<
-    SampleRequestsHasSampleAggregateInput
-  >;
-  requestsHasSampleConnection_ALL?: InputMaybe<
-    SampleRequestsHasSampleConnectionWhere
-  >;
-  requestsHasSampleConnection_NONE?: InputMaybe<
-    SampleRequestsHasSampleConnectionWhere
-  >;
-  requestsHasSampleConnection_SINGLE?: InputMaybe<
-    SampleRequestsHasSampleConnectionWhere
-  >;
-  requestsHasSampleConnection_SOME?: InputMaybe<
-    SampleRequestsHasSampleConnectionWhere
-  >;
+  requestsHasSampleAggregate?: InputMaybe<SampleRequestsHasSampleAggregateInput>;
+  requestsHasSampleConnection_ALL?: InputMaybe<SampleRequestsHasSampleConnectionWhere>;
+  requestsHasSampleConnection_NONE?: InputMaybe<SampleRequestsHasSampleConnectionWhere>;
+  requestsHasSampleConnection_SINGLE?: InputMaybe<SampleRequestsHasSampleConnectionWhere>;
+  requestsHasSampleConnection_SOME?: InputMaybe<SampleRequestsHasSampleConnectionWhere>;
   /** Return Samples where all of the related Requests match this filter */
   requestsHasSample_ALL?: InputMaybe<RequestWhere>;
   /** Return Samples where none of the related Requests match this filter */
@@ -6198,21 +6040,11 @@ export type SampleWhere = {
   requestsHasSample_SINGLE?: InputMaybe<RequestWhere>;
   /** Return Samples where some of the related Requests match this filter */
   requestsHasSample_SOME?: InputMaybe<RequestWhere>;
-  sampleAliasesIsAliasAggregate?: InputMaybe<
-    SampleSampleAliasesIsAliasAggregateInput
-  >;
-  sampleAliasesIsAliasConnection_ALL?: InputMaybe<
-    SampleSampleAliasesIsAliasConnectionWhere
-  >;
-  sampleAliasesIsAliasConnection_NONE?: InputMaybe<
-    SampleSampleAliasesIsAliasConnectionWhere
-  >;
-  sampleAliasesIsAliasConnection_SINGLE?: InputMaybe<
-    SampleSampleAliasesIsAliasConnectionWhere
-  >;
-  sampleAliasesIsAliasConnection_SOME?: InputMaybe<
-    SampleSampleAliasesIsAliasConnectionWhere
-  >;
+  sampleAliasesIsAliasAggregate?: InputMaybe<SampleSampleAliasesIsAliasAggregateInput>;
+  sampleAliasesIsAliasConnection_ALL?: InputMaybe<SampleSampleAliasesIsAliasConnectionWhere>;
+  sampleAliasesIsAliasConnection_NONE?: InputMaybe<SampleSampleAliasesIsAliasConnectionWhere>;
+  sampleAliasesIsAliasConnection_SINGLE?: InputMaybe<SampleSampleAliasesIsAliasConnectionWhere>;
+  sampleAliasesIsAliasConnection_SOME?: InputMaybe<SampleSampleAliasesIsAliasConnectionWhere>;
   /** Return Samples where all of the related SampleAliases match this filter */
   sampleAliasesIsAlias_ALL?: InputMaybe<SampleAliasWhere>;
   /** Return Samples where none of the related SampleAliases match this filter */
@@ -6264,7 +6096,7 @@ export enum SortDirection {
   /** Sort by field values in ascending order. */
   Asc = "ASC",
   /** Sort by field values in descending order. */
-  Desc = "DESC"
+  Desc = "DESC",
 }
 
 export type StringAggregateSelectionNonNullable = {
@@ -6377,9 +6209,7 @@ export type RequestWithSamplesQueryVariables = Exact<{
   where?: InputMaybe<RequestWhere>;
   hasSampleSamplesWhere2?: InputMaybe<SampleWhere>;
   hasMetadataSampleMetadataWhere2?: InputMaybe<SampleMetadataWhere>;
-  hasSampleSamplesConnectionWhere2?: InputMaybe<
-    RequestHasSampleSamplesConnectionWhere
-  >;
+  hasSampleSamplesConnectionWhere2?: InputMaybe<RequestHasSampleSamplesConnectionWhere>;
   hasMetadataSampleMetadataOptions2?: InputMaybe<SampleMetadataOptions>;
 }>;
 

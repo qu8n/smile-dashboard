@@ -13,7 +13,7 @@ const bodyParser = require("body-parser");
 const express = require("express");
 const {
   ApolloServerPluginDrainHttpServer,
-  ApolloServerPluginLandingPageLocalDefault
+  ApolloServerPluginLandingPageLocalDefault,
 } = require("apollo-server-core");
 const { OGM } = require("@neo4j/graphql-ogm");
 
@@ -63,14 +63,14 @@ async function printMsgs(s) {
 const tlsOptions = {
   keyFile: nats_key_pem,
   certFile: nats_cert_pem,
-  caFile: nats_ca_pem
+  caFile: nats_ca_pem,
 };
 
 const natsConnProperties = {
   servers: [nats_url],
   user: nats_username,
   pass: nats_password,
-  tls: tlsOptions
+  tls: tlsOptions,
 };
 
 var nc = null;
@@ -177,17 +177,17 @@ async function main() {
     console.log("querying by: ", req.body.requestId);
     const { r } = await Request.find({
       where: {
-        igoRequestId: req.body.requestId
-      }
+        igoRequestId: req.body.requestId,
+      },
     });
 
     const { x } = await Request.update({
       where: {
-        igoRequestId: req.body.requestId
+        igoRequestId: req.body.requestId,
       },
       update: {
-        dataStatus: req.body.dataStatus
-      }
+        dataStatus: req.body.dataStatus,
+      },
     });
     return res.sendStatus(200);
   });
@@ -198,18 +198,18 @@ async function main() {
     context: ({ req }) => ({ req }),
     plugins: [
       ApolloServerPluginDrainHttpServer({ httpServer }),
-      ApolloServerPluginLandingPageLocalDefault({ embed: true })
-    ]
+      ApolloServerPluginLandingPageLocalDefault({ embed: true }),
+    ],
   });
 
-  neoSchema.getSchema().then(schema => {
+  neoSchema.getSchema().then((schema) => {
     const server = new ApolloServer({
-      schema
+      schema,
     });
   });
   await server.start();
   server.applyMiddleware({ app });
-  await new Promise(resolve => httpServer.listen({ port: 4000 }, resolve));
+  await new Promise((resolve) => httpServer.listen({ port: 4000 }, resolve));
   console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`);
 }
 

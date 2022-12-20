@@ -33,7 +33,7 @@ function requestFilterWhereVariables(value: string) {
     { piEmail_CONTAINS: value },
     { otherContactEmails_CONTAINS: value },
     { projectManagerName_CONTAINS: value },
-    { qcAccessEmails_CONTAINS: value }
+    { qcAccessEmails_CONTAINS: value },
   ];
 }
 
@@ -41,13 +41,13 @@ function createStore() {
   return makeAutoObservable({
     filter: "",
     selectedRequest: "",
-    showRequestDetails: false
+    showRequestDetails: false,
   });
 }
 
 //const store = createStore();
 
-export const RequestsPage: React.FunctionComponent = props => {
+export const RequestsPage: React.FunctionComponent = (props) => {
   return <Requests />;
 };
 
@@ -63,14 +63,12 @@ const Requests: FunctionComponent = () => {
   const params = useParams();
 
   // not we aren't using initial fetch
-  const [
-    initialFetch,
-    { loading, error, data, fetchMore, refetch }
-  ] = useRequestsListLazyQuery({
-    variables: {
-      options: { limit: 20, offset: 0 }
-    }
-  });
+  const [initialFetch, { loading, error, data, fetchMore, refetch }] =
+    useRequestsListLazyQuery({
+      variables: {
+        options: { limit: 20, offset: 0 },
+      },
+    });
 
   const datasource = useMemo(() => {
     return {
@@ -78,18 +76,18 @@ const Requests: FunctionComponent = () => {
       getRows: (params: IServerSideGetRowsParams) => {
         const fetchInput = {
           where: {
-            OR: requestFilterWhereVariables(val)
+            OR: requestFilterWhereVariables(val),
           },
           requestsConnectionWhere2: {
-            OR: requestFilterWhereVariables(val)
+            OR: requestFilterWhereVariables(val),
           },
           options: {
             offset: params.request.startRow,
             limit: params.request.endRow,
-            sort: params.request.sortModel.map(sortModel => {
+            sort: params.request.sortModel.map((sortModel) => {
               return { [sortModel.colId]: sortModel.sort?.toUpperCase() };
-            })
-          }
+            }),
+          },
         };
 
         // if this is NOT first call, use refetch
@@ -98,16 +96,16 @@ const Requests: FunctionComponent = () => {
           params.request.startRow! === 0
             ? refetch(fetchInput)
             : fetchMore({
-                variables: fetchInput
+                variables: fetchInput,
               });
 
-        return thisFetch.then(d => {
+        return thisFetch.then((d) => {
           params.success({
             rowData: d.data.requests,
-            rowCount: d.data.requestsConnection.totalCount
+            rowCount: d.data.requestsConnection.totalCount,
           });
         });
-      }
+      },
     };
   }, [val]);
 
@@ -130,13 +128,13 @@ const Requests: FunctionComponent = () => {
             return fetchMore({
               variables: {
                 where: {
-                  OR: requestFilterWhereVariables(val)
+                  OR: requestFilterWhereVariables(val),
                 },
                 options: {
                   offset: 0,
-                  limit: undefined
-                }
-              }
+                  limit: undefined,
+                },
+              },
             }).then(({ data }) => {
               return CSVFormulate(data.requests, RequestsListColumns);
             });
@@ -201,7 +199,7 @@ const Requests: FunctionComponent = () => {
             placeholder="Search Requests"
             aria-label="Search"
             defaultValue={val}
-            onInput={event => {
+            onInput={(event) => {
               const value = event.currentTarget.value;
 
               if (typingTimeout) {

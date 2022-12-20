@@ -12,10 +12,10 @@ const cache = new InMemoryCache({
   typePolicies: {
     Query: {
       fields: {
-        requests: offsetLimitPagination()
-      }
-    }
-  }
+        requests: offsetLimitPagination(),
+      },
+    },
+  },
 });
 
 const client = new ApolloClient({
@@ -23,7 +23,7 @@ const client = new ApolloClient({
     process.env.REACT_APP_GRAPHQL_CLIENT_URI === undefined
       ? "http://localhost:4000/graphql"
       : process.env.REACT_APP_GRAPHQL_CLIENT_URI,
-  cache
+  cache,
 });
 
 const root = ReactDOM.render(

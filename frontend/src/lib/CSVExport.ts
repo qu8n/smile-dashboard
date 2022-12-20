@@ -3,14 +3,14 @@ import { ColDef } from "ag-grid-community";
 
 export function CSVFormulate(requests: any[], columnDefinitions: ColDef[]) {
   const csvString = [
-    columnDefinitions.map(item => item.field).join("\t"),
+    columnDefinitions.map((item) => item.field).join("\t"),
     ...requests
-      .map(req =>
-        columnDefinitions.map(col => {
+      .map((req) =>
+        columnDefinitions.map((col) => {
           if (col.valueGetter) {
             /* @ts-ignore */
             return col.valueGetter({
-              data: req
+              data: req,
             });
           } else if (col.field) {
             return req[col.field];
@@ -19,7 +19,7 @@ export function CSVFormulate(requests: any[], columnDefinitions: ColDef[]) {
           }
         })
       )
-      .map(e => e.join("\t"))
+      .map((e) => e.join("\t")),
   ].join("\n");
   return csvString;
 }
