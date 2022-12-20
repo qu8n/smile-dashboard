@@ -1,12 +1,14 @@
 {
-  "name": "smile-dashboard-server",
+  "name": "graphql-server",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "prettierAll": "yarn run prettier --write $(git ls-files | grep '\\(.js\\|.ts\\|.scss\\|.css\\|.ht\\)')"
+    "prettierAll": "yarn run prettier --write $(git ls-files | grep '\\(.js\\|.ts\\|.scss\\|.css\\|.ht\\)')",
+    "dev": "ts-node-dev --respawn ./src/index.ts",
+    "build": "tsc -p ."
   },
   "keywords": [],
   "author": "",
@@ -15,6 +17,7 @@
     "@neo4j/graphql": "^3.5.1",
     "@neo4j/graphql-ogm": "^3.9.0",
     "@neo4j/introspector": "^1.0.1",
+    "@types/node": "^18.11.17",
     "apollo-datasource-rest": "^3.7.0",
     "apollo-server": "^3.10.0",
     "apollo-server-core": "^3.10.2",
@@ -24,7 +27,8 @@
     "nats": "^2.7.1",
     "neo4j-driver": "^4.4.6",
     "prettier": "1.19.1",
-    "properties-reader": "^2.2.0"
+    "properties-reader": "^2.2.0",
+    "typescript": "^4.7.4"
   },
   "devDependencies": {
     "apollo": "^2.34.0"

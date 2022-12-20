@@ -1,3 +1,5 @@
+import { Express } from "express";
+
 const path = require("path");
 const { Neo4jGraphQL } = require("@neo4j/graphql");
 const { ApolloServer, gql } = require("apollo-server-express");
@@ -45,20 +47,6 @@ const sub_cmo_sample_update = properties.get(
 );
 
 const sc = StringCodec();
-
-async function printMsgs(s) {
-  let subj = s.getSubject();
-  console.log(`listening for ${subj}`);
-  const c = 13 - subj.length;
-  const pad = "".padEnd(c);
-  for await (const m of s) {
-    console.log(
-      `[${subj}]${pad} #${s.getProcessed()} - ${m.subject} ${
-        m.data ? " " + sc.decode(m.data) : ""
-      }`
-    );
-  }
-}
 
 const tlsOptions = {
   keyFile: nats_key_pem,
@@ -160,7 +148,7 @@ async function main() {
   ogm.init();
   const Request = ogm.model("Request");
 
-  const app = express();
+  const app: Express = express();
   app.use(express.static(path.resolve(__dirname, "../build")));
 
   app.use(bodyParser.urlencoded({ extended: true }));
@@ -193,16 +181,16 @@ async function main() {
   });
 
   const httpServer = http.createServer(app);
-  const server = new ApolloServer({
+  const server: typeof ApolloServer = new ApolloServer({
     schema: await neoSchema.getSchema(),
-    context: ({ req }) => ({ req }),
+    //    context: ({ req }) => ({ req }),
     plugins: [
       ApolloServerPluginDrainHttpServer({ httpServer }),
       ApolloServerPluginLandingPageLocalDefault({ embed: true }),
     ],
   });
 
-  neoSchema.getSchema().then((schema) => {
+  neoSchema.getSchema().then((schema: any) => {
     const server = new ApolloServer({
       schema,
     });
