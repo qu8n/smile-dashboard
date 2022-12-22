@@ -101,3 +101,37 @@ query Samples(
     smileSampleId
   }
 }
+
+mutation UpdateSamples($where: SampleWhere, $update: SampleUpdateInput) {
+  updateSamples(where: $where, update: $update) {
+    samples {
+      smileSampleId
+      revisable
+      datasource
+      sampleCategory
+      sampleClass
+      hasMetadataSampleMetadata {
+        cmoSampleName
+        igoComplete
+        importDate
+        investigatorSampleId
+        primaryId
+        sampleClass
+        cmoPatientId
+        cmoSampleIdFields
+        sampleName
+        preservation
+        tumorOrNormal
+        oncotreeCode
+        collectionYear
+        sampleOrigin
+        tissueLocation
+        sex
+        libraries
+        sampleType
+        species
+        genePanel
+      }
+    }
+  }
+}

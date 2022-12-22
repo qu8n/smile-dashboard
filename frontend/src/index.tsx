@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import RequestsPage from "./pages/requests/RequestsPage";
 import SmileNavBar from "./shared/components/SmileNavBar";
 import { offsetLimitPagination } from "@apollo/client/utilities";
+import { UpdateSamples } from "./pages/samples/UpdateSamples";
 
 const cache = new InMemoryCache({
   typePolicies: {
@@ -40,6 +41,9 @@ const root = ReactDOM.render(
               </Route>
               <Route path="/requests/" element={<RequestsPage />}>
                 <Route path=":requestId" />
+              </Route>
+              <Route path="/samples/update" element={<UpdateSamples />}>
+                <Route path=":smileSampleId" />
               </Route>
             </Routes>
           </section>
