@@ -1,4 +1,9 @@
 import { Express } from "express";
+import {
+  UpdateSamplesMutation,
+  UpdateSamplesMutationVariables,
+} from "./generated/graphql";
+import { resolvers } from "./resolvers";
 
 const path = require("path");
 const { Neo4jGraphQL } = require("@neo4j/graphql");
@@ -108,18 +113,6 @@ const driver = neo4j.driver(
 
 const sessionFactory = () =>
   driver.session({ defaultAccessMode: neo4j.session.WRITE });
-
-const resolvers = {
-  Mutation: {
-    updateSamples: async (_source: any, { where, update }: any) => {
-      console.log("\n invoked updateSamplesMutation resolver w/args");
-      console.log("\n", where);
-      console.log("\n", update);
-
-      return null;
-    },
-  },
-};
 
 async function main() {
   //establishConnection(); // for nats only

@@ -13,7 +13,7 @@
   ],
   "pre-commit": ["prettierFixCurrentChanges"],
   "scripts": {
-    "start:frontend": "yarn --cwd frontend start",
+    "dev:frontend": "yarn --cwd frontend start",
     "start:backend": "yarn --cwd graphql-server start",
     "dev:backend": "yarn --cwd graphql-server dev",
     "build:backend": "yarn --cwd graphql-server build",
