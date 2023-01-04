@@ -31,8 +31,9 @@ LICENSE
 packages/**/dist/**
 yarn.lock
 
-public/**
+frontend/public/**
 generated/**
 *html
 Dockerfile
 *.properties.EXAMPLE
+graphql-server/.dockerignore
