@@ -1,7 +1,7 @@
 import {
   useRequestWithSamplesQuery,
   SortDirection,
-  RequestWithSamplesQuery
+  RequestWithSamplesQuery,
 } from "../../generated/graphql";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { Button, Col, Form, Row } from "react-bootstrap";
@@ -44,7 +44,7 @@ function sampleFilterWhereVariables(value: string) {
     { libraries_CONTAINS: value },
     { sampleType_CONTAINS: value },
     { species_CONTAINS: value },
-    { genePanel_CONTAINS: value }
+    { genePanel_CONTAINS: value },
   ];
 }
 
@@ -56,23 +56,23 @@ function getSampleMetadata(data: RequestWithSamplesQuery) {
 
 export const RequestSamples: FunctionComponent<IRequestSummaryProps> = ({
   params,
-  height
+  height,
 }) => {
   const { loading, error, data, refetch } = useRequestWithSamplesQuery({
     variables: {
       where: {
-        igoRequestId: params.requestId
+        igoRequestId: params.requestId,
       },
       options: {
         offset: 0,
-        limit: undefined
+        limit: undefined,
       },
       hasMetadataSampleMetadataOptions2: {
         sort: [{ importDate: SortDirection.Desc }],
-        limit: 1
-      }
+        limit: 1,
+      },
     },
-    fetchPolicy: "no-cache"
+    fetchPolicy: "no-cache",
   });
 
   const [val, setVal] = useState("");
@@ -120,7 +120,7 @@ export const RequestSamples: FunctionComponent<IRequestSummaryProps> = ({
             placeholder="Search Samples"
             aria-label="Search"
             value={val}
-            onInput={event => {
+            onInput={(event) => {
               const value = event.currentTarget.value;
 
               if (value !== null) {
@@ -136,16 +136,16 @@ export const RequestSamples: FunctionComponent<IRequestSummaryProps> = ({
                   const rf = refetch({
                     hasSampleSamplesWhere2: {
                       hasMetadataSampleMetadata_SOME: {
-                        OR: sampleFilterWhereVariables(value)
-                      }
+                        OR: sampleFilterWhereVariables(value),
+                      },
                     },
                     hasSampleSamplesConnectionWhere2: {
                       node: {
                         hasMetadataSampleMetadata_SOME: {
-                          OR: sampleFilterWhereVariables(value)
-                        }
-                      }
-                    }
+                          OR: sampleFilterWhereVariables(value),
+                        },
+                      },
+                    },
                   });
                   setProm(rf);
                 }, 500);

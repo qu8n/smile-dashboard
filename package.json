@@ -1,90 +1,26 @@
 {
-  "name": "smile-dashboard-client",
-  "version": "0.1.0",
+  "name": "smile-dashboard",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:alisman/smile-dashboard.git",
+  "author": "alisman <lisman.aaron@gmail.com>",
   "private": true,
-  "dependencies": {
-    "@apollo/client": "^3.6.9",
-    "@material-ui/core": "^4.12.4",
-    "@material-ui/icons": "^4.11.3",
-    "@material-ui/lab": "^4.0.0-alpha.61",
-    "@types/jest": "^27.5.2",
-    "@types/lodash": "^4.14.186",
-    "@types/node": "^16.11.43",
-    "@types/react": "17.0.39",
-    "@types/react-bootstrap": "^0.32.30",
-    "@types/react-dom": "^17.0.17",
-    "@types/react-spinkit": "^3.0.7",
-    "@types/react-virtualized": "^9.21.21",
-    "@types/react-virtualized-auto-sizer": "^1.0.1",
-    "ag-grid-community": "^28.2.1",
-    "ag-grid-enterprise": "^28.2.1",
-    "ag-grid-react": "^28.2.1",
-    "classnames": "^2.3.1",
-    "graphql": "^16.5.0",
-    "js-file-download": "^0.4.12",
-    "json": "^9.0.6",
-    "lodash": "^4.17.21",
-    "mobx": "^6.6.1",
-    "mobx-react": "^7.5.2",
-    "mobx-react-lite": "^3.4.0",
-    "neo4j-graphql-cli": "^0.0.11",
-    "pre-commit": "^1.2.2",
-    "prettier": "1.19.1",
-    "react": "^17.0.2",
-    "react-bootstrap": "^2.5.0",
-    "react-data-table-component": "^7.5.2",
-    "react-dom": "^17.0.2",
-    "react-router-dom": "^6.3.0",
-    "react-scripts": "5.0.1",
-    "react-spinkit": "^3.0.0",
-    "react-virtualized-auto-sizer": "^1.0.7",
-    "sass": "^1.55.0",
-    "styled-components": "^5.3.5",
-    "typescript": "^4.7.4",
-    "web-vitals": "^2.1.4"
-  },
-  "resolutions": {
-    "@types/react": "^17.0.2",
-    "@types/react-dom": "^17.0.2",
-    "graphql": "^16.5.0"
-  },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "codegen": "graphql-codegen --config codegen.yml",
-    "prettierFixCurrentChanges": "STAGED_AND_CHANGED_FILES=$(git diff HEAD --name-only --cached --diff-filter=d) && ([ -z \"$STAGED_AND_CHANGED_FILES\" ] && echo \"Nothing to prettify\" || (yarn run prettier ./src --write $(echo $STAGED_AND_CHANGED_FILES) && git add -f $(echo $STAGED_AND_CHANGED_FILES)))",
-    "prettierCheckCircleCI": "git remote add smile-repo https://github.com/mskcc/smile-dashboard.git && git fetch smile-repo master && CHANGED_FILES=$(git diff smile-repo/master --name-only --diff-filter=d) && [ ! -z \"$CHANGED_FILES\" ] && yarn run prettier -c $(echo $CHANGED_FILES) && git remote remove smile-repo",
-    "prettierFixLocal": "CHANGED_FILES=$(git diff master --name-only --diff-filter=d) && ([ ! -z \"$CHANGED_FILES\" ] && yarn run prettier ./src --write $(echo $CHANGED_FILES) || echo \"Nothing to prettify\")",
-    "prettierAll": "yarn run prettier ./src --write $(git ls-files | grep '\\(.js\\|.ts\\|.scss\\|.css\\|.ht\\)')"
-  },
-  "pre-commit": [
-    "prettierFixCurrentChanges"
+  "license": "MIT",
+  "workspaces": [
+    "frontend",
+    "graphql-server",
+    "packages/*"
   ],
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
-  "devDependencies": {
-    "@graphql-codegen/cli": "2.8.1",
-    "@graphql-codegen/introspection": "2.2.0",
-    "@graphql-codegen/typescript": "2.7.1",
-    "@graphql-codegen/typescript-operations": "2.5.1",
-    "@graphql-codegen/typescript-react-apollo": "3.3.1"
+  "pre-commit": ["prettierFixCurrentChanges"],
+  "scripts": {
+    "dev:frontend": "yarn --cwd frontend start",
+    "start:backend": "yarn --cwd graphql-server start",
+    "dev:backend": "yarn --cwd graphql-server dev",
+    "build:backend": "yarn --cwd graphql-server build",
+    "prettierFixCurrentChanges": "STAGED_AND_CHANGED_FILES=$(git diff HEAD --name-only --cached --diff-filter=d) && ([ -z \"$STAGED_AND_CHANGED_FILES\" ] && echo \"Nothing to prettify\" || (yarn run prettier ./frontend/src ./graphql-server --write $(echo $STAGED_AND_CHANGED_FILES) && git add -f $(echo $STAGED_AND_CHANGED_FILES)))",
+    "prettierCheckCircleCI": "git remote add smile-repo https://github.com/mskcc/smile-dashboard.git && git fetch smile-repo master && CHANGED_FILES=$(git diff smile-repo/master --name-only --diff-filter=d) && [ ! -z \"$CHANGED_FILES\" ] && yarn run prettier -c $(echo $CHANGED_FILES) && git remote remove smile-repo",
+    "prettierFixLocal": "CHANGED_FILES=$(git diff master --name-only --diff-filter=d) && ([ ! -z \"$CHANGED_FILES\" ] && yarn run prettier ./frontend/src ./graphql-server --write $(echo $CHANGED_FILES) || echo \"Nothing to prettify\")",
+    "prettierAll": "yarn run prettier ./frontend/src ./graphql-server --write $(git ls-files | grep '\\(.js\\|.ts\\|.scss\\|.css\\|.ht\\)')",
+    "codegen": "graphql-codegen --config codegen.yml"
   }
 }

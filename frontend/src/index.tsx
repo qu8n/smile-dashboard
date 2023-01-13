@@ -7,15 +7,16 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import RequestsPage from "./pages/requests/RequestsPage";
 import SmileNavBar from "./shared/components/SmileNavBar";
 import { offsetLimitPagination } from "@apollo/client/utilities";
+import { UpdateSamples } from "./pages/samples/UpdateSamples";
 
 const cache = new InMemoryCache({
   typePolicies: {
     Query: {
       fields: {
-        requests: offsetLimitPagination()
-      }
-    }
-  }
+        requests: offsetLimitPagination(),
+      },
+    },
+  },
 });
 
 const client = new ApolloClient({
@@ -23,7 +24,7 @@ const client = new ApolloClient({
     process.env.REACT_APP_GRAPHQL_CLIENT_URI === undefined
       ? "http://localhost:4000/graphql"
       : process.env.REACT_APP_GRAPHQL_CLIENT_URI,
-  cache
+  cache,
 });
 
 const root = ReactDOM.render(
@@ -40,6 +41,9 @@ const root = ReactDOM.render(
               </Route>
               <Route path="/requests/" element={<RequestsPage />}>
                 <Route path=":requestId" />
+              </Route>
+              <Route path="/samples/update" element={<UpdateSamples />}>
+                <Route path=":smileSampleId" />
               </Route>
             </Routes>
           </section>

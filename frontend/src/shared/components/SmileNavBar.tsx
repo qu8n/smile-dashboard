@@ -1,7 +1,7 @@
 import * as React from "react";
 import logo_with_text from "../../imgs/logo_with_text.png";
 
-const SmileNavBar: React.FunctionComponent = props => {
+const SmileNavBar: React.FunctionComponent = (props) => {
   var requestIdSearch = "";
 
   return (

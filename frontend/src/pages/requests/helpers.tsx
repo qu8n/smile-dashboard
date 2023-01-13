@@ -30,9 +30,9 @@ export function buildRequestTableColumns(navigate: any): ColDef[] {
             View
           </Button>
         );
-      }
+      },
     },
-    ...RequestsListColumns
+    ...RequestsListColumns,
   ];
 }
 
@@ -40,171 +40,171 @@ export const RequestsListColumns: ColDef[] = [
   {
     field: "igoRequestId",
     headerName: "IGO Request ID",
-    sortable: true
+    sortable: true,
   },
   {
     field: "igoProjectId",
     headerName: "IGO Project ID",
-    sortable: true
+    sortable: true,
   },
   {
     field: "hasSampleSamplesConnection",
     headerName: "# Samples",
-    valueGetter: function({ data }) {
+    valueGetter: function ({ data }) {
       return data["hasSampleSamplesConnection"]?.totalCount;
-    }
+    },
   },
   {
     field: "projectManagerName",
     headerName: "Project Manager Name",
-    sortable: true
+    sortable: true,
   },
   {
     field: "investigatorName",
     headerName: "Investigator Name",
-    sortable: true
+    sortable: true,
   },
   {
     field: "investigatorEmail",
     headerName: "Investigator Email",
-    sortable: true
+    sortable: true,
   },
   {
     field: "piEmail",
     headerName: "PI Email",
-    sortable: true
+    sortable: true,
   },
   {
     field: "dataAnalystName",
     headerName: "Data Analyst Name",
-    sortable: true
+    sortable: true,
   },
   {
     field: "dataAnalystEmail",
     headerName: "Data Analyst Email",
-    sortable: true
+    sortable: true,
   },
   {
     field: "genePanel",
     headerName: "Gene Panel",
-    sortable: true
+    sortable: true,
   },
   {
     field: "labHeadName",
     headerName: "Lab Head Name",
-    sortable: true
+    sortable: true,
   },
   {
     field: "labHeadEmail",
     headerName: "Lab Head Email",
-    sortable: true
+    sortable: true,
   },
   {
     field: "qcAccessEmails",
     headerName: "QC Access Emails",
-    sortable: true
+    sortable: true,
   },
   {
     field: "dataAccessEmails",
     headerName: "Data Access Emails",
-    sortable: true
+    sortable: true,
   },
   {
     field: "bicAnalysis",
     headerName: "BIC Analysis",
-    sortable: true
+    sortable: true,
   },
   {
     field: "isCmoRequest",
     headerName: "CMO Request?",
-    sortable: true
+    sortable: true,
   },
   {
     field: "otherContactEmails",
     headerName: "Other Contact Emails",
-    sortable: true
-  }
+    sortable: true,
+  },
 ];
 
 export const SampleDetailsColumns: ColDef[] = [
   {
     field: "primaryId",
     headerName: "Primary ID",
-    sortable: true
+    sortable: true,
   },
   {
     field: "cmoSampleName",
     headerName: "CMO Sample Name",
-    sortable: true
+    sortable: true,
   },
   {
     field: "importDate",
     headerName: "Last Updated",
-    sortable: true
+    sortable: true,
   },
   {
     field: "cmoPatientId",
     headerName: "CMO Patient ID",
-    sortable: true
+    sortable: true,
   },
   {
     field: "investigatorSampleId",
     headerName: "Investigator Sample ID",
-    sortable: true
+    sortable: true,
   },
   {
     field: "sampleType",
     headerName: "Sample Type",
-    sortable: true
+    sortable: true,
   },
   {
     field: "species",
     headerName: "Species",
-    sortable: true
+    sortable: true,
   },
   {
     field: "genePanel",
     headerName: "Gene Panel",
-    sortable: true
+    sortable: true,
   },
   {
     field: "preservation",
     headerName: "Preservation",
-    sortable: true
+    sortable: true,
   },
   {
     field: "tumorOrNormal",
     headerName: "Tumor Or Normal",
-    sortable: true
+    sortable: true,
   },
   {
     field: "sampleClass",
     headerName: "Sample Class",
-    sortable: true
+    sortable: true,
   },
   {
     field: "oncotreeCode",
     headerName: "Oncotree Code",
-    sortable: true
+    sortable: true,
   },
   {
     field: "collectionYear",
     headerName: "Collection Year",
-    sortable: true
+    sortable: true,
   },
   {
     field: "sampleOrigin",
     headerName: "Sample Origin",
-    sortable: true
+    sortable: true,
   },
   {
     field: "tissueLocation",
     headerName: "Tissue Location",
-    sortable: true
+    sortable: true,
   },
   {
     field: "sex",
     headerName: "Sex",
-    sortable: true
-  }
+    sortable: true,
+  },
 ];

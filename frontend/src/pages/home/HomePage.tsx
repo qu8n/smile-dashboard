@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Container } from "react-bootstrap";
 
-export const HomePage: React.FunctionComponent = props => {
+export const HomePage: React.FunctionComponent = (props) => {
   return (
     <Container style={{ textAlign: "center" }}>
       <div>
