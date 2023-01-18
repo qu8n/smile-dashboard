@@ -13,7 +13,7 @@ const neo4j = require("neo4j-driver");
 const { connect, StringCodec } = require("nats");
 var PropertiesReader = require("properties-reader");
 var properties = new PropertiesReader(
-  path.resolve(__dirname, "./env/application.properties")
+  path.resolve(__dirname, "../dist/env/application.properties")
 );
 const http = require("http");
 const bodyParser = require("body-parser");
