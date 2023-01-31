@@ -57,6 +57,7 @@ const tlsOptions = {
   keyFile: nats_key_pem,
   certFile: nats_cert_pem,
   caFile: nats_ca_pem,
+  rejectUnauthorized: false,
 };
 
 const natsConnProperties = {
@@ -115,7 +116,7 @@ const sessionFactory = () =>
   driver.session({ defaultAccessMode: neo4j.session.WRITE });
 
 async function main() {
-  //establishConnection(); // for nats only
+  establishConnection(); // for nats only
 
   const app: Express = express();
   app.use(express.static(path.resolve(__dirname, "../build")));
