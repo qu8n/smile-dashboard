@@ -19,25 +19,34 @@ Make sure you have installed the node version and yarn version specified in
 
 > **Windows Tip:** If you are developing on Windows, we recommend that you use [Ubuntu / Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10).
 
-### Dashboard Backend
+### Pre-build Steps
 
-The backend for the dashboard is under `./server`.
+If starting from a fresh build, pull dependencies by running `yarn` from the project root directory.
 
-Set up your [./server/env/application.properties.EXAMPLE](./server/env/application.properties.EXAMPLE) with all of the application properties needed for running the dashboard backend.
-
-Build and launch the node app with
+If running into build issues, try purging existing contents from all `/node_modules` directories in project. 
 
 ```
-cd ./server
-yarn
-node index.js
+rm -rf ./node_modules frontend/node_modules graphql-server/node_modules
+```
+
+### Dashboard Backend
+
+The backend for the dashboard is under `./graphql-server`.
+
+Set up your [./graphql-server/dist/env/application.properties.EXAMPLE](./graphql-server/dist/env/application.properties.EXAMPLE) with all of the application properties needed for running the dashboard backend.
+
+Build and launch the node app from the project root directory with:
+
+```
+yarn build:backend
+yarn dev:backend
 ```
 
 If successful, the graphql client should be available at `http://localhost:4000/graphql`.
 
 ### Dashboard App
 
-Set an environment variable `${REACT_APP_GRAPHQL_CLIENT_URI}` that points to the graphql client the webapp should be using.
+Set an environment variable `${REACT_APP_GRAPHQL_CLIENT_URI}` that points to the graphql client the webapp should be using. The app will default to `http://localhost:4000/graphql` if this is unset.
 
 Example:
 
@@ -45,22 +54,10 @@ Example:
 export REACT_APP_GRAPHQL_CLIENT_URI=http://localhost:4000/graphql
 ```
 
-Remove old compiled `node_modules` if it exists
+To run the frontend:
 
 ```
-rm -rf node_modules
-```
-
-To install all app dependencies
-
-```
-yarn install
-```
-
-To start the dev server with hot reload enabled
-
-```
-yarn run start
+yarn dev:frontend
 ```
 
 Example pages:
@@ -69,9 +66,20 @@ Example pages:
 
 > **Tip:** This page should open automatically through your default web browser. If not then please navigate to the web app manually.
 
-## Bootstrap theme
 
-This application uses the following Bootstrap theme https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/
+## Building the Docker Images
+
+To build the frontend docker image:
+
+```
+docker build -f Dockerfile . -t [org]/smile-dashboard:[build version]
+```
+
+To build the backend docker image:
+
+```
+docker build -f graphql-server/Dockerfile . -t [org]/graphql-client:[build version]
+```
 
 ## Running with docker-compose
 
@@ -98,19 +106,23 @@ networks:
 services:
   graphql-client:
     container_name: graphql-client
-    image: cmometadb/graphql-client:1.0.0.RELEASE
+    image: cmometadb/graphql-client:[build version]
+    restart: unless-stopped
     environment:
       - SMILE_CONFIG_HOME=${SMILE_CONFIG_HOME}
     volumes:
       - type: bind
         source: ${SMILE_CONFIG_HOME}/resources/smile-dashboard
-        target: /server/env
+        target: /server/graphql-server/dist/env
       - type: bind
         source: ${SMILE_CONFIG_HOME}/nats
         target: /server/nats
     external_links:
       - nats-jetstream
       - neo4j
+    depends_on:
+      neo4j:
+        condition: service_healthy
     ports:
       - 4000:4000
     healthcheck:
@@ -121,10 +133,10 @@ services:
 
   smile-dashboard:
     container_name: smile-dashboard
-    image: cmometadb/smile-dashboard:1.0.0.RELEASE
-    restart: on-failure
+    image: cmometadb/smile-dashboard:[build version]
+    restart: unless-stopped
     environment:
-      - REACT_APP_GRAPHQL_CLIENT_URI=http://localhost:4000/graphql
+      - REACT_APP_GRAPHQL_CLIENT_URI=${REACT_APP_GRAPHQL_CLIENT_URI}
     links:
       - graphql-client
     ports:

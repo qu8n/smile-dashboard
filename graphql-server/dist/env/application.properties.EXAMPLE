@@ -1,5 +1,5 @@
 [main]
-app.port=4000
+app.port=
 
 [conn]
 nats_username=
@@ -11,12 +11,12 @@ nats_ca_pem=
 nats_filter_subject=
 
 [topics]
-pub_validate_igo_request_update=
 pub_validate_igo_sample_update=
-sub_consumers_cmo_request_update=
-sub_consumers_cmo_sample_update=
 
 [db]
 neo4j_username=
 neo4j_password=
 neo4j_graphql_uri=
+
+[smile]
+smile_sample_endpoint=

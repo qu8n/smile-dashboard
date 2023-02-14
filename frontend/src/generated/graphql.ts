@@ -1850,7 +1850,7 @@ export type Request = {
   projectsHasRequestConnection: RequestProjectsHasRequestConnection;
   qcAccessEmails: Scalars["String"];
   requestJson: Scalars["String"];
-  revisable: Scalars["Boolean"];
+  revisable?: Maybe<Scalars["Boolean"]>;
   smileRequestId: Scalars["String"];
   strand?: Maybe<Scalars["String"]>;
 };
@@ -1976,7 +1976,7 @@ export type RequestCreateInput = {
   projectsHasRequest?: InputMaybe<RequestProjectsHasRequestFieldInput>;
   qcAccessEmails: Scalars["String"];
   requestJson: Scalars["String"];
-  revisable: Scalars["Boolean"];
+  revisable?: InputMaybe<Scalars["Boolean"]>;
   smileRequestId: Scalars["String"];
   strand?: InputMaybe<Scalars["String"]>;
 };
@@ -7683,20 +7683,46 @@ export type RequestPartsFragment = {
 };
 
 export type SamplesQueryVariables = Exact<{
-  options?: InputMaybe<SampleOptions>;
   where?: InputMaybe<SampleWhere>;
-  samplesConnectionWhere2?: InputMaybe<SampleWhere>;
+  hasMetadataSampleMetadataWhere2?: InputMaybe<SampleMetadataWhere>;
+  hasMetadataSampleMetadataOptions2?: InputMaybe<SampleMetadataOptions>;
 }>;
 
 export type SamplesQuery = {
   __typename?: "Query";
-  samplesConnection: { __typename?: "SamplesConnection"; totalCount: number };
-  samples: Array<{ __typename?: "Sample"; smileSampleId: string }>;
+  samples: Array<{
+    __typename?: "Sample";
+    smileSampleId: string;
+    revisable: boolean;
+    sampleCategory: string;
+    sampleClass: string;
+    hasMetadataSampleMetadata: Array<{
+      __typename?: "SampleMetadata";
+      cmoSampleName?: string | null;
+      igoComplete?: boolean | null;
+      importDate: string;
+      investigatorSampleId?: string | null;
+      primaryId: string;
+      sampleClass: string;
+      cmoPatientId?: string | null;
+      cmoSampleIdFields: string;
+      sampleName?: string | null;
+      preservation?: string | null;
+      tumorOrNormal: string;
+      oncotreeCode?: string | null;
+      collectionYear: string;
+      sampleOrigin?: string | null;
+      tissueLocation?: string | null;
+      sex: string;
+    }>;
+  }>;
 };
 
 export type UpdateSamplesMutationVariables = Exact<{
   where?: InputMaybe<SampleWhere>;
   update?: InputMaybe<SampleUpdateInput>;
+  connect?: InputMaybe<SampleConnectInput>;
+  hasMetadataSampleMetadataWhere2?: InputMaybe<SampleMetadataWhere>;
 }>;
 
 export type UpdateSamplesMutation = {
@@ -7944,15 +7970,36 @@ export type RequestWithSamplesQueryResult = Apollo.QueryResult<
 >;
 export const SamplesDocument = gql`
   query Samples(
-    $options: SampleOptions
     $where: SampleWhere
-    $samplesConnectionWhere2: SampleWhere
+    $hasMetadataSampleMetadataWhere2: SampleMetadataWhere
+    $hasMetadataSampleMetadataOptions2: SampleMetadataOptions
   ) {
-    samplesConnection(where: $samplesConnectionWhere2) {
-      totalCount
-    }
-    samples(where: $where, options: $options) {
+    samples(where: $where) {
       smileSampleId
+      revisable
+      sampleCategory
+      sampleClass
+      hasMetadataSampleMetadata(
+        where: $hasMetadataSampleMetadataWhere2
+        options: $hasMetadataSampleMetadataOptions2
+      ) {
+        cmoSampleName
+        igoComplete
+        importDate
+        investigatorSampleId
+        primaryId
+        sampleClass
+        cmoPatientId
+        cmoSampleIdFields
+        sampleName
+        preservation
+        tumorOrNormal
+        oncotreeCode
+        collectionYear
+        sampleOrigin
+        tissueLocation
+        sex
+      }
     }
   }
 `;
@@ -7969,9 +8016,9 @@ export const SamplesDocument = gql`
  * @example
  * const { data, loading, error } = useSamplesQuery({
  *   variables: {
- *      options: // value for 'options'
  *      where: // value for 'where'
- *      samplesConnectionWhere2: // value for 'samplesConnectionWhere2'
+ *      hasMetadataSampleMetadataWhere2: // value for 'hasMetadataSampleMetadataWhere2'
+ *      hasMetadataSampleMetadataOptions2: // value for 'hasMetadataSampleMetadataOptions2'
  *   },
  * });
  */
@@ -8000,15 +8047,20 @@ export type SamplesQueryResult = Apollo.QueryResult<
   SamplesQueryVariables
 >;
 export const UpdateSamplesDocument = gql`
-  mutation UpdateSamples($where: SampleWhere, $update: SampleUpdateInput) {
-    updateSamples(where: $where, update: $update) {
+  mutation UpdateSamples(
+    $where: SampleWhere
+    $update: SampleUpdateInput
+    $connect: SampleConnectInput
+    $hasMetadataSampleMetadataWhere2: SampleMetadataWhere
+  ) {
+    updateSamples(where: $where, update: $update, connect: $connect) {
       samples {
         smileSampleId
         revisable
         datasource
         sampleCategory
         sampleClass
-        hasMetadataSampleMetadata {
+        hasMetadataSampleMetadata(where: $hasMetadataSampleMetadataWhere2) {
           cmoSampleName
           igoComplete
           importDate
@@ -8054,6 +8106,8 @@ export type UpdateSamplesMutationFn = Apollo.MutationFunction<
  *   variables: {
  *      where: // value for 'where'
  *      update: // value for 'update'
+ *      connect: // value for 'connect'
+ *      hasMetadataSampleMetadataWhere2: // value for 'hasMetadataSampleMetadataWhere2'
  *   },
  * });
  */
