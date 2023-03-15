@@ -1,5 +1,6 @@
-import { ColDef } from "ag-grid-community";
+import { ColDef, RowNode } from "ag-grid-community";
 import { Button } from "react-bootstrap";
+import "ag-grid-enterprise";
 
 export type ColumnDefinition = {
   dataKey?: string;
@@ -10,6 +11,20 @@ export type ColumnDefinition = {
   headerRender?: (arg: any) => any;
   cellRenderer?: (arg: any) => any;
   cellDataGetter?: (arg: any) => any;
+};
+
+export type CellChange = {
+  primaryId: string;
+  fieldName: string;
+  oldValue: string;
+  newValue: string;
+  rowNode: RowNode<any>;
+};
+
+export type ChangeForSubmit = {
+  [primaryId: string]: {
+    [fieldName: string]: string;
+  };
 };
 
 export function buildRequestTableColumns(navigate: any): ColDef[] {
@@ -130,81 +145,169 @@ export const SampleDetailsColumns: ColDef[] = [
   {
     field: "primaryId",
     headerName: "Primary ID",
-    sortable: true,
+    editable: (params) => !protectedFields.includes(params.colDef.field!),
   },
   {
     field: "cmoSampleName",
     headerName: "CMO Sample Name",
-    sortable: true,
+    editable: (params) => !protectedFields.includes(params.colDef.field!),
   },
   {
     field: "importDate",
     headerName: "Last Updated",
-    sortable: true,
+    editable: (params) => !protectedFields.includes(params.colDef.field!),
   },
   {
     field: "cmoPatientId",
     headerName: "CMO Patient ID",
-    sortable: true,
+    editable: (params) => !protectedFields.includes(params.colDef.field!),
   },
   {
     field: "investigatorSampleId",
     headerName: "Investigator Sample ID",
-    sortable: true,
+    editable: (params) => !protectedFields.includes(params.colDef.field!),
   },
   {
     field: "sampleType",
     headerName: "Sample Type",
-    sortable: true,
+    editable: (params) => !protectedFields.includes(params.colDef.field!),
+    cellEditor: "agRichSelectCellEditor",
+    cellEditorPopup: true,
+    cellEditorParams: {
+      values: [
+        "Adjacent Normal",
+        "Adjacent Tissue",
+        "Cell free",
+        "Local Recurrence",
+        "Metastasis",
+        "Normal",
+        "Primary",
+        "Recurrence",
+        "Tumor",
+        "Unknown Tumor",
+        "Other",
+      ],
+    },
   },
   {
     field: "species",
     headerName: "Species",
-    sortable: true,
+    editable: (params) => !protectedFields.includes(params.colDef.field!),
   },
   {
     field: "genePanel",
     headerName: "Gene Panel",
-    sortable: true,
+    editable: (params) => !protectedFields.includes(params.colDef.field!),
   },
   {
     field: "preservation",
     headerName: "Preservation",
-    sortable: true,
+    editable: (params) => !protectedFields.includes(params.colDef.field!),
   },
   {
     field: "tumorOrNormal",
     headerName: "Tumor Or Normal",
-    sortable: true,
+    editable: (params) => !protectedFields.includes(params.colDef.field!),
+    cellEditor: "agRichSelectCellEditor",
+    cellEditorPopup: true,
+    cellEditorParams: {
+      values: ["Tumor", "Normal"],
+    },
   },
   {
     field: "sampleClass",
     headerName: "Sample Class",
-    sortable: true,
+    editable: (params) => !protectedFields.includes(params.colDef.field!),
+    cellEditor: "agRichSelectCellEditor",
+    cellEditorPopup: true,
+    cellEditorParams: {
+      values: [
+        "Biopsy",
+        "Blood",
+        "CellLine",
+        "Exosome",
+        "Fingernails",
+        "Organoid",
+        "PDX",
+        "RapidAutopsy",
+        "Resection",
+        "Saliva",
+        "Xenograft",
+        "XenograftDerivedCellLine",
+        "cfDNA",
+        "other",
+      ],
+    },
   },
   {
     field: "oncotreeCode",
     headerName: "Oncotree Code",
-    sortable: true,
+    editable: (params) => !protectedFields.includes(params.colDef.field!),
   },
   {
     field: "collectionYear",
     headerName: "Collection Year",
-    sortable: true,
+    editable: (params) => !protectedFields.includes(params.colDef.field!),
   },
   {
     field: "sampleOrigin",
     headerName: "Sample Origin",
-    sortable: true,
+    editable: (params) => !protectedFields.includes(params.colDef.field!),
+    cellEditor: "agRichSelectCellEditor",
+    cellEditorPopup: true,
+    cellEditorParams: {
+      values: [
+        "Block",
+        "Bone Marrow Aspirate",
+        "Buccal Swab",
+        "Buffy Coat",
+        "Cell Pellet",
+        "Cells",
+        "Cerebrospinal Fluid",
+        "Core Biopsy",
+        "Curls",
+        "Cytospin",
+        "Fine Needle Aspirate",
+        "Fingernails",
+        "Organoid",
+        "Plasma",
+        "Punch",
+        "Rapid Autopsy Tissue",
+        "Saliva",
+        "Slides",
+        "Sorted Cells",
+        "Tissue",
+        "Urine",
+        "Viably Frozen Cells",
+        "Whole Blood",
+        "Other",
+      ],
+    },
   },
   {
     field: "tissueLocation",
     headerName: "Tissue Location",
-    sortable: true,
+    editable: (params) => !protectedFields.includes(params.colDef.field!),
   },
   {
     field: "sex",
     headerName: "Sex",
-    sortable: true,
+    editable: (params) => !protectedFields.includes(params.colDef.field!),
   },
+];
+
+export const defaultColDef: ColDef = {
+  sortable: true,
+  editable: true,
+};
+
+const protectedFields: string[] = [
+  "cmoSampleName",
+  "igoComplete",
+  "importDate",
+  "primaryId",
+  "cmoSampleIdFields",
+  "libraries",
+  "genePanel",
+  "species",
 ];

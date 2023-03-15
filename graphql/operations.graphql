@@ -90,27 +90,53 @@ fragment RequestParts on Request {
 }
 
 query Samples(
-  $options: SampleOptions
   $where: SampleWhere
-  $samplesConnectionWhere2: SampleWhere
+  $hasMetadataSampleMetadataWhere2: SampleMetadataWhere
+  $hasMetadataSampleMetadataOptions2: SampleMetadataOptions
 ) {
-  samplesConnection(where: $samplesConnectionWhere2) {
-    totalCount
-  }
-  samples(where: $where, options: $options) {
+  samples(where: $where) {
     smileSampleId
+    revisable
+    sampleCategory
+    sampleClass
+    hasMetadataSampleMetadata(
+      where: $hasMetadataSampleMetadataWhere2
+      options: $hasMetadataSampleMetadataOptions2
+    ) {
+      cmoSampleName
+      igoComplete
+      importDate
+      investigatorSampleId
+      primaryId
+      sampleClass
+      cmoPatientId
+      cmoSampleIdFields
+      sampleName
+      preservation
+      tumorOrNormal
+      oncotreeCode
+      collectionYear
+      sampleOrigin
+      tissueLocation
+      sex
+    }
   }
 }
 
-mutation UpdateSamples($where: SampleWhere, $update: SampleUpdateInput) {
-  updateSamples(where: $where, update: $update) {
+mutation UpdateSamples(
+  $where: SampleWhere
+  $update: SampleUpdateInput
+  $connect: SampleConnectInput
+  $hasMetadataSampleMetadataWhere2: SampleMetadataWhere
+) {
+  updateSamples(where: $where, update: $update, connect: $connect) {
     samples {
       smileSampleId
       revisable
       datasource
       sampleCategory
       sampleClass
-      hasMetadataSampleMetadata {
+      hasMetadataSampleMetadata(where: $hasMetadataSampleMetadataWhere2) {
         cmoSampleName
         igoComplete
         importDate
