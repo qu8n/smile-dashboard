@@ -135,6 +135,24 @@ async function main() {
                 sampleData[key] = smdataupdates[key];
               });
 
+              // remove 'status' from sample metadata to ensure validator and label
+              // generator use latest status data added during validation process
+              delete sampleData["status"];
+
+              // add isCmoSample to sample's 'additionalProperties' if not already present
+              // this is to ensure that cmo samples get sent to the label generator after validation
+              // since some of the older SMILE samples do not have this additionalProperty set
+              if (sampleData["additionalProperties"]["isCmoSample"] == null) {
+                const requestId =
+                  sampleData["additionalProperties"]["igoRequestId"];
+                let req = ogm.model("Request");
+                const rd = await req.find({
+                  where: { igoRequestId: requestId },
+                });
+                sampleData["additionalProperties"]["isCmoSample"] =
+                  rd[0]["isCmoRequest"].toString();
+              }
+
               // publish sample update to nats server
               publishNatsMessage(
                 pub_validate_sample_update,
