@@ -6,10 +6,10 @@ import Spinner from "react-spinkit";
 export const DownloadModal: FunctionComponent<{
   loader: () => Promise<string>;
   onComplete: () => void;
-  exportFilename: string;
-}> = ({ loader, onComplete, exportFilename }) => {
+  exportFileName: string;
+}> = ({ loader, onComplete, exportFileName }) => {
   loader().then((str) => {
-    jsdownload(str, exportFilename);
+    jsdownload(str, exportFileName);
     onComplete();
   });
 

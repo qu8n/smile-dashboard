@@ -1,19 +1,13 @@
 import { ColDef, RowNode } from "ag-grid-community";
 import { Button } from "react-bootstrap";
 import "ag-grid-enterprise";
+import { SampleMetadata } from "../../generated/graphql";
 
-export type ColumnDefinition = {
-  dataKey?: string;
-  label?: string;
-  sortable?: Boolean;
-  filterable?: Boolean;
-  width?: number;
-  headerRender?: (arg: any) => any;
-  cellRenderer?: (arg: any) => any;
-  cellDataGetter?: (arg: any) => any;
-};
+export interface SampleMetadataExtended extends SampleMetadata {
+  revisable: boolean;
+}
 
-export type CellChange = {
+export type SampleChange = {
   primaryId: string;
   fieldName: string;
   oldValue: string;
@@ -67,6 +61,12 @@ export const RequestsListColumns: ColDef[] = [
     headerName: "# Samples",
     valueGetter: function ({ data }) {
       return data["hasSampleSamplesConnection"]?.totalCount;
+    },
+    cellClass: (params) => {
+      if (params.data.revisable === false) {
+        return "pendingCell";
+      }
+      return undefined;
     },
   },
   {
@@ -141,11 +141,33 @@ export const RequestsListColumns: ColDef[] = [
   },
 ];
 
-export const SampleDetailsColumns: ColDef[] = [
+export const SampleDetailsColumns: ColDef<SampleMetadataExtended>[] = [
   {
     field: "primaryId",
     headerName: "Primary ID",
     editable: (params) => !protectedFields.includes(params.colDef.field!),
+  },
+  {
+    field: "revisable",
+    headerName: "Status",
+    cellRenderer: function (params: any) {
+      return params.data.revisable ? (
+        <span>
+          <strong>&#10003;</strong> Valid
+        </span>
+      ) : (
+        <div>
+          <div className="lds-ring">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
+          &nbsp;Validating
+        </div>
+      );
+    },
+    editable: false,
   },
   {
     field: "cmoSampleName",
@@ -169,6 +191,9 @@ export const SampleDetailsColumns: ColDef[] = [
   },
   {
     field: "sampleType",
+    // valueGetter: (params) => {
+    //   return params.data.sampleType;
+    // },
     headerName: "Sample Type",
     editable: (params) => !protectedFields.includes(params.colDef.field!),
     cellEditor: "agRichSelectCellEditor",
@@ -295,6 +320,52 @@ export const SampleDetailsColumns: ColDef[] = [
     editable: (params) => !protectedFields.includes(params.colDef.field!),
   },
 ];
+
+SampleDetailsColumns.forEach((def) => {
+  def.cellClassRules = {
+    unsubmittedChange: (params: any) => {
+      const changes = params.context.getChanges();
+      const changedValue = changes?.find((change: any) => {
+        return (
+          change.fieldName === params.colDef.field &&
+          change.primaryId === params.data.primaryId
+        );
+      });
+      return changedValue !== undefined;
+    },
+  };
+
+  if (def.valueGetter === undefined) {
+    def.valueGetter = (params) => {
+      const changes = params.context?.getChanges();
+
+      const changedValue = changes?.find((change: any) => {
+        return (
+          change.fieldName === params.colDef.field &&
+          change.primaryId === params.data?.primaryId
+        );
+      });
+      if (changedValue) {
+        return changedValue.newValue;
+      } else {
+        if (params?.colDef?.field! in params.data!) {
+          return params.data?.[
+            params.colDef?.field! as keyof SampleMetadataExtended
+          ];
+        } else {
+          return "N/A";
+        }
+      }
+    };
+  }
+
+  def.editable = (params) => {
+    return (
+      !protectedFields.includes(params.colDef.field!) &&
+      params.data?.revisable === true
+    );
+  };
+});
 
 export const defaultColDef: ColDef = {
   sortable: true,

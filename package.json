@@ -11,7 +11,9 @@
     "graphql-server",
     "packages/*"
   ],
-  "pre-commit": ["prettierFixCurrentChanges"],
+  "pre-commit": [
+    "prettierFixCurrentChanges"
+  ],
   "scripts": {
     "dev:frontend": "yarn --cwd frontend start",
     "start:backend": "yarn --cwd graphql-server start",
@@ -22,5 +24,10 @@
     "prettierFixLocal": "CHANGED_FILES=$(git diff master --name-only --diff-filter=d) && ([ ! -z \"$CHANGED_FILES\" ] && yarn run prettier ./frontend/src ./graphql-server --write $(echo $CHANGED_FILES) || echo \"Nothing to prettify\")",
     "prettierAll": "yarn run prettier ./frontend/src ./graphql-server --write $(git ls-files | grep '\\(.js\\|.ts\\|.scss\\|.css\\|.ht\\)')",
     "codegen": "graphql-codegen --config codegen.yml"
+  },
+  "dependencies": {
+    "apollo-cache-inmemory": "^1.6.6",
+    "apollo-client": "^2.6.10",
+    "apollo-link-http": "^1.5.17"
   }
 }

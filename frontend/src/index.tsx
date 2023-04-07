@@ -9,11 +9,18 @@ import SmileNavBar from "./shared/components/SmileNavBar";
 import { offsetLimitPagination } from "@apollo/client/utilities";
 
 const cache = new InMemoryCache({
+  /* @ts-ignore */
   typePolicies: {
     Query: {
       fields: {
         requests: offsetLimitPagination(),
       },
+    },
+    Sample: {
+      keyFields: ["smileSampleId"],
+    },
+    SampleMetadata: {
+      keyFields: ["primaryId"],
     },
   },
 });

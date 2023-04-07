@@ -6,14 +6,17 @@ import "ag-grid-enterprise";
 import styles from "../pages/requests/requests.module.scss";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
-import { CellChange, ChangeForSubmit } from "../pages/requests/helpers";
-import { useUpdateSamplesMutation } from "../generated/graphql";
+import { SampleChange, ChangeForSubmit } from "../pages/requests/helpers";
+import { Sample, useUpdateSamplesMutation } from "../generated/graphql";
+import _ from "lodash";
 
 export const UpdateModal: FunctionComponent<{
-  changes: CellChange[];
+  changes: SampleChange[];
   onSuccess: () => void;
   onHide: () => void;
-}> = ({ changes, onHide, onSuccess }) => {
+  samples: Sample[];
+  onOpen?: () => void;
+}> = ({ changes, onHide, onSuccess, onOpen, samples }) => {
   const [rowData, setRowData] = useState(changes);
   const [columnDefs] = useState([
     { field: "primaryId", rowGroup: true, hide: true },
@@ -21,6 +24,10 @@ export const UpdateModal: FunctionComponent<{
     { field: "oldValue" },
     { field: "newValue" },
   ]);
+
+  useEffect(() => {
+    onOpen && onOpen();
+  }, []);
 
   useEffect(() => {
     setRowData(changes);
@@ -36,18 +43,6 @@ export const UpdateModal: FunctionComponent<{
   const [updateSamplesMutation, { data, loading, error }] =
     useUpdateSamplesMutation();
 
-  console.log("changes", changes);
-
-  // changesForSubmit = {
-  //   "primaryId1": {
-  //     "field1": "newValue1",
-  //     "field2": "newValue2"
-  //   },
-  //   "primaryId2": {
-  //     "field1": "newValue1",
-  //     "field2": "newValue2"
-  //   }
-  // }
   const handleSubmitUpdates = () => {
     const changesForSubmit: ChangeForSubmit = {};
     for (const c of changes) {
@@ -57,6 +52,19 @@ export const UpdateModal: FunctionComponent<{
         changesForSubmit[c.primaryId] = { [c.fieldName]: c.newValue };
       }
     }
+
+    const updatedSamples = _.cloneDeep(samples);
+    updatedSamples?.forEach((s) => {
+      const primaryId = s.hasMetadataSampleMetadata[0].primaryId;
+      if (primaryId in changesForSubmit) {
+        s.revisable = false;
+
+        _.forEach(changesForSubmit[primaryId], (v, k) => {
+          /* @ts-ignore */
+          s.hasMetadataSampleMetadata[0][k] = v;
+        });
+      }
+    });
 
     for (const [key, value] of Object.entries(changesForSubmit)) {
       updateSamplesMutation({
@@ -79,14 +87,17 @@ export const UpdateModal: FunctionComponent<{
             ],
           },
         },
+        optimisticResponse: {
+          updateSamples: {
+            samples: updatedSamples,
+          },
+        },
       });
     }
 
     onSuccess();
     onHide();
   };
-
-  console.log(rowData);
 
   return (
     <Modal

@@ -1,19 +1,19 @@
-import { ColumnDefinition } from "../pages/requests/helpers";
 import { ColDef } from "ag-grid-community";
 
-export function CSVFormulate(requests: any[], columnDefinitions: ColDef[]) {
+export function CSVFormulate(rows: any[], columnDefinitions: ColDef[]) {
   const csvString = [
     columnDefinitions.map((item) => item.field).join("\t"),
-    ...requests
+    ...rows
       .map((req) =>
-        columnDefinitions.map((col) => {
-          if (col.valueGetter) {
+        columnDefinitions.map((colDef) => {
+          if (colDef.valueGetter) {
             /* @ts-ignore */
-            return col.valueGetter({
+            return colDef.valueGetter({
+              colDef,
               data: req,
             });
-          } else if (col.field) {
-            return req[col.field];
+          } else if (colDef.field) {
+            return req[colDef.field];
           } else {
             return "-";
           }

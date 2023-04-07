@@ -29,30 +29,12 @@ query RequestWithSamples(
       sampleCategory
       sampleClass
       datasource
+      revisable
       hasMetadataSampleMetadata(
         where: $hasMetadataSampleMetadataWhere2
         options: $hasMetadataSampleMetadataOptions2
       ) {
-        cmoSampleName
-        igoComplete
-        importDate
-        investigatorSampleId
-        primaryId
-        sampleClass
-        cmoPatientId
-        cmoSampleIdFields
-        sampleName
-        preservation
-        tumorOrNormal
-        oncotreeCode
-        collectionYear
-        sampleOrigin
-        tissueLocation
-        sex
-        libraries
-        sampleType
-        species
-        genePanel
+        ...SampleMetadataFields
       }
       patientsHasSample {
         smilePatientId
@@ -89,6 +71,29 @@ fragment RequestParts on Request {
   smileRequestId
 }
 
+fragment SampleMetadataFields on SampleMetadata {
+  cmoSampleName
+  igoComplete
+  importDate
+  investigatorSampleId
+  primaryId
+  sampleClass
+  cmoPatientId
+  cmoSampleIdFields
+  sampleName
+  preservation
+  tumorOrNormal
+  oncotreeCode
+  collectionYear
+  sampleOrigin
+  tissueLocation
+  sex
+  libraries
+  sampleType
+  species
+  genePanel
+}
+
 query Samples(
   $where: SampleWhere
   $hasMetadataSampleMetadataWhere2: SampleMetadataWhere
@@ -99,26 +104,12 @@ query Samples(
     revisable
     sampleCategory
     sampleClass
+    datasource
     hasMetadataSampleMetadata(
       where: $hasMetadataSampleMetadataWhere2
       options: $hasMetadataSampleMetadataOptions2
     ) {
-      cmoSampleName
-      igoComplete
-      importDate
-      investigatorSampleId
-      primaryId
-      sampleClass
-      cmoPatientId
-      cmoSampleIdFields
-      sampleName
-      preservation
-      tumorOrNormal
-      oncotreeCode
-      collectionYear
-      sampleOrigin
-      tissueLocation
-      sex
+      ...SampleMetadataFields
     }
   }
 }
@@ -127,7 +118,6 @@ mutation UpdateSamples(
   $where: SampleWhere
   $update: SampleUpdateInput
   $connect: SampleConnectInput
-  $hasMetadataSampleMetadataWhere2: SampleMetadataWhere
 ) {
   updateSamples(where: $where, update: $update, connect: $connect) {
     samples {
@@ -136,27 +126,8 @@ mutation UpdateSamples(
       datasource
       sampleCategory
       sampleClass
-      hasMetadataSampleMetadata(where: $hasMetadataSampleMetadataWhere2) {
-        cmoSampleName
-        igoComplete
-        importDate
-        investigatorSampleId
-        primaryId
-        sampleClass
-        cmoPatientId
-        cmoSampleIdFields
-        sampleName
-        preservation
-        tumorOrNormal
-        oncotreeCode
-        collectionYear
-        sampleOrigin
-        tissueLocation
-        sex
-        libraries
-        sampleType
-        species
-        genePanel
+      hasMetadataSampleMetadata {
+        ...SampleMetadataFields
       }
     }
   }

@@ -1,29 +1,38 @@
 import {
-  useRequestWithSamplesQuery,
   SortDirection,
-  RequestWithSamplesQuery,
+  useSamplesQuery,
+  Sample,
+  SampleMetadata,
 } from "../../generated/graphql";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { Button, Col, Form, Row } from "react-bootstrap";
+import _ from "lodash";
 import classNames from "classnames";
 import { FunctionComponent, useRef } from "react";
 import { DownloadModal } from "../../components/DownloadModal";
 import { UpdateModal } from "../../components/UpdateModal";
 import { CSVFormulate } from "../../lib/CSVExport";
-import { SampleDetailsColumns, CellChange, defaultColDef } from "./helpers";
-import { Params } from "react-router-dom";
+import {
+  SampleDetailsColumns,
+  defaultColDef,
+  SampleChange,
+  SampleMetadataExtended,
+} from "./helpers";
 import Spinner from "react-spinkit";
 import { AgGridReact } from "ag-grid-react";
 import { useState } from "react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import "ag-grid-enterprise";
-import { CellClassParams, CellValueChangedEvent } from "ag-grid-community";
+import { CellValueChangedEvent } from "ag-grid-community";
+
+const POLLING_INTERVAL = 2000;
 
 interface IRequestSummaryProps {
-  params: Readonly<Params<string>>;
   height: number;
   setUnsavedChanges: (val: boolean) => void;
+  sampleIds: string[];
+  exportFileName?: string;
 }
 
 function sampleFilterWhereVariables(value: string) {
@@ -50,41 +59,41 @@ function sampleFilterWhereVariables(value: string) {
   ];
 }
 
-function getSampleMetadata(data: RequestWithSamplesQuery) {
-  return data!.requests[0].hasSampleSamples.map((s: any) => {
-    return s.hasMetadataSampleMetadata[0];
+function getSampleMetadata(samples: Sample[]) {
+  return samples.map((s: any) => {
+    return {
+      ...s.hasMetadataSampleMetadata[0],
+      revisable: s.revisable,
+    };
   });
 }
 
 export const RequestSamples: FunctionComponent<IRequestSummaryProps> = ({
-  params,
+  sampleIds,
   height,
   setUnsavedChanges,
+  exportFileName,
 }) => {
-  const { loading, error, data, refetch } = useRequestWithSamplesQuery({
-    variables: {
-      where: {
-        igoRequestId: params.requestId,
+  const { loading, error, data, startPolling, stopPolling, refetch } =
+    useSamplesQuery({
+      variables: {
+        where: {
+          smileSampleId_IN: sampleIds,
+        },
+        hasMetadataSampleMetadataOptions2: {
+          sort: [{ importDate: SortDirection.Desc }],
+          limit: 1,
+        },
       },
-      options: {
-        offset: 0,
-        limit: undefined,
-      },
-      hasMetadataSampleMetadataOptions2: {
-        sort: [{ importDate: SortDirection.Desc }],
-        limit: 1,
-      },
-    },
-    fetchPolicy: "no-cache",
-  });
+      pollInterval: POLLING_INTERVAL,
+    });
 
   const [val, setVal] = useState("");
   const [showDownloadModal, setShowDownloadModal] = useState(false);
   const [typingTimeout, setTypingTimeout] = useState<any>(null);
   const [prom, setProm] = useState<any>(Promise.resolve());
-  const [showEditButtons, setShowEditButtons] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
-  const [changes, setChanges] = useState<CellChange[]>([]);
+  const [changes, setChanges] = useState<SampleChange[]>([]);
   const [editMode, setEditMode] = useState(true);
   const gridRef = useRef<any>(null);
 
@@ -97,29 +106,18 @@ export const RequestSamples: FunctionComponent<IRequestSummaryProps> = ({
 
   if (error) return <Row>Error loading request details / request samples</Row>;
 
-  const remoteCount = data!.requests[0].hasSampleSamples.length;
+  const samples = data!.samples as Sample[];
 
-  const onCellValueChanged = (params: CellValueChangedEvent) => {
+  const remoteCount = samples.length;
+
+  const onCellValueChanged = (
+    params: CellValueChangedEvent<SampleMetadataExtended>
+  ) => {
     if (editMode) {
-      setUnsavedChanges(true);
-      setShowEditButtons(true);
-
       const { oldValue, newValue } = params;
       const rowNode = params.node;
       const fieldName = params.colDef.field!;
       const primaryId = params.data.primaryId;
-
-      if (oldValue !== newValue) {
-        params.colDef.cellStyle = (p: CellClassParams<any>) =>
-          p.colDef.field === fieldName && p.rowIndex === rowNode.rowIndex
-            ? { backgroundColor: "lemonchiffon" }
-            : null;
-        params.api.refreshCells({
-          columns: [fieldName],
-          rowNodes: [rowNode],
-          force: true,
-        });
-      }
 
       setChanges((changes) => {
         const change = changes.find(
@@ -130,34 +128,21 @@ export const RequestSamples: FunctionComponent<IRequestSummaryProps> = ({
         } else {
           changes.push({ primaryId, fieldName, oldValue, newValue, rowNode });
         }
-        return changes;
+        // we always have produce a new array to trigger re-render
+        return [...changes];
       });
+
+      setUnsavedChanges(true);
     }
   };
 
   const handleDiscardChanges = () => {
     setEditMode(false);
-    let columns: any[] = [];
-    let rowNodes: any[] = [];
 
-    changes.forEach((c) => {
-      c.rowNode.setDataValue(c.fieldName, c.oldValue);
-      const colDef = gridRef.current.api.getColumnDef(c.fieldName);
-      colDef.cellStyle = (p: CellClassParams<any>) =>
-        p.rowIndex.toString() === c.rowNode.rowIndex!.toString()
-          ? { backgroundColor: "transparent" }
-          : null;
-      columns.push(c.fieldName);
-      rowNodes.push(c.rowNode);
-    });
+    setTimeout(() => {
+      startPolling(POLLING_INTERVAL);
+    }, 10000);
 
-    gridRef.current.api.refreshCells({
-      columns: [...columns],
-      rowNodes: [...rowNodes],
-      force: true,
-    });
-
-    setShowEditButtons(false);
     setUnsavedChanges(false);
     setChanges([]);
     setTimeout(() => {
@@ -171,20 +156,22 @@ export const RequestSamples: FunctionComponent<IRequestSummaryProps> = ({
         <DownloadModal
           loader={() => {
             return Promise.resolve(
-              CSVFormulate(getSampleMetadata(data!), SampleDetailsColumns)
+              CSVFormulate(getSampleMetadata(samples), SampleDetailsColumns)
             );
           }}
           onComplete={() => {
             setShowDownloadModal(false);
           }}
-          exportFilename={"request_" + data?.requests[0].igoRequestId + ".tsv"}
+          exportFileName={exportFileName || "samples.tsv"}
         />
       )}
       {showUpdateModal && (
         <UpdateModal
           changes={changes}
+          samples={samples}
           onSuccess={handleDiscardChanges}
           onHide={() => setShowUpdateModal(false)}
+          onOpen={() => stopPolling()}
         />
       )}
       <Row
@@ -215,16 +202,10 @@ export const RequestSamples: FunctionComponent<IRequestSummaryProps> = ({
               prom.then(() => {
                 const to = setTimeout(() => {
                   const rf = refetch({
-                    hasSampleSamplesWhere2: {
+                    where: {
+                      smileSampleId_IN: sampleIds,
                       hasMetadataSampleMetadata_SOME: {
                         OR: sampleFilterWhereVariables(value),
-                      },
-                    },
-                    hasSampleSamplesConnectionWhere2: {
-                      node: {
-                        hasMetadataSampleMetadata_SOME: {
-                          OR: sampleFilterWhereVariables(value),
-                        },
                       },
                     },
                   });
@@ -238,7 +219,7 @@ export const RequestSamples: FunctionComponent<IRequestSummaryProps> = ({
 
         <Col className={"text-start"}>{remoteCount} matching samples</Col>
 
-        {showEditButtons && (
+        {changes.length > 0 && (
           <>
             <Col className={"text-end"}>
               <Button
@@ -280,15 +261,29 @@ export const RequestSamples: FunctionComponent<IRequestSummaryProps> = ({
             className="ag-theme-alpine"
             style={{ height: height, width: width }}
           >
-            <AgGridReact
+            <AgGridReact<SampleMetadataExtended>
+              immutableData={true}
+              getRowId={(d) => {
+                return d.data.primaryId;
+              }}
+              rowClassRules={{
+                unlocked: function (params) {
+                  return params.data?.revisable === true;
+                },
+
+                locked: function (params) {
+                  return params.data?.revisable === false;
+                },
+              }}
               columnDefs={SampleDetailsColumns}
-              rowData={getSampleMetadata(data!)}
-              onCellValueChanged={onCellValueChanged}
+              rowData={getSampleMetadata(samples)}
+              //onCellValueChanged={onCellValueChanged}
+              onCellEditRequest={onCellValueChanged}
+              readOnlyEdit={true}
               defaultColDef={defaultColDef}
               ref={gridRef}
-              gridOptions={{
-                suppressColumnVirtualisation: true,
-                rowBuffer: 9999,
+              context={{
+                getChanges: () => changes,
               }}
               enableRangeSelection={true}
             />

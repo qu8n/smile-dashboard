@@ -1,8 +1,19 @@
-import { useRequestsListLazyQuery } from "../../generated/graphql";
+import {
+  SortDirection,
+  useRequestsListLazyQuery,
+  useRequestWithSamplesQuery,
+} from "../../generated/graphql";
 import { makeAutoObservable } from "mobx";
+import _ from "lodash";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { Button, Col, Container, Form, Row, Modal } from "react-bootstrap";
-import React, { FunctionComponent, useEffect, useMemo } from "react";
+import React, {
+  Dispatch,
+  FunctionComponent,
+  SetStateAction,
+  useEffect,
+  useMemo,
+} from "react";
 import { NavLink, useNavigate, useParams } from "react-router-dom";
 import classNames from "classnames";
 import { buildRequestTableColumns, RequestsListColumns } from "./helpers";
@@ -17,6 +28,7 @@ import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import "ag-grid-enterprise";
 import { IServerSideGetRowsParams } from "ag-grid-community";
+import { RequestSamplesEditor } from "./RequestSamplesEditor";
 
 function requestFilterWhereVariables(value: string) {
   return [
@@ -151,7 +163,7 @@ const Requests: FunctionComponent = () => {
             });
           }}
           onComplete={() => setShowDownloadModal(false)}
-          exportFilename={"requests.tsv"}
+          exportFileName={"requests.tsv"}
         />
       )}
 
@@ -221,10 +233,10 @@ const Requests: FunctionComponent = () => {
               </Modal.Header>
               <Modal.Body>
                 <div style={{ height: height * 4 }}>
-                  <RequestSamples
-                    height={height * 4 - 50}
-                    params={params}
+                  <RequestSamplesEditor
+                    igoRequestId={params.requestId!}
                     setUnsavedChanges={setUnsavedChanges}
+                    height={height}
                   />
                 </div>
               </Modal.Body>
@@ -288,7 +300,7 @@ const Requests: FunctionComponent = () => {
               serverSideDatasource={datasource}
               serverSideInfiniteScroll={true}
               cacheBlockSize={20}
-              debug={true}
+              debug={false}
             />
           </div>
         )}
