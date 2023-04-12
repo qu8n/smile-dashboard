@@ -6856,26 +6856,33 @@ export type RequestWithSamplesQuery = {
       revisable: boolean;
       hasMetadataSampleMetadata: Array<{
         __typename?: "SampleMetadata";
-        cmoSampleName?: string | null;
-        igoComplete?: boolean | null;
-        importDate: string;
-        investigatorSampleId?: string | null;
-        primaryId: string;
-        sampleClass: string;
+        additionalProperties: string;
+        baitSet?: string | null;
+        cfDNA2dBarcode?: string | null;
+        cmoInfoIgoId?: string | null;
         cmoPatientId?: string | null;
         cmoSampleIdFields: string;
-        sampleName?: string | null;
-        preservation?: string | null;
-        tumorOrNormal: string;
-        oncotreeCode?: string | null;
+        cmoSampleName?: string | null;
         collectionYear: string;
-        sampleOrigin?: string | null;
-        tissueLocation?: string | null;
-        sex: string;
-        libraries: string;
-        sampleType: string;
-        species: string;
         genePanel: string;
+        igoComplete?: boolean | null;
+        igoRequestId?: string | null;
+        importDate: string;
+        investigatorSampleId?: string | null;
+        libraries: string;
+        oncotreeCode?: string | null;
+        preservation?: string | null;
+        primaryId: string;
+        qcReports: string;
+        sampleClass: string;
+        sampleName?: string | null;
+        sampleOrigin?: string | null;
+        sampleType: string;
+        sex: string;
+        species: string;
+        tissueLocation?: string | null;
+        tubeId?: string | null;
+        tumorOrNormal: string;
       }>;
       patientsHasSample: Array<{
         __typename?: "Patient";
@@ -6892,6 +6899,101 @@ export type RequestWithSamplesQuery = {
       totalCount: number;
     };
   }>;
+};
+
+export type FindSamplesByInputValueQueryVariables = Exact<{
+  where?: InputMaybe<SampleWhere>;
+  options?: InputMaybe<SampleMetadataOptions>;
+}>;
+
+export type FindSamplesByInputValueQuery = {
+  __typename?: "Query";
+  samplesConnection: {
+    __typename?: "SamplesConnection";
+    edges: Array<{
+      __typename?: "SampleEdge";
+      node: {
+        __typename?: "Sample";
+        datasource: string;
+        revisable: boolean;
+        sampleCategory: string;
+        sampleClass: string;
+        smileSampleId: string;
+        hasMetadataSampleMetadata: Array<{
+          __typename?: "SampleMetadata";
+          additionalProperties: string;
+          baitSet?: string | null;
+          cfDNA2dBarcode?: string | null;
+          cmoInfoIgoId?: string | null;
+          cmoPatientId?: string | null;
+          cmoSampleIdFields: string;
+          cmoSampleName?: string | null;
+          collectionYear: string;
+          genePanel: string;
+          igoComplete?: boolean | null;
+          igoRequestId?: string | null;
+          importDate: string;
+          investigatorSampleId?: string | null;
+          libraries: string;
+          oncotreeCode?: string | null;
+          preservation?: string | null;
+          primaryId: string;
+          qcReports: string;
+          sampleClass: string;
+          sampleName?: string | null;
+          sampleOrigin?: string | null;
+          sampleType: string;
+          sex: string;
+          species: string;
+          tissueLocation?: string | null;
+          tubeId?: string | null;
+          tumorOrNormal: string;
+        }>;
+        requestsHasSampleConnection: {
+          __typename?: "SampleRequestsHasSampleConnection";
+          edges: Array<{
+            __typename?: "SampleRequestsHasSampleRelationship";
+            node: {
+              __typename?: "Request";
+              igoRequestId: string;
+              igoProjectId: string;
+              genePanel: string;
+              dataAnalystName: string;
+              dataAnalystEmail: string;
+              dataAccessEmails: string;
+              bicAnalysis: boolean;
+              investigatorEmail: string;
+              investigatorName: string;
+              isCmoRequest: boolean;
+              labHeadEmail: string;
+              labHeadName: string;
+              libraryType?: string | null;
+              otherContactEmails: string;
+              piEmail: string;
+              projectManagerName: string;
+              qcAccessEmails: string;
+              smileRequestId: string;
+            };
+          }>;
+        };
+        patientsHasSampleConnection: {
+          __typename?: "SamplePatientsHasSampleConnection";
+          edges: Array<{
+            __typename?: "SamplePatientsHasSampleRelationship";
+            node: {
+              __typename?: "Patient";
+              smilePatientId: string;
+              patientAliasesIsAlias: Array<{
+                __typename?: "PatientAlias";
+                namespace: string;
+                value?: string | null;
+              }>;
+            };
+          }>;
+        };
+      };
+    }>;
+  };
 };
 
 export type RequestPartsFragment = {
@@ -6916,28 +7018,44 @@ export type RequestPartsFragment = {
   smileRequestId: string;
 };
 
-export type SampleMetadataFieldsFragment = {
-  __typename?: "SampleMetadata";
-  cmoSampleName?: string | null;
-  igoComplete?: boolean | null;
-  importDate: string;
-  investigatorSampleId?: string | null;
-  primaryId: string;
+export type SamplePartsFragment = {
+  __typename?: "Sample";
+  datasource: string;
+  revisable: boolean;
+  sampleCategory: string;
   sampleClass: string;
+  smileSampleId: string;
+};
+
+export type SampleMetadataPartsFragment = {
+  __typename?: "SampleMetadata";
+  additionalProperties: string;
+  baitSet?: string | null;
+  cfDNA2dBarcode?: string | null;
+  cmoInfoIgoId?: string | null;
   cmoPatientId?: string | null;
   cmoSampleIdFields: string;
-  sampleName?: string | null;
-  preservation?: string | null;
-  tumorOrNormal: string;
-  oncotreeCode?: string | null;
+  cmoSampleName?: string | null;
   collectionYear: string;
-  sampleOrigin?: string | null;
-  tissueLocation?: string | null;
-  sex: string;
-  libraries: string;
-  sampleType: string;
-  species: string;
   genePanel: string;
+  igoComplete?: boolean | null;
+  igoRequestId?: string | null;
+  importDate: string;
+  investigatorSampleId?: string | null;
+  libraries: string;
+  oncotreeCode?: string | null;
+  preservation?: string | null;
+  primaryId: string;
+  qcReports: string;
+  sampleClass: string;
+  sampleName?: string | null;
+  sampleOrigin?: string | null;
+  sampleType: string;
+  sex: string;
+  species: string;
+  tissueLocation?: string | null;
+  tubeId?: string | null;
+  tumorOrNormal: string;
 };
 
 export type SamplesQueryVariables = Exact<{
@@ -6957,26 +7075,33 @@ export type SamplesQuery = {
     datasource: string;
     hasMetadataSampleMetadata: Array<{
       __typename?: "SampleMetadata";
-      cmoSampleName?: string | null;
-      igoComplete?: boolean | null;
-      importDate: string;
-      investigatorSampleId?: string | null;
-      primaryId: string;
-      sampleClass: string;
+      additionalProperties: string;
+      baitSet?: string | null;
+      cfDNA2dBarcode?: string | null;
+      cmoInfoIgoId?: string | null;
       cmoPatientId?: string | null;
       cmoSampleIdFields: string;
-      sampleName?: string | null;
-      preservation?: string | null;
-      tumorOrNormal: string;
-      oncotreeCode?: string | null;
+      cmoSampleName?: string | null;
       collectionYear: string;
-      sampleOrigin?: string | null;
-      tissueLocation?: string | null;
-      sex: string;
-      libraries: string;
-      sampleType: string;
-      species: string;
       genePanel: string;
+      igoComplete?: boolean | null;
+      igoRequestId?: string | null;
+      importDate: string;
+      investigatorSampleId?: string | null;
+      libraries: string;
+      oncotreeCode?: string | null;
+      preservation?: string | null;
+      primaryId: string;
+      qcReports: string;
+      sampleClass: string;
+      sampleName?: string | null;
+      sampleOrigin?: string | null;
+      sampleType: string;
+      sex: string;
+      species: string;
+      tissueLocation?: string | null;
+      tubeId?: string | null;
+      tumorOrNormal: string;
     }>;
   }>;
 };
@@ -7000,26 +7125,33 @@ export type UpdateSamplesMutation = {
       sampleClass: string;
       hasMetadataSampleMetadata: Array<{
         __typename?: "SampleMetadata";
-        cmoSampleName?: string | null;
-        igoComplete?: boolean | null;
-        importDate: string;
-        investigatorSampleId?: string | null;
-        primaryId: string;
-        sampleClass: string;
+        additionalProperties: string;
+        baitSet?: string | null;
+        cfDNA2dBarcode?: string | null;
+        cmoInfoIgoId?: string | null;
         cmoPatientId?: string | null;
         cmoSampleIdFields: string;
-        sampleName?: string | null;
-        preservation?: string | null;
-        tumorOrNormal: string;
-        oncotreeCode?: string | null;
+        cmoSampleName?: string | null;
         collectionYear: string;
-        sampleOrigin?: string | null;
-        tissueLocation?: string | null;
-        sex: string;
-        libraries: string;
-        sampleType: string;
-        species: string;
         genePanel: string;
+        igoComplete?: boolean | null;
+        igoRequestId?: string | null;
+        importDate: string;
+        investigatorSampleId?: string | null;
+        libraries: string;
+        oncotreeCode?: string | null;
+        preservation?: string | null;
+        primaryId: string;
+        qcReports: string;
+        sampleClass: string;
+        sampleName?: string | null;
+        sampleOrigin?: string | null;
+        sampleType: string;
+        sex: string;
+        species: string;
+        tissueLocation?: string | null;
+        tubeId?: string | null;
+        tumorOrNormal: string;
       }>;
     }>;
   };
@@ -7047,28 +7179,44 @@ export const RequestPartsFragmentDoc = gql`
     smileRequestId
   }
 `;
-export const SampleMetadataFieldsFragmentDoc = gql`
-  fragment SampleMetadataFields on SampleMetadata {
-    cmoSampleName
-    igoComplete
-    importDate
-    investigatorSampleId
-    primaryId
+export const SamplePartsFragmentDoc = gql`
+  fragment SampleParts on Sample {
+    datasource
+    revisable
+    sampleCategory
     sampleClass
+    smileSampleId
+  }
+`;
+export const SampleMetadataPartsFragmentDoc = gql`
+  fragment SampleMetadataParts on SampleMetadata {
+    additionalProperties
+    baitSet
+    cfDNA2dBarcode
+    cmoInfoIgoId
     cmoPatientId
     cmoSampleIdFields
-    sampleName
-    preservation
-    tumorOrNormal
-    oncotreeCode
+    cmoSampleName
     collectionYear
-    sampleOrigin
-    tissueLocation
-    sex
-    libraries
-    sampleType
-    species
     genePanel
+    igoComplete
+    igoRequestId
+    importDate
+    investigatorSampleId
+    libraries
+    oncotreeCode
+    preservation
+    primaryId
+    qcReports
+    sampleClass
+    sampleName
+    sampleOrigin
+    sampleType
+    sex
+    species
+    tissueLocation
+    tubeId
+    tumorOrNormal
   }
 `;
 export const RequestsListDocument = gql`
@@ -7114,7 +7262,7 @@ export const RequestWithSamplesDocument = gql`
           where: $hasMetadataSampleMetadataWhere2
           options: $hasMetadataSampleMetadataOptions2
         ) {
-          ...SampleMetadataFields
+          ...SampleMetadataParts
         }
         patientsHasSample {
           smilePatientId
@@ -7130,11 +7278,53 @@ export const RequestWithSamplesDocument = gql`
     }
   }
   ${RequestPartsFragmentDoc}
-  ${SampleMetadataFieldsFragmentDoc}
+  ${SampleMetadataPartsFragmentDoc}
 `;
 export type RequestWithSamplesQueryResult = Apollo.QueryResult<
   RequestWithSamplesQuery,
   RequestWithSamplesQueryVariables
+>;
+export const FindSamplesByInputValueDocument = gql`
+  query FindSamplesByInputValue(
+    $where: SampleWhere
+    $options: SampleMetadataOptions
+  ) {
+    samplesConnection(where: $where) {
+      edges {
+        node {
+          ...SampleParts
+          hasMetadataSampleMetadata(options: $options) {
+            ...SampleMetadataParts
+          }
+          requestsHasSampleConnection {
+            edges {
+              node {
+                ...RequestParts
+              }
+            }
+          }
+          patientsHasSampleConnection {
+            edges {
+              node {
+                smilePatientId
+                patientAliasesIsAlias {
+                  namespace
+                  value
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  ${SamplePartsFragmentDoc}
+  ${SampleMetadataPartsFragmentDoc}
+  ${RequestPartsFragmentDoc}
+`;
+export type FindSamplesByInputValueQueryResult = Apollo.QueryResult<
+  FindSamplesByInputValueQuery,
+  FindSamplesByInputValueQueryVariables
 >;
 export const SamplesDocument = gql`
   query Samples(
@@ -7152,11 +7342,11 @@ export const SamplesDocument = gql`
         where: $hasMetadataSampleMetadataWhere2
         options: $hasMetadataSampleMetadataOptions2
       ) {
-        ...SampleMetadataFields
+        ...SampleMetadataParts
       }
     }
   }
-  ${SampleMetadataFieldsFragmentDoc}
+  ${SampleMetadataPartsFragmentDoc}
 `;
 export type SamplesQueryResult = Apollo.QueryResult<
   SamplesQuery,
@@ -7176,12 +7366,12 @@ export const UpdateSamplesDocument = gql`
         sampleCategory
         sampleClass
         hasMetadataSampleMetadata {
-          ...SampleMetadataFields
+          ...SampleMetadataParts
         }
       }
     }
   }
-  ${SampleMetadataFieldsFragmentDoc}
+  ${SampleMetadataPartsFragmentDoc}
 `;
 export type UpdateSamplesMutationFn = Apollo.MutationFunction<
   UpdateSamplesMutation,

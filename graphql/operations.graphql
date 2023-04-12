@@ -34,7 +34,7 @@ query RequestWithSamples(
         where: $hasMetadataSampleMetadataWhere2
         options: $hasMetadataSampleMetadataOptions2
       ) {
-        ...SampleMetadataFields
+        ...SampleMetadataParts
       }
       patientsHasSample {
         smilePatientId
@@ -46,6 +46,40 @@ query RequestWithSamples(
     }
     hasSampleSamplesConnection(where: $hasSampleSamplesConnectionWhere2) {
       totalCount
+    }
+  }
+}
+
+query FindSamplesByInputValue(
+  $where: SampleWhere
+  $options: SampleMetadataOptions
+) {
+  samplesConnection(where: $where) {
+    edges {
+      node {
+        ...SampleParts
+        hasMetadataSampleMetadata(options: $options) {
+          ...SampleMetadataParts
+        }
+        requestsHasSampleConnection {
+          edges {
+            node {
+              ...RequestParts
+            }
+          }
+        }
+        patientsHasSampleConnection {
+          edges {
+            node {
+              smilePatientId
+              patientAliasesIsAlias {
+                namespace
+                value
+              }
+            }
+          }
+        }
+      }
     }
   }
 }
@@ -71,27 +105,42 @@ fragment RequestParts on Request {
   smileRequestId
 }
 
-fragment SampleMetadataFields on SampleMetadata {
-  cmoSampleName
-  igoComplete
-  importDate
-  investigatorSampleId
-  primaryId
+fragment SampleParts on Sample {
+  datasource
+  revisable
+  sampleCategory
   sampleClass
+  smileSampleId
+}
+
+fragment SampleMetadataParts on SampleMetadata {
+  additionalProperties
+  baitSet
+  cfDNA2dBarcode
+  cmoInfoIgoId
   cmoPatientId
   cmoSampleIdFields
-  sampleName
-  preservation
-  tumorOrNormal
-  oncotreeCode
+  cmoSampleName
   collectionYear
-  sampleOrigin
-  tissueLocation
-  sex
-  libraries
-  sampleType
-  species
   genePanel
+  igoComplete
+  igoRequestId
+  importDate
+  investigatorSampleId
+  libraries
+  oncotreeCode
+  preservation
+  primaryId
+  qcReports
+  sampleClass
+  sampleName
+  sampleOrigin
+  sampleType
+  sex
+  species
+  tissueLocation
+  tubeId
+  tumorOrNormal
 }
 
 query Samples(
@@ -109,7 +158,7 @@ query Samples(
       where: $hasMetadataSampleMetadataWhere2
       options: $hasMetadataSampleMetadataOptions2
     ) {
-      ...SampleMetadataFields
+      ...SampleMetadataParts
     }
   }
 }
@@ -127,7 +176,7 @@ mutation UpdateSamples(
       sampleCategory
       sampleClass
       hasMetadataSampleMetadata {
-        ...SampleMetadataFields
+        ...SampleMetadataParts
       }
     }
   }
