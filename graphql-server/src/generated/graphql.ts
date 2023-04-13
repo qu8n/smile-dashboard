@@ -6948,6 +6948,11 @@ export type FindSamplesByInputValueQuery = {
           tissueLocation?: string | null;
           tubeId?: string | null;
           tumorOrNormal: string;
+          hasStatusStatuses: Array<{
+            __typename?: "Status";
+            validationReport: string;
+            validationStatus: boolean;
+          }>;
         }>;
         requestsHasSampleConnection: {
           __typename?: "SampleRequestsHasSampleConnection";
@@ -7295,6 +7300,10 @@ export const FindSamplesByInputValueDocument = gql`
           ...SampleParts
           hasMetadataSampleMetadata(options: $options) {
             ...SampleMetadataParts
+            hasStatusStatuses {
+              validationReport
+              validationStatus
+            }
           }
           requestsHasSampleConnection {
             edges {

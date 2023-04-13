@@ -60,6 +60,10 @@ query FindSamplesByInputValue(
         ...SampleParts
         hasMetadataSampleMetadata(options: $options) {
           ...SampleMetadataParts
+          hasStatusStatuses {
+            validationReport
+            validationStatus
+          }
         }
         requestsHasSampleConnection {
           edges {
