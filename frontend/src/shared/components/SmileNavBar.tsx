@@ -1,17 +1,26 @@
 import * as React from "react";
 import logo_with_text from "../../imgs/logo_with_text.png";
+import { Nav, NavLink } from "react-bootstrap";
+import { FunctionComponent } from "react";
 
-const SmileNavBar: React.FunctionComponent = (props) => {
-  var requestIdSearch = "";
-
+const SmileNavBar: FunctionComponent = () => {
   return (
-    <header id="header" className="header fixed-top d-flex align-items-center">
-      <div className="d-flex align-items-center justify-content-between">
-        <a href="index.html" className="logo d-flex align-items-center">
-          <img src={logo_with_text} alt="" />
-        </a>
-      </div>
-    </header>
+    <>
+      <header
+        id="header"
+        className="header fixed-top d-flex align-items-center"
+      >
+        <div>
+          <a href="/" className="logo">
+            <img src={logo_with_text} alt="" />
+          </a>
+        </div>
+        <Nav>
+          <NavLink href="/requests">Requests</NavLink>
+          <NavLink href="/patients">Patients</NavLink>
+        </Nav>
+      </header>
+    </>
   );
 };
 

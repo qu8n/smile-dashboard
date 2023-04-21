@@ -3,21 +3,23 @@ import {
   useSamplesQuery,
   Sample,
   SampleMetadata,
-} from "../../generated/graphql";
+  useFindSamplesByInputValueQuery,
+  SampleMetadataWhere,
+} from "../generated/graphql";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { Button, Col, Form, Row } from "react-bootstrap";
 import _ from "lodash";
 import classNames from "classnames";
 import { FunctionComponent, useRef } from "react";
-import { DownloadModal } from "../../components/DownloadModal";
-import { UpdateModal } from "../../components/UpdateModal";
-import { CSVFormulate } from "../../lib/CSVExport";
+import { DownloadModal } from "./DownloadModal";
+import { UpdateModal } from "./UpdateModal";
+import { CSVFormulate } from "../lib/CSVExport";
 import {
   SampleDetailsColumns,
   defaultColDef,
   SampleChange,
   SampleMetadataExtended,
-} from "./helpers";
+} from "../pages/requests/helpers";
 import Spinner from "react-spinkit";
 import { AgGridReact } from "ag-grid-react";
 import { useState } from "react";
@@ -28,10 +30,10 @@ import { CellValueChangedEvent } from "ag-grid-community";
 
 const POLLING_INTERVAL = 2000;
 
-interface IRequestSummaryProps {
+interface ISampleListProps {
   height: number;
   setUnsavedChanges: (val: boolean) => void;
-  sampleIds: string[];
+  searchVariables: SampleMetadataWhere;
   exportFileName?: string;
 }
 
@@ -68,19 +70,22 @@ function getSampleMetadata(samples: Sample[]) {
   });
 }
 
-export const RequestSamples: FunctionComponent<IRequestSummaryProps> = ({
-  sampleIds,
+export const SamplesList: FunctionComponent<ISampleListProps> = ({
+  searchVariables,
   height,
   setUnsavedChanges,
   exportFileName,
 }) => {
   const { loading, error, data, startPolling, stopPolling, refetch } =
-    useSamplesQuery({
+    useFindSamplesByInputValueQuery({
       variables: {
         where: {
-          smileSampleId_IN: sampleIds,
+          hasMetadataSampleMetadata_SOME: {
+            // igoRequestId: "08944_B",
+            ...searchVariables,
+          },
         },
-        hasMetadataSampleMetadataOptions2: {
+        options: {
           sort: [{ importDate: SortDirection.Desc }],
           limit: 1,
         },
@@ -106,7 +111,7 @@ export const RequestSamples: FunctionComponent<IRequestSummaryProps> = ({
 
   if (error) return <Row>Error loading request details / request samples</Row>;
 
-  const samples = data!.samples as Sample[];
+  const samples = data!.samplesConnection.edges.map((e) => e.node) as Sample[];
 
   const remoteCount = samples.length;
 
@@ -203,7 +208,6 @@ export const RequestSamples: FunctionComponent<IRequestSummaryProps> = ({
                 const to = setTimeout(() => {
                   const rf = refetch({
                     where: {
-                      smileSampleId_IN: sampleIds,
                       hasMetadataSampleMetadata_SOME: {
                         OR: sampleFilterWhereVariables(value),
                       },
@@ -277,7 +281,6 @@ export const RequestSamples: FunctionComponent<IRequestSummaryProps> = ({
               }}
               columnDefs={SampleDetailsColumns}
               rowData={getSampleMetadata(samples)}
-              //onCellValueChanged={onCellValueChanged}
               onCellEditRequest={onCellValueChanged}
               readOnlyEdit={true}
               defaultColDef={defaultColDef}

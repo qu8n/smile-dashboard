@@ -1,7 +1,12 @@
-import { ColDef, RowNode } from "ag-grid-community";
+import {
+  CellClassParams,
+  ColDef,
+  EditableCallbackParams,
+  RowNode,
+} from "ag-grid-community";
 import { Button } from "react-bootstrap";
 import "ag-grid-enterprise";
-import { SampleMetadata } from "../../generated/graphql";
+import { Patient, SampleMetadata } from "../../generated/graphql";
 
 export interface SampleMetadataExtended extends SampleMetadata {
   revisable: boolean;
@@ -21,31 +26,27 @@ export type ChangeForSubmit = {
   };
 };
 
-export function buildRequestTableColumns(navigate: any): ColDef[] {
-  return [
-    {
-      headerName: "View",
-      cellRenderer: (data: any) => {
-        return (
-          <Button
-            variant="outline-secondary"
-            size="sm"
-            onClick={() => {
-              if (data.data.igoRequestId !== undefined) {
-                navigate(`/${data.data.igoRequestId}`);
-              }
-            }}
-          >
-            View
-          </Button>
-        );
-      },
-    },
-    ...RequestsListColumns,
-  ];
-}
-
 export const RequestsListColumns: ColDef[] = [
+  {
+    headerName: "View",
+    cellRenderer: (params: CellClassParams<any>) => {
+      return (
+        <Button
+          variant="outline-secondary"
+          size="sm"
+          onClick={() => {
+            if (params.data.igoRequestId !== undefined) {
+              params.context.navigateFunction(
+                `/requests/${params.data.igoRequestId}`
+              );
+            }
+          }}
+        >
+          View
+        </Button>
+      );
+    },
+  },
   {
     field: "igoRequestId",
     headerName: "IGO Request ID",
@@ -141,6 +142,64 @@ export const RequestsListColumns: ColDef[] = [
   },
 ];
 
+export const PatientsListColumns: ColDef[] = [
+  {
+    headerName: "View",
+    cellRenderer: (params: CellClassParams<any>) => {
+      return (
+        <Button
+          variant="outline-secondary"
+          size="sm"
+          onClick={() => {
+            if (params.data.value !== undefined) {
+              params.context.navigateFunction(`/patients/${params.data.value}`);
+            }
+          }}
+        >
+          View
+        </Button>
+      );
+    },
+  },
+  {
+    field: "cmoPatientId",
+    headerName: "CMO Patient ID",
+    valueGetter: function ({ data }) {
+      for (let i of data["isAliasPatients"][0]["patientAliasesIsAlias"]) {
+        if (i.namespace === "cmoId") {
+          return i.value;
+        }
+      }
+    },
+  },
+  {
+    field: "dmpPatientId",
+    headerName: "DMP Patient ID",
+    valueGetter: function ({ data }) {
+      for (let i of data["isAliasPatients"][0]?.patientAliasesIsAlias) {
+        if (i.namespace === "dmpId") {
+          return i.value;
+        }
+      }
+    },
+  },
+  {
+    field: "isAliasPatients",
+    headerName: "Smile Patient ID",
+    valueGetter: function ({ data }) {
+      return data["isAliasPatients"][0].smilePatientId;
+    },
+    width: 400,
+  },
+  {
+    field: "hasSampleSamplesConnection",
+    headerName: "# Samples",
+    valueGetter: function ({ data }) {
+      return data["isAliasPatients"][0].hasSampleSamplesConnection.totalCount;
+    },
+  },
+];
+
 export const SampleDetailsColumns: ColDef<SampleMetadataExtended>[] = [
   {
     field: "primaryId",
@@ -150,8 +209,10 @@ export const SampleDetailsColumns: ColDef<SampleMetadataExtended>[] = [
   {
     field: "revisable",
     headerName: "Status",
-    cellRenderer: function (params: any) {
-      return params.data.revisable ? (
+    cellRenderer: function (
+      params: EditableCallbackParams<SampleMetadataExtended>
+    ) {
+      return params.data?.revisable ? (
         <span>
           <strong>&#10003;</strong> Valid
         </span>
@@ -319,6 +380,21 @@ export const SampleDetailsColumns: ColDef<SampleMetadataExtended>[] = [
     headerName: "Sex",
     editable: (params) => !protectedFields.includes(params.colDef.field!),
   },
+  {
+    field: "validationStatus",
+    headerName: "Validation Status",
+    valueGetter: function ({ data }) {
+      return data?.["hasStatusStatuses"][0].validationStatus;
+    },
+    editable: false,
+  },
+  {
+    field: "validationReport",
+    headerName: "Validation Report",
+    valueGetter: function ({ data }) {
+      return data?.["hasStatusStatuses"][0].validationReport;
+    },
+  },
 ];
 
 SampleDetailsColumns.forEach((def) => {
@@ -370,6 +446,7 @@ SampleDetailsColumns.forEach((def) => {
 export const defaultColDef: ColDef = {
   sortable: true,
   editable: true,
+  resizable: true,
 };
 
 const protectedFields: string[] = [
@@ -381,4 +458,6 @@ const protectedFields: string[] = [
   "libraries",
   "genePanel",
   "species",
+  "validationStatus",
+  "validationReport",
 ];

@@ -14,6 +14,33 @@ query RequestsList(
   }
 }
 
+query PatientsList(
+  $options: PatientAliasOptions
+  $where: PatientAliasWhere
+  $patientAliasesConnectionWhere2: PatientAliasWhere
+) {
+  patientAliasesConnection(where: $patientAliasesConnectionWhere2) {
+    totalCount
+  }
+  patientAliases(where: $where, options: $options) {
+    namespace
+    value
+    isAliasPatients {
+      smilePatientId
+      hasSampleSamples {
+        smileSampleId
+      }
+      hasSampleSamplesConnection {
+        totalCount
+      }
+      patientAliasesIsAlias {
+        namespace
+        value
+      }
+    }
+  }
+}
+
 query RequestWithSamples(
   $options: RequestOptions
   $where: RequestWhere
