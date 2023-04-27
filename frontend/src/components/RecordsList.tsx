@@ -15,7 +15,8 @@ import "ag-grid-enterprise";
 import { ColDef, IServerSideGetRowsParams } from "ag-grid-community";
 import { useHookGeneric } from "../shared/types";
 import { SamplesList } from "./SamplesList";
-import { SampleMetadataWhere } from "../generated/graphql";
+import { SampleMetadataWhere, SampleWhere } from "../generated/graphql";
+import { defaultColDef } from "../pages/requests/helpers";
 
 export interface IRecordsListProps {
   lazyRecordsQuery: typeof useHookGeneric;
@@ -27,6 +28,7 @@ export interface IRecordsListProps {
   conditionBuilder: (val: string) => Record<string, any>[];
   sampleQueryParamValue: string | undefined;
   sampleQueryParamFieldName: string;
+  searchVariables: SampleWhere;
 }
 
 const RecordsList: FunctionComponent<IRecordsListProps> = ({
@@ -39,6 +41,7 @@ const RecordsList: FunctionComponent<IRecordsListProps> = ({
   conditionBuilder,
   sampleQueryParamValue,
   sampleQueryParamFieldName,
+  searchVariables,
 }) => {
   const [val, setVal] = useState("");
   const [showDownloadModal, setShowDownloadModal] = useState(false);
@@ -188,11 +191,7 @@ const RecordsList: FunctionComponent<IRecordsListProps> = ({
                 <div style={{ height: 600 }}>
                   <SamplesList
                     height={height * 11}
-                    searchVariables={
-                      {
-                        [sampleQueryParamFieldName]: sampleQueryParamValue,
-                      } as SampleMetadataWhere
-                    }
+                    searchVariables={searchVariables}
                     setUnsavedChanges={setUnsavedChanges}
                     exportFileName={`${sampleQueryParamFieldName}_${sampleQueryParamValue}.tsv`}
                   />

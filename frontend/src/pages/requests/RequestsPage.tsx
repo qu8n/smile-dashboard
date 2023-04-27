@@ -1,5 +1,6 @@
 import {
   RequestWhere,
+  SampleWhere,
   useRequestsListLazyQuery,
 } from "../../generated/graphql";
 import React from "react";
@@ -51,6 +52,13 @@ export const RequestsPage: React.FunctionComponent = (props) => {
         conditionBuilder={requestFilterWhereVariables}
         sampleQueryParamFieldName={sampleQueryParamFieldName}
         sampleQueryParamValue={params[sampleQueryParamFieldName]}
+        searchVariables={
+          {
+            hasMetadataSampleMetadata_SOME: {
+              [sampleQueryParamFieldName]: params[sampleQueryParamFieldName],
+            },
+          } as SampleWhere
+        }
       />
     </>
   );

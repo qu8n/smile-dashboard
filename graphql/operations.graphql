@@ -80,6 +80,8 @@ query RequestWithSamples(
 query FindSamplesByInputValue(
   $where: SampleWhere
   $options: SampleMetadataOptions
+  $patientAliasesIsAliasWhere2: PatientAliasWhere
+  $requestsHasSampleConnectionWhere2: SampleRequestsHasSampleConnectionWhere
 ) {
   samplesConnection(where: $where) {
     edges {
@@ -103,7 +105,7 @@ query FindSamplesByInputValue(
           edges {
             node {
               smilePatientId
-              patientAliasesIsAlias {
+              patientAliasesIsAlias(where: $patientAliasesIsAliasWhere2) {
                 namespace
                 value
               }

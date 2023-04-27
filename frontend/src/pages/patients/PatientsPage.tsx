@@ -1,5 +1,6 @@
 import {
   PatientAliasWhere,
+  SampleWhere,
   usePatientsListLazyQuery,
 } from "../../generated/graphql";
 import React from "react";
@@ -35,6 +36,21 @@ export const PatientsPage: React.FunctionComponent = (props) => {
         conditionBuilder={patientAliasFilterWhereVariables}
         sampleQueryParamFieldName={sampleQueryParamFieldName}
         sampleQueryParamValue={params[sampleQueryParamFieldName]}
+        searchVariables={
+          {
+            OR: [
+              {
+                patientsHasSampleConnection_SOME: {
+                  node: {
+                    patientAliasesIsAlias_SOME: {
+                      value: params[sampleQueryParamFieldName],
+                    },
+                  },
+                },
+              },
+            ],
+          } as SampleWhere
+        }
       />
     </>
   );
