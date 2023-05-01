@@ -6,7 +6,8 @@ import {
 } from "ag-grid-community";
 import { Button } from "react-bootstrap";
 import "ag-grid-enterprise";
-import { Patient, SampleMetadata } from "../../generated/graphql";
+import { SampleMetadata } from "../../generated/graphql";
+import WarningIcon from "@material-ui/icons/Warning";
 
 export interface SampleMetadataExtended extends SampleMetadata {
   revisable: boolean;
@@ -208,7 +209,7 @@ export const SampleDetailsColumns: ColDef<SampleMetadataExtended>[] = [
   },
   {
     field: "revisable",
-    headerName: "Status",
+    headerName: "Revisable",
     cellRenderer: function (
       params: EditableCallbackParams<SampleMetadataExtended>
     ) {
@@ -226,6 +227,24 @@ export const SampleDetailsColumns: ColDef<SampleMetadataExtended>[] = [
           </div>
           &nbsp;Validating
         </div>
+      );
+    },
+    editable: false,
+  },
+  {
+    field: "validationStatus",
+    headerName: "Status",
+    cellRenderer: function (
+      params: EditableCallbackParams<SampleMetadataExtended>
+    ) {
+      return !params.data?.["hasStatusStatuses"][0].validationStatus ? (
+        <div>
+          <WarningIcon />
+        </div>
+      ) : (
+        <span>
+          <strong>&#10003;</strong>
+        </span>
       );
     },
     editable: false,
@@ -379,14 +398,6 @@ export const SampleDetailsColumns: ColDef<SampleMetadataExtended>[] = [
     field: "sex",
     headerName: "Sex",
     editable: (params) => !protectedFields.includes(params.colDef.field!),
-  },
-  {
-    field: "validationStatus",
-    headerName: "Validation Status",
-    valueGetter: function ({ data }) {
-      return data?.["hasStatusStatuses"][0].validationStatus;
-    },
-    editable: false,
   },
   {
     field: "validationReport",
