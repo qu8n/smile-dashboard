@@ -15,8 +15,8 @@ import "ag-grid-enterprise";
 import { ColDef, IServerSideGetRowsParams } from "ag-grid-community";
 import { useHookGeneric } from "../shared/types";
 import { SamplesList } from "./SamplesList";
-import { SampleMetadataWhere, SampleWhere } from "../generated/graphql";
-import { defaultColDef } from "../pages/requests/helpers";
+import { SampleWhere } from "../generated/graphql";
+import { defaultRecordsColDef } from "../pages/requests/helpers";
 
 export interface IRecordsListProps {
   lazyRecordsQuery: typeof useHookGeneric;
@@ -262,6 +262,13 @@ const RecordsList: FunctionComponent<IRecordsListProps> = ({
               debug={false}
               context={{
                 navigateFunction: navigate,
+              }}
+              defaultColDef={defaultRecordsColDef}
+              onGridReady={(params) => {
+                params.api.sizeColumnsToFit();
+              }}
+              onFirstDataRendered={(params) => {
+                params.columnApi.autoSizeAllColumns();
               }}
             />
           </div>

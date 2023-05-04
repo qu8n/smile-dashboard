@@ -1,8 +1,6 @@
 import {
   SortDirection,
-  useSamplesQuery,
   Sample,
-  SampleMetadata,
   useFindSamplesByInputValueQuery,
   SampleMetadataWhere,
 } from "../generated/graphql";
@@ -16,7 +14,7 @@ import { UpdateModal } from "./UpdateModal";
 import { CSVFormulate } from "../lib/CSVExport";
 import {
   SampleDetailsColumns,
-  defaultColDef,
+  defaultSamplesColDef,
   SampleChange,
   SampleMetadataExtended,
 } from "../pages/requests/helpers";
@@ -280,12 +278,18 @@ export const SamplesList: FunctionComponent<ISampleListProps> = ({
               rowData={getSampleMetadata(samples)}
               onCellEditRequest={onCellValueChanged}
               readOnlyEdit={true}
-              defaultColDef={defaultColDef}
+              defaultColDef={defaultSamplesColDef}
               ref={gridRef}
               context={{
                 getChanges: () => changes,
               }}
               enableRangeSelection={true}
+              onGridReady={(params) => {
+                params.api.sizeColumnsToFit();
+              }}
+              onFirstDataRendered={(params) => {
+                params.columnApi.autoSizeAllColumns();
+              }}
             />
           </div>
         )}

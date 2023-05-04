@@ -51,12 +51,10 @@ export const RequestsListColumns: ColDef[] = [
   {
     field: "igoRequestId",
     headerName: "IGO Request ID",
-    sortable: true,
   },
   {
     field: "igoProjectId",
     headerName: "IGO Project ID",
-    sortable: true,
   },
   {
     field: "hasSampleSamplesConnection",
@@ -74,72 +72,58 @@ export const RequestsListColumns: ColDef[] = [
   {
     field: "projectManagerName",
     headerName: "Project Manager Name",
-    sortable: true,
   },
   {
     field: "investigatorName",
     headerName: "Investigator Name",
-    sortable: true,
   },
   {
     field: "investigatorEmail",
     headerName: "Investigator Email",
-    sortable: true,
   },
   {
     field: "piEmail",
     headerName: "PI Email",
-    sortable: true,
   },
   {
     field: "dataAnalystName",
     headerName: "Data Analyst Name",
-    sortable: true,
   },
   {
     field: "dataAnalystEmail",
     headerName: "Data Analyst Email",
-    sortable: true,
   },
   {
     field: "genePanel",
     headerName: "Gene Panel",
-    sortable: true,
   },
   {
     field: "labHeadName",
     headerName: "Lab Head Name",
-    sortable: true,
   },
   {
     field: "labHeadEmail",
     headerName: "Lab Head Email",
-    sortable: true,
   },
   {
     field: "qcAccessEmails",
     headerName: "QC Access Emails",
-    sortable: true,
   },
   {
     field: "dataAccessEmails",
     headerName: "Data Access Emails",
-    sortable: true,
   },
   {
     field: "bicAnalysis",
     headerName: "BIC Analysis",
-    sortable: true,
   },
   {
     field: "isCmoRequest",
     headerName: "CMO Request?",
-    sortable: true,
   },
   {
     field: "otherContactEmails",
     headerName: "Other Contact Emails",
-    sortable: true,
   },
 ];
 
@@ -190,7 +174,6 @@ export const PatientsListColumns: ColDef[] = [
     valueGetter: function ({ data }) {
       return data["isAliasPatients"][0].smilePatientId;
     },
-    width: 400,
   },
   {
     field: "hasSampleSamplesConnection",
@@ -454,9 +437,14 @@ SampleDetailsColumns.forEach((def) => {
   };
 });
 
-export const defaultColDef: ColDef = {
+export const defaultSamplesColDef: ColDef = {
   sortable: true,
   editable: true,
+  resizable: true,
+};
+
+export const defaultRecordsColDef: ColDef = {
+  sortable: true,
   resizable: true,
 };
 
