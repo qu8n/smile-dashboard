@@ -2,12 +2,15 @@ import {
   CellClassParams,
   ColDef,
   EditableCallbackParams,
+  ICellRendererParams,
   RowNode,
 } from "ag-grid-community";
 import { Button } from "react-bootstrap";
 import "ag-grid-enterprise";
 import { SampleMetadata } from "../../generated/graphql";
 import WarningIcon from "@material-ui/icons/Warning";
+import { StatusTooltip } from "./StatusToolTip";
+import { ITooltipParams } from "ag-grid-community";
 
 export interface SampleMetadataExtended extends SampleMetadata {
   revisable: boolean;
@@ -217,20 +220,33 @@ export const SampleDetailsColumns: ColDef<SampleMetadataExtended>[] = [
   {
     field: "validationStatus",
     headerName: "Status",
-    cellRenderer: function (
-      params: EditableCallbackParams<SampleMetadataExtended>
-    ) {
-      return !params.data?.["hasStatusStatuses"][0].validationStatus ? (
-        <div>
-          <WarningIcon />
-        </div>
-      ) : (
-        <span>
-          <strong>&#10003;</strong>
-        </span>
-      );
+    cellRendererSelector: (params: ICellRendererParams<any>) => {
+      return {
+        component: () => {
+          if (params.data?.hasStatusStatuses[0].validationStatus) {
+            return (
+              <div>
+                <strong>&#10003;</strong>
+              </div>
+            );
+          } else {
+            return (
+              <div>
+                <WarningIcon />
+              </div>
+            );
+          }
+        },
+        params: {
+          colDef: {
+            tooltipComponent: StatusTooltip,
+            tooltipValueGetter: function (params: ITooltipParams) {
+              return params;
+            },
+          },
+        },
+      };
     },
-    editable: false,
   },
   {
     field: "cmoSampleName",
@@ -254,9 +270,6 @@ export const SampleDetailsColumns: ColDef<SampleMetadataExtended>[] = [
   },
   {
     field: "sampleType",
-    // valueGetter: (params) => {
-    //   return params.data.sampleType;
-    // },
     headerName: "Sample Type",
     editable: (params) => !protectedFields.includes(params.colDef.field!),
     cellEditor: "agRichSelectCellEditor",

@@ -6,7 +6,6 @@ import {
 } from "../generated/graphql";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { Button, Col, Form, Row } from "react-bootstrap";
-import _ from "lodash";
 import classNames from "classnames";
 import { FunctionComponent, useRef } from "react";
 import { DownloadModal } from "./DownloadModal";
@@ -290,6 +289,7 @@ export const SamplesList: FunctionComponent<ISampleListProps> = ({
               onFirstDataRendered={(params) => {
                 params.columnApi.autoSizeAllColumns();
               }}
+              tooltipShowDelay={0}
             />
           </div>
         )}
