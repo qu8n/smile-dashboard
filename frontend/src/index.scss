@@ -41,7 +41,7 @@ $standardMargin: 10px;
 }
 
 .locked {
-  background: #ffcccb !important;
+  background: #fffcc9 !important;
 }
 
 .unlocked {
@@ -52,8 +52,7 @@ $standardMargin: 10px;
   background: #fffcc9 !important;
 }
 
-.unrevisable {
-  cursor: not-allowed !important;
+.validation-error {
   background: #ffcccb !important;
 }
 

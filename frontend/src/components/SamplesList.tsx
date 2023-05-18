@@ -272,6 +272,12 @@ export const SamplesList: FunctionComponent<ISampleListProps> = ({
                 locked: function (params) {
                   return params.data?.revisable === false;
                 },
+                "validation-error": function (params) {
+                  return (
+                    params.data?.revisable === true &&
+                    params.data?.hasStatusStatuses[0].validationStatus === false
+                  );
+                },
               }}
               columnDefs={SampleDetailsColumns}
               rowData={getSampleMetadata(samples)}

@@ -1,7 +1,6 @@
 import {
   CellClassParams,
   ColDef,
-  EditableCallbackParams,
   ICellRendererParams,
   RowNode,
 } from "ag-grid-community";
@@ -195,57 +194,34 @@ export const SampleDetailsColumns: ColDef<SampleMetadataExtended>[] = [
   },
   {
     field: "revisable",
-    headerName: "Revisable",
-    cellRenderer: function (
-      params: EditableCallbackParams<SampleMetadataExtended>
-    ) {
-      return params.data?.revisable ? (
-        <span>
-          <strong>&#10003;</strong> Valid
-        </span>
-      ) : (
-        <div>
+    headerName: "Status",
+    cellRenderer: (params: ICellRendererParams<SampleMetadataExtended>) => {
+      if (params.data?.revisable) {
+        return params.data?.hasStatusStatuses[0].validationStatus ? (
+          <div>
+            <strong>&#10003;</strong>
+          </div>
+        ) : (
+          <div>
+            <WarningIcon />
+          </div>
+        );
+      } else {
+        return (
           <div className="lds-ring">
             <div></div>
             <div></div>
             <div></div>
             <div></div>
           </div>
-          &nbsp;Validating
-        </div>
-      );
+        );
+      }
     },
-    editable: false,
-  },
-  {
-    field: "validationStatus",
-    headerName: "Status",
-    cellRendererSelector: (params: ICellRendererParams<any>) => {
-      return {
-        component: () => {
-          if (params.data?.hasStatusStatuses[0].validationStatus) {
-            return (
-              <div>
-                <strong>&#10003;</strong>
-              </div>
-            );
-          } else {
-            return (
-              <div>
-                <WarningIcon />
-              </div>
-            );
-          }
-        },
-        params: {
-          colDef: {
-            tooltipComponent: StatusTooltip,
-            tooltipValueGetter: function (params: ITooltipParams) {
-              return params;
-            },
-          },
-        },
-      };
+    cellRendererParams: {
+      colDef: {
+        tooltipComponent: StatusTooltip,
+        tooltipValueGetter: (params: ITooltipParams) => params,
+      },
     },
   },
   {
@@ -472,4 +448,5 @@ const protectedFields: string[] = [
   "species",
   "validationStatus",
   "validationReport",
+  "revisable",
 ];
