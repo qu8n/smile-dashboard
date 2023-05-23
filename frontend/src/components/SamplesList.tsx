@@ -296,6 +296,7 @@ export const SamplesList: FunctionComponent<ISampleListProps> = ({
                 params.columnApi.autoSizeAllColumns();
               }}
               tooltipShowDelay={0}
+              tooltipHideDelay={60000}
             />
           </div>
         )}

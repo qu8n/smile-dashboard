@@ -171,13 +171,6 @@ export const PatientsListColumns: ColDef[] = [
     },
   },
   {
-    field: "isAliasPatients",
-    headerName: "Smile Patient ID",
-    valueGetter: function ({ data }) {
-      return data["isAliasPatients"][0].smilePatientId;
-    },
-  },
-  {
     field: "hasSampleSamplesConnection",
     headerName: "# Samples",
     valueGetter: function ({ data }) {
@@ -220,7 +213,8 @@ export const SampleDetailsColumns: ColDef<SampleMetadataExtended>[] = [
     cellRendererParams: {
       colDef: {
         tooltipComponent: StatusTooltip,
-        tooltipValueGetter: (params: ITooltipParams) => params,
+        tooltipValueGetter: (params: ITooltipParams) =>
+          params.data.hasStatusStatuses[0].validationReport,
       },
     },
   },
@@ -370,13 +364,6 @@ export const SampleDetailsColumns: ColDef<SampleMetadataExtended>[] = [
     field: "sex",
     headerName: "Sex",
     editable: (params) => !protectedFields.includes(params.colDef.field!),
-  },
-  {
-    field: "validationReport",
-    headerName: "Validation Report",
-    valueGetter: function ({ data }) {
-      return data?.["hasStatusStatuses"][0].validationReport;
-    },
   },
 ];
 
