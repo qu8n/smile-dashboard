@@ -190,7 +190,7 @@ export const SampleDetailsColumns: ColDef<SampleMetadataExtended>[] = [
     headerName: "Status",
     cellRenderer: (params: ICellRendererParams<SampleMetadataExtended>) => {
       if (params.data?.revisable) {
-        return params.data?.hasStatusStatuses[0].validationStatus ? (
+        return params.data?.hasStatusStatuses[0]?.validationStatus ? (
           <div>
             <strong>&#10003;</strong>
           </div>
@@ -214,7 +214,8 @@ export const SampleDetailsColumns: ColDef<SampleMetadataExtended>[] = [
       colDef: {
         tooltipComponent: StatusTooltip,
         tooltipValueGetter: (params: ITooltipParams) =>
-          params.data.hasStatusStatuses[0].validationReport,
+          params.data.hasStatusStatuses[0]?.validationReport ??
+          params.data.hasStatusStatuses,
       },
     },
   },

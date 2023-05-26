@@ -273,9 +273,12 @@ export const SamplesList: FunctionComponent<ISampleListProps> = ({
                   return params.data?.revisable === false;
                 },
                 "validation-error": function (params) {
+                  const validationStatus =
+                    params.data?.hasStatusStatuses[0]?.validationStatus;
                   return (
                     params.data?.revisable === true &&
-                    params.data?.hasStatusStatuses[0].validationStatus === false
+                    (validationStatus === false ||
+                      validationStatus === undefined)
                   );
                 },
               }}

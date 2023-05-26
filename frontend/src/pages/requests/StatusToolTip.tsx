@@ -19,30 +19,46 @@ export const StatusTooltip = (props: ITooltipParams) => {
     },
   ];
 
-  let { validationStatus, validationReport } = data.hasStatusStatuses[0];
+  let validationStatus;
+  let validationReportList;
 
-  let validationReportMap = new Map();
-  try {
-    validationReportMap = new Map(Object.entries(JSON.parse(validationReport)));
-  } catch (e) {
-    const cleanedReport = validationReport.replace(/[{}]/g, "");
-    const reportArray = cleanedReport.split(",");
-    for (const r of reportArray) {
-      const [key, value] = r.split("=").map((str: String) => str.trim());
-      validationReportMap.set(key, value);
+  if (data.hasStatusStatuses[0]) {
+    validationStatus = data.hasStatusStatuses[0].validationStatus;
+    const validationReport = data.hasStatusStatuses[0].validationReport;
+    let validationReportMap = new Map();
+
+    try {
+      validationReportMap = new Map(
+        Object.entries(JSON.parse(validationReport))
+      );
+    } catch (e) {
+      const cleanedReport = validationReport.replace(/[{}]/g, "");
+      const reportArray = cleanedReport.split(",");
+      for (const r of reportArray) {
+        const [key, value] = r.split("=").map((str: String) => str.trim());
+        validationReportMap.set(key, value);
+      }
     }
+
+    validationReportList = Array.from(
+      validationReportMap,
+      ([fieldName, report]) => ({ fieldName, report })
+    );
+
+    validationReportList.map((reportObj) => {
+      reportObj.fieldName = toSentenceCase(reportObj.fieldName);
+      reportObj.report = toSentenceCase(reportObj.report);
+      return reportObj;
+    });
+  } else {
+    validationStatus = false;
+    validationReportList = [
+      {
+        fieldName: "Data error",
+        report: "Validation status is missing from this sample",
+      },
+    ];
   }
-
-  const validationReportList = Array.from(
-    validationReportMap,
-    ([fieldName, report]) => ({ fieldName, report })
-  );
-
-  validationReportList.map((reportObj) => {
-    reportObj.fieldName = toSentenceCase(reportObj.fieldName);
-    reportObj.report = toSentenceCase(reportObj.report);
-    return reportObj;
-  });
 
   if (!validationStatus) {
     return (
