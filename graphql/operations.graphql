@@ -29,6 +29,9 @@ query PatientsList(
       smilePatientId
       hasSampleSamples {
         smileSampleId
+        hasMetadataSampleMetadata {
+          primaryId
+        }
       }
       hasSampleSamplesConnection {
         totalCount
@@ -81,7 +84,6 @@ query FindSamplesByInputValue(
   $where: SampleWhere
   $options: SampleMetadataOptions
   $patientAliasesIsAliasWhere2: PatientAliasWhere
-  $requestsHasSampleConnectionWhere2: SampleRequestsHasSampleConnectionWhere
 ) {
   samplesConnection(where: $where) {
     edges {

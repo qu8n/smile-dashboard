@@ -13,7 +13,19 @@ import { useParams } from "react-router-dom";
 import PageHeader from "../../shared/components/PageHeader";
 
 function patientAliasFilterWhereVariables(value: string): PatientAliasWhere[] {
-  return [{ namespace_CONTAINS: value }, { value_CONTAINS: value }];
+  return [
+    { namespace_CONTAINS: value },
+    { value_CONTAINS: value },
+    {
+      isAliasPatients_SOME: {
+        hasSampleSamples_SOME: {
+          hasMetadataSampleMetadata_SOME: {
+            primaryId_CONTAINS: value,
+          },
+        },
+      },
+    },
+  ];
 }
 
 export const PatientsPage: React.FunctionComponent = (props) => {

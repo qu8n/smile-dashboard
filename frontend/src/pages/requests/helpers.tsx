@@ -177,6 +177,17 @@ export const PatientsListColumns: ColDef[] = [
       return data["isAliasPatients"][0].hasSampleSamplesConnection.totalCount;
     },
   },
+  {
+    field: "primaryIds",
+    headerName: "Primary IDs",
+    valueGetter: function ({ data }) {
+      let sampleIds = [];
+      for (let sample of data["isAliasPatients"][0].hasSampleSamples) {
+        sampleIds.push(sample.hasMetadataSampleMetadata[0].primaryId);
+      }
+      return sampleIds.join(", ");
+    },
+  },
 ];
 
 export const SampleDetailsColumns: ColDef<SampleMetadataExtended>[] = [

@@ -6836,7 +6836,14 @@ export type PatientsListQuery = {
     isAliasPatients: Array<{
       __typename?: "Patient";
       smilePatientId: string;
-      hasSampleSamples: Array<{ __typename?: "Sample"; smileSampleId: string }>;
+      hasSampleSamples: Array<{
+        __typename?: "Sample";
+        smileSampleId: string;
+        hasMetadataSampleMetadata: Array<{
+          __typename?: "SampleMetadata";
+          primaryId: string;
+        }>;
+      }>;
       hasSampleSamplesConnection: {
         __typename?: "PatientHasSampleSamplesConnection";
         totalCount: number;
@@ -7346,6 +7353,9 @@ export const PatientsListDocument = gql`
         smilePatientId
         hasSampleSamples {
           smileSampleId
+          hasMetadataSampleMetadata {
+            primaryId
+          }
         }
         hasSampleSamplesConnection {
           totalCount
