@@ -2,6 +2,7 @@ import {
   CellClassParams,
   ColDef,
   ICellRendererParams,
+  IHeaderParams,
   RowNode,
 } from "ag-grid-community";
 import { Button } from "react-bootstrap";
@@ -422,6 +423,31 @@ SampleDetailsColumns.forEach((def) => {
       !protectedFields.includes(params.colDef.field!) &&
       params.data?.revisable === true
     );
+  };
+
+  def.headerComponentParams = (params: IHeaderParams) => {
+    if (protectedFields.includes(params.column.getColDef().field!)) {
+      return {
+        template: `
+        <div class="ag-cell-label-container" role="presentation">
+          <span ref="eMenu" class="ag-header-icon ag-header-cell-menu-button" aria-hidden="true"></span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" fill="none" viewBox="0 -4 30 30" stroke="gray"
+            stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+          </svg>
+          <div ref="eLabel" class="ag-header-cell-label" role="presentation">
+            <span ref="eText" class="ag-header-cell-text"></span>
+            <span ref="eFilter" class="ag-header-icon ag-header-label-icon ag-filter-icon" aria-hidden="true"></span>
+            <span ref="eSortOrder" class="ag-header-icon ag-header-label-icon ag-sort-order" aria-hidden="true"></span>
+            <span ref="eSortAsc" class="ag-header-icon ag-header-label-icon ag-sort-ascending-icon" aria-hidden="true"></span>
+            <span ref="eSortDesc" class="ag-header-icon ag-header-label-icon ag-sort-descending-icon" aria-hidden="true"></span>
+            <span ref="eSortNone" class="ag-header-icon ag-header-label-icon ag-sort-none-icon" aria-hidden="true"></span>
+          </div>
+          </div>
+        `,
+      };
+    }
   };
 });
 
