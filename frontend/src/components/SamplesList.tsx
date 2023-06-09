@@ -32,6 +32,8 @@ interface ISampleListProps {
   setUnsavedChanges: (val: boolean) => void;
   searchVariables: SampleMetadataWhere;
   exportFileName?: string;
+  sampleQueryParamFieldName: string;
+  sampleQueryParamValue: string;
 }
 
 function sampleFilterWhereVariables(value: string) {
@@ -72,6 +74,8 @@ export const SamplesList: FunctionComponent<ISampleListProps> = ({
   height,
   setUnsavedChanges,
   exportFileName,
+  sampleQueryParamFieldName,
+  sampleQueryParamValue,
 }) => {
   const { loading, error, data, startPolling, stopPolling, refetch } =
     useFindSamplesByInputValueQuery({
@@ -204,6 +208,7 @@ export const SamplesList: FunctionComponent<ISampleListProps> = ({
                     where: {
                       hasMetadataSampleMetadata_SOME: {
                         OR: sampleFilterWhereVariables(value),
+                        [sampleQueryParamFieldName]: sampleQueryParamValue,
                       },
                     },
                   });

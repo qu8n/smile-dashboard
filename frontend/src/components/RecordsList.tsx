@@ -194,6 +194,8 @@ const RecordsList: FunctionComponent<IRecordsListProps> = ({
                     searchVariables={searchVariables}
                     setUnsavedChanges={setUnsavedChanges}
                     exportFileName={`${sampleQueryParamFieldName}_${sampleQueryParamValue}.tsv`}
+                    sampleQueryParamFieldName={sampleQueryParamFieldName}
+                    sampleQueryParamValue={sampleQueryParamValue}
                   />
                 </div>
               </Modal.Body>
