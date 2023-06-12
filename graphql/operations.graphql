@@ -31,6 +31,7 @@ query PatientsList(
         smileSampleId
         hasMetadataSampleMetadata {
           primaryId
+          cmoSampleName
         }
       }
       hasSampleSamplesConnection {

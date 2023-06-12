@@ -6841,6 +6841,7 @@ export type PatientsListQuery = {
         hasMetadataSampleMetadata: Array<{
           __typename?: "SampleMetadata";
           primaryId: string;
+          cmoSampleName?: string | null;
         }>;
       }>;
       hasSampleSamplesConnection: {
@@ -7305,6 +7306,7 @@ export const PatientsListDocument = gql`
           smileSampleId
           hasMetadataSampleMetadata {
             primaryId
+            cmoSampleName
           }
         }
         hasSampleSamplesConnection {

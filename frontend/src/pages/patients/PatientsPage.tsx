@@ -20,6 +20,15 @@ function patientAliasFilterWhereVariables(value: string): PatientAliasWhere[] {
       isAliasPatients_SOME: {
         hasSampleSamples_SOME: {
           hasMetadataSampleMetadata_SOME: {
+            cmoSampleName_CONTAINS: value,
+          },
+        },
+      },
+    },
+    {
+      isAliasPatients_SOME: {
+        hasSampleSamples_SOME: {
+          hasMetadataSampleMetadata_SOME: {
             primaryId_CONTAINS: value,
           },
         },
