@@ -1,4 +1,3 @@
-import React from "react";
 import ReactDOM from "react-dom";
 import "./index.scss";
 import reportWebVitals from "./reportWebVitals";
@@ -8,6 +7,7 @@ import RequestsPage from "./pages/requests/RequestsPage";
 import SmileNavBar from "./shared/components/SmileNavBar";
 import { offsetLimitPagination } from "@apollo/client/utilities";
 import PatientsPage from "./pages/patients/PatientsPage";
+import SamplesPage from "./pages/samples/SamplesPage";
 
 const cache = new InMemoryCache({
   /* @ts-ignore */
@@ -34,7 +34,7 @@ const client = new ApolloClient({
   cache,
 });
 
-const root = ReactDOM.render(
+ReactDOM.render(
   <BrowserRouter>
     <ApolloProvider client={client}>
       <div>
@@ -52,6 +52,7 @@ const root = ReactDOM.render(
               <Route path="/patients/" element={<PatientsPage />}>
                 <Route path=":cmoPatientId" />
               </Route>
+              <Route path="/samples" element={<SamplesPage />} />
             </Routes>
           </section>
         </main>

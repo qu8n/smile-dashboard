@@ -7,9 +7,9 @@ import {
 } from "ag-grid-community";
 import { Button } from "react-bootstrap";
 import "ag-grid-enterprise";
-import { SampleMetadata, Sample } from "../../generated/graphql";
+import { SampleMetadata, Sample } from "../generated/graphql";
 import WarningIcon from "@material-ui/icons/Warning";
-import { StatusTooltip } from "./StatusToolTip";
+import { StatusTooltip } from "./components/StatusToolTip";
 import { ITooltipParams } from "ag-grid-community";
 
 export interface SampleMetadataExtended extends SampleMetadata {

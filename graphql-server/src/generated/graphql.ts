@@ -6944,6 +6944,7 @@ export type RequestWithSamplesQuery = {
 
 export type FindSamplesByInputValueQueryVariables = Exact<{
   where?: InputMaybe<SampleWhere>;
+  first?: InputMaybe<Scalars["Int"]>;
   options?: InputMaybe<SampleMetadataOptions>;
   patientAliasesIsAliasWhere2?: InputMaybe<PatientAliasWhere>;
 }>;
@@ -7370,10 +7371,11 @@ export type RequestWithSamplesQueryResult = Apollo.QueryResult<
 export const FindSamplesByInputValueDocument = gql`
   query FindSamplesByInputValue(
     $where: SampleWhere
+    $first: Int
     $options: SampleMetadataOptions
     $patientAliasesIsAliasWhere2: PatientAliasWhere
   ) {
-    samplesConnection(where: $where) {
+    samplesConnection(where: $where, first: $first) {
       edges {
         node {
           ...SampleParts

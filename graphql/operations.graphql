@@ -83,10 +83,11 @@ query RequestWithSamples(
 
 query FindSamplesByInputValue(
   $where: SampleWhere
+  $first: Int
   $options: SampleMetadataOptions
   $patientAliasesIsAliasWhere2: PatientAliasWhere
 ) {
-  samplesConnection(where: $where) {
+  samplesConnection(where: $where, first: $first) {
     edges {
       node {
         ...SampleParts

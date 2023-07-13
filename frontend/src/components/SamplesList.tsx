@@ -10,13 +10,14 @@ import classNames from "classnames";
 import { FunctionComponent, useRef } from "react";
 import { DownloadModal } from "./DownloadModal";
 import { UpdateModal } from "./UpdateModal";
+import { AlertModal } from "./AlertModal";
 import { CSVFormulate } from "../lib/CSVExport";
 import {
   SampleDetailsColumns,
   defaultSamplesColDef,
   SampleChange,
   SampleMetadataExtended,
-} from "../pages/requests/helpers";
+} from "../shared/helpers";
 import Spinner from "react-spinkit";
 import { AgGridReact } from "ag-grid-react";
 import { useState } from "react";
@@ -26,17 +27,18 @@ import "ag-grid-enterprise";
 import { CellValueChangedEvent } from "ag-grid-community";
 
 const POLLING_INTERVAL = 2000;
+const max_rows = 500;
 
 interface ISampleListProps {
   height: number;
-  setUnsavedChanges: (val: boolean) => void;
-  searchVariables: SampleMetadataWhere;
+  setUnsavedChanges?: (val: boolean) => void;
+  searchVariables?: SampleMetadataWhere;
   exportFileName?: string;
-  sampleQueryParamFieldName: string;
-  sampleQueryParamValue: string;
+  sampleQueryParamFieldName?: string;
+  sampleQueryParamValue?: string;
 }
 
-function sampleFilterWhereVariables(value: string) {
+function sampleFilterWhereVariables(value: string): SampleMetadataWhere[] {
   return [
     { cmoSampleName_CONTAINS: value },
     { importDate_CONTAINS: value },
@@ -80,9 +82,15 @@ export const SamplesList: FunctionComponent<ISampleListProps> = ({
   const { loading, error, data, startPolling, stopPolling, refetch } =
     useFindSamplesByInputValueQuery({
       variables: {
-        where: {
-          ...searchVariables,
-        },
+        ...(searchVariables
+          ? {
+              where: {
+                ...searchVariables,
+              },
+            }
+          : {
+              first: max_rows,
+            }),
         options: {
           sort: [{ importDate: SortDirection.Desc }],
           limit: 1,
@@ -93,6 +101,7 @@ export const SamplesList: FunctionComponent<ISampleListProps> = ({
 
   const [val, setVal] = useState("");
   const [showDownloadModal, setShowDownloadModal] = useState(false);
+  const [showAlertModal, setShowAlertModal] = useState(false);
   const [typingTimeout, setTypingTimeout] = useState<any>(null);
   const [prom, setProm] = useState<any>(Promise.resolve());
   const [showUpdateModal, setShowUpdateModal] = useState(false);
@@ -135,7 +144,7 @@ export const SamplesList: FunctionComponent<ISampleListProps> = ({
         return [...changes];
       });
 
-      setUnsavedChanges(true);
+      setUnsavedChanges?.(true);
     }
   };
 
@@ -146,7 +155,7 @@ export const SamplesList: FunctionComponent<ISampleListProps> = ({
       startPolling(POLLING_INTERVAL);
     }, 10000);
 
-    setUnsavedChanges(false);
+    setUnsavedChanges?.(false);
     setChanges([]);
     setTimeout(() => {
       setEditMode(true);
@@ -168,6 +177,7 @@ export const SamplesList: FunctionComponent<ISampleListProps> = ({
           exportFileName={exportFileName || "samples.tsv"}
         />
       )}
+
       {showUpdateModal && (
         <UpdateModal
           changes={changes}
@@ -177,6 +187,17 @@ export const SamplesList: FunctionComponent<ISampleListProps> = ({
           onOpen={() => stopPolling()}
         />
       )}
+
+      <AlertModal
+        show={showAlertModal}
+        onHide={() => {
+          setShowAlertModal(false);
+        }}
+        message={
+          "You've reached the maximum number of samples that can be displayed. Please refine your search to see more samples."
+        }
+      />
+
       <Row
         className={classNames(
           "d-flex justify-content-between align-items-center tableControlsRow"
@@ -208,7 +229,12 @@ export const SamplesList: FunctionComponent<ISampleListProps> = ({
                     where: {
                       hasMetadataSampleMetadata_SOME: {
                         OR: sampleFilterWhereVariables(value),
-                        [sampleQueryParamFieldName]: sampleQueryParamValue,
+                        ...(sampleQueryParamFieldName && sampleQueryParamValue
+                          ? {
+                              [sampleQueryParamFieldName]:
+                                sampleQueryParamValue,
+                            }
+                          : {}),
                       },
                     },
                   });
@@ -220,7 +246,11 @@ export const SamplesList: FunctionComponent<ISampleListProps> = ({
           />
         </Col>
 
-        <Col className={"text-start"}>{remoteCount} matching samples</Col>
+        <Col className={"text-start"}>
+          {remoteCount === max_rows
+            ? `${max_rows}+ matching samples`
+            : `${remoteCount} matching samples`}
+        </Col>
 
         {changes.length > 0 && (
           <>
@@ -254,10 +284,11 @@ export const SamplesList: FunctionComponent<ISampleListProps> = ({
             }}
             size={"sm"}
           >
-            Generate Sample Report
+            Generate Report
           </Button>
         </Col>
       </Row>
+
       <AutoSizer>
         {({ width }) => (
           <div
@@ -265,7 +296,6 @@ export const SamplesList: FunctionComponent<ISampleListProps> = ({
             style={{ height: height, width: width }}
           >
             <AgGridReact<SampleMetadataExtended>
-              immutableData={true}
               getRowId={(d) => {
                 return d.data.primaryId;
               }}
@@ -305,6 +335,11 @@ export const SamplesList: FunctionComponent<ISampleListProps> = ({
               }}
               tooltipShowDelay={0}
               tooltipHideDelay={60000}
+              onBodyScrollEnd={(params) => {
+                if (params.api.getLastDisplayedRow() + 1 === max_rows) {
+                  setShowAlertModal(true);
+                }
+              }}
             />
           </div>
         )}

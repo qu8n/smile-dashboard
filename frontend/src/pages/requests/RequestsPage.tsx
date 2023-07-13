@@ -4,7 +4,7 @@ import {
   useRequestsListLazyQuery,
 } from "../../generated/graphql";
 import React from "react";
-import { RequestsListColumns } from "./helpers";
+import { RequestsListColumns } from "../../shared/helpers";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import "ag-grid-enterprise";

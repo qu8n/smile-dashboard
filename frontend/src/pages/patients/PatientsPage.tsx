@@ -4,7 +4,7 @@ import {
   usePatientsListLazyQuery,
 } from "../../generated/graphql";
 import React from "react";
-import { PatientsListColumns } from "../requests/helpers";
+import { PatientsListColumns } from "../../shared/helpers";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import "ag-grid-enterprise";

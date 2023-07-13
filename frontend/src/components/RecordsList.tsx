@@ -16,7 +16,7 @@ import { ColDef, IServerSideGetRowsParams } from "ag-grid-community";
 import { useHookGeneric } from "../shared/types";
 import { SamplesList } from "./SamplesList";
 import { SampleWhere } from "../generated/graphql";
-import { defaultRecordsColDef } from "../pages/requests/helpers";
+import { defaultRecordsColDef } from "../shared/helpers";
 
 export interface IRecordsListProps {
   lazyRecordsQuery: typeof useHookGeneric;

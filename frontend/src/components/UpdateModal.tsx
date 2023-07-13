@@ -6,7 +6,7 @@ import "ag-grid-enterprise";
 import styles from "./records.module.scss";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
-import { SampleChange, ChangeForSubmit } from "../pages/requests/helpers";
+import { SampleChange, ChangeForSubmit } from "../shared/helpers";
 import { Sample, useUpdateSamplesMutation } from "../generated/graphql";
 import _ from "lodash";
 

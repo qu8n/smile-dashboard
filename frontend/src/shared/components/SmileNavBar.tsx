@@ -1,4 +1,3 @@
-import * as React from "react";
 import logo_with_text from "../../imgs/logo_with_text.png";
 import { Nav, NavLink } from "react-bootstrap";
 import { FunctionComponent } from "react";
@@ -18,6 +17,7 @@ const SmileNavBar: FunctionComponent = () => {
         <Nav>
           <NavLink href="/requests">Requests</NavLink>
           <NavLink href="/patients">Patients</NavLink>
+          <NavLink href="/samples">Samples</NavLink>
         </Nav>
       </header>
     </>
