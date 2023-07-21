@@ -11,28 +11,49 @@ import "ag-grid-enterprise";
 import RecordsList from "../../components/RecordsList";
 import { useParams } from "react-router-dom";
 import PageHeader from "../../shared/components/PageHeader";
+import { parseSearchQueries } from "../../lib/parseSearchQueries";
 
 function requestFilterWhereVariables(value: string): RequestWhere[] {
-  return [
-    { igoProjectId_CONTAINS: value },
-    { igoRequestId_CONTAINS: value },
-    { genePanel_CONTAINS: value },
-    { dataAnalystEmail_CONTAINS: value },
-    { dataAnalystName_CONTAINS: value },
-    { investigatorEmail_CONTAINS: value },
-    { investigatorName_CONTAINS: value },
-    { labHeadEmail_CONTAINS: value },
-    { libraryType_CONTAINS: value },
-    { labHeadName_CONTAINS: value },
-    { namespace_CONTAINS: value },
-    { piEmail_CONTAINS: value },
-    { otherContactEmails_CONTAINS: value },
-    { projectManagerName_CONTAINS: value },
-    { qcAccessEmails_CONTAINS: value },
-  ];
+  const uniqueQueries = parseSearchQueries(value);
+
+  if (uniqueQueries.length > 1) {
+    return [
+      { igoProjectId_IN: uniqueQueries },
+      { igoRequestId_IN: uniqueQueries },
+      { projectManagerName_IN: uniqueQueries },
+      { investigatorName_IN: uniqueQueries },
+      { investigatorEmail_IN: uniqueQueries },
+      { piEmail_IN: uniqueQueries },
+      { dataAnalystName_IN: uniqueQueries },
+      { dataAnalystEmail_IN: uniqueQueries },
+      { genePanel_IN: uniqueQueries },
+      { labHeadName_IN: uniqueQueries },
+      { labHeadEmail_IN: uniqueQueries },
+      { qcAccessEmails_IN: uniqueQueries },
+      { dataAccessEmails_IN: uniqueQueries },
+      { otherContactEmails_IN: uniqueQueries },
+    ];
+  } else {
+    return [
+      { igoProjectId_CONTAINS: uniqueQueries[0] },
+      { igoRequestId_CONTAINS: uniqueQueries[0] },
+      { projectManagerName_CONTAINS: uniqueQueries[0] },
+      { investigatorName_CONTAINS: uniqueQueries[0] },
+      { investigatorEmail_CONTAINS: uniqueQueries[0] },
+      { piEmail_CONTAINS: uniqueQueries[0] },
+      { dataAnalystName_CONTAINS: uniqueQueries[0] },
+      { dataAnalystEmail_CONTAINS: uniqueQueries[0] },
+      { genePanel_CONTAINS: uniqueQueries[0] },
+      { labHeadName_CONTAINS: uniqueQueries[0] },
+      { labHeadEmail_CONTAINS: uniqueQueries[0] },
+      { qcAccessEmails_CONTAINS: uniqueQueries[0] },
+      { dataAccessEmails_CONTAINS: uniqueQueries[0] },
+      { otherContactEmails_CONTAINS: uniqueQueries[0] },
+    ];
+  }
 }
 
-export const RequestsPage: React.FunctionComponent = (props) => {
+export const RequestsPage: React.FunctionComponent = () => {
   const params = useParams();
 
   const pageRoute = "/requests";

@@ -17,6 +17,8 @@ import { useHookGeneric } from "../shared/types";
 import { SamplesList } from "./SamplesList";
 import { SampleWhere } from "../generated/graphql";
 import { defaultRecordsColDef } from "../shared/helpers";
+import InfoIcon from "@material-ui/icons/InfoOutlined";
+import { Tooltip } from "@material-ui/core";
 
 export interface IRecordsListProps {
   lazyRecordsQuery: typeof useHookGeneric;
@@ -44,15 +46,14 @@ const RecordsList: FunctionComponent<IRecordsListProps> = ({
   searchVariables,
 }) => {
   const [val, setVal] = useState("");
+  const [searchVal, setSearchVal] = useState("");
   const [showDownloadModal, setShowDownloadModal] = useState(false);
-  const [typingTimeout, setTypingTimeout] = useState<ReturnType<
-    typeof setTimeout
-  > | null>(null);
   const [showClosingWarning, setShowClosingWarning] = useState(false);
   const [unsavedChanges, setUnsavedChanges] = useState(false);
   const navigate = useNavigate();
 
-  // not we aren't using initial fetch
+  // note that we aren't using initial fetch
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [initialFetch, { loading, error, data, fetchMore, refetch }] =
     lazyRecordsQuery({
       variables: {
@@ -66,10 +67,10 @@ const RecordsList: FunctionComponent<IRecordsListProps> = ({
       getRows: (params: IServerSideGetRowsParams) => {
         const fetchInput = {
           where: {
-            OR: conditionBuilder(val),
+            OR: conditionBuilder(searchVal),
           },
           [`${nodeName}ConnectionWhere2`]: {
-            OR: conditionBuilder(val),
+            OR: conditionBuilder(searchVal),
           },
           options: {
             offset: params.request.startRow,
@@ -81,7 +82,7 @@ const RecordsList: FunctionComponent<IRecordsListProps> = ({
         };
 
         // if this is NOT first call, use refetch
-        // (which is analogous in this case to the original fetch
+        // (which is analogous in this case to the original fetch)
         const thisFetch =
           params.request.startRow! === 0
             ? refetch(fetchInput)
@@ -97,7 +98,8 @@ const RecordsList: FunctionComponent<IRecordsListProps> = ({
         });
       },
     };
-  }, [val]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchVal]);
 
   if (loading)
     return (
@@ -211,7 +213,8 @@ const RecordsList: FunctionComponent<IRecordsListProps> = ({
         )}
       >
         <Col></Col>
-        <Col className={"text-end"}>
+
+        <Col md="auto">
           <Form.Control
             className={"d-inline-block"}
             style={{ width: "300px" }}
@@ -219,23 +222,51 @@ const RecordsList: FunctionComponent<IRecordsListProps> = ({
             placeholder={"Search " + searchTerm}
             aria-label="Search"
             defaultValue={val}
-            onInput={(event) => {
-              const value = event.currentTarget.value;
-
-              if (typingTimeout) {
-                clearTimeout(typingTimeout);
+            onKeyDown={(event) => {
+              if (event.key === "Enter") {
+                setSearchVal(val);
               }
-
-              const to = setTimeout(() => {
-                setVal(value);
-              }, 500);
-              setTypingTimeout(to);
+            }}
+            onInput={(event) => {
+              const newVal = event.currentTarget.value;
+              if (newVal === "") {
+                setSearchVal("");
+              }
+              setVal(newVal);
             }}
           />
         </Col>
 
-        <Col className={"text-start"}>
-          {remoteCount} matching {searchTerm}
+        <Col md="auto" style={{ marginLeft: -15 }}>
+          <Tooltip
+            title={
+              <span style={{ fontSize: 12 }}>
+                After inputting your search query, click on &quot;Search&quot;
+                or press &quot;Enter&quot; to get your results. To bulk search,
+                input a list of values separated by spaces or commas (e.g.
+                &quot;value1 value2 value3&quot;)
+              </span>
+            }
+          >
+            <InfoIcon style={{ fontSize: 18, color: "grey" }} />
+          </Tooltip>
+        </Col>
+
+        <Col md="auto" style={{ marginLeft: -15 }}>
+          <Button
+            onClick={() => {
+              setSearchVal(val);
+            }}
+            className={"btn btn-secondary"}
+            size={"sm"}
+          >
+            Search
+          </Button>
+        </Col>
+
+        <Col md="auto">
+          {remoteCount?.toLocaleString()} matching{" "}
+          {remoteCount > 1 ? searchTerm : searchTerm.slice(0, -1)}
         </Col>
 
         <Col className={"text-end"}>

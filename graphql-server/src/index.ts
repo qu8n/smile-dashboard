@@ -38,6 +38,7 @@ async function main() {
   const app: Express = express();
   app.use(express.static(path.resolve(__dirname, "../build")));
   app.use(bodyParser.urlencoded({ extended: true }));
+  app.use(express.json({ limit: "50mb" })); // increase to support bulk searching
 
   // for health check
   app.get("/", (req, res) => {
