@@ -303,6 +303,7 @@ const RecordsList: FunctionComponent<IRecordsListProps> = ({
               onFirstDataRendered={(params) => {
                 params.columnApi.autoSizeAllColumns();
               }}
+              enableRangeSelection={true}
             />
           </div>
         )}

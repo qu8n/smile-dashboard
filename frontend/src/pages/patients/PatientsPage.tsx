@@ -11,30 +11,58 @@ import "ag-grid-enterprise";
 import RecordsList from "../../components/RecordsList";
 import { useParams } from "react-router-dom";
 import PageHeader from "../../shared/components/PageHeader";
+import { parseSearchQueries } from "../../lib/parseSearchQueries";
 
 function patientAliasFilterWhereVariables(value: string): PatientAliasWhere[] {
-  return [
-    { namespace_CONTAINS: value },
-    { value_CONTAINS: value },
-    {
-      isAliasPatients_SOME: {
-        hasSampleSamples_SOME: {
-          hasMetadataSampleMetadata_SOME: {
-            cmoSampleName_CONTAINS: value,
+  const uniqueQueries = parseSearchQueries(value);
+
+  if (uniqueQueries.length > 1) {
+    return [
+      { value_IN: uniqueQueries },
+      { namespace_IN: uniqueQueries },
+      {
+        isAliasPatients_SOME: {
+          hasSampleSamples_SOME: {
+            hasMetadataSampleMetadata_SOME: {
+              cmoSampleName_IN: uniqueQueries,
+            },
           },
         },
       },
-    },
-    {
-      isAliasPatients_SOME: {
-        hasSampleSamples_SOME: {
-          hasMetadataSampleMetadata_SOME: {
-            primaryId_CONTAINS: value,
+      {
+        isAliasPatients_SOME: {
+          hasSampleSamples_SOME: {
+            hasMetadataSampleMetadata_SOME: {
+              primaryId_IN: uniqueQueries,
+            },
           },
         },
       },
-    },
-  ];
+    ];
+  } else {
+    return [
+      { value_CONTAINS: uniqueQueries[0] },
+      { namespace_CONTAINS: uniqueQueries[0] },
+      {
+        isAliasPatients_SOME: {
+          hasSampleSamples_SOME: {
+            hasMetadataSampleMetadata_SOME: {
+              cmoSampleName_CONTAINS: uniqueQueries[0],
+            },
+          },
+        },
+      },
+      {
+        isAliasPatients_SOME: {
+          hasSampleSamples_SOME: {
+            hasMetadataSampleMetadata_SOME: {
+              primaryId_CONTAINS: uniqueQueries[0],
+            },
+          },
+        },
+      },
+    ];
+  }
 }
 
 export const PatientsPage: React.FunctionComponent = (props) => {
