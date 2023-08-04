@@ -7,7 +7,7 @@ import {
 import AutoSizer from "react-virtualized-auto-sizer";
 import { Button, Col, Form, Row } from "react-bootstrap";
 import classNames from "classnames";
-import { FunctionComponent, useRef } from "react";
+import { FunctionComponent, useEffect, useRef } from "react";
 import { DownloadModal } from "./DownloadModal";
 import { UpdateModal } from "./UpdateModal";
 import { AlertModal } from "./AlertModal";
@@ -25,6 +25,9 @@ import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import "ag-grid-enterprise";
 import { CellValueChangedEvent } from "ag-grid-community";
+import { Tooltip } from "@material-ui/core";
+import InfoIcon from "@material-ui/icons/InfoOutlined";
+import { parseSearchQueries } from "../lib/parseSearchQueries";
 
 const POLLING_INTERVAL = 2000;
 const max_rows = 500;
@@ -39,27 +42,53 @@ interface ISampleListProps {
 }
 
 function sampleFilterWhereVariables(value: string): SampleMetadataWhere[] {
-  return [
-    { cmoSampleName_CONTAINS: value },
-    { importDate_CONTAINS: value },
-    { investigatorSampleId_CONTAINS: value },
-    { primaryId_CONTAINS: value },
-    { sampleClass_CONTAINS: value },
-    { cmoPatientId_CONTAINS: value },
-    { cmoSampleIdFields_CONTAINS: value },
-    { sampleName_CONTAINS: value },
-    { preservation_CONTAINS: value },
-    { tumorOrNormal_CONTAINS: value },
-    { oncotreeCode_CONTAINS: value },
-    { collectionYear_CONTAINS: value },
-    { sampleOrigin_CONTAINS: value },
-    { tissueLocation_CONTAINS: value },
-    { sex_CONTAINS: value },
-    { libraries_CONTAINS: value },
-    { sampleType_CONTAINS: value },
-    { species_CONTAINS: value },
-    { genePanel_CONTAINS: value },
-  ];
+  const uniqueQueries = parseSearchQueries(value);
+
+  if (uniqueQueries.length > 1) {
+    return [
+      { cmoSampleName_IN: uniqueQueries },
+      { importDate_IN: uniqueQueries },
+      { investigatorSampleId_IN: uniqueQueries },
+      { primaryId_IN: uniqueQueries },
+      { sampleClass_IN: uniqueQueries },
+      { cmoPatientId_IN: uniqueQueries },
+      { cmoSampleIdFields_IN: uniqueQueries },
+      { sampleName_IN: uniqueQueries },
+      { preservation_IN: uniqueQueries },
+      { tumorOrNormal_IN: uniqueQueries },
+      { oncotreeCode_IN: uniqueQueries },
+      { collectionYear_IN: uniqueQueries },
+      { sampleOrigin_IN: uniqueQueries },
+      { tissueLocation_IN: uniqueQueries },
+      { sex_IN: uniqueQueries },
+      { libraries_IN: uniqueQueries },
+      { sampleType_IN: uniqueQueries },
+      { species_IN: uniqueQueries },
+      { genePanel_IN: uniqueQueries },
+    ];
+  } else {
+    return [
+      { cmoSampleName_CONTAINS: uniqueQueries[0] },
+      { importDate_CONTAINS: uniqueQueries[0] },
+      { investigatorSampleId_CONTAINS: uniqueQueries[0] },
+      { primaryId_CONTAINS: uniqueQueries[0] },
+      { sampleClass_CONTAINS: uniqueQueries[0] },
+      { cmoPatientId_CONTAINS: uniqueQueries[0] },
+      { cmoSampleIdFields_CONTAINS: uniqueQueries[0] },
+      { sampleName_CONTAINS: uniqueQueries[0] },
+      { preservation_CONTAINS: uniqueQueries[0] },
+      { tumorOrNormal_CONTAINS: uniqueQueries[0] },
+      { oncotreeCode_CONTAINS: uniqueQueries[0] },
+      { collectionYear_CONTAINS: uniqueQueries[0] },
+      { sampleOrigin_CONTAINS: uniqueQueries[0] },
+      { tissueLocation_CONTAINS: uniqueQueries[0] },
+      { sex_CONTAINS: uniqueQueries[0] },
+      { libraries_CONTAINS: uniqueQueries[0] },
+      { sampleType_CONTAINS: uniqueQueries[0] },
+      { species_CONTAINS: uniqueQueries[0] },
+      { genePanel_CONTAINS: uniqueQueries[0] },
+    ];
+  }
 }
 
 function getSampleMetadata(samples: Sample[]) {
@@ -100,14 +129,35 @@ export const SamplesList: FunctionComponent<ISampleListProps> = ({
     });
 
   const [val, setVal] = useState("");
+  const [searchVal, setSearchVal] = useState("");
   const [showDownloadModal, setShowDownloadModal] = useState(false);
   const [showAlertModal, setShowAlertModal] = useState(false);
-  const [typingTimeout, setTypingTimeout] = useState<any>(null);
-  const [prom, setProm] = useState<any>(Promise.resolve());
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [changes, setChanges] = useState<SampleChange[]>([]);
   const [editMode, setEditMode] = useState(true);
   const gridRef = useRef<any>(null);
+
+  useEffect(() => {
+    gridRef.current?.api?.showLoadingOverlay();
+    async function refetchSearchVal() {
+      await refetch({
+        where: {
+          hasMetadataSampleMetadata_SOME: {
+            OR: sampleFilterWhereVariables(searchVal),
+            ...(sampleQueryParamFieldName && sampleQueryParamValue
+              ? {
+                  [sampleQueryParamFieldName]: sampleQueryParamValue,
+                }
+              : {}),
+          },
+        },
+      });
+    }
+    refetchSearchVal().then(() => {
+      gridRef.current?.api?.hideOverlay();
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchVal]);
 
   if (loading)
     return (
@@ -209,41 +259,49 @@ export const SamplesList: FunctionComponent<ISampleListProps> = ({
             className={"d-inline-block"}
             style={{ width: "300px" }}
             type="search"
-            placeholder="Search Samples"
+            placeholder="Search samples"
             aria-label="Search"
             value={val}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") {
+                setSearchVal(val);
+              }
+            }}
             onInput={(event) => {
-              const value = event.currentTarget.value;
-
-              if (value !== null) {
-                setVal(value);
+              const newVal = event.currentTarget.value;
+              if (newVal === "") {
+                setSearchVal("");
               }
-
-              if (typingTimeout) {
-                clearTimeout(typingTimeout);
-              }
-
-              prom.then(() => {
-                const to = setTimeout(() => {
-                  const rf = refetch({
-                    where: {
-                      hasMetadataSampleMetadata_SOME: {
-                        OR: sampleFilterWhereVariables(value),
-                        ...(sampleQueryParamFieldName && sampleQueryParamValue
-                          ? {
-                              [sampleQueryParamFieldName]:
-                                sampleQueryParamValue,
-                            }
-                          : {}),
-                      },
-                    },
-                  });
-                  setProm(rf);
-                }, 500);
-                setTypingTimeout(to);
-              });
+              setVal(newVal);
             }}
           />
+        </Col>
+
+        <Col md="auto" style={{ marginLeft: -15 }}>
+          <Tooltip
+            title={
+              <span style={{ fontSize: 12 }}>
+                After inputting your search query, click on &quot;Search&quot;
+                or press &quot;Enter&quot; to get your results. To bulk search,
+                input a list of values separated by spaces or commas (e.g.
+                &quot;value1 value2 value3&quot;)
+              </span>
+            }
+          >
+            <InfoIcon style={{ fontSize: 18, color: "grey" }} />
+          </Tooltip>
+        </Col>
+
+        <Col md="auto" style={{ marginLeft: -15 }}>
+          <Button
+            onClick={() => {
+              setSearchVal(val);
+            }}
+            className={"btn btn-secondary"}
+            size={"sm"}
+          >
+            Search
+          </Button>
         </Col>
 
         <Col className={"text-start"}>
