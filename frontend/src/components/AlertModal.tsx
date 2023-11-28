@@ -4,9 +4,10 @@ import Modal from "react-bootstrap/Modal";
 
 export const AlertModal: FunctionComponent<{
   show: boolean;
-  message: string;
+  title: string;
+  content: string;
   onHide: () => void;
-}> = ({ show, onHide, message }) => {
+}> = ({ show, title, content, onHide }) => {
   return (
     <Modal
       show={show}
@@ -15,12 +16,10 @@ export const AlertModal: FunctionComponent<{
       centered
     >
       <Modal.Header closeButton>
-        <Modal.Title id="contained-modal-title-vcenter">
-          Limit reached
-        </Modal.Title>
+        <Modal.Title id="contained-modal-title-vcenter">{title}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <p>{message}</p>
+        <p>{content}</p>
       </Modal.Body>
       <Modal.Footer>
         <Button onClick={onHide}>Ok</Button>

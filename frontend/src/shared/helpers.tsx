@@ -7,7 +7,7 @@ import {
 } from "ag-grid-community";
 import { Button } from "react-bootstrap";
 import "ag-grid-enterprise";
-import { SampleMetadata, Sample } from "../generated/graphql";
+import { Sample, SampleMetadata } from "../generated/graphql";
 import WarningIcon from "@material-ui/icons/Warning";
 import { StatusTooltip } from "./components/StatusToolTip";
 import { ITooltipParams } from "ag-grid-community";
@@ -153,14 +153,18 @@ export const PatientsListColumns: ColDef[] = [
     sortable: false,
   },
   {
+    field: "patientMrn",
+    headerName: "Patient MRN",
+    hide: true,
+    cellStyle: { color: "crimson" },
+  },
+  {
     field: "cmoPatientId",
     headerName: "CMO Patient ID",
     valueGetter: function ({ data }) {
-      for (let i of data["isAliasPatients"][0]["patientAliasesIsAlias"]) {
-        if (i.namespace === "cmoId") {
-          return i.value;
-        }
-      }
+      return data["isAliasPatients"][0]["patientAliasesIsAlias"].find(
+        (patientAlias: any) => patientAlias.namespace === "cmoId"
+      )?.value;
     },
     sortable: false,
   },
@@ -168,11 +172,9 @@ export const PatientsListColumns: ColDef[] = [
     field: "dmpPatientId",
     headerName: "DMP Patient ID",
     valueGetter: function ({ data }) {
-      for (let i of data["isAliasPatients"][0]?.patientAliasesIsAlias) {
-        if (i.namespace === "dmpId") {
-          return i.value;
-        }
-      }
+      return data["isAliasPatients"][0]["patientAliasesIsAlias"].find(
+        (patientAlias: any) => patientAlias.namespace === "dmpId"
+      )?.value;
     },
     sortable: false,
   },
@@ -185,6 +187,7 @@ export const PatientsListColumns: ColDef[] = [
     sortable: false,
   },
   {
+    field: "cmoSampleIds",
     headerName: "CMO Sample IDs",
     valueGetter: function ({ data }) {
       return data["isAliasPatients"][0].hasSampleSamples.map(

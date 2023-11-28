@@ -2,7 +2,7 @@ import { ColDef } from "ag-grid-community";
 
 export function CSVFormulate(rows: any[], columnDefinitions: ColDef[]) {
   const csvString = [
-    columnDefinitions.map((item) => item.field).join("\t"),
+    columnDefinitions.map((item) => item.headerName).join("\t"),
     ...rows
       .map((req) =>
         columnDefinitions.map((colDef) => {

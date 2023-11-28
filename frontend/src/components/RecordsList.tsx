@@ -1,6 +1,6 @@
 import AutoSizer from "react-virtualized-auto-sizer";
 import { Button, Col, Container, Form, Row, Modal } from "react-bootstrap";
-import React, { FunctionComponent, useMemo } from "react";
+import { FunctionComponent, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import classNames from "classnames";
 import { DownloadModal } from "./DownloadModal";
@@ -19,6 +19,7 @@ import { SampleWhere } from "../generated/graphql";
 import { defaultRecordsColDef } from "../shared/helpers";
 import InfoIcon from "@material-ui/icons/InfoOutlined";
 import { Tooltip } from "@material-ui/core";
+import { PatientIdsTriplet } from "../pages/patients/PatientsPage";
 
 export interface IRecordsListProps {
   lazyRecordsQuery: typeof useHookGeneric;
@@ -27,10 +28,20 @@ export interface IRecordsListProps {
   pageRoute: string;
   searchTerm: string;
   colDefs: ColDef[];
-  conditionBuilder: (val: string) => Record<string, any>[];
+  conditionBuilder: (uniqueQueries: string[]) => Record<string, any>[];
   sampleQueryParamValue: string | undefined;
   sampleQueryParamFieldName: string;
   searchVariables: SampleWhere;
+  customFilterUI?: JSX.Element;
+  setCustomFilterVals?: (vals: PatientIdsTriplet[]) => void;
+  searchVal: string[];
+  setSearchVal: (val: string[]) => void;
+  handleSearch: () => void;
+  inputVal: string;
+  setInputVal: (val: string) => void;
+  showDownloadModal: boolean;
+  setShowDownloadModal: (val: boolean) => void;
+  handleDownload: () => void;
 }
 
 const RecordsList: FunctionComponent<IRecordsListProps> = ({
@@ -44,10 +55,17 @@ const RecordsList: FunctionComponent<IRecordsListProps> = ({
   sampleQueryParamValue,
   sampleQueryParamFieldName,
   searchVariables,
+  customFilterUI,
+  setCustomFilterVals,
+  searchVal,
+  setSearchVal,
+  handleSearch,
+  inputVal,
+  setInputVal,
+  showDownloadModal,
+  setShowDownloadModal,
+  handleDownload,
 }) => {
-  const [val, setVal] = useState("");
-  const [searchVal, setSearchVal] = useState("");
-  const [showDownloadModal, setShowDownloadModal] = useState(false);
   const [showClosingWarning, setShowClosingWarning] = useState(false);
   const [unsavedChanges, setUnsavedChanges] = useState(false);
   const navigate = useNavigate();
@@ -128,7 +146,7 @@ const RecordsList: FunctionComponent<IRecordsListProps> = ({
             return fetchMore({
               variables: {
                 where: {
-                  OR: conditionBuilder(val),
+                  OR: conditionBuilder(searchVal),
                 },
                 options: {
                   offset: 0,
@@ -221,18 +239,19 @@ const RecordsList: FunctionComponent<IRecordsListProps> = ({
             type="search"
             placeholder={"Search " + searchTerm}
             aria-label="Search"
-            defaultValue={val}
+            defaultValue={inputVal}
             onKeyDown={(event) => {
               if (event.key === "Enter") {
-                setSearchVal(val);
+                handleSearch();
               }
             }}
             onInput={(event) => {
               const newVal = event.currentTarget.value;
               if (newVal === "") {
-                setSearchVal("");
+                setCustomFilterVals && setCustomFilterVals([]);
+                setSearchVal([]);
               }
-              setVal(newVal);
+              setInputVal(newVal);
             }}
           />
         </Col>
@@ -254,9 +273,7 @@ const RecordsList: FunctionComponent<IRecordsListProps> = ({
 
         <Col md="auto" style={{ marginLeft: -15 }}>
           <Button
-            onClick={() => {
-              setSearchVal(val);
-            }}
+            onClick={handleSearch}
             className={"btn btn-secondary"}
             size={"sm"}
           >
@@ -269,13 +286,10 @@ const RecordsList: FunctionComponent<IRecordsListProps> = ({
           {remoteCount > 1 ? searchTerm : searchTerm.slice(0, -1)}
         </Col>
 
+        {customFilterUI}
+
         <Col className={"text-end"}>
-          <Button
-            onClick={() => {
-              setShowDownloadModal(true);
-            }}
-            size={"sm"}
-          >
+          <Button onClick={handleDownload} size={"sm"}>
             Generate Report
           </Button>
         </Col>

@@ -41,9 +41,9 @@ interface ISampleListProps {
   sampleQueryParamValue?: string;
 }
 
-function sampleFilterWhereVariables(value: string): SampleMetadataWhere[] {
-  const uniqueQueries = parseSearchQueries(value);
-
+function sampleFilterWhereVariables(
+  uniqueQueries: string[]
+): SampleMetadataWhere[] {
   if (uniqueQueries.length > 1) {
     return [
       { cmoSampleName_IN: uniqueQueries },
@@ -143,7 +143,7 @@ export const SamplesList: FunctionComponent<ISampleListProps> = ({
       await refetch({
         where: {
           hasMetadataSampleMetadata_SOME: {
-            OR: sampleFilterWhereVariables(searchVal),
+            OR: sampleFilterWhereVariables(parseSearchQueries(searchVal)),
             ...(sampleQueryParamFieldName && sampleQueryParamValue
               ? {
                   [sampleQueryParamFieldName]: sampleQueryParamValue,
@@ -243,7 +243,8 @@ export const SamplesList: FunctionComponent<ISampleListProps> = ({
         onHide={() => {
           setShowAlertModal(false);
         }}
-        message={
+        title={"Limit reached"}
+        content={
           "You've reached the maximum number of samples that can be displayed. Please refine your search to see more samples."
         }
       />

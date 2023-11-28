@@ -29,4 +29,4 @@ To run launch the GraphQL client:
 node index.js
 ```
 
-The GraphQL client will be available at `http://localhost:4000` and the Apollo GraphQL can connect at `http://localhost:4000/graphql`
+The GraphQL client will be available at `https://localhost:4000` and the Apollo GraphQL can connect at `https://localhost:4000/graphql`

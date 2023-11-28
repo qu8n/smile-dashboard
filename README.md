@@ -29,6 +29,26 @@ If running into build issues, try purging existing contents from all `/node_modu
 rm -rf ./node_modules frontend/node_modules graphql-server/node_modules
 ```
 
+### Add SSL Certificate
+
+Download `smile-dashboard-web-cert.pem` and `smile-dashboard-web-key.pem` from [here](https://github.mskcc.org/cmo/smile-configuration/tree/master/resources/smile-dashboard).
+
+Create a new directory named `.cert` at the root of the project and place the downloaded files in it.
+
+### Download the Oracle Instant Client
+
+The Oracle Instant Client allows us to connect to an Oracle database (CRDB) for MRN-CMO-DMP data.
+
+Download the Oracle Instant Client from [here](https://www.oracle.com/database/technologies/instant-client/downloads.html). 
+
+Select the version corresponding to your operating system and download the latest version's `Basic Package` zip file.
+
+Unzip and copy the entire directory to `/graphql-server/opt/oracle`.
+
+#### Why can't we just use the Nodejs' `oracledb` package?
+
+By default, `node-oracledb` runs in [Thin mode (vs. Thick mode)](https://node-oracledb.readthedocs.io/en/latest/user_guide/appendix_a.html). The CRDB uses a password verifier type (`0x939`) that is not supported by Thin mode. Pairing the Oracle Instant Client with `node-oracledb` allows us enables Thick mode and allows us to connect to the CRDB.
+
 ### Dashboard Backend
 
 The backend for the dashboard is under `./graphql-server`.
@@ -42,16 +62,16 @@ yarn build:backend
 yarn dev:backend
 ```
 
-If successful, the graphql client should be available at `http://localhost:4000/graphql`.
+If successful, the graphql client should be available at `https://localhost:4000/graphql`.
 
 ### Dashboard App
 
-Set an environment variable `${REACT_APP_GRAPHQL_CLIENT_URI}` that points to the graphql client the webapp should be using. The app will default to `http://localhost:4000/graphql` if this is unset.
+Set an environment variable `${REACT_APP_GRAPHQL_CLIENT_URI}` that points to the graphql client the webapp should be using. The app will default to `https://localhost:4000/graphql` if this is unset.
 
 Example:
 
 ```
-export REACT_APP_GRAPHQL_CLIENT_URI=http://localhost:4000/graphql
+export REACT_APP_GRAPHQL_CLIENT_URI=https://localhost:4000/graphql
 ```
 
 To run the frontend:
@@ -62,7 +82,7 @@ yarn dev:frontend
 
 Example pages:
 
-- http://localhost:3006/
+- https://localhost:3006/
 
 > **Tip:** This page should open automatically through your default web browser. If not then please navigate to the web app manually.
 
@@ -126,7 +146,7 @@ services:
     ports:
       - 4000:4000
     healthcheck:
-        test: ["CMD", "curl", "-s", "http://localhost:4000"]
+        test: ["CMD", "curl", "-s", "https://localhost:4000"]
         interval: 30s
         timeout: 10s
         retries: 5

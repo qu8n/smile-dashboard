@@ -1,8 +1,23 @@
 import logo_with_text from "../../imgs/logo_with_text.png";
 import { Nav, NavLink } from "react-bootstrap";
-import { FunctionComponent } from "react";
+import { REACT_APP_EXPRESS_SERVER_ORIGIN } from "../constants";
 
-const SmileNavBar: FunctionComponent = () => {
+export default function SmileNavBar({
+  userEmail,
+  setUserEmail,
+}: {
+  userEmail: string | null;
+  setUserEmail: (email: string | null) => void;
+}) {
+  function handleLogout() {
+    fetch(`${REACT_APP_EXPRESS_SERVER_ORIGIN}/logout`, {
+      method: "POST",
+      credentials: "include",
+      mode: "no-cors",
+    });
+    setUserEmail(null);
+  }
+
   return (
     <>
       <header
@@ -19,9 +34,19 @@ const SmileNavBar: FunctionComponent = () => {
           <NavLink href="/patients">Patients</NavLink>
           <NavLink href="/samples">Samples</NavLink>
         </Nav>
+        {userEmail && (
+          <div className="ms-auto d-flex">
+            <p className="m-auto">Logged in as {userEmail}</p>
+            <button
+              type="button"
+              className="btn btn-outline-primary btn-sm m-3"
+              onClick={handleLogout}
+            >
+              Logout
+            </button>
+          </div>
+        )}
       </header>
     </>
   );
-};
-
-export default SmileNavBar;
+}

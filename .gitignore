@@ -29,3 +29,5 @@ yarn-error.log*
 *.pem
 
 generated/*.js
+
+/graphql-server/opt/
