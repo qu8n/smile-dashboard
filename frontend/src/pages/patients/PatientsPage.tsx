@@ -96,7 +96,7 @@ const UNAUTHORIZED_WARNING = {
 const NO_PHI_SEARCH_RESULTS = {
   title: "No results found",
   content:
-    "No results were found for your search. Your patient ID search term does not exists in either the SMILE or CRDB databases.",
+    "No results were found for your search. No patient IDs in your search exist in either the SMILE or CRDB databases.",
 };
 
 export default function PatientsPage({
@@ -161,10 +161,11 @@ export default function PatientsPage({
       }
 
       const data: PatientIdsTriplet[] = await response.json();
-      setPatientIdsTriplets(data);
+      const validData = data.filter((d) => Boolean(d));
+      setPatientIdsTriplets(validData);
 
-      if (data.length > 0) {
-        return data.map((d) => addCDashToCMOId(d.CMO_ID));
+      if (validData.length > 0) {
+        return validData.map((d) => addCDashToCMOId(d.CMO_ID));
       } else {
         return [];
       }
@@ -188,6 +189,7 @@ export default function PatientsPage({
           show: true,
           ...NO_PHI_SEARCH_RESULTS,
         });
+        setSearchVal([]);
       }
     } else {
       setSearchVal(uniqueQueries);
