@@ -1,10 +1,8 @@
 import AutoSizer from "react-virtualized-auto-sizer";
-import { Button, Col, Container, Form, Row, Modal } from "react-bootstrap";
+import { Button, Container, Modal } from "react-bootstrap";
 import { FunctionComponent, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import classNames from "classnames";
 import { DownloadModal } from "./DownloadModal";
-import Spinner from "react-spinkit";
 import { CSVFormulate } from "../lib/CSVExport";
 import { AgGridReact } from "ag-grid-react";
 import { useState } from "react";
@@ -17,9 +15,8 @@ import { useHookGeneric } from "../shared/types";
 import { SamplesList } from "./SamplesList";
 import { SampleWhere } from "../generated/graphql";
 import { defaultRecordsColDef } from "../shared/helpers";
-import InfoIcon from "@material-ui/icons/InfoOutlined";
-import { Tooltip } from "@material-ui/core";
 import { PatientIdsTriplet } from "../pages/patients/PatientsPage";
+import { ErrorMessage, LoadingSpinner, Toolbar } from "../shared/tableElements";
 
 export interface IRecordsListProps {
   lazyRecordsQuery: typeof useHookGeneric;
@@ -119,14 +116,9 @@ const RecordsList: FunctionComponent<IRecordsListProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchVal]);
 
-  if (loading)
-    return (
-      <div className={"centralSpinner"}>
-        <Spinner fadeIn={"none"} color={"lightblue"} name="ball-grid-pulse" />
-      </div>
-    );
+  if (loading) return <LoadingSpinner />;
 
-  if (error) return <p>Error :(</p>;
+  if (error) return <ErrorMessage error={error} />;
 
   const remoteCount = data?.[totalCountNodeName]?.totalCount;
 
@@ -224,76 +216,22 @@ const RecordsList: FunctionComponent<IRecordsListProps> = ({
         </AutoSizer>
       )}
 
-      <Row
-        className={classNames(
-          "d-flex justify-content-between align-items-center",
-          "tableControlsRow"
-        )}
-      >
-        <Col></Col>
+      <Toolbar
+        searchTerm={searchTerm}
+        input={inputVal}
+        setInput={setInputVal}
+        handleSearch={handleSearch}
+        clearInput={() => {
+          setCustomFilterVals && setCustomFilterVals([]);
+          setSearchVal([]);
+        }}
+        matchingResultsCount={`${remoteCount?.toLocaleString()} matching ${
+          remoteCount > 1 ? searchTerm : searchTerm.slice(0, -1)
+        }`}
+        handleDownload={handleDownload}
+        customUI={customFilterUI}
+      />
 
-        <Col md="auto">
-          <Form.Control
-            className={"d-inline-block"}
-            style={{ width: "300px" }}
-            type="search"
-            placeholder={"Search " + searchTerm}
-            aria-label="Search"
-            defaultValue={inputVal}
-            onKeyDown={(event) => {
-              if (event.key === "Enter") {
-                handleSearch();
-              }
-            }}
-            onInput={(event) => {
-              const newVal = event.currentTarget.value;
-              if (newVal === "") {
-                setCustomFilterVals && setCustomFilterVals([]);
-                setSearchVal([]);
-              }
-              setInputVal(newVal);
-            }}
-          />
-        </Col>
-
-        <Col md="auto" style={{ marginLeft: -15 }}>
-          <Tooltip
-            title={
-              <span style={{ fontSize: 12 }}>
-                After inputting your search query, click on &quot;Search&quot;
-                or press &quot;Enter&quot; to get your results. To bulk search,
-                input a list of values separated by spaces or commas (e.g.
-                &quot;value1 value2 value3&quot;)
-              </span>
-            }
-          >
-            <InfoIcon style={{ fontSize: 18, color: "grey" }} />
-          </Tooltip>
-        </Col>
-
-        <Col md="auto" style={{ marginLeft: -15 }}>
-          <Button
-            onClick={handleSearch}
-            className={"btn btn-secondary"}
-            size={"sm"}
-          >
-            Search
-          </Button>
-        </Col>
-
-        <Col md="auto">
-          {remoteCount?.toLocaleString()} matching{" "}
-          {remoteCount > 1 ? searchTerm : searchTerm.slice(0, -1)}
-        </Col>
-
-        {customFilterUI}
-
-        <Col className={"text-end"}>
-          <Button onClick={handleDownload} size={"sm"}>
-            Generate Report
-          </Button>
-        </Col>
-      </Row>
       <AutoSizer>
         {({ width }) => (
           <div

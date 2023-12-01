@@ -5,8 +5,7 @@ import {
   SampleMetadataWhere,
 } from "../generated/graphql";
 import AutoSizer from "react-virtualized-auto-sizer";
-import { Button, Col, Form, Row } from "react-bootstrap";
-import classNames from "classnames";
+import { Button, Col } from "react-bootstrap";
 import { FunctionComponent, useEffect, useRef } from "react";
 import { DownloadModal } from "./DownloadModal";
 import { UpdateModal } from "./UpdateModal";
@@ -18,16 +17,14 @@ import {
   SampleChange,
   SampleMetadataExtended,
 } from "../shared/helpers";
-import Spinner from "react-spinkit";
 import { AgGridReact } from "ag-grid-react";
 import { useState } from "react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import "ag-grid-enterprise";
 import { CellValueChangedEvent } from "ag-grid-community";
-import { Tooltip } from "@material-ui/core";
-import InfoIcon from "@material-ui/icons/InfoOutlined";
 import { parseSearchQueries } from "../lib/parseSearchQueries";
+import { ErrorMessage, LoadingSpinner, Toolbar } from "../shared/tableElements";
 
 const POLLING_INTERVAL = 2000;
 const max_rows = 500;
@@ -159,14 +156,9 @@ export const SamplesList: FunctionComponent<ISampleListProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchVal]);
 
-  if (loading)
-    return (
-      <div className={"centralSpinner"}>
-        <Spinner fadeIn={"none"} color={"lightblue"} name="ball-grid-pulse" />
-      </div>
-    );
+  if (loading) return <LoadingSpinner />;
 
-  if (error) return <Row>Error loading request details / request samples</Row>;
+  if (error) return <ErrorMessage error={error} />;
 
   const samples = data!.samplesConnection.edges.map((e) => e.node) as Sample[];
 
@@ -249,104 +241,50 @@ export const SamplesList: FunctionComponent<ISampleListProps> = ({
         }
       />
 
-      <Row
-        className={classNames(
-          "d-flex justify-content-between align-items-center tableControlsRow"
-        )}
-      >
-        <Col></Col>
-        <Col className={"text-end"}>
-          <Form.Control
-            className={"d-inline-block"}
-            style={{ width: "300px" }}
-            type="search"
-            placeholder="Search samples"
-            aria-label="Search"
-            value={val}
-            onKeyDown={(event) => {
-              if (event.key === "Enter") {
-                setSearchVal(val);
-              }
-            }}
-            onInput={(event) => {
-              const newVal = event.currentTarget.value;
-              if (newVal === "") {
-                setSearchVal("");
-              }
-              setVal(newVal);
-            }}
-          />
-        </Col>
-
-        <Col md="auto" style={{ marginLeft: -15 }}>
-          <Tooltip
-            title={
-              <span style={{ fontSize: 12 }}>
-                After inputting your search query, click on &quot;Search&quot;
-                or press &quot;Enter&quot; to get your results. To bulk search,
-                input a list of values separated by spaces or commas (e.g.
-                &quot;value1 value2 value3&quot;)
-              </span>
-            }
-          >
-            <InfoIcon style={{ fontSize: 18, color: "grey" }} />
-          </Tooltip>
-        </Col>
-
-        <Col md="auto" style={{ marginLeft: -15 }}>
-          <Button
-            onClick={() => {
-              setSearchVal(val);
-            }}
-            className={"btn btn-secondary"}
-            size={"sm"}
-          >
-            Search
-          </Button>
-        </Col>
-
-        <Col className={"text-start"}>
-          {remoteCount === max_rows
+      <Toolbar
+        searchTerm={"samples"}
+        input={val}
+        setInput={setVal}
+        handleSearch={() => {
+          setSearchVal(val);
+        }}
+        clearInput={() => {
+          setSearchVal("");
+        }}
+        matchingResultsCount={
+          remoteCount === max_rows
             ? `${max_rows}+ matching samples`
-            : `${remoteCount} matching samples`}
-        </Col>
+            : `${remoteCount} matching samples`
+        }
+        handleDownload={() => setShowDownloadModal(true)}
+        customUI={
+          changes.length > 0 ? (
+            <>
+              <Col className={"text-end"}>
+                <Button
+                  className={"btn btn-secondary"}
+                  onClick={handleDiscardChanges}
+                  size={"sm"}
+                >
+                  Discard Changes
+                </Button>
+              </Col>
 
-        {changes.length > 0 && (
-          <>
-            <Col className={"text-end"}>
-              <Button
-                className={"btn btn-secondary"}
-                onClick={handleDiscardChanges}
-                size={"sm"}
-              >
-                Discard Changes
-              </Button>
-            </Col>
-            <Col className={"text-start"}>
-              <Button
-                className={"btn btn-success"}
-                onClick={() => {
-                  setShowUpdateModal(true);
-                }}
-                size={"sm"}
-              >
-                Submit Updates
-              </Button>
-            </Col>
-          </>
-        )}
-
-        <Col className={"text-end"}>
-          <Button
-            onClick={() => {
-              setShowDownloadModal(true);
-            }}
-            size={"sm"}
-          >
-            Generate Report
-          </Button>
-        </Col>
-      </Row>
+              <Col className={"text-start"}>
+                <Button
+                  className={"btn btn-success"}
+                  onClick={() => {
+                    setShowUpdateModal(true);
+                  }}
+                  size={"sm"}
+                >
+                  Submit Updates
+                </Button>
+              </Col>
+            </>
+          ) : undefined
+        }
+      />
 
       <AutoSizer>
         {({ width }) => (
