@@ -199,6 +199,26 @@ export const PatientsListColumns: ColDef[] = [
     sortable: false,
   },
   {
+    headerName: "12-245 Part A",
+    valueGetter: function ({ data }) {
+      return JSON.parse(
+        data["isAliasPatients"][0].hasSampleSamples[0]
+          ?.hasMetadataSampleMetadata[0]?.additionalProperties
+      )["consent-parta"];
+    },
+    sortable: false,
+  },
+  {
+    headerName: "12-245 Part C",
+    valueGetter: function ({ data }) {
+      return JSON.parse(
+        data["isAliasPatients"][0].hasSampleSamples[0]
+          ?.hasMetadataSampleMetadata[0]?.additionalProperties
+      )["consent-partc"];
+    },
+    sortable: false,
+  },
+  {
     field: "smilePatientId",
     headerName: "SMILE Patient ID",
     valueGetter: function ({ data }) {

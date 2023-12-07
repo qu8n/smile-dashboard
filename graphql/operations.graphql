@@ -32,6 +32,7 @@ query PatientsList(
         hasMetadataSampleMetadata {
           primaryId
           cmoSampleName
+          additionalProperties
         }
       }
       hasSampleSamplesConnection {
