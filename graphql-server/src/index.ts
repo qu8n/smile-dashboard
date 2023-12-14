@@ -30,6 +30,10 @@ import { buildResolvers } from "./resolvers";
 import { buildProps } from "./buildProps";
 import { EXPRESS_SERVER_ORIGIN, REACT_SERVER_ORIGIN } from "./constants";
 
+import { makeExecutableSchema } from "@graphql-tools/schema";
+import { mergeSchemas } from "@graphql-tools/schema";
+import { GraphQLSchema } from "graphql/type/schema";
+
 // OracleDB requires node-oracledb's Thick mode & the Oracle Instant Client, which is unavailable for M1 Macs
 let oracledb: any = null;
 const os = require("os");
@@ -286,30 +290,108 @@ async function main() {
     app
   );
 
-  const typeDefs = await toGraphQLTypeDefs(sessionFactory, false);
-  const ogm = new OGM({ typeDefs, driver });
-  const neoSchema = new Neo4jGraphQL({
-    typeDefs,
+  const neo4jTypeDefs = await toGraphQLTypeDefs(sessionFactory, false);
+  const ogm = new OGM({ typeDefs: neo4jTypeDefs, driver });
+  const neo4jSchema = new Neo4jGraphQL({
+    typeDefs: neo4jTypeDefs,
     driver,
-    config: {
-      skipValidateTypeDefs: true,
-    },
-    plugins: [
-      ApolloServerPluginDrainHttpServer({ httpServer: httpsServer }),
-      ApolloServerPluginLandingPageLocalDefault({ embed: true }),
-    ],
     resolvers: buildResolvers(ogm, client),
   });
 
-  Promise.all([neoSchema.getSchema(), ogm.init()]).then(async ([schema]) => {
-    const server = new ApolloServer({ schema });
-    await server.start();
-    server.applyMiddleware({ app });
-    await new Promise((resolve) => httpsServer.listen({ port: 4000 }, resolve));
-    console.log(
-      `🚀 Server ready at ${EXPRESS_SERVER_ORIGIN}${server.graphqlPath}`
-    );
+  const crDbTypeDefs = `
+    type PatientIdsTriplet {
+      CMO_ID: String
+      DMP_ID: String
+      PT_MRN: String
+    }
+
+    type Query {
+      patientIdsTriplets(patientIds: [String!]!): [PatientIdsTriplet]
+    }
+  `;
+
+  const crDbResolvers = {
+    Query: {
+      patientIdsTriplets: async (_: any, { patientIds }: any) => {
+        // dummy data for testing
+        const patientIdsTriplets = [
+          {
+            DMP_ID: "P-1234567",
+            CMO_ID: "SMILE1",
+            PT_MRN: "12345678",
+          },
+          {
+            DMP_ID: "P-2345678",
+            CMO_ID: "SMILE2",
+            PT_MRN: "23456789",
+          },
+        ];
+
+        if (os.arch() !== "arm64" && oracledb !== null) {
+          try {
+            const connection = await oracledb.getConnection({
+              user: props.oracle_user,
+              password: props.oracle_password,
+              connectString: props.oracle_connect_string,
+            });
+
+            const promises = patientIds.map(async (patientId: string) => {
+              const result = await connection.execute(
+                "SELECT CMO_ID, DMP_ID, PT_MRN FROM CRDB_CMO_LOJ_DMP_MAP WHERE :patientId IN (DMP_ID, PT_MRN, CMO_ID)",
+                { patientId }
+              );
+              if (result.rows.length > 0) {
+                return result.rows[0];
+              }
+            });
+
+            patientIdsTriplets.push(...(await Promise.all(promises)));
+            await connection.close();
+          } catch (error) {
+            console.error("Error in OracleDB connection: ", error);
+          }
+        }
+
+        return patientIdsTriplets;
+      },
+    },
+  };
+
+  const crDbSchema: GraphQLSchema = makeExecutableSchema({
+    typeDefs: crDbTypeDefs,
+    resolvers: crDbResolvers,
   });
+
+  Promise.all([neo4jSchema.getSchema(), ogm.init()]).then(
+    async ([neo4jSchema]) => {
+      const mergedSchema = mergeSchemas({
+        schemas: [neo4jSchema, crDbSchema],
+      });
+
+      const server = new ApolloServer({
+        schema: mergedSchema,
+        config: {
+          skipValidateTypeDefs: true,
+        },
+        plugins: [
+          ApolloServerPluginDrainHttpServer({ httpServer: httpsServer }),
+          ApolloServerPluginLandingPageLocalDefault({
+            embed: true,
+            includeCookies: true,
+          }),
+        ],
+      });
+
+      await server.start();
+      server.applyMiddleware({ app });
+      await new Promise((resolve) =>
+        httpsServer.listen({ port: 4000 }, resolve)
+      );
+      console.log(
+        `🚀 Server ready at ${EXPRESS_SERVER_ORIGIN}${server.graphqlPath}`
+      );
+    }
+  );
 }
 
 main();
