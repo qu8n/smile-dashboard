@@ -794,6 +794,13 @@ export type PatientHasSampleSamplesUpdateFieldInput = {
   where?: InputMaybe<PatientHasSampleSamplesConnectionWhere>;
 };
 
+export type PatientIdsTriplet = {
+  __typename?: "PatientIdsTriplet";
+  CMO_ID?: Maybe<Scalars["String"]>;
+  DMP_ID?: Maybe<Scalars["String"]>;
+  PT_MRN?: Maybe<Scalars["String"]>;
+};
+
 export type PatientOptions = {
   limit?: InputMaybe<Scalars["Int"]>;
   offset?: InputMaybe<Scalars["Int"]>;
@@ -1648,6 +1655,7 @@ export type Query = {
   patientAliases: Array<PatientAlias>;
   patientAliasesAggregate: PatientAliasAggregateSelection;
   patientAliasesConnection: PatientAliasesConnection;
+  patientIdsTriplets?: Maybe<Array<Maybe<PatientIdsTriplet>>>;
   patients: Array<Patient>;
   patientsAggregate: PatientAggregateSelection;
   patientsConnection: PatientsConnection;
@@ -1688,6 +1696,10 @@ export type QueryPatientAliasesConnectionArgs = {
   first?: InputMaybe<Scalars["Int"]>;
   sort?: InputMaybe<Array<InputMaybe<PatientAliasSort>>>;
   where?: InputMaybe<PatientAliasWhere>;
+};
+
+export type QueryPatientIdsTripletsArgs = {
+  patientIds: Array<Scalars["String"]>;
 };
 
 export type QueryPatientsArgs = {
@@ -7966,6 +7978,20 @@ export type UpdateSamplesMutation = {
   };
 };
 
+export type GetPatientIdsTripletsQueryVariables = Exact<{
+  patientIds: Array<Scalars["String"]> | Scalars["String"];
+}>;
+
+export type GetPatientIdsTripletsQuery = {
+  __typename?: "Query";
+  patientIdsTriplets?: Array<{
+    __typename?: "PatientIdsTriplet";
+    CMO_ID?: string | null;
+    DMP_ID?: string | null;
+    PT_MRN?: string | null;
+  } | null> | null;
+};
+
 export const RequestPartsFragmentDoc = gql`
   fragment RequestParts on Request {
     igoRequestId
@@ -8234,4 +8260,17 @@ export type UpdateSamplesMutationResult =
 export type UpdateSamplesMutationOptions = Apollo.BaseMutationOptions<
   UpdateSamplesMutation,
   UpdateSamplesMutationVariables
+>;
+export const GetPatientIdsTripletsDocument = gql`
+  query GetPatientIdsTriplets($patientIds: [String!]!) {
+    patientIdsTriplets(patientIds: $patientIds) {
+      CMO_ID
+      DMP_ID
+      PT_MRN
+    }
+  }
+`;
+export type GetPatientIdsTripletsQueryResult = Apollo.QueryResult<
+  GetPatientIdsTripletsQuery,
+  GetPatientIdsTripletsQueryVariables
 >;

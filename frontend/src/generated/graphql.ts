@@ -795,6 +795,13 @@ export type PatientHasSampleSamplesUpdateFieldInput = {
   where?: InputMaybe<PatientHasSampleSamplesConnectionWhere>;
 };
 
+export type PatientIdsTriplet = {
+  __typename?: "PatientIdsTriplet";
+  CMO_ID?: Maybe<Scalars["String"]>;
+  DMP_ID?: Maybe<Scalars["String"]>;
+  PT_MRN?: Maybe<Scalars["String"]>;
+};
+
 export type PatientOptions = {
   limit?: InputMaybe<Scalars["Int"]>;
   offset?: InputMaybe<Scalars["Int"]>;
@@ -1649,6 +1656,7 @@ export type Query = {
   patientAliases: Array<PatientAlias>;
   patientAliasesAggregate: PatientAliasAggregateSelection;
   patientAliasesConnection: PatientAliasesConnection;
+  patientIdsTriplets?: Maybe<Array<Maybe<PatientIdsTriplet>>>;
   patients: Array<Patient>;
   patientsAggregate: PatientAggregateSelection;
   patientsConnection: PatientsConnection;
@@ -1689,6 +1697,10 @@ export type QueryPatientAliasesConnectionArgs = {
   first?: InputMaybe<Scalars["Int"]>;
   sort?: InputMaybe<Array<InputMaybe<PatientAliasSort>>>;
   where?: InputMaybe<PatientAliasWhere>;
+};
+
+export type QueryPatientIdsTripletsArgs = {
+  patientIds: Array<Scalars["String"]>;
 };
 
 export type QueryPatientsArgs = {
@@ -7967,6 +7979,20 @@ export type UpdateSamplesMutation = {
   };
 };
 
+export type GetPatientIdsTripletsQueryVariables = Exact<{
+  patientIds: Array<Scalars["String"]> | Scalars["String"];
+}>;
+
+export type GetPatientIdsTripletsQuery = {
+  __typename?: "Query";
+  patientIdsTriplets?: Array<{
+    __typename?: "PatientIdsTriplet";
+    CMO_ID?: string | null;
+    DMP_ID?: string | null;
+    PT_MRN?: string | null;
+  } | null> | null;
+};
+
 export const RequestPartsFragmentDoc = gql`
   fragment RequestParts on Request {
     igoRequestId
@@ -8509,4 +8535,64 @@ export type UpdateSamplesMutationResult =
 export type UpdateSamplesMutationOptions = Apollo.BaseMutationOptions<
   UpdateSamplesMutation,
   UpdateSamplesMutationVariables
+>;
+export const GetPatientIdsTripletsDocument = gql`
+  query GetPatientIdsTriplets($patientIds: [String!]!) {
+    patientIdsTriplets(patientIds: $patientIds) {
+      CMO_ID
+      DMP_ID
+      PT_MRN
+    }
+  }
+`;
+
+/**
+ * __useGetPatientIdsTripletsQuery__
+ *
+ * To run a query within a React component, call `useGetPatientIdsTripletsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetPatientIdsTripletsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetPatientIdsTripletsQuery({
+ *   variables: {
+ *      patientIds: // value for 'patientIds'
+ *   },
+ * });
+ */
+export function useGetPatientIdsTripletsQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    GetPatientIdsTripletsQuery,
+    GetPatientIdsTripletsQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetPatientIdsTripletsQuery,
+    GetPatientIdsTripletsQueryVariables
+  >(GetPatientIdsTripletsDocument, options);
+}
+export function useGetPatientIdsTripletsLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetPatientIdsTripletsQuery,
+    GetPatientIdsTripletsQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetPatientIdsTripletsQuery,
+    GetPatientIdsTripletsQueryVariables
+  >(GetPatientIdsTripletsDocument, options);
+}
+export type GetPatientIdsTripletsQueryHookResult = ReturnType<
+  typeof useGetPatientIdsTripletsQuery
+>;
+export type GetPatientIdsTripletsLazyQueryHookResult = ReturnType<
+  typeof useGetPatientIdsTripletsLazyQuery
+>;
+export type GetPatientIdsTripletsQueryResult = Apollo.QueryResult<
+  GetPatientIdsTripletsQuery,
+  GetPatientIdsTripletsQueryVariables
 >;
