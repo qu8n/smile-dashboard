@@ -1,6 +1,7 @@
 import {
   PatientAliasWhere,
   SampleWhere,
+  useGetPatientIdsTripletsLazyQuery,
   usePatientsListLazyQuery,
 } from "../../generated/graphql";
 import { useEffect, useMemo, useState } from "react";
@@ -113,64 +114,60 @@ export default function PatientsPage({
   const [showDownloadModal, setShowDownloadModal] = useState(false);
 
   const [phiEnabled, setPhiEnabled] = useState(false);
-  const [patientIdsTriplets, setPatientIdsTriplets] = useState<
-    PatientIdsTriplet[]
-  >([]);
+  const [patientIdsTriplets, setPatientIdsTriplets] = useState<any>([]); // using `any` temporarily instead of `PatientIdsTriplet[]`
   const [alertModal, setAlertModal] = useState<{
     show: boolean;
     title: string;
     content: string;
   }>({ show: false, title: "", content: "" });
 
+  const [getPatientIdsTriplets, { error }] =
+    useGetPatientIdsTripletsLazyQuery();
+
   async function fetchPatientIdsTriplets(
     patientIds: string[]
   ): Promise<string[]> {
-    try {
-      const response = await fetch(
-        `${REACT_APP_EXPRESS_SERVER_ORIGIN}/mrn-search`,
-        {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(patientIds),
-        }
-      );
+    const response = await getPatientIdsTriplets({
+      variables: {
+        patientIds: patientIds,
+      },
+    });
 
-      if (response.status === 403) {
-        setAlertModal({
-          show: true,
-          ...UNAUTHORIZED_WARNING,
-        });
-        return [];
-      }
-
-      if (response.status === 401) {
-        const width = 800;
-        const height = 800;
-        const left = (window.screen.width - width) / 2;
-        const top = (window.screen.height - height) / 2;
-
-        window.open(
-          `${REACT_APP_EXPRESS_SERVER_ORIGIN}/login`,
-          "_blank",
-          `toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width=${width}, height=${height}, top=${top}, left=${left}`
-        );
-        return [];
-      }
-
-      const data: PatientIdsTriplet[] = await response.json();
-      const validData = data.filter((d) => Boolean(d));
-      setPatientIdsTriplets(validData);
-
-      if (validData.length > 0) {
-        return validData.map((d) => addCDashToCMOId(d.CMO_ID));
-      } else {
-        return [];
-      }
-    } catch (error) {
+    if (error) {
       console.error(error);
+      return [];
+    }
+
+    // TODOs: handle 403 and 401 errors. Old code for reference:
+
+    // if (response.status === 403) {
+    //   setAlertModal({
+    //     show: true,
+    //     ...UNAUTHORIZED_WARNING,
+    //   });
+    //   return [];
+    // }
+
+    // if (response.status === 401) {
+    //   const width = 800;
+    //   const height = 800;
+    //   const left = (window.screen.width - width) / 2;
+    //   const top = (window.screen.height - height) / 2;
+
+    //   window.open(
+    //     `${REACT_APP_EXPRESS_SERVER_ORIGIN}/login`,
+    //     "_blank",
+    //     `toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width=${width}, height=${height}, top=${top}, left=${left}`
+    //   );
+    // }
+
+    const data = response.data?.patientIdsTriplets;
+    const validData = data?.filter((d) => Boolean(d));
+    setPatientIdsTriplets(validData);
+
+    if (validData && validData.length > 0) {
+      return validData.map((d) => addCDashToCMOId(d?.CMO_ID as string));
+    } else {
       return [];
     }
   }
@@ -229,7 +226,7 @@ export default function PatientsPage({
           valueGetter: (params: any) => {
             const cmoId = params.data.value;
             const patientIdsTriplet = patientIdsTriplets.find(
-              (triplet) => addCDashToCMOId(triplet.CMO_ID) === cmoId
+              (triplet: any) => addCDashToCMOId(triplet.CMO_ID) === cmoId
             );
             if (patientIdsTriplet) {
               return patientIdsTriplet.PT_MRN;
