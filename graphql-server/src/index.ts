@@ -33,6 +33,7 @@ import { EXPRESS_SERVER_ORIGIN, REACT_SERVER_ORIGIN } from "./constants";
 import { makeExecutableSchema } from "@graphql-tools/schema";
 import { mergeSchemas } from "@graphql-tools/schema";
 import { GraphQLSchema } from "graphql/type/schema";
+import { AuthenticationError, ForbiddenError } from "apollo-server-express";
 
 // OracleDB requires node-oracledb's Thick mode & the Oracle Instant Client, which is unavailable for M1 Macs
 let oracledb: any = null;
@@ -317,7 +318,13 @@ async function main() {
         { patientIds }: any,
         contextValue: any
       ) => {
-        console.log("contextValue: ", contextValue);
+        const user = contextValue.user;
+
+        if (!user) {
+          throw new AuthenticationError("401");
+        } else if (!user.groups.includes("mrn-search")) {
+          throw new ForbiddenError("403");
+        }
 
         // dummy data for testing
         const patientIdsTriplets = [

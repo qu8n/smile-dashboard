@@ -134,32 +134,28 @@ export default function PatientsPage({
     });
 
     if (error) {
-      console.error(error);
+      if (error.message === "401") {
+        const width = 800;
+        const height = 800;
+        const left = (window.screen.width - width) / 2;
+        const top = (window.screen.height - height) / 2;
+
+        window.open(
+          `${REACT_APP_EXPRESS_SERVER_ORIGIN}/login`,
+          "_blank",
+          `toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width=${width}, height=${height}, top=${top}, left=${left}`
+        );
+      }
+
+      if (error.message === "403") {
+        setAlertModal({
+          show: true,
+          ...UNAUTHORIZED_WARNING,
+        });
+      }
+
       return [];
     }
-
-    // TODOs: handle 403 and 401 errors. Old code for reference:
-
-    // if (response.status === 403) {
-    //   setAlertModal({
-    //     show: true,
-    //     ...UNAUTHORIZED_WARNING,
-    //   });
-    //   return [];
-    // }
-
-    // if (response.status === 401) {
-    //   const width = 800;
-    //   const height = 800;
-    //   const left = (window.screen.width - width) / 2;
-    //   const top = (window.screen.height - height) / 2;
-
-    //   window.open(
-    //     `${REACT_APP_EXPRESS_SERVER_ORIGIN}/login`,
-    //     "_blank",
-    //     `toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width=${width}, height=${height}, top=${top}, left=${left}`
-    //   );
-    // }
 
     const data = response.data?.patientIdsTriplets;
     const validData = data?.filter((d) => Boolean(d));
