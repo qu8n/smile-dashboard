@@ -163,9 +163,9 @@ export default function PatientsPage({
 
     const data = response.data?.patientIdsTriplets;
     const validData = data?.filter((d) => Boolean(d));
-    setPatientIdsTriplets(validData);
 
     if (validData && validData.length > 0) {
+      setPatientIdsTriplets(validData);
       return validData.map((d) => addCDashToCMOId(d?.CMO_ID as string));
     } else {
       return [];

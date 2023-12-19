@@ -53,17 +53,17 @@ const driver = neo4j.driver(
 const sessionFactory = () =>
   driver.session({ defaultAccessMode: neo4j.session.WRITE });
 
+const corsOptions = {
+  origin: REACT_SERVER_ORIGIN,
+  credentials: true,
+};
+
 async function main() {
   const app: Express = express();
   app.use(express.static(path.resolve(__dirname, "../build")));
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(express.json({ limit: "50mb" })); // increase to support bulk searching
-  app.use(
-    cors({
-      origin: REACT_SERVER_ORIGIN,
-      credentials: true,
-    })
-  );
+  app.use(cors(corsOptions));
 
   const keycloakIssuer = await Issuer.discover(props.keycloak_server_uri);
 
@@ -312,18 +312,24 @@ async function main() {
 
   const crDbResolvers = {
     Query: {
-      patientIdsTriplets: async (_: any, { patientIds }: any) => {
+      patientIdsTriplets: async (
+        _: any,
+        { patientIds }: any,
+        contextValue: any
+      ) => {
+        console.log("contextValue: ", contextValue);
+
         // dummy data for testing
         const patientIdsTriplets = [
           {
             DMP_ID: "P-1234567",
-            CMO_ID: "SMILE1",
+            CMO_ID: "4PJHNV",
             PT_MRN: "12345678",
           },
           {
-            DMP_ID: "P-2345678",
-            CMO_ID: "SMILE2",
-            PT_MRN: "23456789",
+            DMP_ID: "P-3456789",
+            CMO_ID: "YYTNU8",
+            PT_MRN: "34567890",
           },
         ];
 
@@ -370,6 +376,10 @@ async function main() {
 
       const server = new ApolloServer({
         schema: mergedSchema,
+        context: async ({ req }: { req: any }) => {
+          const user = req.user;
+          return { user };
+        },
         config: {
           skipValidateTypeDefs: true,
         },
@@ -383,7 +393,8 @@ async function main() {
       });
 
       await server.start();
-      server.applyMiddleware({ app });
+      server.applyMiddleware({ app, cors: corsOptions });
+
       await new Promise((resolve) =>
         httpsServer.listen({ port: 4000 }, resolve)
       );
