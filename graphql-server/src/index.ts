@@ -1,47 +1,50 @@
-import { Express } from "express";
-const express = require("express");
+import express, { Express } from "express";
 const fetch = require("node-fetch");
-const cors = require("cors");
-const path = require("path");
+import cors from "cors";
+import path from "path";
 const bodyParser = require("body-parser");
 const morgan = require("morgan");
-const fs = require("fs");
+import fs from "fs";
 const https = require("https");
 
 import { Issuer, Strategy } from "openid-client";
 const passport = require("passport");
 const expressSession = require("express-session");
 
-const neo4j = require("neo4j-driver");
-const { Neo4jGraphQL } = require("@neo4j/graphql");
-const { OGM } = require("@neo4j/graphql-ogm");
+import neo4j from "neo4j-driver";
+import { Neo4jGraphQL } from "@neo4j/graphql";
+import { OGM } from "@neo4j/graphql-ogm";
 
-const ApolloClient = require("apollo-client").ApolloClient;
-const { ApolloServer } = require("apollo-server-express");
-const { toGraphQLTypeDefs } = require("@neo4j/introspector");
-const createHttpLink = require("apollo-link-http").createHttpLink;
-const InMemoryCache = require("apollo-cache-inmemory").InMemoryCache;
-const {
+import { ApolloClient } from "apollo-client";
+import {
+  ApolloServer,
+  AuthenticationError,
+  ForbiddenError,
+} from "apollo-server-express";
+import { toGraphQLTypeDefs } from "@neo4j/introspector";
+import { createHttpLink } from "apollo-link-http";
+import { InMemoryCache } from "apollo-cache-inmemory";
+import {
   ApolloServerPluginDrainHttpServer,
   ApolloServerPluginLandingPageLocalDefault,
-} = require("apollo-server-core");
+} from "apollo-server-core";
+
+import { makeExecutableSchema } from "@graphql-tools/schema";
+import { mergeSchemas } from "@graphql-tools/schema";
+import { GraphQLSchema } from "graphql/type/schema";
 
 import { buildResolvers } from "./resolvers";
 import { buildProps } from "./buildProps";
 import { EXPRESS_SERVER_ORIGIN, REACT_SERVER_ORIGIN } from "./constants";
 
-import { makeExecutableSchema } from "@graphql-tools/schema";
-import { mergeSchemas } from "@graphql-tools/schema";
-import { GraphQLSchema } from "graphql/type/schema";
-import { AuthenticationError, ForbiddenError } from "apollo-server-express";
-
-// OracleDB requires node-oracledb's Thick mode & the Oracle Instant Client, which is unavailable for M1 Macs
+// The CRDB implements case insensitive logon, a setting that requires node-oracledb's Thick mode
+// and the Oracle Instant Client that is unavailable for M1 Macs
 let oracledb: any = null;
 const os = require("os");
 if (os.arch() !== "arm64") {
   oracledb = require("oracledb");
   oracledb.initOracleClient();
-  oracledb.outFormat = oracledb.OUT_FORMAT_OBJECT;
+  oracledb.outFormat = oracledb.OUT_FORMAT_OBJECT; // returns each row as a JS object
 }
 
 const props = buildProps();
@@ -108,18 +111,15 @@ async function main() {
 
   passport.use(
     "oidc",
-    new Strategy(
-      { client: keycloakClient },
-      (tokenSet: any, userinfo: any, done: any) => {
-        ssoSessionIdleTimeout = tokenSet.refresh_expires_in * 1000; // convert to ms because it's in s by default
-        const claims = tokenSet.claims();
-        activeUserSessions[claims.sub] = {
-          lastAuthCheckTime: Date.now(),
-          idTokenHint: tokenSet.id_token,
-        };
-        return done(null, claims);
-      }
-    )
+    new Strategy({ client: keycloakClient }, (tokenSet: any, done: any) => {
+      ssoSessionIdleTimeout = tokenSet.refresh_expires_in * 1000; // convert to ms to be standardized
+      const claims = tokenSet.claims();
+      activeUserSessions[claims.sub] = {
+        lastAuthCheckTime: Date.now(),
+        idTokenHint: tokenSet.id_token,
+      };
+      return done(null, claims);
+    })
   );
 
   app.get("/login", (req, res, next) => {
@@ -209,7 +209,7 @@ async function main() {
     }
   }
 
-  const logDir = path.join(process.env.SMILE_DATA_HOME, props.log_dir);
+  const logDir = path.join(process.env.SMILE_DATA_HOME!, props.log_dir);
   if (!fs.existsSync(logDir)) fs.mkdirSync(logDir);
   const accessLogStream = fs.createWriteStream(path.join(logDir, "event.log"), {
     flags: "a+",
@@ -296,6 +296,9 @@ async function main() {
   const neo4jSchema = new Neo4jGraphQL({
     typeDefs: neo4jTypeDefs,
     driver,
+    config: {
+      skipValidateTypeDefs: true,
+    },
     resolvers: buildResolvers(ogm, client),
   });
 
@@ -386,9 +389,6 @@ async function main() {
         context: async ({ req }: { req: any }) => {
           const user = req.user;
           return { user };
-        },
-        config: {
-          skipValidateTypeDefs: true,
         },
         plugins: [
           ApolloServerPluginDrainHttpServer({ httpServer: httpsServer }),
