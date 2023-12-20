@@ -2,60 +2,25 @@ import express, { Express } from "express";
 const fetch = require("node-fetch");
 import cors from "cors";
 import path from "path";
-const bodyParser = require("body-parser");
+import bodyParser from "body-parser";
 const morgan = require("morgan");
 import fs from "fs";
-const https = require("https");
-
+import https from "https";
 import { Issuer, Strategy } from "openid-client";
 const passport = require("passport");
 const expressSession = require("express-session");
-
-import neo4j from "neo4j-driver";
-import { Neo4jGraphQL } from "@neo4j/graphql";
-import { OGM } from "@neo4j/graphql-ogm";
-
-import { ApolloClient } from "apollo-client";
-import {
-  ApolloServer,
-  AuthenticationError,
-  ForbiddenError,
-} from "apollo-server-express";
-import { toGraphQLTypeDefs } from "@neo4j/introspector";
-import { createHttpLink } from "apollo-link-http";
-import { InMemoryCache } from "apollo-cache-inmemory";
+import { ApolloServer } from "apollo-server-express";
 import {
   ApolloServerPluginDrainHttpServer,
   ApolloServerPluginLandingPageLocalDefault,
 } from "apollo-server-core";
-
-import { makeExecutableSchema } from "@graphql-tools/schema";
 import { mergeSchemas } from "@graphql-tools/schema";
-import { GraphQLSchema } from "graphql/type/schema";
-
-import { buildResolvers } from "./resolvers";
 import { buildProps } from "./buildProps";
 import { EXPRESS_SERVER_ORIGIN, REACT_SERVER_ORIGIN } from "./constants";
-
-// The CRDB implements case insensitive logon, a setting that requires node-oracledb's Thick mode
-// and the Oracle Instant Client that is unavailable for M1 Macs
-let oracledb: any = null;
-const os = require("os");
-if (os.arch() !== "arm64") {
-  oracledb = require("oracledb");
-  oracledb.initOracleClient();
-  oracledb.outFormat = oracledb.OUT_FORMAT_OBJECT; // returns each row as a JS object
-}
+import { buildNeo4jDbSchema } from "./schemas/neo4j.schema";
+import { oracleDbSchema } from "./schemas/oracle.schema";
 
 const props = buildProps();
-
-const driver = neo4j.driver(
-  props.neo4j_graphql_uri,
-  neo4j.auth.basic(props.neo4j_username, props.neo4j_password)
-);
-
-const sessionFactory = () =>
-  driver.session({ defaultAccessMode: neo4j.session.WRITE });
 
 const corsOptions = {
   origin: REACT_SERVER_ORIGIN,
@@ -196,18 +161,10 @@ async function main() {
     logOutEverywhere(req, res, next);
   });
 
+  // for navbar to display user email is logged in
   app.get("/check-login", checkAuthenticated, async (req: any, res) => {
     res.status(200).send(req.user.email);
   });
-
-  function checkAuthorized(req: any, res: any, next: any) {
-    const userRoles = req.user.groups;
-    if (userRoles.includes("mrn-search")) {
-      return next();
-    } else {
-      res.status(403).send("403 Forbidden");
-    }
-  }
 
   const logDir = path.join(process.env.SMILE_DATA_HOME!, props.log_dir);
   if (!fs.existsSync(logDir)) fs.mkdirSync(logDir);
@@ -226,57 +183,9 @@ async function main() {
     })
   );
 
-  app.post(
-    "/mrn-search",
-    checkAuthenticated,
-    checkAuthorized,
-    async (req, res) => {
-      const patientIds = req.body;
-      const patientIdsTriplets = [];
-
-      if (os.arch() !== "arm64" && oracledb !== null) {
-        try {
-          const connection = await oracledb.getConnection({
-            user: props.oracle_user,
-            password: props.oracle_password,
-            connectString: props.oracle_connect_string,
-          });
-
-          const promises = patientIds.map(async (patientId: string) => {
-            const result = await connection.execute(
-              "SELECT CMO_ID, DMP_ID, PT_MRN FROM CRDB_CMO_LOJ_DMP_MAP WHERE :patientId IN (DMP_ID, PT_MRN, CMO_ID)",
-              { patientId }
-            );
-            if (result.rows.length > 0) {
-              return result.rows[0];
-            }
-          });
-
-          patientIdsTriplets.push(...(await Promise.all(promises)));
-          await connection.close();
-        } catch (error) {
-          console.error("Error in OracleDB connection: ", error);
-        }
-      }
-
-      res.status(200).json(patientIdsTriplets);
-      return;
-    }
-  );
-
   // for health check
   app.get("/", (req, res) => {
     res.sendStatus(200);
-  });
-
-  const httpLink = createHttpLink({
-    uri: "https://localhost:4000/graphql",
-    fetch: fetch,
-  });
-
-  const client = new ApolloClient({
-    link: httpLink,
-    cache: new InMemoryCache(),
   });
 
   const httpsServer = https.createServer(
@@ -291,124 +200,37 @@ async function main() {
     app
   );
 
-  const neo4jTypeDefs = await toGraphQLTypeDefs(sessionFactory, false);
-  const ogm = new OGM({ typeDefs: neo4jTypeDefs, driver });
-  const neo4jSchema = new Neo4jGraphQL({
-    typeDefs: neo4jTypeDefs,
-    driver,
-    config: {
-      skipValidateTypeDefs: true,
-    },
-    resolvers: buildResolvers(ogm, client),
+  const neo4jDbSchema = await buildNeo4jDbSchema();
+
+  const mergedSchema = mergeSchemas({
+    schemas: [neo4jDbSchema, oracleDbSchema],
   });
 
-  const crDbTypeDefs = `
-    type PatientIdsTriplet {
-      CMO_ID: String
-      DMP_ID: String
-      PT_MRN: String
-    }
-
-    type Query {
-      patientIdsTriplets(patientIds: [String!]!): [PatientIdsTriplet]
-    }
-  `;
-
-  const crDbResolvers = {
-    Query: {
-      patientIdsTriplets: async (
-        _: any,
-        { patientIds }: any,
-        contextValue: any
-      ) => {
-        const user = contextValue.user;
-
-        if (!user) {
-          throw new AuthenticationError("401");
-        } else if (!user.groups.includes("mrn-search")) {
-          throw new ForbiddenError("403");
-        }
-
-        // dummy data for testing
-        const patientIdsTriplets = [
-          {
-            DMP_ID: "P-1234567",
-            CMO_ID: "4PJHNV",
-            PT_MRN: "12345678",
-          },
-          {
-            DMP_ID: "P-3456789",
-            CMO_ID: "YYTNU8",
-            PT_MRN: "34567890",
-          },
-        ];
-
-        if (os.arch() !== "arm64" && oracledb !== null) {
-          try {
-            const connection = await oracledb.getConnection({
-              user: props.oracle_user,
-              password: props.oracle_password,
-              connectString: props.oracle_connect_string,
-            });
-
-            const promises = patientIds.map(async (patientId: string) => {
-              const result = await connection.execute(
-                "SELECT CMO_ID, DMP_ID, PT_MRN FROM CRDB_CMO_LOJ_DMP_MAP WHERE :patientId IN (DMP_ID, PT_MRN, CMO_ID)",
-                { patientId }
-              );
-              if (result.rows.length > 0) {
-                return result.rows[0];
-              }
-            });
-
-            patientIdsTriplets.push(...(await Promise.all(promises)));
-            await connection.close();
-          } catch (error) {
-            console.error("Error in OracleDB connection: ", error);
-          }
-        }
-
-        return patientIdsTriplets;
-      },
+  const server = new ApolloServer({
+    schema: mergedSchema,
+    context: async ({ req }: { req: any }) => {
+      const user = req.user;
+      return { user };
     },
-  };
-
-  const crDbSchema: GraphQLSchema = makeExecutableSchema({
-    typeDefs: crDbTypeDefs,
-    resolvers: crDbResolvers,
+    plugins: [
+      ApolloServerPluginDrainHttpServer({ httpServer: httpsServer }),
+      ApolloServerPluginLandingPageLocalDefault({
+        embed: true,
+        includeCookies: true,
+      }),
+    ],
   });
 
-  Promise.all([neo4jSchema.getSchema(), ogm.init()]).then(
-    async ([neo4jSchema]) => {
-      const mergedSchema = mergeSchemas({
-        schemas: [neo4jSchema, crDbSchema],
-      });
+  await server.start();
 
-      const server = new ApolloServer({
-        schema: mergedSchema,
-        context: async ({ req }: { req: any }) => {
-          const user = req.user;
-          return { user };
-        },
-        plugins: [
-          ApolloServerPluginDrainHttpServer({ httpServer: httpsServer }),
-          ApolloServerPluginLandingPageLocalDefault({
-            embed: true,
-            includeCookies: true,
-          }),
-        ],
-      });
+  server.applyMiddleware({ app, cors: corsOptions });
 
-      await server.start();
-      server.applyMiddleware({ app, cors: corsOptions });
+  await new Promise<void>((resolve) =>
+    httpsServer.listen({ port: 4000 }, resolve)
+  );
 
-      await new Promise((resolve) =>
-        httpsServer.listen({ port: 4000 }, resolve)
-      );
-      console.log(
-        `🚀 Server ready at ${EXPRESS_SERVER_ORIGIN}${server.graphqlPath}`
-      );
-    }
+  console.log(
+    `🚀 Server ready at ${EXPRESS_SERVER_ORIGIN}${server.graphqlPath}`
   );
 }
 

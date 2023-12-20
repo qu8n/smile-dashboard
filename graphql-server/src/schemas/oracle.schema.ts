@@ -1,0 +1,91 @@
+import { AuthenticationError, ForbiddenError } from "apollo-server-express";
+import { makeExecutableSchema } from "@graphql-tools/schema";
+import { buildProps } from "../buildProps";
+
+// The CRDB implements case insensitive logon, a setting that requires node-oracledb's Thick mode
+// and the Oracle Instant Client that is unavailable for M1 Macs
+let oracledb: any = null;
+const os = require("os");
+if (os.arch() !== "arm64") {
+  oracledb = require("oracledb");
+  oracledb.initOracleClient();
+  oracledb.outFormat = oracledb.OUT_FORMAT_OBJECT; // returns each row as a JS object
+}
+
+const props = buildProps();
+
+const resolvers = {
+  Query: {
+    patientIdsTriplets: async (
+      _: any,
+      { patientIds }: any,
+      contextValue: any
+    ) => {
+      const user = contextValue.user;
+
+      if (!user) {
+        throw new AuthenticationError("401");
+      } else if (!user.groups.includes("mrn-search")) {
+        throw new ForbiddenError("403");
+      }
+
+      // dummy data for testing
+      const patientIdsTriplets = [
+        {
+          DMP_ID: "P-1234567",
+          CMO_ID: "4PJHNV",
+          PT_MRN: "12345678",
+        },
+        {
+          DMP_ID: "P-3456789",
+          CMO_ID: "YYTNU8",
+          PT_MRN: "34567890",
+        },
+      ];
+
+      if (os.arch() !== "arm64" && oracledb !== null) {
+        try {
+          const connection = await oracledb.getConnection({
+            user: props.oracle_user,
+            password: props.oracle_password,
+            connectString: props.oracle_connect_string,
+          });
+
+          const promises = patientIds.map(async (patientId: string) => {
+            const result = await connection.execute(
+              "SELECT CMO_ID, DMP_ID, PT_MRN FROM CRDB_CMO_LOJ_DMP_MAP WHERE :patientId IN (DMP_ID, PT_MRN, CMO_ID)",
+              { patientId }
+            );
+            if (result.rows.length > 0) {
+              return result.rows[0];
+            }
+          });
+
+          patientIdsTriplets.push(...(await Promise.all(promises)));
+          await connection.close();
+        } catch (error) {
+          console.error("Error in OracleDB connection: ", error);
+        }
+      }
+
+      return patientIdsTriplets;
+    },
+  },
+};
+
+const typeDefs = `
+  type PatientIdsTriplet {
+    CMO_ID: String
+    DMP_ID: String
+    PT_MRN: String
+  }
+
+  type Query {
+    patientIdsTriplets(patientIds: [String!]!): [PatientIdsTriplet]
+  }
+`;
+
+export const oracleDbSchema = makeExecutableSchema({
+  typeDefs: typeDefs,
+  resolvers: resolvers,
+});
