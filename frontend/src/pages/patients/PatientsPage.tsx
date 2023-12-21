@@ -121,13 +121,12 @@ export default function PatientsPage({
     content: string;
   }>({ show: false, title: "", content: "" });
 
-  const [getPatientIdsTriplets, { error }] =
-    useGetPatientIdsTripletsLazyQuery();
+  const [getPatientIdsTriplets] = useGetPatientIdsTripletsLazyQuery();
 
   async function fetchPatientIdsTriplets(
     patientIds: string[]
   ): Promise<string[]> {
-    const response = await getPatientIdsTriplets({
+    const { data, error } = await getPatientIdsTriplets({
       variables: {
         patientIds: patientIds,
       },
@@ -157,12 +156,16 @@ export default function PatientsPage({
       return [];
     }
 
-    const data = response.data?.patientIdsTriplets;
-    const validData = data?.filter((d) => Boolean(d));
+    const patientIdsTriplets = data?.patientIdsTriplets;
+    const validPatientIdsTriplets = patientIdsTriplets?.filter((d) =>
+      Boolean(d)
+    );
 
-    if (validData && validData.length > 0) {
-      setPatientIdsTriplets(validData);
-      return validData.map((d) => addCDashToCMOId(d?.CMO_ID as string));
+    if (validPatientIdsTriplets && validPatientIdsTriplets.length > 0) {
+      setPatientIdsTriplets(validPatientIdsTriplets);
+      return validPatientIdsTriplets.map((triplet) =>
+        addCDashToCMOId(triplet?.CMO_ID as string)
+      );
     } else {
       return [];
     }
