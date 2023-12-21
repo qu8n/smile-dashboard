@@ -1,11 +1,13 @@
 import { AuthenticationError, ForbiddenError } from "apollo-server-express";
 import { makeExecutableSchema } from "@graphql-tools/schema";
 import { buildProps } from "../buildProps";
+import { applyMiddleware } from "graphql-middleware";
+import { IMiddlewareResolver } from "graphql-middleware/dist/types";
+import os from "os";
 
 // The CRDB implements case insensitive logon, a setting that requires node-oracledb's Thick mode
-// and the Oracle Instant Client that is unavailable for M1 Macs
+// and the Oracle Instant Client, which is unavailable for M1 Macs
 let oracledb: any = null;
-const os = require("os");
 if (os.arch() !== "arm64") {
   oracledb = require("oracledb");
   oracledb.initOracleClient();
@@ -14,21 +16,49 @@ if (os.arch() !== "arm64") {
 
 const props = buildProps();
 
+const authenticationMiddleware: {
+  Query: {
+    patientIdsTriplets: IMiddlewareResolver;
+  };
+} = {
+  Query: {
+    patientIdsTriplets: async (resolve, parent, args, context, info) => {
+      const req = context.req;
+
+      if (!req.isAuthenticated()) {
+        throw new AuthenticationError("401");
+      } else {
+        // continues to the next middleware or resolver
+        const result = await resolve(parent, args, context, info);
+        return result;
+      }
+    },
+  },
+};
+
+const authorizationMiddleware: {
+  Query: {
+    patientIdsTriplets: IMiddlewareResolver;
+  };
+} = {
+  Query: {
+    patientIdsTriplets: async (resolve, parent, args, context, info) => {
+      const req = context.req;
+
+      if (!req.user.groups.includes("mrn-search")) {
+        throw new ForbiddenError("403");
+      } else {
+        // continues to the next middleware or resolver
+        const result = await resolve(parent, args, context, info);
+        return result;
+      }
+    },
+  },
+};
+
 const resolvers = {
   Query: {
-    patientIdsTriplets: async (
-      _: any,
-      { patientIds }: any,
-      contextValue: any
-    ) => {
-      const user = contextValue.user;
-
-      if (!user) {
-        throw new AuthenticationError("401");
-      } else if (!user.groups.includes("mrn-search")) {
-        throw new ForbiddenError("403");
-      }
-
+    patientIdsTriplets: async (_: any, { patientIds }: any) => {
       // dummy data for testing
       const patientIdsTriplets = [
         {
@@ -85,7 +115,13 @@ const typeDefs = `
   }
 `;
 
-export const oracleDbSchema = makeExecutableSchema({
+const schema = makeExecutableSchema({
   typeDefs: typeDefs,
   resolvers: resolvers,
 });
+
+export const oracleDbSchema = applyMiddleware(
+  schema,
+  authenticationMiddleware,
+  authorizationMiddleware
+);

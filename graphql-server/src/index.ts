@@ -209,8 +209,12 @@ async function main() {
   const server = new ApolloServer({
     schema: mergedSchema,
     context: async ({ req }: { req: any }) => {
-      const user = req.user;
-      return { user };
+      return {
+        req: {
+          user: req.user,
+          isAuthenticated: req.isAuthenticated,
+        },
+      };
     },
     plugins: [
       ApolloServerPluginDrainHttpServer({ httpServer: httpsServer }),
