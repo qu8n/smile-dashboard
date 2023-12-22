@@ -140,7 +140,7 @@ export default function PatientsPage({
         const top = (window.screen.height - height) / 2;
 
         window.open(
-          `${REACT_APP_EXPRESS_SERVER_ORIGIN}/login`,
+          `${REACT_APP_EXPRESS_SERVER_ORIGIN}/auth/login`,
           "_blank",
           `toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width=${width}, height=${height}, top=${top}, left=${left}`
         );

@@ -10,7 +10,7 @@ export default function SmileNavBar({
   setUserEmail: (email: string | null) => void;
 }) {
   function handleLogout() {
-    fetch(`${REACT_APP_EXPRESS_SERVER_ORIGIN}/logout`, {
+    fetch(`${REACT_APP_EXPRESS_SERVER_ORIGIN}/auth/logout`, {
       method: "POST",
       credentials: "include",
       mode: "no-cors",
