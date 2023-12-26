@@ -12,12 +12,12 @@ import bodyParser from "body-parser";
 const passport = require("passport");
 import { Issuer, Strategy } from "openid-client";
 import { buildProps } from "../buildProps";
-import { EXPRESS_SERVER_ORIGIN } from "../constants";
+import { EXPRESS_SERVER_ORIGIN, corsOptions } from "../constants";
 const session = require("express-session");
 
 const props = buildProps();
 
-module.exports = async function (app: Express, corsOptions: any) {
+module.exports = async function (app: Express) {
   app.use(express.static(path.resolve(__dirname, "../build")));
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(express.json({ limit: "50mb" })); // increase to support bulk searching

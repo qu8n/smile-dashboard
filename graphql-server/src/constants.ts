@@ -7,3 +7,8 @@ export const REACT_SERVER_ORIGIN =
   process.env.REACT_SERVER_ORIGIN === undefined
     ? "https://localhost:3006"
     : process.env.REACT_SERVER_ORIGIN;
+
+export const corsOptions = {
+  origin: REACT_SERVER_ORIGIN,
+  credentials: true,
+};

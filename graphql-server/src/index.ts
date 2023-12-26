@@ -10,21 +10,16 @@ import {
 } from "apollo-server-core";
 import { mergeSchemas } from "@graphql-tools/schema";
 import { buildProps } from "./buildProps";
-import { EXPRESS_SERVER_ORIGIN, REACT_SERVER_ORIGIN } from "./constants";
+import { EXPRESS_SERVER_ORIGIN, corsOptions } from "./constants";
 import { buildNeo4jDbSchema } from "./schemas/neo4j.schema";
 import { oracleDbSchema } from "./schemas/oracle.schema";
 
 const props = buildProps();
 
-const corsOptions = {
-  origin: REACT_SERVER_ORIGIN,
-  credentials: true,
-};
-
 async function main() {
   const app: Express = express();
 
-  require("./routes")(app, corsOptions);
+  require("./routes")(app);
 
   const logDir = path.join(process.env.SMILE_DATA_HOME!, props.log_dir);
   if (!fs.existsSync(logDir)) fs.mkdirSync(logDir);
