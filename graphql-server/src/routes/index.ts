@@ -7,7 +7,6 @@ import { healthCheckRouter } from "./health";
 const fetch = require("node-fetch");
 import express, { Express } from "express";
 import cors from "cors";
-import path from "path";
 import bodyParser from "body-parser";
 const passport = require("passport");
 import { Issuer, Strategy } from "openid-client";
@@ -18,7 +17,6 @@ const session = require("express-session");
 const props = buildProps();
 
 module.exports = async function (app: Express) {
-  app.use(express.static(path.resolve(__dirname, "../build")));
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(express.json({ limit: "50mb" })); // increase to support bulk searching
   app.use(cors(corsOptions));

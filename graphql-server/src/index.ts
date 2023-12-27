@@ -11,8 +11,8 @@ import {
 import { mergeSchemas } from "@graphql-tools/schema";
 import { buildProps } from "./buildProps";
 import { EXPRESS_SERVER_ORIGIN, corsOptions } from "./constants";
-import { buildNeo4jDbSchema } from "./schemas/neo4j.schema";
-import { oracleDbSchema } from "./schemas/oracle.schema";
+import { buildNeo4jDbSchema } from "./schemas/neo4j";
+import { oracleDbSchema } from "./schemas/oracle";
 
 const props = buildProps();
 
