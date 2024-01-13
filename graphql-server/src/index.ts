@@ -19,6 +19,9 @@ const props = buildProps();
 async function main() {
   const app: Express = express();
 
+  app.locals.sessionIdleTimeout = 0;
+  app.locals.activeUserSessions = {};
+
   require("./routes")(app);
 
   const logDir = path.join(process.env.SMILE_DATA_HOME!, props.log_dir);

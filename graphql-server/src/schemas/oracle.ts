@@ -25,12 +25,12 @@ const authenticationMiddleware: {
     patientIdsTriplets: async (resolve, parent, args, context, info) => {
       const req = context.req;
 
-      if (!req.isAuthenticated()) {
-        throw new AuthenticationError("401");
-      } else {
+      if (req.isAuthenticated()) {
         // continues to the next middleware or resolver
         const result = await resolve(parent, args, context, info);
         return result;
+      } else {
+        throw new AuthenticationError("401");
       }
     },
   },
@@ -45,12 +45,12 @@ const authorizationMiddleware: {
     patientIdsTriplets: async (resolve, parent, args, context, info) => {
       const req = context.req;
 
-      if (!req.user.groups.includes("mrn-search")) {
-        throw new ForbiddenError("403");
-      } else {
+      if (req.user.groups.includes("mrn-search")) {
         // continues to the next middleware or resolver
         const result = await resolve(parent, args, context, info);
         return result;
+      } else {
+        throw new ForbiddenError("403");
       }
     },
   },
