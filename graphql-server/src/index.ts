@@ -13,6 +13,7 @@ import { buildProps } from "./buildProps";
 import { EXPRESS_SERVER_ORIGIN, corsOptions } from "./constants";
 import { buildNeo4jDbSchema } from "./schemas/neo4j";
 import { oracleDbSchema } from "./schemas/oracle";
+import { updateActiveUserSessions } from "./utils/session";
 
 const props = buildProps();
 
@@ -62,6 +63,8 @@ async function main() {
   const server = new ApolloServer({
     schema: mergedSchema,
     context: async ({ req }: { req: any }) => {
+      // gets called every request
+      updateActiveUserSessions(req);
       return {
         req: {
           user: req.user,

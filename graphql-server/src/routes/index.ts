@@ -1,21 +1,22 @@
+import express, { Express } from "express";
+import cors from "cors";
+import bodyParser from "body-parser";
+import { Strategy } from "openid-client";
+const passport = require("passport");
+const session = require("express-session");
 import { logInRouter } from "./auth/login";
 import { callbackRouter } from "./auth/callback";
 import { postLoginRouter } from "./auth/post-login";
 import { checkLogInRouter } from "./auth/check-login";
-import { healthCheckRouter } from "./health";
-import express, { Express } from "express";
-import cors from "cors";
-import bodyParser from "body-parser";
-const passport = require("passport");
-import { Strategy } from "openid-client";
+import { healthCheckRouter } from "./health-check";
 import { buildProps } from "../buildProps";
 import { corsOptions } from "../constants";
 import {
-  checkAuthenticated,
   getKeycloakClient,
-  logout,
-} from "../utils/keycloak";
-const session = require("express-session");
+  checkAuthentication,
+  updateActiveUserSessions,
+} from "../utils/session";
+import { logOutRouter } from "./auth/logout";
 
 const props = buildProps();
 
@@ -24,13 +25,12 @@ module.exports = async function (app: Express) {
   app.use(express.json({ limit: "50mb" })); // increase to support bulk searching
   app.use(cors(corsOptions));
 
-  const memoryStore = new session.MemoryStore();
   app.use(
     session({
       secret: props.express_session_secret,
       resave: false,
       saveUninitialized: true,
-      store: memoryStore,
+      store: new session.MemoryStore(),
       cookie: { secure: true },
     })
   );
@@ -49,28 +49,38 @@ module.exports = async function (app: Express) {
   });
 
   const keycloakClient = await getKeycloakClient();
+
   passport.use(
     "oidc",
     new Strategy({ client: keycloakClient }, (tokenSet: any, done: any) => {
       app.locals.sessionIdleTimeout = tokenSet.refresh_expires_in * 1000; // convert to ms to be standardized
 
       const claims = tokenSet.claims();
-      app.locals.activeUserSessions[claims.sub] = {
-        lastAuthCheckTime: Date.now(),
+      const keycloakUserId = claims.sub;
+
+      app.locals.activeUserSessions[keycloakUserId] = {
+        lastActiveTime: Date.now(),
         idTokenHint: tokenSet.id_token,
       };
+
       return done(null, claims);
     })
   );
 
-  function authenticate(req: any, res: any, next: any) {
-    checkAuthenticated(req, res, next, app);
-  }
-
   app.get("/", healthCheckRouter);
   app.get("/auth/login", logInRouter);
   app.get("/auth/callback", callbackRouter);
-  app.get("/auth/post-login", authenticate, postLoginRouter);
-  app.post("/auth/logout", authenticate, (req) => logout(req, app));
-  app.get("/auth/check-login", authenticate, checkLogInRouter);
+  app.get(
+    "/auth/post-login",
+    checkAuthentication,
+    updateActiveUserSessions,
+    postLoginRouter
+  );
+  app.get(
+    "/auth/check-login",
+    checkAuthentication,
+    updateActiveUserSessions,
+    checkLogInRouter
+  );
+  app.post("/auth/logout", checkAuthentication, logOutRouter);
 };

@@ -1,9 +1,9 @@
+import os from "os";
 import { AuthenticationError, ForbiddenError } from "apollo-server-express";
 import { makeExecutableSchema } from "@graphql-tools/schema";
 import { buildProps } from "../buildProps";
 import { applyMiddleware } from "graphql-middleware";
 import { IMiddlewareResolver } from "graphql-middleware/dist/types";
-import os from "os";
 
 // The CRDB implements case insensitive logon, a setting that requires node-oracledb's Thick mode
 // and the Oracle Instant Client, which is unavailable for M1 Macs
@@ -16,6 +16,7 @@ if (os.arch() !== "arm64") {
 
 const props = buildProps();
 
+// Modelled after the `checkAuthenticated` middleware in graphql-server/src/utils/session.ts
 const authenticationMiddleware: {
   Query: {
     patientIdsTriplets: IMiddlewareResolver;
@@ -59,7 +60,7 @@ const authorizationMiddleware: {
 const resolvers = {
   Query: {
     patientIdsTriplets: async (_: any, { patientIds }: any) => {
-      // dummy data for testing
+      // TODO remove before finalizing PR. Dummy data for testing
       const patientIdsTriplets = [
         {
           DMP_ID: "P-1234567",

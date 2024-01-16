@@ -1,6 +1,6 @@
 import { REACT_SERVER_ORIGIN } from "../../constants";
 
-export function postLoginRouter(req: any, res: any, next: any) {
+export function postLoginRouter(req: any, res: any) {
   const userEmail = req.user.email;
 
   res.send(`
