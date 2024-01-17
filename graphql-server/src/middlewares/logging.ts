@@ -14,16 +14,28 @@ module.exports = function (app: Express) {
     flags: "a+",
   });
 
-  morgan.token("userKeycloakId", function (req: any, res: any) {
-    return req.user ? req.user.sub : "-";
+  morgan.token("keycloak-user-id", (req: any) => {
+    return `Keycloak user ID: ${req.user?.sub || "N/A"}`;
+  });
+
+  morgan.token("graphql-query", (req: any) => {
+    const { operationName } = req.body;
+    return `GraphQL query: ${operationName || "N/A"}`;
   });
 
   app.use(
-    morgan(":method :url :status - :date[iso] - :userKeycloakId", {
-      stream: accessLogStream,
-      skip: function (req: any, res: any) {
-        return req.path !== "/mrn-search";
-      },
-    })
+    morgan(
+      ":method :url :status - :date[iso] - :keycloak-user-id - :graphql-query",
+      {
+        stream: accessLogStream,
+        skip: (req: any) => {
+          // Only log GetPatientIdsTriplets query from logged in users
+          if (req.user && req.body.operationName === "GetPatientIdsTriplets") {
+            return false;
+          }
+          return true;
+        },
+      }
+    )
   );
 };
