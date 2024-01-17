@@ -4,8 +4,6 @@ const fetch = require("node-fetch");
 /**
  * Clear user from `activeUserSessions` tracker, `req` object, and their Keycloak session.
  * User is logged out from Keycloak without a "log out?" prompt and redirecting the response.
- *
- * @param req Express request object
  */
 export async function logOutRouter(req: any) {
   const keycloakUserId = req.user.sub;

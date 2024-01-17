@@ -5,9 +5,6 @@ import { initializeApolloServer, initializeHttpsServer } from "./utils/servers";
 async function main() {
   const app: Express = express();
 
-  app.locals.sessionIdleTimeout = 0;
-  app.locals.activeUserSessions = {};
-
   require("./middlewares/express")(app);
   await require("./middlewares/session")(app);
   require("./middlewares/logging")(app);

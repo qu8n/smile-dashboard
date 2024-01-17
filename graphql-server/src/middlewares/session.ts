@@ -8,6 +8,10 @@ import { getKeycloakClient } from "../utils/session";
 const props = buildProps();
 
 module.exports = async function (app: Express) {
+  // For the auto-timeout functionality
+  app.locals.sessionIdleTimeout = 0;
+  app.locals.activeUserSessions = {};
+
   app.use(
     session({
       secret: props.express_session_secret,
@@ -20,19 +24,22 @@ module.exports = async function (app: Express) {
 
   app.use(passport.initialize());
 
-  // Enables persistent login sessions; equivalent to `app.use(passport.authenticate('session'))`
+  // Enable persistent login sessions; equivalent to `app.use(passport.authenticate('session'))`
   app.use(passport.session());
 
-  // These two functions are required for the Session strategy above to work
+  // Encrypt and store user info into session after they log in successfully
   passport.serializeUser(function (user: any, done: any) {
     done(null, user);
   });
+
+  // Decrypt and retrieve user info from session each time they make a request
   passport.deserializeUser(function (user: any, done: any) {
     done(null, user);
   });
 
   const keycloakClient = await getKeycloakClient();
 
+  // Authenticate users using OpenID Connect (OIDC) protocol with Keycloak
   passport.use(
     "oidc",
     new Strategy({ client: keycloakClient }, (tokenSet: any, done: any) => {

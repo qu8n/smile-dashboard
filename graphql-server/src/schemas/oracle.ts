@@ -16,7 +16,6 @@ if (os.arch() !== "arm64") {
 
 const props = buildProps();
 
-// Modelled after the `checkAuthenticated` middleware in graphql-server/src/utils/session.ts
 const authenticationMiddleware: {
   Query: {
     patientIdsTriplets: IMiddlewareResolver;

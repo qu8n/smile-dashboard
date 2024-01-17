@@ -1,6 +1,6 @@
 const passport = require("passport");
 
-// Initiates the authentication request
 export function logInRouter(req: any, res: any, next: any) {
+  // Initiate the authentication request
   passport.authenticate("oidc")(req, res, next);
 }
