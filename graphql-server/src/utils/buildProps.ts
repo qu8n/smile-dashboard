@@ -1,7 +1,7 @@
 import path from "path";
 const PropertiesReader = require("properties-reader");
 const properties = new PropertiesReader(
-  path.resolve(`${__dirname}`, "./env/application.properties")
+  path.resolve(`${__dirname}`, "../env/application.properties")
 );
 
 export function buildProps() {

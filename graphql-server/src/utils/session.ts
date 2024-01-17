@@ -1,24 +1,9 @@
-/**
- * @file Contains utilities for managing user sessions
- */
-
 import { Issuer } from "openid-client";
-import { buildProps } from "../buildProps";
-import { EXPRESS_SERVER_ORIGIN } from "../constants";
+import { buildProps } from "./buildProps";
+import { EXPRESS_SERVER_ORIGIN } from "./constants";
 import { logOutRouter } from "../routes/auth/logout";
-const fetch = require("node-fetch");
 
 const props = buildProps();
-
-interface SessionConfig {
-  activeUserSessions: {
-    [keycloakUserId: string]: {
-      lastActiveTime: number;
-      idTokenHint: string;
-    };
-  };
-  sessionIdleTimeout: number;
-}
 
 export async function getKeycloakClient() {
   const keycloakIssuer = await Issuer.discover(props.keycloak_server_uri);
@@ -32,12 +17,22 @@ export async function getKeycloakClient() {
 }
 
 export function checkAuthentication(req: any, res: any, next: any) {
+  // Check if `req.user` is defined
   if (req.isAuthenticated()) {
-    // checks if `req.user` is defined
     return next();
   } else {
     res.status(401).send("401 Unauthorized");
   }
+}
+
+interface SessionConfig {
+  activeUserSessions: {
+    [keycloakUserId: string]: {
+      lastActiveTime: number;
+      idTokenHint: string;
+    };
+  };
+  sessionIdleTimeout: number;
 }
 
 /**
@@ -47,9 +42,9 @@ export function checkAuthentication(req: any, res: any, next: any) {
  *
  * Does nothing if user is not logged in.
  *
- * @param req Express request object
+ * @param next to include if function is used as middleware
  */
-export function updateActiveUserSessions(req: any, res?: any, next?: any) {
+export function updateActiveUserSessions(req: any, _?: any, next?: any) {
   const keycloakUserId = req.user?.sub;
 
   const { activeUserSessions, sessionIdleTimeout } = req.app

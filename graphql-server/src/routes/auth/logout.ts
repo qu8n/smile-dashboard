@@ -21,7 +21,7 @@ export async function logOutRouter(req: any) {
   });
 
   const keycloakClient = await getKeycloakClient();
-  fetch(keycloakClient.endSessionUrl({ id_token_hint: idTokenHint }), {
+  await fetch(keycloakClient.endSessionUrl({ id_token_hint: idTokenHint }), {
     mode: "no-cors",
   });
 }

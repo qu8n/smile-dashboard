@@ -1,4 +1,4 @@
-import { REACT_SERVER_ORIGIN } from "../../constants";
+import { REACT_SERVER_ORIGIN } from "../../utils/constants";
 
 export function postLoginRouter(req: any, res: any) {
   const userEmail = req.user.email;

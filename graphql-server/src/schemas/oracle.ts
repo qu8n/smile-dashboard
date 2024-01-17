@@ -1,7 +1,7 @@
 import os from "os";
 import { AuthenticationError, ForbiddenError } from "apollo-server-express";
 import { makeExecutableSchema } from "@graphql-tools/schema";
-import { buildProps } from "../buildProps";
+import { buildProps } from "../utils/buildProps";
 import { applyMiddleware } from "graphql-middleware";
 import { IMiddlewareResolver } from "graphql-middleware/dist/types";
 
