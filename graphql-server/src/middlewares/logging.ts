@@ -6,6 +6,9 @@ import { buildProps } from "../utils/buildProps";
 
 const props = buildProps();
 
+/**
+ * Log only GetPatientIdsTriplets queries from logged in users
+ */
 module.exports = function (app: Express) {
   const logDir = path.join(process.env.SMILE_DATA_HOME!, props.log_dir);
 
@@ -29,7 +32,6 @@ module.exports = function (app: Express) {
       {
         stream: accessLogStream,
         skip: (req: any) => {
-          // Only log GetPatientIdsTriplets query from logged in users
           if (req.user && req.body.operationName === "GetPatientIdsTriplets") {
             return false;
           }

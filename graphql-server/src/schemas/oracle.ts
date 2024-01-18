@@ -59,19 +59,7 @@ const authorizationMiddleware: {
 const resolvers = {
   Query: {
     patientIdsTriplets: async (_: any, { patientIds }: any) => {
-      // TODO remove before finalizing PR. Dummy data for testing
-      const patientIdsTriplets = [
-        {
-          DMP_ID: "P-1234567",
-          CMO_ID: "4PJHNV",
-          PT_MRN: "12345678",
-        },
-        {
-          DMP_ID: "P-3456789",
-          CMO_ID: "YYTNU8",
-          PT_MRN: "34567890",
-        },
-      ];
+      const patientIdsTriplets = [];
 
       if (os.arch() !== "arm64" && oracledb !== null) {
         try {

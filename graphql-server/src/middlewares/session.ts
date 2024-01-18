@@ -7,6 +7,12 @@ import { getKeycloakClient } from "../utils/session";
 
 const props = buildProps();
 
+/**
+ * This middleware sets up the following session-related mechanisms:
+ * - Express-session for storing user info in session store and managing the session cookie
+ * - Passport for authenticating users using OpenID Connect (OIDC) protocol with Keycloak as the OIDC provider
+ * - Storing timestamp of user's last activity for the auto-timeout functionality
+ */
 module.exports = async function (app: Express) {
   // For the auto-timeout functionality
   app.locals.sessionIdleTimeout = 0;
@@ -15,8 +21,8 @@ module.exports = async function (app: Express) {
   app.use(
     session({
       secret: props.express_session_secret,
-      resave: false,
-      saveUninitialized: true,
+      resave: false, // prevents resetting the session cookie on every req
+      saveUninitialized: false, // avoids storing empty sessions
       store: new session.MemoryStore(),
       cookie: { secure: true },
     })
