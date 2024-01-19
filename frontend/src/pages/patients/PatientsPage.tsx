@@ -19,11 +19,11 @@ import { parseSearchQueries } from "../../lib/parseSearchQueries";
 import { REACT_APP_EXPRESS_SERVER_ORIGIN } from "../../shared/constants";
 import { PatientsListColumns } from "../../shared/helpers";
 
-// This type mirrors the fields types in the CRDB. CMO_ID is stored without the "C-" prefix
+// Mirror the field types in the CRDB, where CMO_ID is stored without the "C-" prefix
 export type PatientIdsTriplet = {
-  DMP_ID: string;
   CMO_ID: string;
   PT_MRN: string;
+  DMP_ID: string | null;
 };
 
 function patientAliasFilterWhereVariables(
@@ -112,9 +112,10 @@ export default function PatientsPage({
   const [searchVal, setSearchVal] = useState<string[]>([]);
   const [inputVal, setInputVal] = useState("");
   const [showDownloadModal, setShowDownloadModal] = useState(false);
-
   const [phiEnabled, setPhiEnabled] = useState(false);
-  const [patientIdsTriplets, setPatientIdsTriplets] = useState<any>([]); // using `any` temporarily instead of `PatientIdsTriplet[]`
+  const [patientIdsTriplets, setPatientIdsTriplets] = useState<
+    PatientIdsTriplet[]
+  >([]);
   const [alertModal, setAlertModal] = useState<{
     show: boolean;
     title: string;
@@ -156,14 +157,14 @@ export default function PatientsPage({
       return [];
     }
 
-    const patientIdsTriplets = data?.patientIdsTriplets;
-    const validPatientIdsTriplets = patientIdsTriplets?.filter((d) =>
-      Boolean(d)
-    );
+    const patientIdsTriplets = data?.patientIdsTriplets?.filter((triplet) =>
+      Boolean(triplet)
+    ) as PatientIdsTriplet[];
 
-    if (validPatientIdsTriplets && validPatientIdsTriplets.length > 0) {
-      setPatientIdsTriplets(validPatientIdsTriplets);
-      return validPatientIdsTriplets.map((triplet) =>
+    if (patientIdsTriplets && patientIdsTriplets.length > 0) {
+      setPatientIdsTriplets(patientIdsTriplets);
+
+      return patientIdsTriplets.map((triplet) =>
         addCDashToCMOId(triplet?.CMO_ID as string)
       );
     } else {
@@ -173,11 +174,14 @@ export default function PatientsPage({
 
   const handleSearch = async () => {
     let uniqueQueries = parseSearchQueries(inputVal);
+
     if (phiEnabled) {
       uniqueQueries = uniqueQueries.map((query) =>
         query.startsWith("C-") ? query.slice(2) : query
       );
+
       const newQueries = await fetchPatientIdsTriplets(uniqueQueries);
+
       if (newQueries.length > 0) {
         setSearchVal(newQueries);
       } else if (userEmail) {
@@ -185,6 +189,7 @@ export default function PatientsPage({
           show: true,
           ...NO_PHI_SEARCH_RESULTS,
         });
+
         setSearchVal([]);
       }
     } else {
@@ -197,11 +202,14 @@ export default function PatientsPage({
 
     function handleLogin(event: any) {
       if (event.origin !== `${REACT_APP_EXPRESS_SERVER_ORIGIN}`) return;
+
       setUserEmail(event.data);
+
       setAlertModal({
         show: true,
         ...PHI_WARNING,
       });
+
       handleSearch();
     }
 
@@ -224,9 +232,11 @@ export default function PatientsPage({
           hide: false,
           valueGetter: (params: any) => {
             const cmoId = params.data.value;
+
             const patientIdsTriplet = patientIdsTriplets.find(
-              (triplet: any) => addCDashToCMOId(triplet.CMO_ID) === cmoId
+              (triplet) => addCDashToCMOId(triplet.CMO_ID) === cmoId
             );
+
             if (patientIdsTriplet) {
               return patientIdsTriplet.PT_MRN;
             } else {
