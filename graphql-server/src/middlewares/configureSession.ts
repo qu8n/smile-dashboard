@@ -2,10 +2,8 @@ import { Express } from "express";
 import { Strategy } from "openid-client";
 const passport = require("passport");
 const session = require("express-session");
-import { buildProps } from "../utils/buildProps";
+import { props } from "../utils/constants";
 import { getKeycloakClient } from "../utils/session";
-
-const props = buildProps();
 
 /**
  * This middleware sets up the following session-related mechanisms:

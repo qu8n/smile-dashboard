@@ -1,9 +1,7 @@
 import { Issuer } from "openid-client";
-import { buildProps } from "./buildProps";
+import { props } from "../utils/constants";
 import { EXPRESS_SERVER_ORIGIN } from "./constants";
-import { logOutRouter } from "../routes/auth/logout";
-
-const props = buildProps();
+import { logOutRoute } from "../routes/auth/logout";
 
 export async function getKeycloakClient() {
   const keycloakIssuer = await Issuer.discover(props.keycloak_server_uri);
@@ -55,7 +53,7 @@ export function updateActiveUserSessions(req: any, _?: any, next?: any) {
       Date.now() - activeUserSessions[keycloakUserId].lastActiveTime;
 
     if (userIdleTime > sessionIdleTimeout) {
-      logOutRouter(req);
+      logOutRoute(req);
     } else {
       req.app.locals.activeUserSessions[keycloakUserId].lastActiveTime =
         Date.now();

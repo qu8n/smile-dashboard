@@ -2,9 +2,7 @@ import { Express } from "express";
 import path from "path";
 const morgan = require("morgan");
 import fs from "fs";
-import { buildProps } from "../utils/buildProps";
-
-const props = buildProps();
+import { props } from "../utils/constants";
 
 /**
  * Log only GetPatientIdsTriplets queries from logged in users

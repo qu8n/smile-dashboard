@@ -4,14 +4,12 @@ import { OGM } from "@neo4j/graphql-ogm";
 import { toGraphQLTypeDefs } from "@neo4j/introspector";
 import { createHttpLink } from "apollo-link-http";
 import { InMemoryCache } from "apollo-cache-inmemory";
-import { buildProps } from "../utils/buildProps";
+import { props } from "../utils/constants";
 import { SamplesDocument, SortDirection } from "../generated/graphql";
 import { connect, headers, StringCodec } from "nats";
 const fetch = require("node-fetch");
 const request = require("request-promise-native");
 const ApolloClient = require("apollo-client").ApolloClient;
-
-const props = buildProps();
 
 export async function buildNeo4jDbSchema() {
   const driver = neo4j.driver(

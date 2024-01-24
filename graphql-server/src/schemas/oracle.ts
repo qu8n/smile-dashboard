@@ -1,7 +1,7 @@
 import os from "os";
 import { AuthenticationError, ForbiddenError } from "apollo-server-express";
 import { makeExecutableSchema } from "@graphql-tools/schema";
-import { buildProps } from "../utils/buildProps";
+import { props } from "../utils/constants";
 import { applyMiddleware } from "graphql-middleware";
 import { IMiddlewareResolver } from "graphql-middleware/dist/types";
 
@@ -13,8 +13,6 @@ if (os.arch() !== "arm64") {
   oracledb.initOracleClient();
   oracledb.outFormat = oracledb.OUT_FORMAT_OBJECT; // returns each row as a JS object
 }
-
-const props = buildProps();
 
 const authenticationMiddleware: {
   Query: {
