@@ -9,7 +9,7 @@ const props = buildProps();
 /**
  * Log only GetPatientIdsTriplets queries from logged in users
  */
-module.exports = function (app: Express) {
+export function configureLogging(app: Express) {
   const logDir = path.join(process.env.SMILE_DATA_HOME!, props.log_dir);
 
   if (!fs.existsSync(logDir)) fs.mkdirSync(logDir);
@@ -40,4 +40,4 @@ module.exports = function (app: Express) {
       }
     )
   );
-};
+}

@@ -13,7 +13,7 @@ const props = buildProps();
  * - Passport for authenticating users using OpenID Connect (OIDC) protocol with Keycloak as the OIDC provider
  * - Storing timestamp of user's last activity for the auto-timeout functionality
  */
-module.exports = async function (app: Express) {
+export async function configureSession(app: Express) {
   // For the auto-timeout functionality
   app.locals.sessionIdleTimeout = 0;
   app.locals.activeUserSessions = {};
@@ -62,4 +62,4 @@ module.exports = async function (app: Express) {
       return done(null, claims);
     })
   );
-};
+}

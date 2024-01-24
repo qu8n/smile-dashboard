@@ -1,34 +1,34 @@
 import { Express } from "express";
-import { logInRouter } from "./auth/login";
-import { callbackRouter } from "./auth/callback";
-import { postLoginRouter } from "./auth/post-login";
-import { checkLogInRouter } from "./auth/check-login";
+import { logInRoute } from "./auth/login";
+import { callbackRoute } from "./auth/callback";
+import { postLoginRoute } from "./auth/post-login";
+import { checkLogInRoute } from "./auth/check-login";
 import {
   checkAuthentication,
   updateActiveUserSessions,
 } from "../utils/session";
-import { logOutRouter } from "./auth/logout";
+import { logOutRoute } from "./auth/logout";
 
-module.exports = function (app: Express) {
+export function configureRoutes(app: Express) {
   app.get("/", (_, res) => res.sendStatus(200)); // health check
 
-  app.get("/auth/login", logInRouter);
+  app.get("/auth/login", logInRoute);
 
-  app.get("/auth/callback", callbackRouter);
+  app.get("/auth/callback", callbackRoute);
 
   app.get(
     "/auth/post-login",
     checkAuthentication,
     updateActiveUserSessions,
-    postLoginRouter
+    postLoginRoute
   );
 
   app.get(
     "/auth/check-login",
     checkAuthentication,
     updateActiveUserSessions,
-    checkLogInRouter
+    checkLogInRoute
   );
 
-  app.post("/auth/logout", checkAuthentication, logOutRouter);
-};
+  app.post("/auth/logout", checkAuthentication, logOutRoute);
+}

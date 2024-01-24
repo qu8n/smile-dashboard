@@ -1,14 +1,18 @@
 import express, { Express } from "express";
 import { EXPRESS_SERVER_ORIGIN } from "./utils/constants";
 import { initializeApolloServer, initializeHttpsServer } from "./utils/servers";
+import { configureApp } from "./middlewares/configureApp";
+import { configureSession } from "./middlewares/configureSession";
+import { configureLogging } from "./middlewares/configureLogging";
+import { configureRoutes } from "./routes";
 
 async function main() {
   const app: Express = express();
 
-  require("./middlewares/express")(app);
-  await require("./middlewares/session")(app);
-  require("./middlewares/logging")(app);
-  require("./routes")(app);
+  configureApp(app);
+  await configureSession(app);
+  configureLogging(app);
+  configureRoutes(app);
 
   const httpsServer = initializeHttpsServer(app);
   const apolloServer = await initializeApolloServer(httpsServer, app);

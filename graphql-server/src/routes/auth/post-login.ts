@@ -5,7 +5,7 @@ import { REACT_SERVER_ORIGIN } from "../../utils/constants";
  * closes the popup window and sends user's email to the parent window
  * to display on in the navbar.
  */
-export function postLoginRouter(req: any, res: any) {
+export function postLoginRoute(req: any, res: any) {
   const userEmail = req.user.email;
 
   res.send(`
