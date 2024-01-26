@@ -233,7 +233,6 @@ export const SampleDetailsColumns: ColDef<SampleMetadataExtended>[] = [
   {
     field: "primaryId",
     headerName: "Primary ID",
-    editable: (params) => !protectedFields.includes(params.colDef.field!),
   },
   {
     field: "revisable",
@@ -272,27 +271,22 @@ export const SampleDetailsColumns: ColDef<SampleMetadataExtended>[] = [
   {
     field: "cmoSampleName",
     headerName: "CMO Sample Name",
-    editable: (params) => !protectedFields.includes(params.colDef.field!),
   },
   {
     field: "importDate",
     headerName: "Last Updated",
-    editable: (params) => !protectedFields.includes(params.colDef.field!),
   },
   {
     field: "cmoPatientId",
     headerName: "CMO Patient ID",
-    editable: (params) => !protectedFields.includes(params.colDef.field!),
   },
   {
     field: "investigatorSampleId",
     headerName: "Investigator Sample ID",
-    editable: (params) => !protectedFields.includes(params.colDef.field!),
   },
   {
     field: "sampleType",
     headerName: "Sample Type",
-    editable: (params) => !protectedFields.includes(params.colDef.field!),
     cellEditor: "agRichSelectCellEditor",
     cellEditorPopup: true,
     cellEditorParams: {
@@ -314,22 +308,22 @@ export const SampleDetailsColumns: ColDef<SampleMetadataExtended>[] = [
   {
     field: "species",
     headerName: "Species",
-    editable: (params) => !protectedFields.includes(params.colDef.field!),
   },
   {
     field: "genePanel",
     headerName: "Gene Panel",
-    editable: (params) => !protectedFields.includes(params.colDef.field!),
+  },
+  {
+    field: "baitSet",
+    headerName: "Bait Set",
   },
   {
     field: "preservation",
     headerName: "Preservation",
-    editable: (params) => !protectedFields.includes(params.colDef.field!),
   },
   {
     field: "tumorOrNormal",
     headerName: "Tumor Or Normal",
-    editable: (params) => !protectedFields.includes(params.colDef.field!),
     cellEditor: "agRichSelectCellEditor",
     cellEditorPopup: true,
     cellEditorParams: {
@@ -339,7 +333,6 @@ export const SampleDetailsColumns: ColDef<SampleMetadataExtended>[] = [
   {
     field: "sampleClass",
     headerName: "Sample Class",
-    editable: (params) => !protectedFields.includes(params.colDef.field!),
     cellEditor: "agRichSelectCellEditor",
     cellEditorPopup: true,
     cellEditorParams: {
@@ -364,17 +357,14 @@ export const SampleDetailsColumns: ColDef<SampleMetadataExtended>[] = [
   {
     field: "oncotreeCode",
     headerName: "Oncotree Code",
-    editable: (params) => !protectedFields.includes(params.colDef.field!),
   },
   {
     field: "collectionYear",
     headerName: "Collection Year",
-    editable: (params) => !protectedFields.includes(params.colDef.field!),
   },
   {
     field: "sampleOrigin",
     headerName: "Sample Origin",
-    editable: (params) => !protectedFields.includes(params.colDef.field!),
     cellEditor: "agRichSelectCellEditor",
     cellEditorPopup: true,
     cellEditorParams: {
@@ -409,17 +399,15 @@ export const SampleDetailsColumns: ColDef<SampleMetadataExtended>[] = [
   {
     field: "tissueLocation",
     headerName: "Tissue Location",
-    editable: (params) => !protectedFields.includes(params.colDef.field!),
   },
   {
     field: "sex",
     headerName: "Sex",
-    editable: (params) => !protectedFields.includes(params.colDef.field!),
   },
 ];
 
-SampleDetailsColumns.forEach((def) => {
-  def.cellClassRules = {
+SampleDetailsColumns.forEach((colDef) => {
+  colDef.cellClassRules = {
     unsubmittedChange: (params: any) => {
       const changes = params.context.getChanges();
       const changedValue = changes?.find((change: any) => {
@@ -432,8 +420,8 @@ SampleDetailsColumns.forEach((def) => {
     },
   };
 
-  if (def.valueGetter === undefined) {
-    def.valueGetter = (params) => {
+  if (colDef.valueGetter === undefined) {
+    colDef.valueGetter = (params) => {
       const changes = params.context?.getChanges();
 
       const changedValue = changes?.find((change: any) => {
@@ -456,14 +444,14 @@ SampleDetailsColumns.forEach((def) => {
     };
   }
 
-  def.editable = (params) => {
+  colDef.editable = (params) => {
     return (
       !protectedFields.includes(params.colDef.field!) &&
       params.data?.revisable === true
     );
   };
 
-  def.headerComponentParams = (params: IHeaderParams) => {
+  colDef.headerComponentParams = (params: IHeaderParams) => {
     if (protectedFields.includes(params.column.getColDef().field!)) {
       return {
         template: `
@@ -508,6 +496,7 @@ const protectedFields: string[] = [
   "cmoSampleIdFields",
   "libraries",
   "genePanel",
+  "baitSet",
   "species",
   "validationStatus",
   "validationReport",
