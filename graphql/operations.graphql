@@ -219,3 +219,11 @@ mutation UpdateSamples(
     }
   }
 }
+
+query GetPatientIdsTriplets($patientIds: [String!]!) {
+  patientIdsTriplets(patientIds: $patientIds) {
+    CMO_ID
+    DMP_ID
+    PT_MRN
+  }
+}

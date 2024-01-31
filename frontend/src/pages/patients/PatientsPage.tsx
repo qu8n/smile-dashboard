@@ -1,6 +1,7 @@
 import {
   PatientAliasWhere,
   SampleWhere,
+  useGetPatientIdsTripletsLazyQuery,
   usePatientsListLazyQuery,
 } from "../../generated/graphql";
 import { useEffect, useMemo, useState } from "react";
@@ -18,11 +19,11 @@ import { parseSearchQueries } from "../../lib/parseSearchQueries";
 import { REACT_APP_EXPRESS_SERVER_ORIGIN } from "../../shared/constants";
 import { PatientsListColumns } from "../../shared/helpers";
 
-// This type mirrors the fields types in the CRDB. CMO_ID is stored without the "C-" prefix
+// Mirror the field types in the CRDB, where CMO_ID is stored without the "C-" prefix
 export type PatientIdsTriplet = {
-  DMP_ID: string;
   CMO_ID: string;
   PT_MRN: string;
+  DMP_ID: string | null;
 };
 
 function patientAliasFilterWhereVariables(
@@ -111,7 +112,6 @@ export default function PatientsPage({
   const [searchVal, setSearchVal] = useState<string[]>([]);
   const [inputVal, setInputVal] = useState("");
   const [showDownloadModal, setShowDownloadModal] = useState(false);
-
   const [phiEnabled, setPhiEnabled] = useState(false);
   const [patientIdsTriplets, setPatientIdsTriplets] = useState<
     PatientIdsTriplet[]
@@ -122,66 +122,66 @@ export default function PatientsPage({
     content: string;
   }>({ show: false, title: "", content: "" });
 
+  const [getPatientIdsTriplets] = useGetPatientIdsTripletsLazyQuery();
+
   async function fetchPatientIdsTriplets(
     patientIds: string[]
   ): Promise<string[]> {
-    try {
-      const response = await fetch(
-        `${REACT_APP_EXPRESS_SERVER_ORIGIN}/mrn-search`,
-        {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(patientIds),
-        }
-      );
+    const { data, error } = await getPatientIdsTriplets({
+      variables: {
+        patientIds: patientIds,
+      },
+    });
 
-      if (response.status === 403) {
-        setAlertModal({
-          show: true,
-          ...UNAUTHORIZED_WARNING,
-        });
-        return [];
-      }
-
-      if (response.status === 401) {
+    if (error) {
+      if (error.message === "401") {
         const width = 800;
         const height = 800;
         const left = (window.screen.width - width) / 2;
         const top = (window.screen.height - height) / 2;
 
         window.open(
-          `${REACT_APP_EXPRESS_SERVER_ORIGIN}/login`,
+          `${REACT_APP_EXPRESS_SERVER_ORIGIN}/auth/login`,
           "_blank",
           `toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width=${width}, height=${height}, top=${top}, left=${left}`
         );
-        return [];
       }
 
-      const data: PatientIdsTriplet[] = await response.json();
-      const validData = data.filter((d) => Boolean(d));
-      setPatientIdsTriplets(validData);
-
-      if (validData.length > 0) {
-        return validData.map((d) => addCDashToCMOId(d.CMO_ID));
-      } else {
-        return [];
+      if (error.message === "403") {
+        setAlertModal({
+          show: true,
+          ...UNAUTHORIZED_WARNING,
+        });
       }
-    } catch (error) {
-      console.error(error);
+
+      return [];
+    }
+
+    const patientIdsTriplets = data?.patientIdsTriplets?.filter((triplet) =>
+      Boolean(triplet)
+    ) as PatientIdsTriplet[];
+
+    if (patientIdsTriplets && patientIdsTriplets.length > 0) {
+      setPatientIdsTriplets(patientIdsTriplets);
+
+      return patientIdsTriplets.map((triplet) =>
+        addCDashToCMOId(triplet?.CMO_ID as string)
+      );
+    } else {
       return [];
     }
   }
 
   const handleSearch = async () => {
     let uniqueQueries = parseSearchQueries(inputVal);
+
     if (phiEnabled) {
       uniqueQueries = uniqueQueries.map((query) =>
         query.startsWith("C-") ? query.slice(2) : query
       );
+
       const newQueries = await fetchPatientIdsTriplets(uniqueQueries);
+
       if (newQueries.length > 0) {
         setSearchVal(newQueries);
       } else if (userEmail) {
@@ -189,6 +189,7 @@ export default function PatientsPage({
           show: true,
           ...NO_PHI_SEARCH_RESULTS,
         });
+
         setSearchVal([]);
       }
     } else {
@@ -201,11 +202,14 @@ export default function PatientsPage({
 
     function handleLogin(event: any) {
       if (event.origin !== `${REACT_APP_EXPRESS_SERVER_ORIGIN}`) return;
+
       setUserEmail(event.data);
+
       setAlertModal({
         show: true,
         ...PHI_WARNING,
       });
+
       handleSearch();
     }
 
@@ -228,9 +232,11 @@ export default function PatientsPage({
           hide: false,
           valueGetter: (params: any) => {
             const cmoId = params.data.value;
+
             const patientIdsTriplet = patientIdsTriplets.find(
               (triplet) => addCDashToCMOId(triplet.CMO_ID) === cmoId
             );
+
             if (patientIdsTriplet) {
               return patientIdsTriplet.PT_MRN;
             } else {

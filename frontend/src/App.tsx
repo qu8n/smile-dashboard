@@ -13,7 +13,7 @@ function App() {
     async function checkLogin() {
       try {
         const response = await fetch(
-          `${REACT_APP_EXPRESS_SERVER_ORIGIN}/check-login`,
+          `${REACT_APP_EXPRESS_SERVER_ORIGIN}/auth/check-login`,
           {
             credentials: "include",
           }

@@ -1,13 +1,53 @@
-import { SamplesDocument, SortDirection } from "./generated/graphql";
-import { connect, headers, StringCodec } from "nats";
+import neo4j from "neo4j-driver";
+import { Neo4jGraphQL } from "@neo4j/graphql";
 import { OGM } from "@neo4j/graphql-ogm";
-import { buildProps } from "./buildProps";
+import { toGraphQLTypeDefs } from "@neo4j/introspector";
+import { createHttpLink } from "apollo-link-http";
+import { InMemoryCache } from "apollo-cache-inmemory";
+import { props } from "../utils/constants";
+import { SamplesDocument, SortDirection } from "../generated/graphql";
+import { connect, headers, StringCodec } from "nats";
+const fetch = require("node-fetch");
 const request = require("request-promise-native");
 const ApolloClient = require("apollo-client").ApolloClient;
 
-const props = buildProps();
+export async function buildNeo4jDbSchema() {
+  const driver = neo4j.driver(
+    props.neo4j_graphql_uri,
+    neo4j.auth.basic(props.neo4j_username, props.neo4j_password)
+  );
 
-export function buildResolvers(ogm: OGM, apolloClient: typeof ApolloClient) {
+  const sessionFactory = () =>
+    driver.session({ defaultAccessMode: neo4j.session.WRITE });
+
+  const httpLink = createHttpLink({
+    uri: "https://localhost:4000/graphql",
+    fetch: fetch,
+  });
+
+  const client = new ApolloClient({
+    link: httpLink,
+    cache: new InMemoryCache(),
+  });
+
+  const typeDefs = await toGraphQLTypeDefs(sessionFactory, false);
+  const ogm = new OGM({ typeDefs: typeDefs, driver });
+  const neoSchema = new Neo4jGraphQL({
+    typeDefs: typeDefs,
+    driver,
+    config: {
+      skipValidateTypeDefs: true,
+    },
+    resolvers: buildResolvers(ogm, client),
+  });
+
+  await ogm.init();
+  const neo4jDbSchema = await neoSchema.getSchema();
+
+  return neo4jDbSchema;
+}
+
+function buildResolvers(ogm: OGM, apolloClient: typeof ApolloClient) {
   return {
     Mutation: {
       async updateSamples(_source: any, { where, update }: any) {

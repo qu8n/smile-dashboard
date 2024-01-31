@@ -27,6 +27,8 @@ const cache = new InMemoryCache({
 const client = new ApolloClient({
   uri: `${REACT_APP_EXPRESS_SERVER_ORIGIN}/graphql`,
   cache,
+  credentials: "include",
+  connectToDevTools: true,
 });
 
 ReactDOM.render(
