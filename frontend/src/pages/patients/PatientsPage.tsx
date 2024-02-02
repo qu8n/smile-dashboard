@@ -4,7 +4,7 @@ import {
   useGetPatientIdsTripletsLazyQuery,
   usePatientsListLazyQuery,
 } from "../../generated/graphql";
-import { useEffect, useMemo, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import "ag-grid-enterprise";
@@ -15,9 +15,10 @@ import { Col, Form } from "react-bootstrap";
 import { AlertModal } from "../../components/AlertModal";
 import { Tooltip } from "@material-ui/core";
 import InfoIcon from "@material-ui/icons/InfoOutlined";
-import { parseSearchQueries } from "../../lib/parseSearchQueries";
+import { parseSearchQueries } from "../../utils/parseSearchQueries";
 import { REACT_APP_EXPRESS_SERVER_ORIGIN } from "../../shared/constants";
 import { PatientsListColumns } from "../../shared/helpers";
+import { getUserEmail } from "../../utils/getUserEmail";
 
 // Mirror the field types in the CRDB, where CMO_ID is stored without the "C-" prefix
 export type PatientIdsTriplet = {
@@ -105,7 +106,7 @@ export default function PatientsPage({
   setUserEmail,
 }: {
   userEmail: string | null;
-  setUserEmail: (userEmail: string | null) => void;
+  setUserEmail: Dispatch<SetStateAction<string | null>>;
 }) {
   const params = useParams();
 
@@ -200,10 +201,10 @@ export default function PatientsPage({
   useEffect(() => {
     window.addEventListener("message", handleLogin);
 
-    function handleLogin(event: any) {
-      if (event.origin !== `${REACT_APP_EXPRESS_SERVER_ORIGIN}`) return;
+    function handleLogin(event: MessageEvent) {
+      if (event.data !== `success`) return;
 
-      setUserEmail(event.data);
+      getUserEmail(setUserEmail);
 
       setAlertModal({
         show: true,

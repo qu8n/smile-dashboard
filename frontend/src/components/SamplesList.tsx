@@ -10,7 +10,7 @@ import { FunctionComponent, useEffect, useRef } from "react";
 import { DownloadModal } from "./DownloadModal";
 import { UpdateModal } from "./UpdateModal";
 import { AlertModal } from "./AlertModal";
-import { CSVFormulate } from "../lib/CSVExport";
+import { CSVFormulate } from "../utils/CSVExport";
 import {
   SampleDetailsColumns,
   defaultSamplesColDef,
@@ -23,7 +23,7 @@ import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import "ag-grid-enterprise";
 import { CellValueChangedEvent } from "ag-grid-community";
-import { parseSearchQueries } from "../lib/parseSearchQueries";
+import { parseSearchQueries } from "../utils/parseSearchQueries";
 import { ErrorMessage, LoadingSpinner, Toolbar } from "../shared/tableElements";
 
 const POLLING_INTERVAL = 2000;

@@ -11,7 +11,7 @@ import "ag-grid-enterprise";
 import RecordsList from "../../components/RecordsList";
 import { useParams } from "react-router-dom";
 import PageHeader from "../../shared/components/PageHeader";
-import { parseSearchQueries } from "../../lib/parseSearchQueries";
+import { parseSearchQueries } from "../../utils/parseSearchQueries";
 
 function requestFilterWhereVariables(uniqueQueries: string[]): RequestWhere[] {
   if (uniqueQueries.length > 1) {

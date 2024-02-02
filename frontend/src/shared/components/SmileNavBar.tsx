@@ -1,13 +1,14 @@
 import logo_with_text from "../../imgs/logo_with_text.png";
 import { Nav, NavLink } from "react-bootstrap";
 import { REACT_APP_EXPRESS_SERVER_ORIGIN } from "../constants";
+import { Dispatch, SetStateAction } from "react";
 
 export default function SmileNavBar({
   userEmail,
   setUserEmail,
 }: {
   userEmail: string | null;
-  setUserEmail: (email: string | null) => void;
+  setUserEmail: Dispatch<SetStateAction<string | null>>;
 }) {
   function handleLogout() {
     fetch(`${REACT_APP_EXPRESS_SERVER_ORIGIN}/auth/logout`, {
@@ -35,7 +36,7 @@ export default function SmileNavBar({
           <NavLink href="/samples">Samples</NavLink>
         </Nav>
         {userEmail && (
-          <div className="ms-auto d-flex">
+          <div className="ms-auto d-none d-md-flex">
             <p className="m-auto">Logged in as {userEmail}</p>
             <button
               type="button"

@@ -1,8 +1,7 @@
 import { Express } from "express";
 import { logInRoute } from "./auth/login";
 import { callbackRoute } from "./auth/callback";
-import { postLoginRoute } from "./auth/post-login";
-import { checkLogInRoute } from "./auth/check-login";
+import { getUserEmailRoute } from "./auth/get-user-email";
 import {
   checkAuthentication,
   updateActiveUserSessions,
@@ -17,17 +16,10 @@ export function configureRoutes(app: Express) {
   app.get("/auth/callback", callbackRoute);
 
   app.get(
-    "/auth/post-login",
+    "/auth/get-user-email",
     checkAuthentication,
     updateActiveUserSessions,
-    postLoginRoute
-  );
-
-  app.get(
-    "/auth/check-login",
-    checkAuthentication,
-    updateActiveUserSessions,
-    checkLogInRoute
+    getUserEmailRoute
   );
 
   app.post("/auth/logout", checkAuthentication, logOutRoute);

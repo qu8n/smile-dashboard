@@ -3,7 +3,7 @@ import { Button, Container, Modal } from "react-bootstrap";
 import { FunctionComponent, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { DownloadModal } from "./DownloadModal";
-import { CSVFormulate } from "../lib/CSVExport";
+import { CSVFormulate } from "../utils/CSVExport";
 import { AgGridReact } from "ag-grid-react";
 import { useState } from "react";
 import styles from "./records.module.scss";
