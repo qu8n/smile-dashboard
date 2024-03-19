@@ -10,7 +10,7 @@ import { IMiddlewareResolver } from "graphql-middleware/dist/types";
 let oracledb: any = null;
 if (os.arch() !== "arm64") {
   oracledb = require("oracledb");
-  oracledb.initOracleClient();
+  oracledb.initOracleClient({ libDir: process.env.LD_LIBRARY_PATH });
   oracledb.outFormat = oracledb.OUT_FORMAT_OBJECT; // returns each row as a JS object
 }
 

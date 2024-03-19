@@ -1,6 +1,6 @@
 import AutoSizer from "react-virtualized-auto-sizer";
 import { Button, Container, Modal } from "react-bootstrap";
-import { FunctionComponent, useMemo } from "react";
+import { Dispatch, SetStateAction, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { DownloadModal } from "./DownloadModal";
 import { CSVFormulate } from "../utils/CSVExport";
@@ -11,58 +11,66 @@ import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import "ag-grid-enterprise";
 import { ColDef, IServerSideGetRowsParams } from "ag-grid-community";
-import { useHookGeneric } from "../shared/types";
-import { SamplesList } from "./SamplesList";
-import { SampleWhere } from "../generated/graphql";
-import { defaultRecordsColDef } from "../shared/helpers";
+import { DataName, useHookLazyGeneric } from "../shared/types";
+import SamplesList from "./SamplesList";
+import { Sample, SampleWhere } from "../generated/graphql";
+import { defaultReadOnlyColDef } from "../shared/helpers";
 import { PatientIdsTriplet } from "../pages/patients/PatientsPage";
 import { ErrorMessage, LoadingSpinner, Toolbar } from "../shared/tableElements";
 
-export interface IRecordsListProps {
-  lazyRecordsQuery: typeof useHookGeneric;
-  nodeName: string;
-  totalCountNodeName: string;
-  pageRoute: string;
-  searchTerm: string;
+interface IRecordsListProps {
   colDefs: ColDef[];
-  conditionBuilder: (uniqueQueries: string[]) => Record<string, any>[];
-  sampleQueryParamValue: string | undefined;
-  sampleQueryParamFieldName: string;
-  searchVariables: SampleWhere;
-  customFilterUI?: JSX.Element;
-  setCustomFilterVals?: (vals: PatientIdsTriplet[]) => void;
-  searchVal: string[];
-  setSearchVal: (val: string[]) => void;
+  dataName: DataName;
+  nodeName?: string;
+  lazyRecordsQuery: typeof useHookLazyGeneric;
+  lazyRecordsQueryAddlVariables?: Record<string, any>;
+  queryFilterWhereVariables: (
+    parsedSearchVals: string[]
+  ) => Record<string, any>[];
+  userSearchVal: string;
+  setUserSearchVal: Dispatch<SetStateAction<string>>;
+  parsedSearchVals: string[];
+  setParsedSearchVals: Dispatch<SetStateAction<string[]>>;
   handleSearch: () => void;
-  inputVal: string;
-  setInputVal: (val: string) => void;
   showDownloadModal: boolean;
-  setShowDownloadModal: (val: boolean) => void;
+  setShowDownloadModal: Dispatch<SetStateAction<boolean>>;
   handleDownload: () => void;
+  samplesQueryParam: string | undefined;
+  samplesDefaultColDef: ColDef;
+  getSamplesRowData: (samples: Sample[]) => any[];
+  samplesColDefs: ColDef[];
+  samplesParentWhereVariables: SampleWhere;
+  samplesRefetchWhereVariables: (
+    samplesParsedSearchVals: string[]
+  ) => SampleWhere;
+  setCustomSearchVals?: Dispatch<SetStateAction<PatientIdsTriplet[]>>;
+  customToolbarUI?: JSX.Element;
 }
 
-const RecordsList: FunctionComponent<IRecordsListProps> = ({
-  lazyRecordsQuery,
-  nodeName,
-  totalCountNodeName,
-  pageRoute,
-  searchTerm,
+export default function RecordsList({
   colDefs,
-  conditionBuilder,
-  sampleQueryParamValue,
-  sampleQueryParamFieldName,
-  searchVariables,
-  customFilterUI,
-  setCustomFilterVals,
-  searchVal,
-  setSearchVal,
+  dataName,
+  nodeName = dataName,
+  lazyRecordsQuery,
+  lazyRecordsQueryAddlVariables,
+  queryFilterWhereVariables,
+  userSearchVal,
+  setUserSearchVal,
+  parsedSearchVals,
+  setParsedSearchVals,
   handleSearch,
-  inputVal,
-  setInputVal,
   showDownloadModal,
   setShowDownloadModal,
   handleDownload,
-}) => {
+  samplesQueryParam,
+  samplesDefaultColDef,
+  getSamplesRowData,
+  samplesColDefs,
+  samplesParentWhereVariables,
+  samplesRefetchWhereVariables,
+  customToolbarUI,
+  setCustomSearchVals,
+}: IRecordsListProps) {
   const [showClosingWarning, setShowClosingWarning] = useState(false);
   const [unsavedChanges, setUnsavedChanges] = useState(false);
   const navigate = useNavigate();
@@ -73,8 +81,11 @@ const RecordsList: FunctionComponent<IRecordsListProps> = ({
     lazyRecordsQuery({
       variables: {
         options: { limit: 20, offset: 0 },
+        ...lazyRecordsQueryAddlVariables,
       },
     });
+
+  const totalCountNodeName = `${nodeName}Connection`;
 
   const datasource = useMemo(() => {
     return {
@@ -82,10 +93,10 @@ const RecordsList: FunctionComponent<IRecordsListProps> = ({
       getRows: (params: IServerSideGetRowsParams) => {
         const fetchInput = {
           where: {
-            OR: conditionBuilder(searchVal),
+            OR: queryFilterWhereVariables(parsedSearchVals),
           },
           [`${nodeName}ConnectionWhere2`]: {
-            OR: conditionBuilder(searchVal),
+            OR: queryFilterWhereVariables(parsedSearchVals),
           },
           options: {
             offset: params.request.startRow,
@@ -114,7 +125,7 @@ const RecordsList: FunctionComponent<IRecordsListProps> = ({
       },
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchVal]);
+  }, [parsedSearchVals]);
 
   if (loading) return <LoadingSpinner />;
 
@@ -126,7 +137,7 @@ const RecordsList: FunctionComponent<IRecordsListProps> = ({
     if (unsavedChanges) {
       setShowClosingWarning(true);
     } else {
-      navigate(pageRoute);
+      navigate(`/${dataName}`);
     }
   };
 
@@ -138,7 +149,7 @@ const RecordsList: FunctionComponent<IRecordsListProps> = ({
             return fetchMore({
               variables: {
                 where: {
-                  OR: conditionBuilder(searchVal),
+                  OR: queryFilterWhereVariables(parsedSearchVals),
                 },
                 options: {
                   offset: 0,
@@ -183,7 +194,7 @@ const RecordsList: FunctionComponent<IRecordsListProps> = ({
               onClick={() => {
                 setShowClosingWarning(false);
                 setUnsavedChanges(false);
-                navigate(pageRoute);
+                navigate(`/${dataName}`);
               }}
             >
               Continue Exiting
@@ -192,22 +203,23 @@ const RecordsList: FunctionComponent<IRecordsListProps> = ({
         </Modal>
       )}
 
-      {sampleQueryParamValue && (
+      {samplesQueryParam && (
         <AutoSizer>
           {({ height, width }) => (
             <Modal show={true} dialogClassName="modal-90w" onHide={handleClose}>
               <Modal.Header closeButton>
-                <Modal.Title>{`Viewing ${sampleQueryParamValue}`}</Modal.Title>
+                <Modal.Title>{`Viewing ${samplesQueryParam}`}</Modal.Title>
               </Modal.Header>
               <Modal.Body>
-                <div style={{ height: 600 }}>
+                <div className={styles.popupHeight}>
                   <SamplesList
-                    height={height * 11}
-                    searchVariables={searchVariables}
+                    columnDefs={samplesColDefs}
+                    defaultColDef={samplesDefaultColDef}
+                    getRowData={getSamplesRowData}
+                    parentWhereVariables={samplesParentWhereVariables}
+                    refetchWhereVariables={samplesRefetchWhereVariables}
                     setUnsavedChanges={setUnsavedChanges}
-                    exportFileName={`${sampleQueryParamFieldName}_${sampleQueryParamValue}.tsv`}
-                    sampleQueryParamFieldName={sampleQueryParamFieldName}
-                    sampleQueryParamValue={sampleQueryParamValue}
+                    exportFileName={`${samplesQueryParam}.tsv`}
                   />
                 </div>
               </Modal.Body>
@@ -217,26 +229,26 @@ const RecordsList: FunctionComponent<IRecordsListProps> = ({
       )}
 
       <Toolbar
-        searchTerm={searchTerm}
-        input={inputVal}
-        setInput={setInputVal}
+        dataName={dataName}
+        userSearchVal={userSearchVal}
+        setUserSearchVal={setUserSearchVal}
         handleSearch={handleSearch}
-        clearInput={() => {
-          setCustomFilterVals && setCustomFilterVals([]);
-          setSearchVal([]);
+        clearUserSearchVal={() => {
+          setCustomSearchVals && setCustomSearchVals([]);
+          setParsedSearchVals([]);
         }}
         matchingResultsCount={`${remoteCount?.toLocaleString()} matching ${
-          remoteCount > 1 ? searchTerm : searchTerm.slice(0, -1)
+          remoteCount > 1 ? dataName : dataName.slice(0, -1)
         }`}
         handleDownload={handleDownload}
-        customUI={customFilterUI}
+        customUI={customToolbarUI}
       />
 
       <AutoSizer>
         {({ width }) => (
           <div
-            className="ag-theme-alpine"
-            style={{ height: 540, width: width }}
+            className={`ag-theme-alpine ${styles.tableHeight}`}
+            style={{ width: width }}
           >
             <AgGridReact
               rowModelType={"serverSide"}
@@ -248,7 +260,7 @@ const RecordsList: FunctionComponent<IRecordsListProps> = ({
               context={{
                 navigateFunction: navigate,
               }}
-              defaultColDef={defaultRecordsColDef}
+              defaultColDef={defaultReadOnlyColDef}
               onGridReady={(params) => {
                 params.api.sizeColumnsToFit();
               }}
@@ -262,6 +274,4 @@ const RecordsList: FunctionComponent<IRecordsListProps> = ({
       </AutoSizer>
     </Container>
   );
-};
-
-export default RecordsList;
+}

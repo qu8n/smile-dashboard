@@ -46,53 +46,19 @@ query PatientsList(
   }
 }
 
-query RequestWithSamples(
-  $options: RequestOptions
-  $where: RequestWhere
-  $hasSampleSamplesWhere2: SampleWhere
-  $hasMetadataSampleMetadataWhere2: SampleMetadataWhere
-  $hasSampleSamplesConnectionWhere2: RequestHasSampleSamplesConnectionWhere
-  $hasMetadataSampleMetadataOptions2: SampleMetadataOptions
-) {
-  requests(where: $where, options: $options) {
-    ...RequestParts
-    hasSampleSamples(where: $hasSampleSamplesWhere2) {
-      smileSampleId
-      sampleCategory
-      sampleClass
-      datasource
-      revisable
-      hasMetadataSampleMetadata(
-        where: $hasMetadataSampleMetadataWhere2
-        options: $hasMetadataSampleMetadataOptions2
-      ) {
-        ...SampleMetadataParts
-      }
-      patientsHasSample {
-        smilePatientId
-        patientAliasesIsAlias {
-          namespace
-          value
-        }
-      }
-    }
-    hasSampleSamplesConnection(where: $hasSampleSamplesConnectionWhere2) {
-      totalCount
-    }
-  }
-}
-
 query FindSamplesByInputValue(
   $where: SampleWhere
   $first: Int
-  $options: SampleMetadataOptions
-  $patientAliasesIsAliasWhere2: PatientAliasWhere
+  $sampleMetadataOptions: SampleMetadataOptions
+  $bamCompletesOptions: BamCompleteOptions
+  $mafCompletesOptions: MafCompleteOptions
+  $qcCompletesOptions: QcCompleteOptions
 ) {
   samplesConnection(where: $where, first: $first) {
     edges {
       node {
         ...SampleParts
-        hasMetadataSampleMetadata(options: $options) {
+        hasMetadataSampleMetadata(options: $sampleMetadataOptions) {
           ...SampleMetadataParts
           hasStatusStatuses {
             validationReport
@@ -110,11 +76,35 @@ query FindSamplesByInputValue(
           edges {
             node {
               smilePatientId
-              patientAliasesIsAlias(where: $patientAliasesIsAliasWhere2) {
+              patientAliasesIsAlias {
                 namespace
                 value
               }
             }
+          }
+        }
+        cohortsHasCohortSampleConnection {
+          edges {
+            node {
+              cohortId
+            }
+          }
+        }
+        hasTempoTempos {
+          hasEventBamCompletes(options: $bamCompletesOptions) {
+            date
+            status
+          }
+          hasEventMafCompletes(options: $mafCompletesOptions) {
+            date
+            normalPrimaryId
+            status
+          }
+          hasEventQcCompletes(options: $qcCompletesOptions) {
+            date
+            reason
+            result
+            status
           }
         }
       }
@@ -225,5 +215,33 @@ query GetPatientIdsTriplets($patientIds: [String!]!) {
     CMO_ID
     DMP_ID
     PT_MRN
+  }
+}
+
+query CohortsList(
+  $where: CohortWhere
+  $options: CohortOptions
+  $cohortsConnectionWhere2: CohortWhere
+  $hasCohortCompleteCohortCompletesOptions2: CohortCompleteOptions
+) {
+  cohortsConnection(where: $cohortsConnectionWhere2) {
+    totalCount
+  }
+  cohorts(where: $where, options: $options) {
+    cohortId
+    hasCohortCompleteCohortCompletes(
+      options: $hasCohortCompleteCohortCompletesOptions2
+    ) {
+      type
+      endUsers
+      pmUsers
+      projectTitle
+      projectSubtitle
+      status
+      date
+    }
+    hasCohortSampleSamplesConnection {
+      totalCount
+    }
   }
 }

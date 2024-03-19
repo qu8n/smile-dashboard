@@ -1,20 +1,30 @@
-import React from "react";
-import "ag-grid-community/styles/ag-grid.css";
-import "ag-grid-community/styles/ag-theme-alpine.css";
-import "ag-grid-enterprise";
-import PageHeader from "../../shared/components/PageHeader";
-import { SamplesList } from "../../components/SamplesList";
+import { PageHeader } from "../../shared/components/PageHeader";
+import SamplesList from "../../components/SamplesList";
+import {
+  SampleDetailsColumns,
+  defaultEditableColDef,
+  getMetadataFromSamples,
+  sampleFilterWhereVariables,
+} from "../../shared/helpers";
+import { SampleWhere } from "../../generated/graphql";
 
-export const SamplesPage: React.FunctionComponent = (props) => {
-  const pageRoute = "/samples";
-
+export default function SamplesPage() {
   return (
     <>
-      <PageHeader pageTitle={"samples"} pageRoute={pageRoute} />
+      <PageHeader dataName={"samples"} />
 
-      <SamplesList height={540} />
+      <SamplesList
+        columnDefs={SampleDetailsColumns}
+        defaultColDef={defaultEditableColDef}
+        getRowData={getMetadataFromSamples}
+        refetchWhereVariables={(parsedSearchVals) => {
+          return {
+            hasMetadataSampleMetadata_SOME: {
+              OR: sampleFilterWhereVariables(parsedSearchVals),
+            },
+          } as SampleWhere;
+        }}
+      />
     </>
   );
-};
-
-export default SamplesPage;
+}

@@ -7,10 +7,18 @@ import {
 } from "ag-grid-community";
 import { Button } from "react-bootstrap";
 import "ag-grid-enterprise";
-import { Sample, SampleMetadata } from "../generated/graphql";
+import {
+  Sample,
+  SampleMetadata,
+  SampleMetadataWhere,
+  SampleWhere,
+  TempoWhere,
+} from "../generated/graphql";
 import WarningIcon from "@material-ui/icons/Warning";
 import { StatusTooltip } from "./components/StatusToolTip";
 import { ITooltipParams } from "ag-grid-community";
+import { parseUserSearchVal } from "../utils/parseSearchQueries";
+import { Dispatch, SetStateAction } from "react";
 
 export interface SampleMetadataExtended extends SampleMetadata {
   revisable: boolean;
@@ -32,7 +40,7 @@ export type ChangeForSubmit = {
 
 export const RequestsListColumns: ColDef[] = [
   {
-    headerName: "View",
+    headerName: "View Samples",
     cellRenderer: (params: CellClassParams<any>) => {
       return (
         <Button
@@ -61,7 +69,6 @@ export const RequestsListColumns: ColDef[] = [
     headerName: "IGO Project ID",
   },
   {
-    field: "hasSampleSamplesConnection",
     headerName: "# Samples",
     valueGetter: function ({ data }) {
       return data["hasSampleSamplesConnection"]?.totalCount;
@@ -134,7 +141,7 @@ export const RequestsListColumns: ColDef[] = [
 
 export const PatientsListColumns: ColDef[] = [
   {
-    headerName: "View",
+    headerName: "View Samples",
     cellRenderer: (params: CellClassParams<any>) => {
       return (
         <Button
@@ -180,7 +187,6 @@ export const PatientsListColumns: ColDef[] = [
     sortable: false,
   },
   {
-    field: "hasSampleSamplesConnection",
     headerName: "# Samples",
     valueGetter: function ({ data }) {
       return data["isAliasPatients"][0].hasSampleSamplesConnection.totalCount;
@@ -406,6 +412,27 @@ export const SampleDetailsColumns: ColDef<SampleMetadataExtended>[] = [
   },
 ];
 
+const readOnlyHeader = {
+  template: `
+  <div class="ag-cell-label-container" role="presentation">
+    <span ref="eMenu" class="ag-header-icon ag-header-cell-menu-button" aria-hidden="true"></span>
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" fill="none" viewBox="0 -4 30 30" stroke="gray"
+      stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round"
+        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+    </svg>
+    <div ref="eLabel" class="ag-header-cell-label" role="presentation">
+      <span ref="eText" class="ag-header-cell-text"></span>
+      <span ref="eFilter" class="ag-header-icon ag-header-label-icon ag-filter-icon" aria-hidden="true"></span>
+      <span ref="eSortOrder" class="ag-header-icon ag-header-label-icon ag-sort-order" aria-hidden="true"></span>
+      <span ref="eSortAsc" class="ag-header-icon ag-header-label-icon ag-sort-ascending-icon" aria-hidden="true"></span>
+      <span ref="eSortDesc" class="ag-header-icon ag-header-label-icon ag-sort-descending-icon" aria-hidden="true"></span>
+      <span ref="eSortNone" class="ag-header-icon ag-header-label-icon ag-sort-none-icon" aria-hidden="true"></span>
+    </div>
+    </div>
+  `,
+};
+
 SampleDetailsColumns.forEach((colDef) => {
   colDef.cellClassRules = {
     unsubmittedChange: (params: any) => {
@@ -452,40 +479,148 @@ SampleDetailsColumns.forEach((colDef) => {
   };
 
   colDef.headerComponentParams = (params: IHeaderParams) => {
-    if (protectedFields.includes(params.column.getColDef().field!)) {
-      return {
-        template: `
-        <div class="ag-cell-label-container" role="presentation">
-          <span ref="eMenu" class="ag-header-icon ag-header-cell-menu-button" aria-hidden="true"></span>
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" fill="none" viewBox="0 -4 30 30" stroke="gray"
-            stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round"
-              d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-          </svg>
-          <div ref="eLabel" class="ag-header-cell-label" role="presentation">
-            <span ref="eText" class="ag-header-cell-text"></span>
-            <span ref="eFilter" class="ag-header-icon ag-header-label-icon ag-filter-icon" aria-hidden="true"></span>
-            <span ref="eSortOrder" class="ag-header-icon ag-header-label-icon ag-sort-order" aria-hidden="true"></span>
-            <span ref="eSortAsc" class="ag-header-icon ag-header-label-icon ag-sort-ascending-icon" aria-hidden="true"></span>
-            <span ref="eSortDesc" class="ag-header-icon ag-header-label-icon ag-sort-descending-icon" aria-hidden="true"></span>
-            <span ref="eSortNone" class="ag-header-icon ag-header-label-icon ag-sort-none-icon" aria-hidden="true"></span>
-          </div>
-          </div>
-        `,
-      };
-    }
+    if (protectedFields.includes(params.column.getColDef().field!))
+      return readOnlyHeader;
   };
 });
 
-export const defaultSamplesColDef: ColDef = {
+export const CohortsListColumns: ColDef[] = [
+  {
+    headerName: "View Samples",
+    cellRenderer: (params: CellClassParams<any>) => {
+      return (
+        <Button
+          variant="outline-secondary"
+          size="sm"
+          onClick={() => {
+            if (params.data.cohortId !== undefined) {
+              params.context.navigateFunction(
+                `/cohorts/${params.data.cohortId}`
+              );
+            }
+          }}
+        >
+          View
+        </Button>
+      );
+    },
+    sortable: false,
+  },
+  {
+    field: "cohortId",
+    headerName: "Cohort ID",
+  },
+  {
+    headerName: "# Samples",
+    valueGetter: ({ data }) =>
+      data["hasCohortSampleSamplesConnection"].totalCount,
+    sortable: false,
+  },
+  {
+    headerName: "Cohort Complete Date",
+    valueGetter: ({ data }) =>
+      data["hasCohortCompleteCohortCompletes"][0]?.date,
+    sortable: false,
+  },
+  {
+    headerName: "End Users",
+    valueGetter: ({ data }) =>
+      data["hasCohortCompleteCohortCompletes"][0]?.endUsers,
+    sortable: false,
+  },
+  {
+    headerName: "PM Users",
+    valueGetter: ({ data }) =>
+      data["hasCohortCompleteCohortCompletes"][0]?.pmUsers,
+    sortable: false,
+  },
+  {
+    headerName: "Project Title",
+    valueGetter: ({ data }) =>
+      data["hasCohortCompleteCohortCompletes"][0]?.projectTitle,
+    sortable: false,
+  },
+  {
+    headerName: "Project Subtitle",
+    valueGetter: ({ data }) =>
+      data["hasCohortCompleteCohortCompletes"][0]?.projectSubtitle,
+    sortable: false,
+  },
+  {
+    headerName: "Status",
+    valueGetter: ({ data }) =>
+      data["hasCohortCompleteCohortCompletes"][0]?.status,
+    sortable: false,
+  },
+  {
+    headerName: "Type",
+    valueGetter: ({ data }) =>
+      data["hasCohortCompleteCohortCompletes"][0]?.type,
+    sortable: false,
+  },
+];
+
+export const CohortSamplesDetailsColumns: ColDef[] = [
+  {
+    field: "primaryId",
+    headerName: "Primary ID",
+  },
+  {
+    field: "cmoSampleName",
+    headerName: "CMO Sample Name",
+  },
+  {
+    headerName: "BAM Complete Date",
+    valueGetter: ({ data }) => data.bamComplete?.date,
+  },
+  {
+    headerName: "BAM Complete Status",
+    valueGetter: ({ data }) => data.bamComplete?.status,
+  },
+  {
+    headerName: "MAF Complete Date",
+    valueGetter: ({ data }) => data.mafComplete?.date,
+  },
+  {
+    headerName: "MAF Complete Normal Primary ID",
+    valueGetter: ({ data }) => data.mafComplete?.normalPrimaryId,
+  },
+  {
+    headerName: "MAF Complete Status",
+    valueGetter: ({ data }) => data.mafComplete?.status,
+  },
+  {
+    headerName: "QC Complete Date",
+    valueGetter: ({ data }) => data.qcComplete?.date,
+  },
+  {
+    headerName: "QC Complete Result",
+    valueGetter: ({ data }) => data.qcComplete?.result,
+  },
+  {
+    headerName: "QC Complete Reason",
+    valueGetter: ({ data }) => data.qcComplete?.reason,
+  },
+  {
+    headerName: "QC Complete Status",
+    valueGetter: ({ data }) => data.qcComplete?.status,
+  },
+];
+
+export const defaultColDef: ColDef = {
   sortable: true,
-  editable: true,
   resizable: true,
+  headerComponentParams: readOnlyHeader,
 };
 
-export const defaultRecordsColDef: ColDef = {
-  sortable: true,
-  resizable: true,
+export const defaultEditableColDef: ColDef = {
+  ...defaultColDef,
+  editable: true,
+};
+
+export const defaultReadOnlyColDef: ColDef = {
+  ...defaultColDef,
+  editable: false,
 };
 
 const protectedFields: string[] = [
@@ -502,3 +637,211 @@ const protectedFields: string[] = [
   "validationReport",
   "revisable",
 ];
+
+export function sampleFilterWhereVariables(
+  parsedSearchVals: string[]
+): SampleMetadataWhere[] {
+  if (parsedSearchVals.length > 1) {
+    return [
+      { cmoSampleName_IN: parsedSearchVals },
+      { importDate_IN: parsedSearchVals },
+      { investigatorSampleId_IN: parsedSearchVals },
+      { primaryId_IN: parsedSearchVals },
+      { sampleClass_IN: parsedSearchVals },
+      { cmoPatientId_IN: parsedSearchVals },
+      { cmoSampleIdFields_IN: parsedSearchVals },
+      { sampleName_IN: parsedSearchVals },
+      { preservation_IN: parsedSearchVals },
+      { tumorOrNormal_IN: parsedSearchVals },
+      { oncotreeCode_IN: parsedSearchVals },
+      { collectionYear_IN: parsedSearchVals },
+      { sampleOrigin_IN: parsedSearchVals },
+      { tissueLocation_IN: parsedSearchVals },
+      { sex_IN: parsedSearchVals },
+      { libraries_IN: parsedSearchVals },
+      { sampleType_IN: parsedSearchVals },
+      { species_IN: parsedSearchVals },
+      { genePanel_IN: parsedSearchVals },
+    ];
+  } else {
+    return [
+      { cmoSampleName_CONTAINS: parsedSearchVals[0] },
+      { importDate_CONTAINS: parsedSearchVals[0] },
+      { investigatorSampleId_CONTAINS: parsedSearchVals[0] },
+      { primaryId_CONTAINS: parsedSearchVals[0] },
+      { sampleClass_CONTAINS: parsedSearchVals[0] },
+      { cmoPatientId_CONTAINS: parsedSearchVals[0] },
+      { cmoSampleIdFields_CONTAINS: parsedSearchVals[0] },
+      { sampleName_CONTAINS: parsedSearchVals[0] },
+      { preservation_CONTAINS: parsedSearchVals[0] },
+      { tumorOrNormal_CONTAINS: parsedSearchVals[0] },
+      { oncotreeCode_CONTAINS: parsedSearchVals[0] },
+      { collectionYear_CONTAINS: parsedSearchVals[0] },
+      { sampleOrigin_CONTAINS: parsedSearchVals[0] },
+      { tissueLocation_CONTAINS: parsedSearchVals[0] },
+      { sex_CONTAINS: parsedSearchVals[0] },
+      { libraries_CONTAINS: parsedSearchVals[0] },
+      { sampleType_CONTAINS: parsedSearchVals[0] },
+      { species_CONTAINS: parsedSearchVals[0] },
+      { genePanel_CONTAINS: parsedSearchVals[0] },
+    ];
+  }
+}
+
+export function cohortSampleFilterWhereVariables(
+  parsedSearchVals: string[]
+): SampleWhere[] {
+  let tempoWhere: TempoWhere[] = [];
+  if (parsedSearchVals.length > 1) {
+    tempoWhere = [
+      {
+        hasEventBamCompletes_SOME: {
+          date_IN: parsedSearchVals,
+        },
+      },
+      {
+        hasEventBamCompletes_SOME: {
+          status_IN: parsedSearchVals,
+        },
+      },
+      {
+        hasEventMafCompletes_SOME: {
+          date_IN: parsedSearchVals,
+        },
+      },
+      {
+        hasEventMafCompletes_SOME: {
+          normalPrimaryId_IN: parsedSearchVals,
+        },
+      },
+      {
+        hasEventMafCompletes_SOME: {
+          status_IN: parsedSearchVals,
+        },
+      },
+      {
+        hasEventQcCompletes_SOME: {
+          date_IN: parsedSearchVals,
+        },
+      },
+      {
+        hasEventQcCompletes_SOME: {
+          result_IN: parsedSearchVals,
+        },
+      },
+      {
+        hasEventQcCompletes_SOME: {
+          reason_IN: parsedSearchVals,
+        },
+      },
+      {
+        hasEventQcCompletes_SOME: {
+          status_IN: parsedSearchVals,
+        },
+      },
+    ];
+  } else {
+    tempoWhere = [
+      {
+        hasEventBamCompletes_SOME: {
+          date_CONTAINS: parsedSearchVals[0],
+        },
+      },
+      {
+        hasEventBamCompletes_SOME: {
+          status_CONTAINS: parsedSearchVals[0],
+        },
+      },
+      {
+        hasEventMafCompletes_SOME: {
+          date_CONTAINS: parsedSearchVals[0],
+        },
+      },
+      {
+        hasEventMafCompletes_SOME: {
+          normalPrimaryId_CONTAINS: parsedSearchVals[0],
+        },
+      },
+      {
+        hasEventMafCompletes_SOME: {
+          status_CONTAINS: parsedSearchVals[0],
+        },
+      },
+      {
+        hasEventQcCompletes_SOME: {
+          date_CONTAINS: parsedSearchVals[0],
+        },
+      },
+      {
+        hasEventQcCompletes_SOME: {
+          result_CONTAINS: parsedSearchVals[0],
+        },
+      },
+      {
+        hasEventQcCompletes_SOME: {
+          reason_CONTAINS: parsedSearchVals[0],
+        },
+      },
+      {
+        hasEventQcCompletes_SOME: {
+          status_CONTAINS: parsedSearchVals[0],
+        },
+      },
+    ];
+  }
+
+  let sampleMetadataWhere: SampleMetadataWhere[] = [];
+  if (parsedSearchVals.length > 1) {
+    sampleMetadataWhere = [
+      { primaryId_IN: parsedSearchVals },
+      { cmoSampleName_IN: parsedSearchVals },
+    ];
+  } else {
+    sampleMetadataWhere = [
+      { primaryId_CONTAINS: parsedSearchVals[0] },
+      { cmoSampleName_CONTAINS: parsedSearchVals[0] },
+    ];
+  }
+
+  return [
+    {
+      hasTempoTempos_SOME: {
+        OR: tempoWhere,
+      },
+    },
+    {
+      hasMetadataSampleMetadata_SOME: {
+        OR: sampleMetadataWhere,
+      },
+    },
+  ];
+}
+
+export function getMetadataFromSamples(samples: Sample[]) {
+  return samples.map((s: any) => {
+    return {
+      ...s.hasMetadataSampleMetadata[0],
+      revisable: s.revisable,
+    };
+  });
+}
+
+export function getCohortDataFromSamples(samples: Sample[]) {
+  return samples.map((s: any) => {
+    return {
+      ...s.hasMetadataSampleMetadata[0],
+      revisable: s.revisable,
+      bamComplete: s.hasTempoTempos[0].hasEventBamCompletes[0],
+      mafComplete: s.hasTempoTempos[0].hasEventMafCompletes[0],
+      qcComplete: s.hasTempoTempos[0].hasEventQcCompletes[0],
+    };
+  });
+}
+
+export function handleSearch(
+  userSearchVal: string,
+  setParsedSearchVals: Dispatch<SetStateAction<string[]>>
+) {
+  const parsedSearchVals = parseUserSearchVal(userSearchVal);
+  setParsedSearchVals(parsedSearchVals);
+}

@@ -3,100 +3,114 @@ import {
   SampleWhere,
   useRequestsListLazyQuery,
 } from "../../generated/graphql";
-import React, { useState } from "react";
-import { RequestsListColumns } from "../../shared/helpers";
-import "ag-grid-community/styles/ag-grid.css";
-import "ag-grid-community/styles/ag-theme-alpine.css";
-import "ag-grid-enterprise";
+import { useState } from "react";
+import {
+  RequestsListColumns,
+  SampleDetailsColumns,
+  defaultEditableColDef,
+  getMetadataFromSamples,
+  handleSearch,
+  sampleFilterWhereVariables,
+} from "../../shared/helpers";
 import RecordsList from "../../components/RecordsList";
 import { useParams } from "react-router-dom";
-import PageHeader from "../../shared/components/PageHeader";
-import { parseSearchQueries } from "../../utils/parseSearchQueries";
+import { PageHeader } from "../../shared/components/PageHeader";
 
-function requestFilterWhereVariables(uniqueQueries: string[]): RequestWhere[] {
-  if (uniqueQueries.length > 1) {
+function requestFilterWhereVariables(
+  parsedSearchVals: string[]
+): RequestWhere[] {
+  if (parsedSearchVals.length > 1) {
     return [
-      { igoProjectId_IN: uniqueQueries },
-      { igoRequestId_IN: uniqueQueries },
-      { projectManagerName_IN: uniqueQueries },
-      { investigatorName_IN: uniqueQueries },
-      { investigatorEmail_IN: uniqueQueries },
-      { piEmail_IN: uniqueQueries },
-      { dataAnalystName_IN: uniqueQueries },
-      { dataAnalystEmail_IN: uniqueQueries },
-      { genePanel_IN: uniqueQueries },
-      { labHeadName_IN: uniqueQueries },
-      { labHeadEmail_IN: uniqueQueries },
-      { qcAccessEmails_IN: uniqueQueries },
-      { dataAccessEmails_IN: uniqueQueries },
-      { otherContactEmails_IN: uniqueQueries },
+      { igoProjectId_IN: parsedSearchVals },
+      { igoRequestId_IN: parsedSearchVals },
+      { projectManagerName_IN: parsedSearchVals },
+      { investigatorName_IN: parsedSearchVals },
+      { investigatorEmail_IN: parsedSearchVals },
+      { piEmail_IN: parsedSearchVals },
+      { dataAnalystName_IN: parsedSearchVals },
+      { dataAnalystEmail_IN: parsedSearchVals },
+      { genePanel_IN: parsedSearchVals },
+      { labHeadName_IN: parsedSearchVals },
+      { labHeadEmail_IN: parsedSearchVals },
+      { qcAccessEmails_IN: parsedSearchVals },
+      { dataAccessEmails_IN: parsedSearchVals },
+      { otherContactEmails_IN: parsedSearchVals },
     ];
   } else {
     return [
-      { igoProjectId_CONTAINS: uniqueQueries[0] },
-      { igoRequestId_CONTAINS: uniqueQueries[0] },
-      { projectManagerName_CONTAINS: uniqueQueries[0] },
-      { investigatorName_CONTAINS: uniqueQueries[0] },
-      { investigatorEmail_CONTAINS: uniqueQueries[0] },
-      { piEmail_CONTAINS: uniqueQueries[0] },
-      { dataAnalystName_CONTAINS: uniqueQueries[0] },
-      { dataAnalystEmail_CONTAINS: uniqueQueries[0] },
-      { genePanel_CONTAINS: uniqueQueries[0] },
-      { labHeadName_CONTAINS: uniqueQueries[0] },
-      { labHeadEmail_CONTAINS: uniqueQueries[0] },
-      { qcAccessEmails_CONTAINS: uniqueQueries[0] },
-      { dataAccessEmails_CONTAINS: uniqueQueries[0] },
-      { otherContactEmails_CONTAINS: uniqueQueries[0] },
+      { igoProjectId_CONTAINS: parsedSearchVals[0] },
+      { igoRequestId_CONTAINS: parsedSearchVals[0] },
+      { projectManagerName_CONTAINS: parsedSearchVals[0] },
+      { investigatorName_CONTAINS: parsedSearchVals[0] },
+      { investigatorEmail_CONTAINS: parsedSearchVals[0] },
+      { piEmail_CONTAINS: parsedSearchVals[0] },
+      { dataAnalystName_CONTAINS: parsedSearchVals[0] },
+      { dataAnalystEmail_CONTAINS: parsedSearchVals[0] },
+      { genePanel_CONTAINS: parsedSearchVals[0] },
+      { labHeadName_CONTAINS: parsedSearchVals[0] },
+      { labHeadEmail_CONTAINS: parsedSearchVals[0] },
+      { qcAccessEmails_CONTAINS: parsedSearchVals[0] },
+      { dataAccessEmails_CONTAINS: parsedSearchVals[0] },
+      { otherContactEmails_CONTAINS: parsedSearchVals[0] },
     ];
   }
 }
 
-export const RequestsPage: React.FunctionComponent = () => {
+export default function RequestsPage() {
   const params = useParams();
-  const [searchVal, setSearchVal] = useState<string[]>([]);
-  const [inputVal, setInputVal] = useState("");
+  const [userSearchVal, setUserSearchVal] = useState<string>("");
+  const [parsedSearchVals, setParsedSearchVals] = useState<string[]>([]);
   const [showDownloadModal, setShowDownloadModal] = useState(false);
 
-  const pageRoute = "/requests";
+  const dataName = "requests";
   const sampleQueryParamFieldName = "igoRequestId";
-
-  const handleSearch = async () => {
-    const uniqueQueries = parseSearchQueries(inputVal);
-    setSearchVal(uniqueQueries);
-  };
+  const sampleQueryParamHeaderName = "IGO Request ID";
+  const sampleQueryParamValue = params[sampleQueryParamFieldName];
 
   return (
     <>
-      <PageHeader pageTitle={"requests"} pageRoute={pageRoute} />
+      <PageHeader dataName={dataName} />
 
       <RecordsList
-        lazyRecordsQuery={useRequestsListLazyQuery}
-        nodeName="requests"
-        totalCountNodeName="requestsConnection"
-        pageRoute={pageRoute}
-        searchTerm="requests"
         colDefs={RequestsListColumns}
-        conditionBuilder={requestFilterWhereVariables}
-        sampleQueryParamFieldName={sampleQueryParamFieldName}
-        sampleQueryParamValue={params[sampleQueryParamFieldName]}
-        searchVariables={
-          {
-            hasMetadataSampleMetadata_SOME: {
-              [sampleQueryParamFieldName]: params[sampleQueryParamFieldName],
-            },
-          } as SampleWhere
-        }
-        handleSearch={handleSearch}
-        searchVal={searchVal}
-        setSearchVal={setSearchVal}
-        inputVal={inputVal}
-        setInputVal={setInputVal}
+        dataName={dataName}
+        lazyRecordsQuery={useRequestsListLazyQuery}
+        queryFilterWhereVariables={requestFilterWhereVariables}
+        userSearchVal={userSearchVal}
+        setUserSearchVal={setUserSearchVal}
+        parsedSearchVals={parsedSearchVals}
+        setParsedSearchVals={setParsedSearchVals}
+        handleSearch={() => handleSearch(userSearchVal, setParsedSearchVals)}
         showDownloadModal={showDownloadModal}
         setShowDownloadModal={setShowDownloadModal}
         handleDownload={() => setShowDownloadModal(true)}
+        samplesColDefs={SampleDetailsColumns}
+        samplesDefaultColDef={defaultEditableColDef}
+        samplesQueryParam={
+          sampleQueryParamValue &&
+          `${sampleQueryParamHeaderName} ${sampleQueryParamValue}`
+        }
+        getSamplesRowData={getMetadataFromSamples}
+        samplesParentWhereVariables={
+          {
+            hasMetadataSampleMetadata_SOME: {
+              [sampleQueryParamFieldName]: sampleQueryParamValue,
+            },
+          } as SampleWhere
+        }
+        samplesRefetchWhereVariables={(sampleParsedSearchVals) => {
+          return {
+            hasMetadataSampleMetadata_SOME: {
+              OR: sampleFilterWhereVariables(sampleParsedSearchVals),
+              ...(sampleQueryParamValue
+                ? {
+                    [sampleQueryParamFieldName]: sampleQueryParamValue,
+                  }
+                : {}),
+            },
+          } as SampleWhere;
+        }}
       />
     </>
   );
-};
-
-export default RequestsPage;
+}

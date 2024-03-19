@@ -5,19 +5,22 @@ import {
   usePatientsListLazyQuery,
 } from "../../generated/graphql";
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
-import "ag-grid-community/styles/ag-grid.css";
-import "ag-grid-community/styles/ag-theme-alpine.css";
-import "ag-grid-enterprise";
 import RecordsList from "../../components/RecordsList";
 import { useParams } from "react-router-dom";
-import PageHeader from "../../shared/components/PageHeader";
+import { PageHeader } from "../../shared/components/PageHeader";
 import { Col, Form } from "react-bootstrap";
 import { AlertModal } from "../../components/AlertModal";
 import { Tooltip } from "@material-ui/core";
 import InfoIcon from "@material-ui/icons/InfoOutlined";
-import { parseSearchQueries } from "../../utils/parseSearchQueries";
+import { parseUserSearchVal } from "../../utils/parseSearchQueries";
 import { REACT_APP_EXPRESS_SERVER_ORIGIN } from "../../shared/constants";
-import { PatientsListColumns } from "../../shared/helpers";
+import {
+  PatientsListColumns,
+  SampleDetailsColumns,
+  defaultEditableColDef,
+  getMetadataFromSamples,
+  sampleFilterWhereVariables,
+} from "../../shared/helpers";
 import { getUserEmail } from "../../utils/getUserEmail";
 
 // Mirror the field types in the CRDB, where CMO_ID is stored without the "C-" prefix
@@ -28,17 +31,17 @@ export type PatientIdsTriplet = {
 };
 
 function patientAliasFilterWhereVariables(
-  uniqueQueries: string[]
+  parsedSearchVals: string[]
 ): PatientAliasWhere[] {
-  if (uniqueQueries.length > 1) {
+  if (parsedSearchVals.length > 1) {
     return [
-      { value_IN: uniqueQueries },
-      { namespace_IN: uniqueQueries },
+      { value_IN: parsedSearchVals },
+      { namespace_IN: parsedSearchVals },
       {
         isAliasPatients_SOME: {
           hasSampleSamples_SOME: {
             hasMetadataSampleMetadata_SOME: {
-              cmoSampleName_IN: uniqueQueries,
+              cmoSampleName_IN: parsedSearchVals,
             },
           },
         },
@@ -47,7 +50,7 @@ function patientAliasFilterWhereVariables(
         isAliasPatients_SOME: {
           hasSampleSamples_SOME: {
             hasMetadataSampleMetadata_SOME: {
-              primaryId_IN: uniqueQueries,
+              primaryId_IN: parsedSearchVals,
             },
           },
         },
@@ -55,13 +58,13 @@ function patientAliasFilterWhereVariables(
     ];
   } else {
     return [
-      { value_CONTAINS: uniqueQueries[0] },
-      { namespace_CONTAINS: uniqueQueries[0] },
+      { value_CONTAINS: parsedSearchVals[0] },
+      { namespace_CONTAINS: parsedSearchVals[0] },
       {
         isAliasPatients_SOME: {
           hasSampleSamples_SOME: {
             hasMetadataSampleMetadata_SOME: {
-              cmoSampleName_CONTAINS: uniqueQueries[0],
+              cmoSampleName_CONTAINS: parsedSearchVals[0],
             },
           },
         },
@@ -70,7 +73,7 @@ function patientAliasFilterWhereVariables(
         isAliasPatients_SOME: {
           hasSampleSamples_SOME: {
             hasMetadataSampleMetadata_SOME: {
-              primaryId_CONTAINS: uniqueQueries[0],
+              primaryId_CONTAINS: parsedSearchVals[0],
             },
           },
         },
@@ -101,17 +104,19 @@ const NO_PHI_SEARCH_RESULTS = {
     "No results were found for your search. No patient IDs in your search exist in either the SMILE or CRDB databases.",
 };
 
+interface IPatientsPageProps {
+  userEmail: string | null;
+  setUserEmail: Dispatch<SetStateAction<string | null>>;
+}
+
 export default function PatientsPage({
   userEmail,
   setUserEmail,
-}: {
-  userEmail: string | null;
-  setUserEmail: Dispatch<SetStateAction<string | null>>;
-}) {
+}: IPatientsPageProps) {
   const params = useParams();
 
-  const [searchVal, setSearchVal] = useState<string[]>([]);
-  const [inputVal, setInputVal] = useState("");
+  const [userSearchVal, setUserSearchVal] = useState<string>("");
+  const [parsedSearchVals, setParsedSearchVals] = useState<string[]>([]);
   const [showDownloadModal, setShowDownloadModal] = useState(false);
   const [phiEnabled, setPhiEnabled] = useState(false);
   const [patientIdsTriplets, setPatientIdsTriplets] = useState<
@@ -173,30 +178,30 @@ export default function PatientsPage({
     }
   }
 
-  const handleSearch = async () => {
-    let uniqueQueries = parseSearchQueries(inputVal);
+  async function handlePatientSearch() {
+    let parsedSearchVals = parseUserSearchVal(userSearchVal);
 
     if (phiEnabled) {
-      uniqueQueries = uniqueQueries.map((query) =>
+      parsedSearchVals = parsedSearchVals.map((query) =>
         query.startsWith("C-") ? query.slice(2) : query
       );
 
-      const newQueries = await fetchPatientIdsTriplets(uniqueQueries);
+      const customSearchVals = await fetchPatientIdsTriplets(parsedSearchVals);
 
-      if (newQueries.length > 0) {
-        setSearchVal(newQueries);
+      if (customSearchVals.length > 0) {
+        setParsedSearchVals(customSearchVals);
       } else if (userEmail) {
         setAlertModal({
           show: true,
           ...NO_PHI_SEARCH_RESULTS,
         });
 
-        setSearchVal([]);
+        setParsedSearchVals([]);
       }
     } else {
-      setSearchVal(uniqueQueries);
+      setParsedSearchVals(parsedSearchVals);
     }
-  };
+  }
 
   useEffect(() => {
     window.addEventListener("message", handleLogin);
@@ -211,7 +216,7 @@ export default function PatientsPage({
         ...PHI_WARNING,
       });
 
-      handleSearch();
+      handlePatientSearch();
     }
 
     return () => {
@@ -220,7 +225,7 @@ export default function PatientsPage({
     // eslint-disable-next-line
   }, [phiEnabled]);
 
-  let ActiveColumns = useMemo(() => {
+  let ActivePatientsListColumns = useMemo(() => {
     return PatientsListColumns.map((column) => {
       if (
         column.headerName === "Patient MRN" &&
@@ -251,31 +256,51 @@ export default function PatientsPage({
     });
   }, [phiEnabled, patientIdsTriplets, userEmail]);
 
-  const pageRoute = "/patients";
+  const dataName = "patients";
+  const nodeName = "patientAliases";
   const sampleQueryParamFieldName = "cmoPatientId";
+  const sampleQueryParamHeaderName = "CMO Patient ID";
+  const sampleQueryParamValue = params[sampleQueryParamFieldName];
 
   return (
     <>
-      <PageHeader pageTitle={"patients"} pageRoute={pageRoute} />
+      <PageHeader dataName={dataName} />
 
       <RecordsList
+        colDefs={ActivePatientsListColumns}
+        dataName={dataName}
+        nodeName={nodeName}
         lazyRecordsQuery={usePatientsListLazyQuery}
-        nodeName="patientAliases"
-        totalCountNodeName="patientAliasesConnection"
-        pageRoute={pageRoute}
-        searchTerm="patients"
-        colDefs={ActiveColumns}
-        conditionBuilder={patientAliasFilterWhereVariables}
-        sampleQueryParamFieldName={sampleQueryParamFieldName}
-        sampleQueryParamValue={params[sampleQueryParamFieldName]}
-        searchVariables={
+        queryFilterWhereVariables={patientAliasFilterWhereVariables}
+        userSearchVal={userSearchVal}
+        setUserSearchVal={setUserSearchVal}
+        parsedSearchVals={parsedSearchVals}
+        setParsedSearchVals={setParsedSearchVals}
+        handleSearch={handlePatientSearch}
+        showDownloadModal={showDownloadModal}
+        setShowDownloadModal={setShowDownloadModal}
+        handleDownload={() => {
+          setAlertModal({
+            show: true,
+            ...PHI_WARNING,
+          });
+          setShowDownloadModal(true);
+        }}
+        samplesColDefs={SampleDetailsColumns}
+        samplesDefaultColDef={defaultEditableColDef}
+        samplesQueryParam={
+          sampleQueryParamValue &&
+          `${sampleQueryParamHeaderName} ${sampleQueryParamValue}`
+        }
+        getSamplesRowData={getMetadataFromSamples}
+        samplesParentWhereVariables={
           {
             OR: [
               {
                 patientsHasSampleConnection_SOME: {
                   node: {
                     patientAliasesIsAlias_SOME: {
-                      value: params[sampleQueryParamFieldName],
+                      value: sampleQueryParamValue,
                     },
                   },
                 },
@@ -283,7 +308,21 @@ export default function PatientsPage({
             ],
           } as SampleWhere
         }
-        customFilterUI={
+        samplesRefetchWhereVariables={(parsedSearchVals) => {
+          return {
+            hasMetadataSampleMetadata_SOME: {
+              OR: sampleFilterWhereVariables(parsedSearchVals),
+              ...(params[sampleQueryParamFieldName]
+                ? {
+                    [sampleQueryParamFieldName]:
+                      params[sampleQueryParamFieldName],
+                  }
+                : {}),
+            },
+          } as SampleWhere;
+        }}
+        setCustomSearchVals={setPatientIdsTriplets}
+        customToolbarUI={
           <>
             <Col md="auto" className="mt-1">
               <div className="vr"></div>
@@ -318,21 +357,6 @@ export default function PatientsPage({
             </Col>
           </>
         }
-        setCustomFilterVals={setPatientIdsTriplets}
-        handleSearch={handleSearch}
-        searchVal={searchVal}
-        setSearchVal={setSearchVal}
-        inputVal={inputVal}
-        setInputVal={setInputVal}
-        showDownloadModal={showDownloadModal}
-        setShowDownloadModal={setShowDownloadModal}
-        handleDownload={() => {
-          setAlertModal({
-            show: true,
-            ...PHI_WARNING,
-          });
-          setShowDownloadModal(true);
-        }}
       />
 
       <AlertModal

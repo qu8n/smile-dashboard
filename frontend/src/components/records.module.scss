@@ -9,3 +9,11 @@
   align-items: center;
   justify-content: center;
 }
+
+.tableHeight {
+  height: calc(100vh - 230px);
+}
+
+.popupHeight {
+  height: calc(100vh - 180px);
+}

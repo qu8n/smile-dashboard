@@ -20,11 +20,1176 @@ export type Scalars = {
   Float: number;
 };
 
+export type BamComplete = {
+  __typename?: "BamComplete";
+  date: Scalars["String"];
+  status: Scalars["String"];
+  temposHasEvent: Array<Tempo>;
+  temposHasEventAggregate?: Maybe<BamCompleteTempoTemposHasEventAggregationSelection>;
+  temposHasEventConnection: BamCompleteTemposHasEventConnection;
+};
+
+export type BamCompleteTemposHasEventArgs = {
+  directed?: InputMaybe<Scalars["Boolean"]>;
+  options?: InputMaybe<TempoOptions>;
+  where?: InputMaybe<TempoWhere>;
+};
+
+export type BamCompleteTemposHasEventAggregateArgs = {
+  directed?: InputMaybe<Scalars["Boolean"]>;
+  where?: InputMaybe<TempoWhere>;
+};
+
+export type BamCompleteTemposHasEventConnectionArgs = {
+  after?: InputMaybe<Scalars["String"]>;
+  directed?: InputMaybe<Scalars["Boolean"]>;
+  first?: InputMaybe<Scalars["Int"]>;
+  where?: InputMaybe<BamCompleteTemposHasEventConnectionWhere>;
+};
+
+export type BamCompleteAggregateSelection = {
+  __typename?: "BamCompleteAggregateSelection";
+  count: Scalars["Int"];
+  date: StringAggregateSelectionNonNullable;
+  status: StringAggregateSelectionNonNullable;
+};
+
+export type BamCompleteConnectInput = {
+  temposHasEvent?: InputMaybe<
+    Array<BamCompleteTemposHasEventConnectFieldInput>
+  >;
+};
+
+export type BamCompleteConnectWhere = {
+  node: BamCompleteWhere;
+};
+
+export type BamCompleteCreateInput = {
+  date: Scalars["String"];
+  status: Scalars["String"];
+  temposHasEvent?: InputMaybe<BamCompleteTemposHasEventFieldInput>;
+};
+
+export type BamCompleteDeleteInput = {
+  temposHasEvent?: InputMaybe<Array<BamCompleteTemposHasEventDeleteFieldInput>>;
+};
+
+export type BamCompleteDisconnectInput = {
+  temposHasEvent?: InputMaybe<
+    Array<BamCompleteTemposHasEventDisconnectFieldInput>
+  >;
+};
+
+export type BamCompleteEdge = {
+  __typename?: "BamCompleteEdge";
+  cursor: Scalars["String"];
+  node: BamComplete;
+};
+
+export type BamCompleteOptions = {
+  limit?: InputMaybe<Scalars["Int"]>;
+  offset?: InputMaybe<Scalars["Int"]>;
+  /** Specify one or more BamCompleteSort objects to sort BamCompletes by. The sorts will be applied in the order in which they are arranged in the array. */
+  sort?: InputMaybe<Array<BamCompleteSort>>;
+};
+
+export type BamCompleteRelationInput = {
+  temposHasEvent?: InputMaybe<Array<BamCompleteTemposHasEventCreateFieldInput>>;
+};
+
+/** Fields to sort BamCompletes by. The order in which sorts are applied is not guaranteed when specifying many fields in one BamCompleteSort object. */
+export type BamCompleteSort = {
+  date?: InputMaybe<SortDirection>;
+  status?: InputMaybe<SortDirection>;
+};
+
+export type BamCompleteTempoTemposHasEventAggregationSelection = {
+  __typename?: "BamCompleteTempoTemposHasEventAggregationSelection";
+  count: Scalars["Int"];
+};
+
+export type BamCompleteTemposHasEventAggregateInput = {
+  AND?: InputMaybe<Array<BamCompleteTemposHasEventAggregateInput>>;
+  OR?: InputMaybe<Array<BamCompleteTemposHasEventAggregateInput>>;
+  count?: InputMaybe<Scalars["Int"]>;
+  count_GT?: InputMaybe<Scalars["Int"]>;
+  count_GTE?: InputMaybe<Scalars["Int"]>;
+  count_LT?: InputMaybe<Scalars["Int"]>;
+  count_LTE?: InputMaybe<Scalars["Int"]>;
+};
+
+export type BamCompleteTemposHasEventConnectFieldInput = {
+  connect?: InputMaybe<Array<TempoConnectInput>>;
+  where?: InputMaybe<TempoConnectWhere>;
+};
+
+export type BamCompleteTemposHasEventConnection = {
+  __typename?: "BamCompleteTemposHasEventConnection";
+  edges: Array<BamCompleteTemposHasEventRelationship>;
+  pageInfo: PageInfo;
+  totalCount: Scalars["Int"];
+};
+
+export type BamCompleteTemposHasEventConnectionWhere = {
+  AND?: InputMaybe<Array<BamCompleteTemposHasEventConnectionWhere>>;
+  OR?: InputMaybe<Array<BamCompleteTemposHasEventConnectionWhere>>;
+  node?: InputMaybe<TempoWhere>;
+  node_NOT?: InputMaybe<TempoWhere>;
+};
+
+export type BamCompleteTemposHasEventCreateFieldInput = {
+  node: TempoCreateInput;
+};
+
+export type BamCompleteTemposHasEventDeleteFieldInput = {
+  delete?: InputMaybe<TempoDeleteInput>;
+  where?: InputMaybe<BamCompleteTemposHasEventConnectionWhere>;
+};
+
+export type BamCompleteTemposHasEventDisconnectFieldInput = {
+  disconnect?: InputMaybe<TempoDisconnectInput>;
+  where?: InputMaybe<BamCompleteTemposHasEventConnectionWhere>;
+};
+
+export type BamCompleteTemposHasEventFieldInput = {
+  connect?: InputMaybe<Array<BamCompleteTemposHasEventConnectFieldInput>>;
+  create?: InputMaybe<Array<BamCompleteTemposHasEventCreateFieldInput>>;
+};
+
+export type BamCompleteTemposHasEventRelationship = {
+  __typename?: "BamCompleteTemposHasEventRelationship";
+  cursor: Scalars["String"];
+  node: Tempo;
+};
+
+export type BamCompleteTemposHasEventUpdateConnectionInput = {
+  node?: InputMaybe<TempoUpdateInput>;
+};
+
+export type BamCompleteTemposHasEventUpdateFieldInput = {
+  connect?: InputMaybe<Array<BamCompleteTemposHasEventConnectFieldInput>>;
+  create?: InputMaybe<Array<BamCompleteTemposHasEventCreateFieldInput>>;
+  delete?: InputMaybe<Array<BamCompleteTemposHasEventDeleteFieldInput>>;
+  disconnect?: InputMaybe<Array<BamCompleteTemposHasEventDisconnectFieldInput>>;
+  update?: InputMaybe<BamCompleteTemposHasEventUpdateConnectionInput>;
+  where?: InputMaybe<BamCompleteTemposHasEventConnectionWhere>;
+};
+
+export type BamCompleteUpdateInput = {
+  date?: InputMaybe<Scalars["String"]>;
+  status?: InputMaybe<Scalars["String"]>;
+  temposHasEvent?: InputMaybe<Array<BamCompleteTemposHasEventUpdateFieldInput>>;
+};
+
+export type BamCompleteWhere = {
+  AND?: InputMaybe<Array<BamCompleteWhere>>;
+  OR?: InputMaybe<Array<BamCompleteWhere>>;
+  date?: InputMaybe<Scalars["String"]>;
+  date_CONTAINS?: InputMaybe<Scalars["String"]>;
+  date_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  date_IN?: InputMaybe<Array<Scalars["String"]>>;
+  date_NOT?: InputMaybe<Scalars["String"]>;
+  date_NOT_CONTAINS?: InputMaybe<Scalars["String"]>;
+  date_NOT_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  date_NOT_IN?: InputMaybe<Array<Scalars["String"]>>;
+  date_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  date_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  status?: InputMaybe<Scalars["String"]>;
+  status_CONTAINS?: InputMaybe<Scalars["String"]>;
+  status_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  status_IN?: InputMaybe<Array<Scalars["String"]>>;
+  status_NOT?: InputMaybe<Scalars["String"]>;
+  status_NOT_CONTAINS?: InputMaybe<Scalars["String"]>;
+  status_NOT_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  status_NOT_IN?: InputMaybe<Array<Scalars["String"]>>;
+  status_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  status_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  temposHasEventAggregate?: InputMaybe<BamCompleteTemposHasEventAggregateInput>;
+  temposHasEventConnection_ALL?: InputMaybe<BamCompleteTemposHasEventConnectionWhere>;
+  temposHasEventConnection_NONE?: InputMaybe<BamCompleteTemposHasEventConnectionWhere>;
+  temposHasEventConnection_SINGLE?: InputMaybe<BamCompleteTemposHasEventConnectionWhere>;
+  temposHasEventConnection_SOME?: InputMaybe<BamCompleteTemposHasEventConnectionWhere>;
+  /** Return BamCompletes where all of the related Tempos match this filter */
+  temposHasEvent_ALL?: InputMaybe<TempoWhere>;
+  /** Return BamCompletes where none of the related Tempos match this filter */
+  temposHasEvent_NONE?: InputMaybe<TempoWhere>;
+  /** Return BamCompletes where one of the related Tempos match this filter */
+  temposHasEvent_SINGLE?: InputMaybe<TempoWhere>;
+  /** Return BamCompletes where some of the related Tempos match this filter */
+  temposHasEvent_SOME?: InputMaybe<TempoWhere>;
+};
+
+export type BamCompletesConnection = {
+  __typename?: "BamCompletesConnection";
+  edges: Array<BamCompleteEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars["Int"];
+};
+
+export type Cohort = {
+  __typename?: "Cohort";
+  cohortId: Scalars["String"];
+  hasCohortCompleteCohortCompletes: Array<CohortComplete>;
+  hasCohortCompleteCohortCompletesAggregate?: Maybe<CohortCohortCompleteHasCohortCompleteCohortCompletesAggregationSelection>;
+  hasCohortCompleteCohortCompletesConnection: CohortHasCohortCompleteCohortCompletesConnection;
+  hasCohortSampleSamples: Array<Sample>;
+  hasCohortSampleSamplesAggregate?: Maybe<CohortSampleHasCohortSampleSamplesAggregationSelection>;
+  hasCohortSampleSamplesConnection: CohortHasCohortSampleSamplesConnection;
+};
+
+export type CohortHasCohortCompleteCohortCompletesArgs = {
+  directed?: InputMaybe<Scalars["Boolean"]>;
+  options?: InputMaybe<CohortCompleteOptions>;
+  where?: InputMaybe<CohortCompleteWhere>;
+};
+
+export type CohortHasCohortCompleteCohortCompletesAggregateArgs = {
+  directed?: InputMaybe<Scalars["Boolean"]>;
+  where?: InputMaybe<CohortCompleteWhere>;
+};
+
+export type CohortHasCohortCompleteCohortCompletesConnectionArgs = {
+  after?: InputMaybe<Scalars["String"]>;
+  directed?: InputMaybe<Scalars["Boolean"]>;
+  first?: InputMaybe<Scalars["Int"]>;
+  sort?: InputMaybe<
+    Array<CohortHasCohortCompleteCohortCompletesConnectionSort>
+  >;
+  where?: InputMaybe<CohortHasCohortCompleteCohortCompletesConnectionWhere>;
+};
+
+export type CohortHasCohortSampleSamplesArgs = {
+  directed?: InputMaybe<Scalars["Boolean"]>;
+  options?: InputMaybe<SampleOptions>;
+  where?: InputMaybe<SampleWhere>;
+};
+
+export type CohortHasCohortSampleSamplesAggregateArgs = {
+  directed?: InputMaybe<Scalars["Boolean"]>;
+  where?: InputMaybe<SampleWhere>;
+};
+
+export type CohortHasCohortSampleSamplesConnectionArgs = {
+  after?: InputMaybe<Scalars["String"]>;
+  directed?: InputMaybe<Scalars["Boolean"]>;
+  first?: InputMaybe<Scalars["Int"]>;
+  sort?: InputMaybe<Array<CohortHasCohortSampleSamplesConnectionSort>>;
+  where?: InputMaybe<CohortHasCohortSampleSamplesConnectionWhere>;
+};
+
+export type CohortAggregateSelection = {
+  __typename?: "CohortAggregateSelection";
+  cohortId: StringAggregateSelectionNonNullable;
+  count: Scalars["Int"];
+};
+
+export type CohortCohortCompleteHasCohortCompleteCohortCompletesAggregationSelection =
+  {
+    __typename?: "CohortCohortCompleteHasCohortCompleteCohortCompletesAggregationSelection";
+    count: Scalars["Int"];
+    node?: Maybe<CohortCohortCompleteHasCohortCompleteCohortCompletesNodeAggregateSelection>;
+  };
+
+export type CohortCohortCompleteHasCohortCompleteCohortCompletesNodeAggregateSelection =
+  {
+    __typename?: "CohortCohortCompleteHasCohortCompleteCohortCompletesNodeAggregateSelection";
+    analyst: StringAggregateSelectionNullable;
+    date: StringAggregateSelectionNonNullable;
+    projectSubtitle: StringAggregateSelectionNullable;
+    projectTitle: StringAggregateSelectionNullable;
+    status: StringAggregateSelectionNonNullable;
+    type: StringAggregateSelectionNonNullable;
+  };
+
+export type CohortComplete = {
+  __typename?: "CohortComplete";
+  analyst?: Maybe<Scalars["String"]>;
+  cohortsHasCohortComplete: Array<Cohort>;
+  cohortsHasCohortCompleteAggregate?: Maybe<CohortCompleteCohortCohortsHasCohortCompleteAggregationSelection>;
+  cohortsHasCohortCompleteConnection: CohortCompleteCohortsHasCohortCompleteConnection;
+  date: Scalars["String"];
+  endUsers?: Maybe<Array<Maybe<Scalars["String"]>>>;
+  pmUsers?: Maybe<Array<Maybe<Scalars["String"]>>>;
+  projectSubtitle?: Maybe<Scalars["String"]>;
+  projectTitle?: Maybe<Scalars["String"]>;
+  status: Scalars["String"];
+  type: Scalars["String"];
+};
+
+export type CohortCompleteCohortsHasCohortCompleteArgs = {
+  directed?: InputMaybe<Scalars["Boolean"]>;
+  options?: InputMaybe<CohortOptions>;
+  where?: InputMaybe<CohortWhere>;
+};
+
+export type CohortCompleteCohortsHasCohortCompleteAggregateArgs = {
+  directed?: InputMaybe<Scalars["Boolean"]>;
+  where?: InputMaybe<CohortWhere>;
+};
+
+export type CohortCompleteCohortsHasCohortCompleteConnectionArgs = {
+  after?: InputMaybe<Scalars["String"]>;
+  directed?: InputMaybe<Scalars["Boolean"]>;
+  first?: InputMaybe<Scalars["Int"]>;
+  sort?: InputMaybe<
+    Array<CohortCompleteCohortsHasCohortCompleteConnectionSort>
+  >;
+  where?: InputMaybe<CohortCompleteCohortsHasCohortCompleteConnectionWhere>;
+};
+
+export type CohortCompleteAggregateSelection = {
+  __typename?: "CohortCompleteAggregateSelection";
+  analyst: StringAggregateSelectionNullable;
+  count: Scalars["Int"];
+  date: StringAggregateSelectionNonNullable;
+  projectSubtitle: StringAggregateSelectionNullable;
+  projectTitle: StringAggregateSelectionNullable;
+  status: StringAggregateSelectionNonNullable;
+  type: StringAggregateSelectionNonNullable;
+};
+
+export type CohortCompleteCohortCohortsHasCohortCompleteAggregationSelection = {
+  __typename?: "CohortCompleteCohortCohortsHasCohortCompleteAggregationSelection";
+  count: Scalars["Int"];
+  node?: Maybe<CohortCompleteCohortCohortsHasCohortCompleteNodeAggregateSelection>;
+};
+
+export type CohortCompleteCohortCohortsHasCohortCompleteNodeAggregateSelection =
+  {
+    __typename?: "CohortCompleteCohortCohortsHasCohortCompleteNodeAggregateSelection";
+    cohortId: StringAggregateSelectionNonNullable;
+  };
+
+export type CohortCompleteCohortsHasCohortCompleteAggregateInput = {
+  AND?: InputMaybe<Array<CohortCompleteCohortsHasCohortCompleteAggregateInput>>;
+  OR?: InputMaybe<Array<CohortCompleteCohortsHasCohortCompleteAggregateInput>>;
+  count?: InputMaybe<Scalars["Int"]>;
+  count_GT?: InputMaybe<Scalars["Int"]>;
+  count_GTE?: InputMaybe<Scalars["Int"]>;
+  count_LT?: InputMaybe<Scalars["Int"]>;
+  count_LTE?: InputMaybe<Scalars["Int"]>;
+  node?: InputMaybe<CohortCompleteCohortsHasCohortCompleteNodeAggregationWhereInput>;
+};
+
+export type CohortCompleteCohortsHasCohortCompleteConnectFieldInput = {
+  connect?: InputMaybe<Array<CohortConnectInput>>;
+  where?: InputMaybe<CohortConnectWhere>;
+};
+
+export type CohortCompleteCohortsHasCohortCompleteConnection = {
+  __typename?: "CohortCompleteCohortsHasCohortCompleteConnection";
+  edges: Array<CohortCompleteCohortsHasCohortCompleteRelationship>;
+  pageInfo: PageInfo;
+  totalCount: Scalars["Int"];
+};
+
+export type CohortCompleteCohortsHasCohortCompleteConnectionSort = {
+  node?: InputMaybe<CohortSort>;
+};
+
+export type CohortCompleteCohortsHasCohortCompleteConnectionWhere = {
+  AND?: InputMaybe<
+    Array<CohortCompleteCohortsHasCohortCompleteConnectionWhere>
+  >;
+  OR?: InputMaybe<Array<CohortCompleteCohortsHasCohortCompleteConnectionWhere>>;
+  node?: InputMaybe<CohortWhere>;
+  node_NOT?: InputMaybe<CohortWhere>;
+};
+
+export type CohortCompleteCohortsHasCohortCompleteCreateFieldInput = {
+  node: CohortCreateInput;
+};
+
+export type CohortCompleteCohortsHasCohortCompleteDeleteFieldInput = {
+  delete?: InputMaybe<CohortDeleteInput>;
+  where?: InputMaybe<CohortCompleteCohortsHasCohortCompleteConnectionWhere>;
+};
+
+export type CohortCompleteCohortsHasCohortCompleteDisconnectFieldInput = {
+  disconnect?: InputMaybe<CohortDisconnectInput>;
+  where?: InputMaybe<CohortCompleteCohortsHasCohortCompleteConnectionWhere>;
+};
+
+export type CohortCompleteCohortsHasCohortCompleteFieldInput = {
+  connect?: InputMaybe<
+    Array<CohortCompleteCohortsHasCohortCompleteConnectFieldInput>
+  >;
+  create?: InputMaybe<
+    Array<CohortCompleteCohortsHasCohortCompleteCreateFieldInput>
+  >;
+};
+
+export type CohortCompleteCohortsHasCohortCompleteNodeAggregationWhereInput = {
+  AND?: InputMaybe<
+    Array<CohortCompleteCohortsHasCohortCompleteNodeAggregationWhereInput>
+  >;
+  OR?: InputMaybe<
+    Array<CohortCompleteCohortsHasCohortCompleteNodeAggregationWhereInput>
+  >;
+  cohortId_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  cohortId_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  cohortId_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  cohortId_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  cohortId_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  cohortId_EQUAL?: InputMaybe<Scalars["String"]>;
+  cohortId_GT?: InputMaybe<Scalars["Int"]>;
+  cohortId_GTE?: InputMaybe<Scalars["Int"]>;
+  cohortId_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  cohortId_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  cohortId_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  cohortId_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  cohortId_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  cohortId_LT?: InputMaybe<Scalars["Int"]>;
+  cohortId_LTE?: InputMaybe<Scalars["Int"]>;
+  cohortId_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  cohortId_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  cohortId_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  cohortId_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  cohortId_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+};
+
+export type CohortCompleteCohortsHasCohortCompleteRelationship = {
+  __typename?: "CohortCompleteCohortsHasCohortCompleteRelationship";
+  cursor: Scalars["String"];
+  node: Cohort;
+};
+
+export type CohortCompleteCohortsHasCohortCompleteUpdateConnectionInput = {
+  node?: InputMaybe<CohortUpdateInput>;
+};
+
+export type CohortCompleteCohortsHasCohortCompleteUpdateFieldInput = {
+  connect?: InputMaybe<
+    Array<CohortCompleteCohortsHasCohortCompleteConnectFieldInput>
+  >;
+  create?: InputMaybe<
+    Array<CohortCompleteCohortsHasCohortCompleteCreateFieldInput>
+  >;
+  delete?: InputMaybe<
+    Array<CohortCompleteCohortsHasCohortCompleteDeleteFieldInput>
+  >;
+  disconnect?: InputMaybe<
+    Array<CohortCompleteCohortsHasCohortCompleteDisconnectFieldInput>
+  >;
+  update?: InputMaybe<CohortCompleteCohortsHasCohortCompleteUpdateConnectionInput>;
+  where?: InputMaybe<CohortCompleteCohortsHasCohortCompleteConnectionWhere>;
+};
+
+export type CohortCompleteConnectInput = {
+  cohortsHasCohortComplete?: InputMaybe<
+    Array<CohortCompleteCohortsHasCohortCompleteConnectFieldInput>
+  >;
+};
+
+export type CohortCompleteConnectWhere = {
+  node: CohortCompleteWhere;
+};
+
+export type CohortCompleteCreateInput = {
+  analyst?: InputMaybe<Scalars["String"]>;
+  cohortsHasCohortComplete?: InputMaybe<CohortCompleteCohortsHasCohortCompleteFieldInput>;
+  date: Scalars["String"];
+  endUsers?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  pmUsers?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  projectSubtitle?: InputMaybe<Scalars["String"]>;
+  projectTitle?: InputMaybe<Scalars["String"]>;
+  status: Scalars["String"];
+  type: Scalars["String"];
+};
+
+export type CohortCompleteDeleteInput = {
+  cohortsHasCohortComplete?: InputMaybe<
+    Array<CohortCompleteCohortsHasCohortCompleteDeleteFieldInput>
+  >;
+};
+
+export type CohortCompleteDisconnectInput = {
+  cohortsHasCohortComplete?: InputMaybe<
+    Array<CohortCompleteCohortsHasCohortCompleteDisconnectFieldInput>
+  >;
+};
+
+export type CohortCompleteEdge = {
+  __typename?: "CohortCompleteEdge";
+  cursor: Scalars["String"];
+  node: CohortComplete;
+};
+
+export type CohortCompleteOptions = {
+  limit?: InputMaybe<Scalars["Int"]>;
+  offset?: InputMaybe<Scalars["Int"]>;
+  /** Specify one or more CohortCompleteSort objects to sort CohortCompletes by. The sorts will be applied in the order in which they are arranged in the array. */
+  sort?: InputMaybe<Array<CohortCompleteSort>>;
+};
+
+export type CohortCompleteRelationInput = {
+  cohortsHasCohortComplete?: InputMaybe<
+    Array<CohortCompleteCohortsHasCohortCompleteCreateFieldInput>
+  >;
+};
+
+/** Fields to sort CohortCompletes by. The order in which sorts are applied is not guaranteed when specifying many fields in one CohortCompleteSort object. */
+export type CohortCompleteSort = {
+  analyst?: InputMaybe<SortDirection>;
+  date?: InputMaybe<SortDirection>;
+  projectSubtitle?: InputMaybe<SortDirection>;
+  projectTitle?: InputMaybe<SortDirection>;
+  status?: InputMaybe<SortDirection>;
+  type?: InputMaybe<SortDirection>;
+};
+
+export type CohortCompleteUpdateInput = {
+  analyst?: InputMaybe<Scalars["String"]>;
+  cohortsHasCohortComplete?: InputMaybe<
+    Array<CohortCompleteCohortsHasCohortCompleteUpdateFieldInput>
+  >;
+  date?: InputMaybe<Scalars["String"]>;
+  endUsers?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  endUsers_POP?: InputMaybe<Scalars["Int"]>;
+  endUsers_PUSH?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  pmUsers?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  pmUsers_POP?: InputMaybe<Scalars["Int"]>;
+  pmUsers_PUSH?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  projectSubtitle?: InputMaybe<Scalars["String"]>;
+  projectTitle?: InputMaybe<Scalars["String"]>;
+  status?: InputMaybe<Scalars["String"]>;
+  type?: InputMaybe<Scalars["String"]>;
+};
+
+export type CohortCompleteWhere = {
+  AND?: InputMaybe<Array<CohortCompleteWhere>>;
+  OR?: InputMaybe<Array<CohortCompleteWhere>>;
+  analyst?: InputMaybe<Scalars["String"]>;
+  analyst_CONTAINS?: InputMaybe<Scalars["String"]>;
+  analyst_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  analyst_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  analyst_NOT?: InputMaybe<Scalars["String"]>;
+  analyst_NOT_CONTAINS?: InputMaybe<Scalars["String"]>;
+  analyst_NOT_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  analyst_NOT_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  analyst_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  analyst_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  cohortsHasCohortCompleteAggregate?: InputMaybe<CohortCompleteCohortsHasCohortCompleteAggregateInput>;
+  cohortsHasCohortCompleteConnection_ALL?: InputMaybe<CohortCompleteCohortsHasCohortCompleteConnectionWhere>;
+  cohortsHasCohortCompleteConnection_NONE?: InputMaybe<CohortCompleteCohortsHasCohortCompleteConnectionWhere>;
+  cohortsHasCohortCompleteConnection_SINGLE?: InputMaybe<CohortCompleteCohortsHasCohortCompleteConnectionWhere>;
+  cohortsHasCohortCompleteConnection_SOME?: InputMaybe<CohortCompleteCohortsHasCohortCompleteConnectionWhere>;
+  /** Return CohortCompletes where all of the related Cohorts match this filter */
+  cohortsHasCohortComplete_ALL?: InputMaybe<CohortWhere>;
+  /** Return CohortCompletes where none of the related Cohorts match this filter */
+  cohortsHasCohortComplete_NONE?: InputMaybe<CohortWhere>;
+  /** Return CohortCompletes where one of the related Cohorts match this filter */
+  cohortsHasCohortComplete_SINGLE?: InputMaybe<CohortWhere>;
+  /** Return CohortCompletes where some of the related Cohorts match this filter */
+  cohortsHasCohortComplete_SOME?: InputMaybe<CohortWhere>;
+  date?: InputMaybe<Scalars["String"]>;
+  date_CONTAINS?: InputMaybe<Scalars["String"]>;
+  date_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  date_IN?: InputMaybe<Array<Scalars["String"]>>;
+  date_NOT?: InputMaybe<Scalars["String"]>;
+  date_NOT_CONTAINS?: InputMaybe<Scalars["String"]>;
+  date_NOT_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  date_NOT_IN?: InputMaybe<Array<Scalars["String"]>>;
+  date_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  date_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  endUsers?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  endUsers_INCLUDES?: InputMaybe<Scalars["String"]>;
+  endUsers_NOT?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  endUsers_NOT_INCLUDES?: InputMaybe<Scalars["String"]>;
+  pmUsers?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  pmUsers_INCLUDES?: InputMaybe<Scalars["String"]>;
+  pmUsers_NOT?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  pmUsers_NOT_INCLUDES?: InputMaybe<Scalars["String"]>;
+  projectSubtitle?: InputMaybe<Scalars["String"]>;
+  projectSubtitle_CONTAINS?: InputMaybe<Scalars["String"]>;
+  projectSubtitle_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  projectSubtitle_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  projectSubtitle_NOT?: InputMaybe<Scalars["String"]>;
+  projectSubtitle_NOT_CONTAINS?: InputMaybe<Scalars["String"]>;
+  projectSubtitle_NOT_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  projectSubtitle_NOT_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  projectSubtitle_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  projectSubtitle_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  projectTitle?: InputMaybe<Scalars["String"]>;
+  projectTitle_CONTAINS?: InputMaybe<Scalars["String"]>;
+  projectTitle_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  projectTitle_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  projectTitle_NOT?: InputMaybe<Scalars["String"]>;
+  projectTitle_NOT_CONTAINS?: InputMaybe<Scalars["String"]>;
+  projectTitle_NOT_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  projectTitle_NOT_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  projectTitle_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  projectTitle_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  status?: InputMaybe<Scalars["String"]>;
+  status_CONTAINS?: InputMaybe<Scalars["String"]>;
+  status_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  status_IN?: InputMaybe<Array<Scalars["String"]>>;
+  status_NOT?: InputMaybe<Scalars["String"]>;
+  status_NOT_CONTAINS?: InputMaybe<Scalars["String"]>;
+  status_NOT_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  status_NOT_IN?: InputMaybe<Array<Scalars["String"]>>;
+  status_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  status_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  type?: InputMaybe<Scalars["String"]>;
+  type_CONTAINS?: InputMaybe<Scalars["String"]>;
+  type_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  type_IN?: InputMaybe<Array<Scalars["String"]>>;
+  type_NOT?: InputMaybe<Scalars["String"]>;
+  type_NOT_CONTAINS?: InputMaybe<Scalars["String"]>;
+  type_NOT_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  type_NOT_IN?: InputMaybe<Array<Scalars["String"]>>;
+  type_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  type_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+};
+
+export type CohortCompletesConnection = {
+  __typename?: "CohortCompletesConnection";
+  edges: Array<CohortCompleteEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars["Int"];
+};
+
+export type CohortConnectInput = {
+  hasCohortCompleteCohortCompletes?: InputMaybe<
+    Array<CohortHasCohortCompleteCohortCompletesConnectFieldInput>
+  >;
+  hasCohortSampleSamples?: InputMaybe<
+    Array<CohortHasCohortSampleSamplesConnectFieldInput>
+  >;
+};
+
+export type CohortConnectWhere = {
+  node: CohortWhere;
+};
+
+export type CohortCreateInput = {
+  cohortId: Scalars["String"];
+  hasCohortCompleteCohortCompletes?: InputMaybe<CohortHasCohortCompleteCohortCompletesFieldInput>;
+  hasCohortSampleSamples?: InputMaybe<CohortHasCohortSampleSamplesFieldInput>;
+};
+
+export type CohortDeleteInput = {
+  hasCohortCompleteCohortCompletes?: InputMaybe<
+    Array<CohortHasCohortCompleteCohortCompletesDeleteFieldInput>
+  >;
+  hasCohortSampleSamples?: InputMaybe<
+    Array<CohortHasCohortSampleSamplesDeleteFieldInput>
+  >;
+};
+
+export type CohortDisconnectInput = {
+  hasCohortCompleteCohortCompletes?: InputMaybe<
+    Array<CohortHasCohortCompleteCohortCompletesDisconnectFieldInput>
+  >;
+  hasCohortSampleSamples?: InputMaybe<
+    Array<CohortHasCohortSampleSamplesDisconnectFieldInput>
+  >;
+};
+
+export type CohortEdge = {
+  __typename?: "CohortEdge";
+  cursor: Scalars["String"];
+  node: Cohort;
+};
+
+export type CohortHasCohortCompleteCohortCompletesAggregateInput = {
+  AND?: InputMaybe<Array<CohortHasCohortCompleteCohortCompletesAggregateInput>>;
+  OR?: InputMaybe<Array<CohortHasCohortCompleteCohortCompletesAggregateInput>>;
+  count?: InputMaybe<Scalars["Int"]>;
+  count_GT?: InputMaybe<Scalars["Int"]>;
+  count_GTE?: InputMaybe<Scalars["Int"]>;
+  count_LT?: InputMaybe<Scalars["Int"]>;
+  count_LTE?: InputMaybe<Scalars["Int"]>;
+  node?: InputMaybe<CohortHasCohortCompleteCohortCompletesNodeAggregationWhereInput>;
+};
+
+export type CohortHasCohortCompleteCohortCompletesConnectFieldInput = {
+  connect?: InputMaybe<Array<CohortCompleteConnectInput>>;
+  where?: InputMaybe<CohortCompleteConnectWhere>;
+};
+
+export type CohortHasCohortCompleteCohortCompletesConnection = {
+  __typename?: "CohortHasCohortCompleteCohortCompletesConnection";
+  edges: Array<CohortHasCohortCompleteCohortCompletesRelationship>;
+  pageInfo: PageInfo;
+  totalCount: Scalars["Int"];
+};
+
+export type CohortHasCohortCompleteCohortCompletesConnectionSort = {
+  node?: InputMaybe<CohortCompleteSort>;
+};
+
+export type CohortHasCohortCompleteCohortCompletesConnectionWhere = {
+  AND?: InputMaybe<
+    Array<CohortHasCohortCompleteCohortCompletesConnectionWhere>
+  >;
+  OR?: InputMaybe<Array<CohortHasCohortCompleteCohortCompletesConnectionWhere>>;
+  node?: InputMaybe<CohortCompleteWhere>;
+  node_NOT?: InputMaybe<CohortCompleteWhere>;
+};
+
+export type CohortHasCohortCompleteCohortCompletesCreateFieldInput = {
+  node: CohortCompleteCreateInput;
+};
+
+export type CohortHasCohortCompleteCohortCompletesDeleteFieldInput = {
+  delete?: InputMaybe<CohortCompleteDeleteInput>;
+  where?: InputMaybe<CohortHasCohortCompleteCohortCompletesConnectionWhere>;
+};
+
+export type CohortHasCohortCompleteCohortCompletesDisconnectFieldInput = {
+  disconnect?: InputMaybe<CohortCompleteDisconnectInput>;
+  where?: InputMaybe<CohortHasCohortCompleteCohortCompletesConnectionWhere>;
+};
+
+export type CohortHasCohortCompleteCohortCompletesFieldInput = {
+  connect?: InputMaybe<
+    Array<CohortHasCohortCompleteCohortCompletesConnectFieldInput>
+  >;
+  create?: InputMaybe<
+    Array<CohortHasCohortCompleteCohortCompletesCreateFieldInput>
+  >;
+};
+
+export type CohortHasCohortCompleteCohortCompletesNodeAggregationWhereInput = {
+  AND?: InputMaybe<
+    Array<CohortHasCohortCompleteCohortCompletesNodeAggregationWhereInput>
+  >;
+  OR?: InputMaybe<
+    Array<CohortHasCohortCompleteCohortCompletesNodeAggregationWhereInput>
+  >;
+  analyst_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  analyst_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  analyst_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  analyst_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  analyst_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  analyst_EQUAL?: InputMaybe<Scalars["String"]>;
+  analyst_GT?: InputMaybe<Scalars["Int"]>;
+  analyst_GTE?: InputMaybe<Scalars["Int"]>;
+  analyst_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  analyst_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  analyst_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  analyst_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  analyst_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  analyst_LT?: InputMaybe<Scalars["Int"]>;
+  analyst_LTE?: InputMaybe<Scalars["Int"]>;
+  analyst_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  analyst_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  analyst_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  analyst_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  analyst_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  date_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  date_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  date_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  date_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  date_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  date_EQUAL?: InputMaybe<Scalars["String"]>;
+  date_GT?: InputMaybe<Scalars["Int"]>;
+  date_GTE?: InputMaybe<Scalars["Int"]>;
+  date_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  date_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  date_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  date_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  date_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  date_LT?: InputMaybe<Scalars["Int"]>;
+  date_LTE?: InputMaybe<Scalars["Int"]>;
+  date_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  date_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  date_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  date_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  date_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  projectSubtitle_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  projectSubtitle_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  projectSubtitle_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  projectSubtitle_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  projectSubtitle_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  projectSubtitle_EQUAL?: InputMaybe<Scalars["String"]>;
+  projectSubtitle_GT?: InputMaybe<Scalars["Int"]>;
+  projectSubtitle_GTE?: InputMaybe<Scalars["Int"]>;
+  projectSubtitle_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  projectSubtitle_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  projectSubtitle_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  projectSubtitle_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  projectSubtitle_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  projectSubtitle_LT?: InputMaybe<Scalars["Int"]>;
+  projectSubtitle_LTE?: InputMaybe<Scalars["Int"]>;
+  projectSubtitle_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  projectSubtitle_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  projectSubtitle_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  projectSubtitle_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  projectSubtitle_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  projectTitle_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  projectTitle_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  projectTitle_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  projectTitle_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  projectTitle_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  projectTitle_EQUAL?: InputMaybe<Scalars["String"]>;
+  projectTitle_GT?: InputMaybe<Scalars["Int"]>;
+  projectTitle_GTE?: InputMaybe<Scalars["Int"]>;
+  projectTitle_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  projectTitle_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  projectTitle_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  projectTitle_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  projectTitle_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  projectTitle_LT?: InputMaybe<Scalars["Int"]>;
+  projectTitle_LTE?: InputMaybe<Scalars["Int"]>;
+  projectTitle_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  projectTitle_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  projectTitle_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  projectTitle_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  projectTitle_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  status_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  status_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  status_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  status_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  status_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  status_EQUAL?: InputMaybe<Scalars["String"]>;
+  status_GT?: InputMaybe<Scalars["Int"]>;
+  status_GTE?: InputMaybe<Scalars["Int"]>;
+  status_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  status_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  status_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  status_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  status_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  status_LT?: InputMaybe<Scalars["Int"]>;
+  status_LTE?: InputMaybe<Scalars["Int"]>;
+  status_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  status_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  status_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  status_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  status_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  type_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  type_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  type_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  type_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  type_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  type_EQUAL?: InputMaybe<Scalars["String"]>;
+  type_GT?: InputMaybe<Scalars["Int"]>;
+  type_GTE?: InputMaybe<Scalars["Int"]>;
+  type_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  type_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  type_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  type_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  type_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  type_LT?: InputMaybe<Scalars["Int"]>;
+  type_LTE?: InputMaybe<Scalars["Int"]>;
+  type_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  type_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  type_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  type_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  type_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+};
+
+export type CohortHasCohortCompleteCohortCompletesRelationship = {
+  __typename?: "CohortHasCohortCompleteCohortCompletesRelationship";
+  cursor: Scalars["String"];
+  node: CohortComplete;
+};
+
+export type CohortHasCohortCompleteCohortCompletesUpdateConnectionInput = {
+  node?: InputMaybe<CohortCompleteUpdateInput>;
+};
+
+export type CohortHasCohortCompleteCohortCompletesUpdateFieldInput = {
+  connect?: InputMaybe<
+    Array<CohortHasCohortCompleteCohortCompletesConnectFieldInput>
+  >;
+  create?: InputMaybe<
+    Array<CohortHasCohortCompleteCohortCompletesCreateFieldInput>
+  >;
+  delete?: InputMaybe<
+    Array<CohortHasCohortCompleteCohortCompletesDeleteFieldInput>
+  >;
+  disconnect?: InputMaybe<
+    Array<CohortHasCohortCompleteCohortCompletesDisconnectFieldInput>
+  >;
+  update?: InputMaybe<CohortHasCohortCompleteCohortCompletesUpdateConnectionInput>;
+  where?: InputMaybe<CohortHasCohortCompleteCohortCompletesConnectionWhere>;
+};
+
+export type CohortHasCohortSampleSamplesAggregateInput = {
+  AND?: InputMaybe<Array<CohortHasCohortSampleSamplesAggregateInput>>;
+  OR?: InputMaybe<Array<CohortHasCohortSampleSamplesAggregateInput>>;
+  count?: InputMaybe<Scalars["Int"]>;
+  count_GT?: InputMaybe<Scalars["Int"]>;
+  count_GTE?: InputMaybe<Scalars["Int"]>;
+  count_LT?: InputMaybe<Scalars["Int"]>;
+  count_LTE?: InputMaybe<Scalars["Int"]>;
+  node?: InputMaybe<CohortHasCohortSampleSamplesNodeAggregationWhereInput>;
+};
+
+export type CohortHasCohortSampleSamplesConnectFieldInput = {
+  connect?: InputMaybe<Array<SampleConnectInput>>;
+  where?: InputMaybe<SampleConnectWhere>;
+};
+
+export type CohortHasCohortSampleSamplesConnection = {
+  __typename?: "CohortHasCohortSampleSamplesConnection";
+  edges: Array<CohortHasCohortSampleSamplesRelationship>;
+  pageInfo: PageInfo;
+  totalCount: Scalars["Int"];
+};
+
+export type CohortHasCohortSampleSamplesConnectionSort = {
+  node?: InputMaybe<SampleSort>;
+};
+
+export type CohortHasCohortSampleSamplesConnectionWhere = {
+  AND?: InputMaybe<Array<CohortHasCohortSampleSamplesConnectionWhere>>;
+  OR?: InputMaybe<Array<CohortHasCohortSampleSamplesConnectionWhere>>;
+  node?: InputMaybe<SampleWhere>;
+  node_NOT?: InputMaybe<SampleWhere>;
+};
+
+export type CohortHasCohortSampleSamplesCreateFieldInput = {
+  node: SampleCreateInput;
+};
+
+export type CohortHasCohortSampleSamplesDeleteFieldInput = {
+  delete?: InputMaybe<SampleDeleteInput>;
+  where?: InputMaybe<CohortHasCohortSampleSamplesConnectionWhere>;
+};
+
+export type CohortHasCohortSampleSamplesDisconnectFieldInput = {
+  disconnect?: InputMaybe<SampleDisconnectInput>;
+  where?: InputMaybe<CohortHasCohortSampleSamplesConnectionWhere>;
+};
+
+export type CohortHasCohortSampleSamplesFieldInput = {
+  connect?: InputMaybe<Array<CohortHasCohortSampleSamplesConnectFieldInput>>;
+  create?: InputMaybe<Array<CohortHasCohortSampleSamplesCreateFieldInput>>;
+};
+
+export type CohortHasCohortSampleSamplesNodeAggregationWhereInput = {
+  AND?: InputMaybe<
+    Array<CohortHasCohortSampleSamplesNodeAggregationWhereInput>
+  >;
+  OR?: InputMaybe<Array<CohortHasCohortSampleSamplesNodeAggregationWhereInput>>;
+  datasource_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  datasource_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  datasource_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  datasource_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  datasource_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  datasource_EQUAL?: InputMaybe<Scalars["String"]>;
+  datasource_GT?: InputMaybe<Scalars["Int"]>;
+  datasource_GTE?: InputMaybe<Scalars["Int"]>;
+  datasource_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  datasource_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  datasource_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  datasource_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  datasource_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  datasource_LT?: InputMaybe<Scalars["Int"]>;
+  datasource_LTE?: InputMaybe<Scalars["Int"]>;
+  datasource_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  datasource_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  datasource_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  datasource_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  datasource_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  sampleCategory_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  sampleCategory_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  sampleCategory_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  sampleCategory_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  sampleCategory_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  sampleCategory_EQUAL?: InputMaybe<Scalars["String"]>;
+  sampleCategory_GT?: InputMaybe<Scalars["Int"]>;
+  sampleCategory_GTE?: InputMaybe<Scalars["Int"]>;
+  sampleCategory_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  sampleCategory_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  sampleCategory_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  sampleCategory_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  sampleCategory_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  sampleCategory_LT?: InputMaybe<Scalars["Int"]>;
+  sampleCategory_LTE?: InputMaybe<Scalars["Int"]>;
+  sampleCategory_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  sampleCategory_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  sampleCategory_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  sampleCategory_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  sampleCategory_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  sampleClass_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  sampleClass_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  sampleClass_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  sampleClass_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  sampleClass_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  sampleClass_EQUAL?: InputMaybe<Scalars["String"]>;
+  sampleClass_GT?: InputMaybe<Scalars["Int"]>;
+  sampleClass_GTE?: InputMaybe<Scalars["Int"]>;
+  sampleClass_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  sampleClass_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  sampleClass_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  sampleClass_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  sampleClass_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  sampleClass_LT?: InputMaybe<Scalars["Int"]>;
+  sampleClass_LTE?: InputMaybe<Scalars["Int"]>;
+  sampleClass_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  sampleClass_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  sampleClass_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  sampleClass_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  sampleClass_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  smileSampleId_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  smileSampleId_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  smileSampleId_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  smileSampleId_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  smileSampleId_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  smileSampleId_EQUAL?: InputMaybe<Scalars["String"]>;
+  smileSampleId_GT?: InputMaybe<Scalars["Int"]>;
+  smileSampleId_GTE?: InputMaybe<Scalars["Int"]>;
+  smileSampleId_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  smileSampleId_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  smileSampleId_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  smileSampleId_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  smileSampleId_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  smileSampleId_LT?: InputMaybe<Scalars["Int"]>;
+  smileSampleId_LTE?: InputMaybe<Scalars["Int"]>;
+  smileSampleId_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  smileSampleId_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  smileSampleId_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  smileSampleId_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  smileSampleId_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+};
+
+export type CohortHasCohortSampleSamplesRelationship = {
+  __typename?: "CohortHasCohortSampleSamplesRelationship";
+  cursor: Scalars["String"];
+  node: Sample;
+};
+
+export type CohortHasCohortSampleSamplesUpdateConnectionInput = {
+  node?: InputMaybe<SampleUpdateInput>;
+};
+
+export type CohortHasCohortSampleSamplesUpdateFieldInput = {
+  connect?: InputMaybe<Array<CohortHasCohortSampleSamplesConnectFieldInput>>;
+  create?: InputMaybe<Array<CohortHasCohortSampleSamplesCreateFieldInput>>;
+  delete?: InputMaybe<Array<CohortHasCohortSampleSamplesDeleteFieldInput>>;
+  disconnect?: InputMaybe<
+    Array<CohortHasCohortSampleSamplesDisconnectFieldInput>
+  >;
+  update?: InputMaybe<CohortHasCohortSampleSamplesUpdateConnectionInput>;
+  where?: InputMaybe<CohortHasCohortSampleSamplesConnectionWhere>;
+};
+
+export type CohortOptions = {
+  limit?: InputMaybe<Scalars["Int"]>;
+  offset?: InputMaybe<Scalars["Int"]>;
+  /** Specify one or more CohortSort objects to sort Cohorts by. The sorts will be applied in the order in which they are arranged in the array. */
+  sort?: InputMaybe<Array<CohortSort>>;
+};
+
+export type CohortRelationInput = {
+  hasCohortCompleteCohortCompletes?: InputMaybe<
+    Array<CohortHasCohortCompleteCohortCompletesCreateFieldInput>
+  >;
+  hasCohortSampleSamples?: InputMaybe<
+    Array<CohortHasCohortSampleSamplesCreateFieldInput>
+  >;
+};
+
+export type CohortSampleHasCohortSampleSamplesAggregationSelection = {
+  __typename?: "CohortSampleHasCohortSampleSamplesAggregationSelection";
+  count: Scalars["Int"];
+  node?: Maybe<CohortSampleHasCohortSampleSamplesNodeAggregateSelection>;
+};
+
+export type CohortSampleHasCohortSampleSamplesNodeAggregateSelection = {
+  __typename?: "CohortSampleHasCohortSampleSamplesNodeAggregateSelection";
+  datasource: StringAggregateSelectionNonNullable;
+  sampleCategory: StringAggregateSelectionNonNullable;
+  sampleClass: StringAggregateSelectionNonNullable;
+  smileSampleId: StringAggregateSelectionNonNullable;
+};
+
+/** Fields to sort Cohorts by. The order in which sorts are applied is not guaranteed when specifying many fields in one CohortSort object. */
+export type CohortSort = {
+  cohortId?: InputMaybe<SortDirection>;
+};
+
+export type CohortUpdateInput = {
+  cohortId?: InputMaybe<Scalars["String"]>;
+  hasCohortCompleteCohortCompletes?: InputMaybe<
+    Array<CohortHasCohortCompleteCohortCompletesUpdateFieldInput>
+  >;
+  hasCohortSampleSamples?: InputMaybe<
+    Array<CohortHasCohortSampleSamplesUpdateFieldInput>
+  >;
+};
+
+export type CohortWhere = {
+  AND?: InputMaybe<Array<CohortWhere>>;
+  OR?: InputMaybe<Array<CohortWhere>>;
+  cohortId?: InputMaybe<Scalars["String"]>;
+  cohortId_CONTAINS?: InputMaybe<Scalars["String"]>;
+  cohortId_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  cohortId_IN?: InputMaybe<Array<Scalars["String"]>>;
+  cohortId_NOT?: InputMaybe<Scalars["String"]>;
+  cohortId_NOT_CONTAINS?: InputMaybe<Scalars["String"]>;
+  cohortId_NOT_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  cohortId_NOT_IN?: InputMaybe<Array<Scalars["String"]>>;
+  cohortId_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  cohortId_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  hasCohortCompleteCohortCompletesAggregate?: InputMaybe<CohortHasCohortCompleteCohortCompletesAggregateInput>;
+  hasCohortCompleteCohortCompletesConnection_ALL?: InputMaybe<CohortHasCohortCompleteCohortCompletesConnectionWhere>;
+  hasCohortCompleteCohortCompletesConnection_NONE?: InputMaybe<CohortHasCohortCompleteCohortCompletesConnectionWhere>;
+  hasCohortCompleteCohortCompletesConnection_SINGLE?: InputMaybe<CohortHasCohortCompleteCohortCompletesConnectionWhere>;
+  hasCohortCompleteCohortCompletesConnection_SOME?: InputMaybe<CohortHasCohortCompleteCohortCompletesConnectionWhere>;
+  /** Return Cohorts where all of the related CohortCompletes match this filter */
+  hasCohortCompleteCohortCompletes_ALL?: InputMaybe<CohortCompleteWhere>;
+  /** Return Cohorts where none of the related CohortCompletes match this filter */
+  hasCohortCompleteCohortCompletes_NONE?: InputMaybe<CohortCompleteWhere>;
+  /** Return Cohorts where one of the related CohortCompletes match this filter */
+  hasCohortCompleteCohortCompletes_SINGLE?: InputMaybe<CohortCompleteWhere>;
+  /** Return Cohorts where some of the related CohortCompletes match this filter */
+  hasCohortCompleteCohortCompletes_SOME?: InputMaybe<CohortCompleteWhere>;
+  hasCohortSampleSamplesAggregate?: InputMaybe<CohortHasCohortSampleSamplesAggregateInput>;
+  hasCohortSampleSamplesConnection_ALL?: InputMaybe<CohortHasCohortSampleSamplesConnectionWhere>;
+  hasCohortSampleSamplesConnection_NONE?: InputMaybe<CohortHasCohortSampleSamplesConnectionWhere>;
+  hasCohortSampleSamplesConnection_SINGLE?: InputMaybe<CohortHasCohortSampleSamplesConnectionWhere>;
+  hasCohortSampleSamplesConnection_SOME?: InputMaybe<CohortHasCohortSampleSamplesConnectionWhere>;
+  /** Return Cohorts where all of the related Samples match this filter */
+  hasCohortSampleSamples_ALL?: InputMaybe<SampleWhere>;
+  /** Return Cohorts where none of the related Samples match this filter */
+  hasCohortSampleSamples_NONE?: InputMaybe<SampleWhere>;
+  /** Return Cohorts where one of the related Samples match this filter */
+  hasCohortSampleSamples_SINGLE?: InputMaybe<SampleWhere>;
+  /** Return Cohorts where some of the related Samples match this filter */
+  hasCohortSampleSamples_SOME?: InputMaybe<SampleWhere>;
+};
+
+export type CohortsConnection = {
+  __typename?: "CohortsConnection";
+  edges: Array<CohortEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars["Int"];
+};
+
+export type CreateBamCompletesMutationResponse = {
+  __typename?: "CreateBamCompletesMutationResponse";
+  bamCompletes: Array<BamComplete>;
+  info: CreateInfo;
+};
+
+export type CreateCohortCompletesMutationResponse = {
+  __typename?: "CreateCohortCompletesMutationResponse";
+  cohortCompletes: Array<CohortComplete>;
+  info: CreateInfo;
+};
+
+export type CreateCohortsMutationResponse = {
+  __typename?: "CreateCohortsMutationResponse";
+  cohorts: Array<Cohort>;
+  info: CreateInfo;
+};
+
 export type CreateInfo = {
   __typename?: "CreateInfo";
   bookmark?: Maybe<Scalars["String"]>;
   nodesCreated: Scalars["Int"];
   relationshipsCreated: Scalars["Int"];
+};
+
+export type CreateMafCompletesMutationResponse = {
+  __typename?: "CreateMafCompletesMutationResponse";
+  info: CreateInfo;
+  mafCompletes: Array<MafComplete>;
 };
 
 export type CreatePatientAliasesMutationResponse = {
@@ -43,6 +1208,12 @@ export type CreateProjectsMutationResponse = {
   __typename?: "CreateProjectsMutationResponse";
   info: CreateInfo;
   projects: Array<Project>;
+};
+
+export type CreateQcCompletesMutationResponse = {
+  __typename?: "CreateQcCompletesMutationResponse";
+  info: CreateInfo;
+  qcCompletes: Array<QcComplete>;
 };
 
 export type CreateRequestMetadataMutationResponse = {
@@ -81,6 +1252,12 @@ export type CreateStatusesMutationResponse = {
   statuses: Array<Status>;
 };
 
+export type CreateTemposMutationResponse = {
+  __typename?: "CreateTemposMutationResponse";
+  info: CreateInfo;
+  tempos: Array<Tempo>;
+};
+
 export type DeleteInfo = {
   __typename?: "DeleteInfo";
   bookmark?: Maybe<Scalars["String"]>;
@@ -88,35 +1265,290 @@ export type DeleteInfo = {
   relationshipsDeleted: Scalars["Int"];
 };
 
+export type MafComplete = {
+  __typename?: "MafComplete";
+  date: Scalars["String"];
+  normalPrimaryId: Scalars["String"];
+  status: Scalars["String"];
+  temposHasEvent: Array<Tempo>;
+  temposHasEventAggregate?: Maybe<MafCompleteTempoTemposHasEventAggregationSelection>;
+  temposHasEventConnection: MafCompleteTemposHasEventConnection;
+};
+
+export type MafCompleteTemposHasEventArgs = {
+  directed?: InputMaybe<Scalars["Boolean"]>;
+  options?: InputMaybe<TempoOptions>;
+  where?: InputMaybe<TempoWhere>;
+};
+
+export type MafCompleteTemposHasEventAggregateArgs = {
+  directed?: InputMaybe<Scalars["Boolean"]>;
+  where?: InputMaybe<TempoWhere>;
+};
+
+export type MafCompleteTemposHasEventConnectionArgs = {
+  after?: InputMaybe<Scalars["String"]>;
+  directed?: InputMaybe<Scalars["Boolean"]>;
+  first?: InputMaybe<Scalars["Int"]>;
+  where?: InputMaybe<MafCompleteTemposHasEventConnectionWhere>;
+};
+
+export type MafCompleteAggregateSelection = {
+  __typename?: "MafCompleteAggregateSelection";
+  count: Scalars["Int"];
+  date: StringAggregateSelectionNonNullable;
+  normalPrimaryId: StringAggregateSelectionNonNullable;
+  status: StringAggregateSelectionNonNullable;
+};
+
+export type MafCompleteConnectInput = {
+  temposHasEvent?: InputMaybe<
+    Array<MafCompleteTemposHasEventConnectFieldInput>
+  >;
+};
+
+export type MafCompleteConnectWhere = {
+  node: MafCompleteWhere;
+};
+
+export type MafCompleteCreateInput = {
+  date: Scalars["String"];
+  normalPrimaryId: Scalars["String"];
+  status: Scalars["String"];
+  temposHasEvent?: InputMaybe<MafCompleteTemposHasEventFieldInput>;
+};
+
+export type MafCompleteDeleteInput = {
+  temposHasEvent?: InputMaybe<Array<MafCompleteTemposHasEventDeleteFieldInput>>;
+};
+
+export type MafCompleteDisconnectInput = {
+  temposHasEvent?: InputMaybe<
+    Array<MafCompleteTemposHasEventDisconnectFieldInput>
+  >;
+};
+
+export type MafCompleteEdge = {
+  __typename?: "MafCompleteEdge";
+  cursor: Scalars["String"];
+  node: MafComplete;
+};
+
+export type MafCompleteOptions = {
+  limit?: InputMaybe<Scalars["Int"]>;
+  offset?: InputMaybe<Scalars["Int"]>;
+  /** Specify one or more MafCompleteSort objects to sort MafCompletes by. The sorts will be applied in the order in which they are arranged in the array. */
+  sort?: InputMaybe<Array<MafCompleteSort>>;
+};
+
+export type MafCompleteRelationInput = {
+  temposHasEvent?: InputMaybe<Array<MafCompleteTemposHasEventCreateFieldInput>>;
+};
+
+/** Fields to sort MafCompletes by. The order in which sorts are applied is not guaranteed when specifying many fields in one MafCompleteSort object. */
+export type MafCompleteSort = {
+  date?: InputMaybe<SortDirection>;
+  normalPrimaryId?: InputMaybe<SortDirection>;
+  status?: InputMaybe<SortDirection>;
+};
+
+export type MafCompleteTempoTemposHasEventAggregationSelection = {
+  __typename?: "MafCompleteTempoTemposHasEventAggregationSelection";
+  count: Scalars["Int"];
+};
+
+export type MafCompleteTemposHasEventAggregateInput = {
+  AND?: InputMaybe<Array<MafCompleteTemposHasEventAggregateInput>>;
+  OR?: InputMaybe<Array<MafCompleteTemposHasEventAggregateInput>>;
+  count?: InputMaybe<Scalars["Int"]>;
+  count_GT?: InputMaybe<Scalars["Int"]>;
+  count_GTE?: InputMaybe<Scalars["Int"]>;
+  count_LT?: InputMaybe<Scalars["Int"]>;
+  count_LTE?: InputMaybe<Scalars["Int"]>;
+};
+
+export type MafCompleteTemposHasEventConnectFieldInput = {
+  connect?: InputMaybe<Array<TempoConnectInput>>;
+  where?: InputMaybe<TempoConnectWhere>;
+};
+
+export type MafCompleteTemposHasEventConnection = {
+  __typename?: "MafCompleteTemposHasEventConnection";
+  edges: Array<MafCompleteTemposHasEventRelationship>;
+  pageInfo: PageInfo;
+  totalCount: Scalars["Int"];
+};
+
+export type MafCompleteTemposHasEventConnectionWhere = {
+  AND?: InputMaybe<Array<MafCompleteTemposHasEventConnectionWhere>>;
+  OR?: InputMaybe<Array<MafCompleteTemposHasEventConnectionWhere>>;
+  node?: InputMaybe<TempoWhere>;
+  node_NOT?: InputMaybe<TempoWhere>;
+};
+
+export type MafCompleteTemposHasEventCreateFieldInput = {
+  node: TempoCreateInput;
+};
+
+export type MafCompleteTemposHasEventDeleteFieldInput = {
+  delete?: InputMaybe<TempoDeleteInput>;
+  where?: InputMaybe<MafCompleteTemposHasEventConnectionWhere>;
+};
+
+export type MafCompleteTemposHasEventDisconnectFieldInput = {
+  disconnect?: InputMaybe<TempoDisconnectInput>;
+  where?: InputMaybe<MafCompleteTemposHasEventConnectionWhere>;
+};
+
+export type MafCompleteTemposHasEventFieldInput = {
+  connect?: InputMaybe<Array<MafCompleteTemposHasEventConnectFieldInput>>;
+  create?: InputMaybe<Array<MafCompleteTemposHasEventCreateFieldInput>>;
+};
+
+export type MafCompleteTemposHasEventRelationship = {
+  __typename?: "MafCompleteTemposHasEventRelationship";
+  cursor: Scalars["String"];
+  node: Tempo;
+};
+
+export type MafCompleteTemposHasEventUpdateConnectionInput = {
+  node?: InputMaybe<TempoUpdateInput>;
+};
+
+export type MafCompleteTemposHasEventUpdateFieldInput = {
+  connect?: InputMaybe<Array<MafCompleteTemposHasEventConnectFieldInput>>;
+  create?: InputMaybe<Array<MafCompleteTemposHasEventCreateFieldInput>>;
+  delete?: InputMaybe<Array<MafCompleteTemposHasEventDeleteFieldInput>>;
+  disconnect?: InputMaybe<Array<MafCompleteTemposHasEventDisconnectFieldInput>>;
+  update?: InputMaybe<MafCompleteTemposHasEventUpdateConnectionInput>;
+  where?: InputMaybe<MafCompleteTemposHasEventConnectionWhere>;
+};
+
+export type MafCompleteUpdateInput = {
+  date?: InputMaybe<Scalars["String"]>;
+  normalPrimaryId?: InputMaybe<Scalars["String"]>;
+  status?: InputMaybe<Scalars["String"]>;
+  temposHasEvent?: InputMaybe<Array<MafCompleteTemposHasEventUpdateFieldInput>>;
+};
+
+export type MafCompleteWhere = {
+  AND?: InputMaybe<Array<MafCompleteWhere>>;
+  OR?: InputMaybe<Array<MafCompleteWhere>>;
+  date?: InputMaybe<Scalars["String"]>;
+  date_CONTAINS?: InputMaybe<Scalars["String"]>;
+  date_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  date_IN?: InputMaybe<Array<Scalars["String"]>>;
+  date_NOT?: InputMaybe<Scalars["String"]>;
+  date_NOT_CONTAINS?: InputMaybe<Scalars["String"]>;
+  date_NOT_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  date_NOT_IN?: InputMaybe<Array<Scalars["String"]>>;
+  date_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  date_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  normalPrimaryId?: InputMaybe<Scalars["String"]>;
+  normalPrimaryId_CONTAINS?: InputMaybe<Scalars["String"]>;
+  normalPrimaryId_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  normalPrimaryId_IN?: InputMaybe<Array<Scalars["String"]>>;
+  normalPrimaryId_NOT?: InputMaybe<Scalars["String"]>;
+  normalPrimaryId_NOT_CONTAINS?: InputMaybe<Scalars["String"]>;
+  normalPrimaryId_NOT_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  normalPrimaryId_NOT_IN?: InputMaybe<Array<Scalars["String"]>>;
+  normalPrimaryId_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  normalPrimaryId_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  status?: InputMaybe<Scalars["String"]>;
+  status_CONTAINS?: InputMaybe<Scalars["String"]>;
+  status_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  status_IN?: InputMaybe<Array<Scalars["String"]>>;
+  status_NOT?: InputMaybe<Scalars["String"]>;
+  status_NOT_CONTAINS?: InputMaybe<Scalars["String"]>;
+  status_NOT_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  status_NOT_IN?: InputMaybe<Array<Scalars["String"]>>;
+  status_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  status_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  temposHasEventAggregate?: InputMaybe<MafCompleteTemposHasEventAggregateInput>;
+  temposHasEventConnection_ALL?: InputMaybe<MafCompleteTemposHasEventConnectionWhere>;
+  temposHasEventConnection_NONE?: InputMaybe<MafCompleteTemposHasEventConnectionWhere>;
+  temposHasEventConnection_SINGLE?: InputMaybe<MafCompleteTemposHasEventConnectionWhere>;
+  temposHasEventConnection_SOME?: InputMaybe<MafCompleteTemposHasEventConnectionWhere>;
+  /** Return MafCompletes where all of the related Tempos match this filter */
+  temposHasEvent_ALL?: InputMaybe<TempoWhere>;
+  /** Return MafCompletes where none of the related Tempos match this filter */
+  temposHasEvent_NONE?: InputMaybe<TempoWhere>;
+  /** Return MafCompletes where one of the related Tempos match this filter */
+  temposHasEvent_SINGLE?: InputMaybe<TempoWhere>;
+  /** Return MafCompletes where some of the related Tempos match this filter */
+  temposHasEvent_SOME?: InputMaybe<TempoWhere>;
+};
+
+export type MafCompletesConnection = {
+  __typename?: "MafCompletesConnection";
+  edges: Array<MafCompleteEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars["Int"];
+};
+
 export type Mutation = {
   __typename?: "Mutation";
+  createBamCompletes: CreateBamCompletesMutationResponse;
+  createCohortCompletes: CreateCohortCompletesMutationResponse;
+  createCohorts: CreateCohortsMutationResponse;
+  createMafCompletes: CreateMafCompletesMutationResponse;
   createPatientAliases: CreatePatientAliasesMutationResponse;
   createPatients: CreatePatientsMutationResponse;
   createProjects: CreateProjectsMutationResponse;
+  createQcCompletes: CreateQcCompletesMutationResponse;
   createRequestMetadata: CreateRequestMetadataMutationResponse;
   createRequests: CreateRequestsMutationResponse;
   createSampleAliases: CreateSampleAliasesMutationResponse;
   createSampleMetadata: CreateSampleMetadataMutationResponse;
   createSamples: CreateSamplesMutationResponse;
   createStatuses: CreateStatusesMutationResponse;
+  createTempos: CreateTemposMutationResponse;
+  deleteBamCompletes: DeleteInfo;
+  deleteCohortCompletes: DeleteInfo;
+  deleteCohorts: DeleteInfo;
+  deleteMafCompletes: DeleteInfo;
   deletePatientAliases: DeleteInfo;
   deletePatients: DeleteInfo;
   deleteProjects: DeleteInfo;
+  deleteQcCompletes: DeleteInfo;
   deleteRequestMetadata: DeleteInfo;
   deleteRequests: DeleteInfo;
   deleteSampleAliases: DeleteInfo;
   deleteSampleMetadata: DeleteInfo;
   deleteSamples: DeleteInfo;
   deleteStatuses: DeleteInfo;
+  deleteTempos: DeleteInfo;
+  updateBamCompletes: UpdateBamCompletesMutationResponse;
+  updateCohortCompletes: UpdateCohortCompletesMutationResponse;
+  updateCohorts: UpdateCohortsMutationResponse;
+  updateMafCompletes: UpdateMafCompletesMutationResponse;
   updatePatientAliases: UpdatePatientAliasesMutationResponse;
   updatePatients: UpdatePatientsMutationResponse;
   updateProjects: UpdateProjectsMutationResponse;
+  updateQcCompletes: UpdateQcCompletesMutationResponse;
   updateRequestMetadata: UpdateRequestMetadataMutationResponse;
   updateRequests: UpdateRequestsMutationResponse;
   updateSampleAliases: UpdateSampleAliasesMutationResponse;
   updateSampleMetadata: UpdateSampleMetadataMutationResponse;
   updateSamples: UpdateSamplesMutationResponse;
   updateStatuses: UpdateStatusesMutationResponse;
+  updateTempos: UpdateTemposMutationResponse;
+};
+
+export type MutationCreateBamCompletesArgs = {
+  input: Array<BamCompleteCreateInput>;
+};
+
+export type MutationCreateCohortCompletesArgs = {
+  input: Array<CohortCompleteCreateInput>;
+};
+
+export type MutationCreateCohortsArgs = {
+  input: Array<CohortCreateInput>;
+};
+
+export type MutationCreateMafCompletesArgs = {
+  input: Array<MafCompleteCreateInput>;
 };
 
 export type MutationCreatePatientAliasesArgs = {
@@ -129,6 +1561,10 @@ export type MutationCreatePatientsArgs = {
 
 export type MutationCreateProjectsArgs = {
   input: Array<ProjectCreateInput>;
+};
+
+export type MutationCreateQcCompletesArgs = {
+  input: Array<QcCompleteCreateInput>;
 };
 
 export type MutationCreateRequestMetadataArgs = {
@@ -155,6 +1591,30 @@ export type MutationCreateStatusesArgs = {
   input: Array<StatusCreateInput>;
 };
 
+export type MutationCreateTemposArgs = {
+  input: Array<TempoCreateInput>;
+};
+
+export type MutationDeleteBamCompletesArgs = {
+  delete?: InputMaybe<BamCompleteDeleteInput>;
+  where?: InputMaybe<BamCompleteWhere>;
+};
+
+export type MutationDeleteCohortCompletesArgs = {
+  delete?: InputMaybe<CohortCompleteDeleteInput>;
+  where?: InputMaybe<CohortCompleteWhere>;
+};
+
+export type MutationDeleteCohortsArgs = {
+  delete?: InputMaybe<CohortDeleteInput>;
+  where?: InputMaybe<CohortWhere>;
+};
+
+export type MutationDeleteMafCompletesArgs = {
+  delete?: InputMaybe<MafCompleteDeleteInput>;
+  where?: InputMaybe<MafCompleteWhere>;
+};
+
 export type MutationDeletePatientAliasesArgs = {
   delete?: InputMaybe<PatientAliasDeleteInput>;
   where?: InputMaybe<PatientAliasWhere>;
@@ -168,6 +1628,11 @@ export type MutationDeletePatientsArgs = {
 export type MutationDeleteProjectsArgs = {
   delete?: InputMaybe<ProjectDeleteInput>;
   where?: InputMaybe<ProjectWhere>;
+};
+
+export type MutationDeleteQcCompletesArgs = {
+  delete?: InputMaybe<QcCompleteDeleteInput>;
+  where?: InputMaybe<QcCompleteWhere>;
 };
 
 export type MutationDeleteRequestMetadataArgs = {
@@ -200,6 +1665,47 @@ export type MutationDeleteStatusesArgs = {
   where?: InputMaybe<StatusWhere>;
 };
 
+export type MutationDeleteTemposArgs = {
+  delete?: InputMaybe<TempoDeleteInput>;
+  where?: InputMaybe<TempoWhere>;
+};
+
+export type MutationUpdateBamCompletesArgs = {
+  connect?: InputMaybe<BamCompleteConnectInput>;
+  create?: InputMaybe<BamCompleteRelationInput>;
+  delete?: InputMaybe<BamCompleteDeleteInput>;
+  disconnect?: InputMaybe<BamCompleteDisconnectInput>;
+  update?: InputMaybe<BamCompleteUpdateInput>;
+  where?: InputMaybe<BamCompleteWhere>;
+};
+
+export type MutationUpdateCohortCompletesArgs = {
+  connect?: InputMaybe<CohortCompleteConnectInput>;
+  create?: InputMaybe<CohortCompleteRelationInput>;
+  delete?: InputMaybe<CohortCompleteDeleteInput>;
+  disconnect?: InputMaybe<CohortCompleteDisconnectInput>;
+  update?: InputMaybe<CohortCompleteUpdateInput>;
+  where?: InputMaybe<CohortCompleteWhere>;
+};
+
+export type MutationUpdateCohortsArgs = {
+  connect?: InputMaybe<CohortConnectInput>;
+  create?: InputMaybe<CohortRelationInput>;
+  delete?: InputMaybe<CohortDeleteInput>;
+  disconnect?: InputMaybe<CohortDisconnectInput>;
+  update?: InputMaybe<CohortUpdateInput>;
+  where?: InputMaybe<CohortWhere>;
+};
+
+export type MutationUpdateMafCompletesArgs = {
+  connect?: InputMaybe<MafCompleteConnectInput>;
+  create?: InputMaybe<MafCompleteRelationInput>;
+  delete?: InputMaybe<MafCompleteDeleteInput>;
+  disconnect?: InputMaybe<MafCompleteDisconnectInput>;
+  update?: InputMaybe<MafCompleteUpdateInput>;
+  where?: InputMaybe<MafCompleteWhere>;
+};
+
 export type MutationUpdatePatientAliasesArgs = {
   connect?: InputMaybe<PatientAliasConnectInput>;
   create?: InputMaybe<PatientAliasRelationInput>;
@@ -225,6 +1731,15 @@ export type MutationUpdateProjectsArgs = {
   disconnect?: InputMaybe<ProjectDisconnectInput>;
   update?: InputMaybe<ProjectUpdateInput>;
   where?: InputMaybe<ProjectWhere>;
+};
+
+export type MutationUpdateQcCompletesArgs = {
+  connect?: InputMaybe<QcCompleteConnectInput>;
+  create?: InputMaybe<QcCompleteRelationInput>;
+  delete?: InputMaybe<QcCompleteDeleteInput>;
+  disconnect?: InputMaybe<QcCompleteDisconnectInput>;
+  update?: InputMaybe<QcCompleteUpdateInput>;
+  where?: InputMaybe<QcCompleteWhere>;
 };
 
 export type MutationUpdateRequestMetadataArgs = {
@@ -279,6 +1794,15 @@ export type MutationUpdateStatusesArgs = {
   disconnect?: InputMaybe<StatusDisconnectInput>;
   update?: InputMaybe<StatusUpdateInput>;
   where?: InputMaybe<StatusWhere>;
+};
+
+export type MutationUpdateTemposArgs = {
+  connect?: InputMaybe<TempoConnectInput>;
+  create?: InputMaybe<TempoRelationInput>;
+  delete?: InputMaybe<TempoDeleteInput>;
+  disconnect?: InputMaybe<TempoDisconnectInput>;
+  update?: InputMaybe<TempoUpdateInput>;
+  where?: InputMaybe<TempoWhere>;
 };
 
 /** Pagination information (Relay) */
@@ -1650,8 +3174,254 @@ export type ProjectsConnection = {
   totalCount: Scalars["Int"];
 };
 
+export type QcComplete = {
+  __typename?: "QcComplete";
+  date: Scalars["String"];
+  reason: Scalars["String"];
+  result: Scalars["String"];
+  status: Scalars["String"];
+  temposHasEvent: Array<Tempo>;
+  temposHasEventAggregate?: Maybe<QcCompleteTempoTemposHasEventAggregationSelection>;
+  temposHasEventConnection: QcCompleteTemposHasEventConnection;
+};
+
+export type QcCompleteTemposHasEventArgs = {
+  directed?: InputMaybe<Scalars["Boolean"]>;
+  options?: InputMaybe<TempoOptions>;
+  where?: InputMaybe<TempoWhere>;
+};
+
+export type QcCompleteTemposHasEventAggregateArgs = {
+  directed?: InputMaybe<Scalars["Boolean"]>;
+  where?: InputMaybe<TempoWhere>;
+};
+
+export type QcCompleteTemposHasEventConnectionArgs = {
+  after?: InputMaybe<Scalars["String"]>;
+  directed?: InputMaybe<Scalars["Boolean"]>;
+  first?: InputMaybe<Scalars["Int"]>;
+  where?: InputMaybe<QcCompleteTemposHasEventConnectionWhere>;
+};
+
+export type QcCompleteAggregateSelection = {
+  __typename?: "QcCompleteAggregateSelection";
+  count: Scalars["Int"];
+  date: StringAggregateSelectionNonNullable;
+  reason: StringAggregateSelectionNonNullable;
+  result: StringAggregateSelectionNonNullable;
+  status: StringAggregateSelectionNonNullable;
+};
+
+export type QcCompleteConnectInput = {
+  temposHasEvent?: InputMaybe<Array<QcCompleteTemposHasEventConnectFieldInput>>;
+};
+
+export type QcCompleteConnectWhere = {
+  node: QcCompleteWhere;
+};
+
+export type QcCompleteCreateInput = {
+  date: Scalars["String"];
+  reason: Scalars["String"];
+  result: Scalars["String"];
+  status: Scalars["String"];
+  temposHasEvent?: InputMaybe<QcCompleteTemposHasEventFieldInput>;
+};
+
+export type QcCompleteDeleteInput = {
+  temposHasEvent?: InputMaybe<Array<QcCompleteTemposHasEventDeleteFieldInput>>;
+};
+
+export type QcCompleteDisconnectInput = {
+  temposHasEvent?: InputMaybe<
+    Array<QcCompleteTemposHasEventDisconnectFieldInput>
+  >;
+};
+
+export type QcCompleteEdge = {
+  __typename?: "QcCompleteEdge";
+  cursor: Scalars["String"];
+  node: QcComplete;
+};
+
+export type QcCompleteOptions = {
+  limit?: InputMaybe<Scalars["Int"]>;
+  offset?: InputMaybe<Scalars["Int"]>;
+  /** Specify one or more QcCompleteSort objects to sort QcCompletes by. The sorts will be applied in the order in which they are arranged in the array. */
+  sort?: InputMaybe<Array<QcCompleteSort>>;
+};
+
+export type QcCompleteRelationInput = {
+  temposHasEvent?: InputMaybe<Array<QcCompleteTemposHasEventCreateFieldInput>>;
+};
+
+/** Fields to sort QcCompletes by. The order in which sorts are applied is not guaranteed when specifying many fields in one QcCompleteSort object. */
+export type QcCompleteSort = {
+  date?: InputMaybe<SortDirection>;
+  reason?: InputMaybe<SortDirection>;
+  result?: InputMaybe<SortDirection>;
+  status?: InputMaybe<SortDirection>;
+};
+
+export type QcCompleteTempoTemposHasEventAggregationSelection = {
+  __typename?: "QcCompleteTempoTemposHasEventAggregationSelection";
+  count: Scalars["Int"];
+};
+
+export type QcCompleteTemposHasEventAggregateInput = {
+  AND?: InputMaybe<Array<QcCompleteTemposHasEventAggregateInput>>;
+  OR?: InputMaybe<Array<QcCompleteTemposHasEventAggregateInput>>;
+  count?: InputMaybe<Scalars["Int"]>;
+  count_GT?: InputMaybe<Scalars["Int"]>;
+  count_GTE?: InputMaybe<Scalars["Int"]>;
+  count_LT?: InputMaybe<Scalars["Int"]>;
+  count_LTE?: InputMaybe<Scalars["Int"]>;
+};
+
+export type QcCompleteTemposHasEventConnectFieldInput = {
+  connect?: InputMaybe<Array<TempoConnectInput>>;
+  where?: InputMaybe<TempoConnectWhere>;
+};
+
+export type QcCompleteTemposHasEventConnection = {
+  __typename?: "QcCompleteTemposHasEventConnection";
+  edges: Array<QcCompleteTemposHasEventRelationship>;
+  pageInfo: PageInfo;
+  totalCount: Scalars["Int"];
+};
+
+export type QcCompleteTemposHasEventConnectionWhere = {
+  AND?: InputMaybe<Array<QcCompleteTemposHasEventConnectionWhere>>;
+  OR?: InputMaybe<Array<QcCompleteTemposHasEventConnectionWhere>>;
+  node?: InputMaybe<TempoWhere>;
+  node_NOT?: InputMaybe<TempoWhere>;
+};
+
+export type QcCompleteTemposHasEventCreateFieldInput = {
+  node: TempoCreateInput;
+};
+
+export type QcCompleteTemposHasEventDeleteFieldInput = {
+  delete?: InputMaybe<TempoDeleteInput>;
+  where?: InputMaybe<QcCompleteTemposHasEventConnectionWhere>;
+};
+
+export type QcCompleteTemposHasEventDisconnectFieldInput = {
+  disconnect?: InputMaybe<TempoDisconnectInput>;
+  where?: InputMaybe<QcCompleteTemposHasEventConnectionWhere>;
+};
+
+export type QcCompleteTemposHasEventFieldInput = {
+  connect?: InputMaybe<Array<QcCompleteTemposHasEventConnectFieldInput>>;
+  create?: InputMaybe<Array<QcCompleteTemposHasEventCreateFieldInput>>;
+};
+
+export type QcCompleteTemposHasEventRelationship = {
+  __typename?: "QcCompleteTemposHasEventRelationship";
+  cursor: Scalars["String"];
+  node: Tempo;
+};
+
+export type QcCompleteTemposHasEventUpdateConnectionInput = {
+  node?: InputMaybe<TempoUpdateInput>;
+};
+
+export type QcCompleteTemposHasEventUpdateFieldInput = {
+  connect?: InputMaybe<Array<QcCompleteTemposHasEventConnectFieldInput>>;
+  create?: InputMaybe<Array<QcCompleteTemposHasEventCreateFieldInput>>;
+  delete?: InputMaybe<Array<QcCompleteTemposHasEventDeleteFieldInput>>;
+  disconnect?: InputMaybe<Array<QcCompleteTemposHasEventDisconnectFieldInput>>;
+  update?: InputMaybe<QcCompleteTemposHasEventUpdateConnectionInput>;
+  where?: InputMaybe<QcCompleteTemposHasEventConnectionWhere>;
+};
+
+export type QcCompleteUpdateInput = {
+  date?: InputMaybe<Scalars["String"]>;
+  reason?: InputMaybe<Scalars["String"]>;
+  result?: InputMaybe<Scalars["String"]>;
+  status?: InputMaybe<Scalars["String"]>;
+  temposHasEvent?: InputMaybe<Array<QcCompleteTemposHasEventUpdateFieldInput>>;
+};
+
+export type QcCompleteWhere = {
+  AND?: InputMaybe<Array<QcCompleteWhere>>;
+  OR?: InputMaybe<Array<QcCompleteWhere>>;
+  date?: InputMaybe<Scalars["String"]>;
+  date_CONTAINS?: InputMaybe<Scalars["String"]>;
+  date_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  date_IN?: InputMaybe<Array<Scalars["String"]>>;
+  date_NOT?: InputMaybe<Scalars["String"]>;
+  date_NOT_CONTAINS?: InputMaybe<Scalars["String"]>;
+  date_NOT_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  date_NOT_IN?: InputMaybe<Array<Scalars["String"]>>;
+  date_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  date_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  reason?: InputMaybe<Scalars["String"]>;
+  reason_CONTAINS?: InputMaybe<Scalars["String"]>;
+  reason_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  reason_IN?: InputMaybe<Array<Scalars["String"]>>;
+  reason_NOT?: InputMaybe<Scalars["String"]>;
+  reason_NOT_CONTAINS?: InputMaybe<Scalars["String"]>;
+  reason_NOT_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  reason_NOT_IN?: InputMaybe<Array<Scalars["String"]>>;
+  reason_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  reason_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  result?: InputMaybe<Scalars["String"]>;
+  result_CONTAINS?: InputMaybe<Scalars["String"]>;
+  result_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  result_IN?: InputMaybe<Array<Scalars["String"]>>;
+  result_NOT?: InputMaybe<Scalars["String"]>;
+  result_NOT_CONTAINS?: InputMaybe<Scalars["String"]>;
+  result_NOT_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  result_NOT_IN?: InputMaybe<Array<Scalars["String"]>>;
+  result_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  result_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  status?: InputMaybe<Scalars["String"]>;
+  status_CONTAINS?: InputMaybe<Scalars["String"]>;
+  status_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  status_IN?: InputMaybe<Array<Scalars["String"]>>;
+  status_NOT?: InputMaybe<Scalars["String"]>;
+  status_NOT_CONTAINS?: InputMaybe<Scalars["String"]>;
+  status_NOT_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  status_NOT_IN?: InputMaybe<Array<Scalars["String"]>>;
+  status_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  status_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  temposHasEventAggregate?: InputMaybe<QcCompleteTemposHasEventAggregateInput>;
+  temposHasEventConnection_ALL?: InputMaybe<QcCompleteTemposHasEventConnectionWhere>;
+  temposHasEventConnection_NONE?: InputMaybe<QcCompleteTemposHasEventConnectionWhere>;
+  temposHasEventConnection_SINGLE?: InputMaybe<QcCompleteTemposHasEventConnectionWhere>;
+  temposHasEventConnection_SOME?: InputMaybe<QcCompleteTemposHasEventConnectionWhere>;
+  /** Return QcCompletes where all of the related Tempos match this filter */
+  temposHasEvent_ALL?: InputMaybe<TempoWhere>;
+  /** Return QcCompletes where none of the related Tempos match this filter */
+  temposHasEvent_NONE?: InputMaybe<TempoWhere>;
+  /** Return QcCompletes where one of the related Tempos match this filter */
+  temposHasEvent_SINGLE?: InputMaybe<TempoWhere>;
+  /** Return QcCompletes where some of the related Tempos match this filter */
+  temposHasEvent_SOME?: InputMaybe<TempoWhere>;
+};
+
+export type QcCompletesConnection = {
+  __typename?: "QcCompletesConnection";
+  edges: Array<QcCompleteEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars["Int"];
+};
+
 export type Query = {
   __typename?: "Query";
+  bamCompletes: Array<BamComplete>;
+  bamCompletesAggregate: BamCompleteAggregateSelection;
+  bamCompletesConnection: BamCompletesConnection;
+  cohortCompletes: Array<CohortComplete>;
+  cohortCompletesAggregate: CohortCompleteAggregateSelection;
+  cohortCompletesConnection: CohortCompletesConnection;
+  cohorts: Array<Cohort>;
+  cohortsAggregate: CohortAggregateSelection;
+  cohortsConnection: CohortsConnection;
+  mafCompletes: Array<MafComplete>;
+  mafCompletesAggregate: MafCompleteAggregateSelection;
+  mafCompletesConnection: MafCompletesConnection;
   patientAliases: Array<PatientAlias>;
   patientAliasesAggregate: PatientAliasAggregateSelection;
   patientAliasesConnection: PatientAliasesConnection;
@@ -1662,6 +3432,9 @@ export type Query = {
   projects: Array<Project>;
   projectsAggregate: ProjectAggregateSelection;
   projectsConnection: ProjectsConnection;
+  qcCompletes: Array<QcComplete>;
+  qcCompletesAggregate: QcCompleteAggregateSelection;
+  qcCompletesConnection: QcCompletesConnection;
   requestMetadata: Array<RequestMetadata>;
   requestMetadataAggregate: RequestMetadataAggregateSelection;
   requestMetadataConnection: RequestMetadataConnection;
@@ -1680,6 +3453,73 @@ export type Query = {
   statuses: Array<Status>;
   statusesAggregate: StatusAggregateSelection;
   statusesConnection: StatusesConnection;
+  tempos: Array<Tempo>;
+  temposAggregate: TempoAggregateSelection;
+  temposConnection: TemposConnection;
+};
+
+export type QueryBamCompletesArgs = {
+  options?: InputMaybe<BamCompleteOptions>;
+  where?: InputMaybe<BamCompleteWhere>;
+};
+
+export type QueryBamCompletesAggregateArgs = {
+  where?: InputMaybe<BamCompleteWhere>;
+};
+
+export type QueryBamCompletesConnectionArgs = {
+  after?: InputMaybe<Scalars["String"]>;
+  first?: InputMaybe<Scalars["Int"]>;
+  sort?: InputMaybe<Array<InputMaybe<BamCompleteSort>>>;
+  where?: InputMaybe<BamCompleteWhere>;
+};
+
+export type QueryCohortCompletesArgs = {
+  options?: InputMaybe<CohortCompleteOptions>;
+  where?: InputMaybe<CohortCompleteWhere>;
+};
+
+export type QueryCohortCompletesAggregateArgs = {
+  where?: InputMaybe<CohortCompleteWhere>;
+};
+
+export type QueryCohortCompletesConnectionArgs = {
+  after?: InputMaybe<Scalars["String"]>;
+  first?: InputMaybe<Scalars["Int"]>;
+  sort?: InputMaybe<Array<InputMaybe<CohortCompleteSort>>>;
+  where?: InputMaybe<CohortCompleteWhere>;
+};
+
+export type QueryCohortsArgs = {
+  options?: InputMaybe<CohortOptions>;
+  where?: InputMaybe<CohortWhere>;
+};
+
+export type QueryCohortsAggregateArgs = {
+  where?: InputMaybe<CohortWhere>;
+};
+
+export type QueryCohortsConnectionArgs = {
+  after?: InputMaybe<Scalars["String"]>;
+  first?: InputMaybe<Scalars["Int"]>;
+  sort?: InputMaybe<Array<InputMaybe<CohortSort>>>;
+  where?: InputMaybe<CohortWhere>;
+};
+
+export type QueryMafCompletesArgs = {
+  options?: InputMaybe<MafCompleteOptions>;
+  where?: InputMaybe<MafCompleteWhere>;
+};
+
+export type QueryMafCompletesAggregateArgs = {
+  where?: InputMaybe<MafCompleteWhere>;
+};
+
+export type QueryMafCompletesConnectionArgs = {
+  after?: InputMaybe<Scalars["String"]>;
+  first?: InputMaybe<Scalars["Int"]>;
+  sort?: InputMaybe<Array<InputMaybe<MafCompleteSort>>>;
+  where?: InputMaybe<MafCompleteWhere>;
 };
 
 export type QueryPatientAliasesArgs = {
@@ -1732,6 +3572,22 @@ export type QueryProjectsConnectionArgs = {
   first?: InputMaybe<Scalars["Int"]>;
   sort?: InputMaybe<Array<InputMaybe<ProjectSort>>>;
   where?: InputMaybe<ProjectWhere>;
+};
+
+export type QueryQcCompletesArgs = {
+  options?: InputMaybe<QcCompleteOptions>;
+  where?: InputMaybe<QcCompleteWhere>;
+};
+
+export type QueryQcCompletesAggregateArgs = {
+  where?: InputMaybe<QcCompleteWhere>;
+};
+
+export type QueryQcCompletesConnectionArgs = {
+  after?: InputMaybe<Scalars["String"]>;
+  first?: InputMaybe<Scalars["Int"]>;
+  sort?: InputMaybe<Array<InputMaybe<QcCompleteSort>>>;
+  where?: InputMaybe<QcCompleteWhere>;
 };
 
 export type QueryRequestMetadataArgs = {
@@ -1828,6 +3684,21 @@ export type QueryStatusesConnectionArgs = {
   first?: InputMaybe<Scalars["Int"]>;
   sort?: InputMaybe<Array<InputMaybe<StatusSort>>>;
   where?: InputMaybe<StatusWhere>;
+};
+
+export type QueryTemposArgs = {
+  options?: InputMaybe<TempoOptions>;
+  where?: InputMaybe<TempoWhere>;
+};
+
+export type QueryTemposAggregateArgs = {
+  where?: InputMaybe<TempoWhere>;
+};
+
+export type QueryTemposConnectionArgs = {
+  after?: InputMaybe<Scalars["String"]>;
+  first?: InputMaybe<Scalars["Int"]>;
+  where?: InputMaybe<TempoWhere>;
 };
 
 export type Request = {
@@ -3634,10 +5505,16 @@ export type RequestsConnection = {
 
 export type Sample = {
   __typename?: "Sample";
+  cohortsHasCohortSample: Array<Cohort>;
+  cohortsHasCohortSampleAggregate?: Maybe<SampleCohortCohortsHasCohortSampleAggregationSelection>;
+  cohortsHasCohortSampleConnection: SampleCohortsHasCohortSampleConnection;
   datasource: Scalars["String"];
   hasMetadataSampleMetadata: Array<SampleMetadata>;
   hasMetadataSampleMetadataAggregate?: Maybe<SampleSampleMetadataHasMetadataSampleMetadataAggregationSelection>;
   hasMetadataSampleMetadataConnection: SampleHasMetadataSampleMetadataConnection;
+  hasTempoTempos: Array<Tempo>;
+  hasTempoTemposAggregate?: Maybe<SampleTempoHasTempoTemposAggregationSelection>;
+  hasTempoTemposConnection: SampleHasTempoTemposConnection;
   patientsHasSample: Array<Patient>;
   patientsHasSampleAggregate?: Maybe<SamplePatientPatientsHasSampleAggregationSelection>;
   patientsHasSampleConnection: SamplePatientsHasSampleConnection;
@@ -3651,6 +5528,25 @@ export type Sample = {
   sampleCategory: Scalars["String"];
   sampleClass: Scalars["String"];
   smileSampleId: Scalars["String"];
+};
+
+export type SampleCohortsHasCohortSampleArgs = {
+  directed?: InputMaybe<Scalars["Boolean"]>;
+  options?: InputMaybe<CohortOptions>;
+  where?: InputMaybe<CohortWhere>;
+};
+
+export type SampleCohortsHasCohortSampleAggregateArgs = {
+  directed?: InputMaybe<Scalars["Boolean"]>;
+  where?: InputMaybe<CohortWhere>;
+};
+
+export type SampleCohortsHasCohortSampleConnectionArgs = {
+  after?: InputMaybe<Scalars["String"]>;
+  directed?: InputMaybe<Scalars["Boolean"]>;
+  first?: InputMaybe<Scalars["Int"]>;
+  sort?: InputMaybe<Array<SampleCohortsHasCohortSampleConnectionSort>>;
+  where?: InputMaybe<SampleCohortsHasCohortSampleConnectionWhere>;
 };
 
 export type SampleHasMetadataSampleMetadataArgs = {
@@ -3670,6 +5566,24 @@ export type SampleHasMetadataSampleMetadataConnectionArgs = {
   first?: InputMaybe<Scalars["Int"]>;
   sort?: InputMaybe<Array<SampleHasMetadataSampleMetadataConnectionSort>>;
   where?: InputMaybe<SampleHasMetadataSampleMetadataConnectionWhere>;
+};
+
+export type SampleHasTempoTemposArgs = {
+  directed?: InputMaybe<Scalars["Boolean"]>;
+  options?: InputMaybe<TempoOptions>;
+  where?: InputMaybe<TempoWhere>;
+};
+
+export type SampleHasTempoTemposAggregateArgs = {
+  directed?: InputMaybe<Scalars["Boolean"]>;
+  where?: InputMaybe<TempoWhere>;
+};
+
+export type SampleHasTempoTemposConnectionArgs = {
+  after?: InputMaybe<Scalars["String"]>;
+  directed?: InputMaybe<Scalars["Boolean"]>;
+  first?: InputMaybe<Scalars["Int"]>;
+  where?: InputMaybe<SampleHasTempoTemposConnectionWhere>;
 };
 
 export type SamplePatientsHasSampleArgs = {
@@ -4044,10 +5958,126 @@ export type SampleAliasesConnection = {
   totalCount: Scalars["Int"];
 };
 
+export type SampleCohortCohortsHasCohortSampleAggregationSelection = {
+  __typename?: "SampleCohortCohortsHasCohortSampleAggregationSelection";
+  count: Scalars["Int"];
+  node?: Maybe<SampleCohortCohortsHasCohortSampleNodeAggregateSelection>;
+};
+
+export type SampleCohortCohortsHasCohortSampleNodeAggregateSelection = {
+  __typename?: "SampleCohortCohortsHasCohortSampleNodeAggregateSelection";
+  cohortId: StringAggregateSelectionNonNullable;
+};
+
+export type SampleCohortsHasCohortSampleAggregateInput = {
+  AND?: InputMaybe<Array<SampleCohortsHasCohortSampleAggregateInput>>;
+  OR?: InputMaybe<Array<SampleCohortsHasCohortSampleAggregateInput>>;
+  count?: InputMaybe<Scalars["Int"]>;
+  count_GT?: InputMaybe<Scalars["Int"]>;
+  count_GTE?: InputMaybe<Scalars["Int"]>;
+  count_LT?: InputMaybe<Scalars["Int"]>;
+  count_LTE?: InputMaybe<Scalars["Int"]>;
+  node?: InputMaybe<SampleCohortsHasCohortSampleNodeAggregationWhereInput>;
+};
+
+export type SampleCohortsHasCohortSampleConnectFieldInput = {
+  connect?: InputMaybe<Array<CohortConnectInput>>;
+  where?: InputMaybe<CohortConnectWhere>;
+};
+
+export type SampleCohortsHasCohortSampleConnection = {
+  __typename?: "SampleCohortsHasCohortSampleConnection";
+  edges: Array<SampleCohortsHasCohortSampleRelationship>;
+  pageInfo: PageInfo;
+  totalCount: Scalars["Int"];
+};
+
+export type SampleCohortsHasCohortSampleConnectionSort = {
+  node?: InputMaybe<CohortSort>;
+};
+
+export type SampleCohortsHasCohortSampleConnectionWhere = {
+  AND?: InputMaybe<Array<SampleCohortsHasCohortSampleConnectionWhere>>;
+  OR?: InputMaybe<Array<SampleCohortsHasCohortSampleConnectionWhere>>;
+  node?: InputMaybe<CohortWhere>;
+  node_NOT?: InputMaybe<CohortWhere>;
+};
+
+export type SampleCohortsHasCohortSampleCreateFieldInput = {
+  node: CohortCreateInput;
+};
+
+export type SampleCohortsHasCohortSampleDeleteFieldInput = {
+  delete?: InputMaybe<CohortDeleteInput>;
+  where?: InputMaybe<SampleCohortsHasCohortSampleConnectionWhere>;
+};
+
+export type SampleCohortsHasCohortSampleDisconnectFieldInput = {
+  disconnect?: InputMaybe<CohortDisconnectInput>;
+  where?: InputMaybe<SampleCohortsHasCohortSampleConnectionWhere>;
+};
+
+export type SampleCohortsHasCohortSampleFieldInput = {
+  connect?: InputMaybe<Array<SampleCohortsHasCohortSampleConnectFieldInput>>;
+  create?: InputMaybe<Array<SampleCohortsHasCohortSampleCreateFieldInput>>;
+};
+
+export type SampleCohortsHasCohortSampleNodeAggregationWhereInput = {
+  AND?: InputMaybe<
+    Array<SampleCohortsHasCohortSampleNodeAggregationWhereInput>
+  >;
+  OR?: InputMaybe<Array<SampleCohortsHasCohortSampleNodeAggregationWhereInput>>;
+  cohortId_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  cohortId_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  cohortId_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  cohortId_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  cohortId_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  cohortId_EQUAL?: InputMaybe<Scalars["String"]>;
+  cohortId_GT?: InputMaybe<Scalars["Int"]>;
+  cohortId_GTE?: InputMaybe<Scalars["Int"]>;
+  cohortId_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  cohortId_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  cohortId_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  cohortId_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  cohortId_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  cohortId_LT?: InputMaybe<Scalars["Int"]>;
+  cohortId_LTE?: InputMaybe<Scalars["Int"]>;
+  cohortId_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  cohortId_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  cohortId_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  cohortId_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  cohortId_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+};
+
+export type SampleCohortsHasCohortSampleRelationship = {
+  __typename?: "SampleCohortsHasCohortSampleRelationship";
+  cursor: Scalars["String"];
+  node: Cohort;
+};
+
+export type SampleCohortsHasCohortSampleUpdateConnectionInput = {
+  node?: InputMaybe<CohortUpdateInput>;
+};
+
+export type SampleCohortsHasCohortSampleUpdateFieldInput = {
+  connect?: InputMaybe<Array<SampleCohortsHasCohortSampleConnectFieldInput>>;
+  create?: InputMaybe<Array<SampleCohortsHasCohortSampleCreateFieldInput>>;
+  delete?: InputMaybe<Array<SampleCohortsHasCohortSampleDeleteFieldInput>>;
+  disconnect?: InputMaybe<
+    Array<SampleCohortsHasCohortSampleDisconnectFieldInput>
+  >;
+  update?: InputMaybe<SampleCohortsHasCohortSampleUpdateConnectionInput>;
+  where?: InputMaybe<SampleCohortsHasCohortSampleConnectionWhere>;
+};
+
 export type SampleConnectInput = {
+  cohortsHasCohortSample?: InputMaybe<
+    Array<SampleCohortsHasCohortSampleConnectFieldInput>
+  >;
   hasMetadataSampleMetadata?: InputMaybe<
     Array<SampleHasMetadataSampleMetadataConnectFieldInput>
   >;
+  hasTempoTempos?: InputMaybe<Array<SampleHasTempoTemposConnectFieldInput>>;
   patientsHasSample?: InputMaybe<
     Array<SamplePatientsHasSampleConnectFieldInput>
   >;
@@ -4064,8 +6094,10 @@ export type SampleConnectWhere = {
 };
 
 export type SampleCreateInput = {
+  cohortsHasCohortSample?: InputMaybe<SampleCohortsHasCohortSampleFieldInput>;
   datasource: Scalars["String"];
   hasMetadataSampleMetadata?: InputMaybe<SampleHasMetadataSampleMetadataFieldInput>;
+  hasTempoTempos?: InputMaybe<SampleHasTempoTemposFieldInput>;
   patientsHasSample?: InputMaybe<SamplePatientsHasSampleFieldInput>;
   requestsHasSample?: InputMaybe<SampleRequestsHasSampleFieldInput>;
   revisable: Scalars["Boolean"];
@@ -4076,9 +6108,13 @@ export type SampleCreateInput = {
 };
 
 export type SampleDeleteInput = {
+  cohortsHasCohortSample?: InputMaybe<
+    Array<SampleCohortsHasCohortSampleDeleteFieldInput>
+  >;
   hasMetadataSampleMetadata?: InputMaybe<
     Array<SampleHasMetadataSampleMetadataDeleteFieldInput>
   >;
+  hasTempoTempos?: InputMaybe<Array<SampleHasTempoTemposDeleteFieldInput>>;
   patientsHasSample?: InputMaybe<
     Array<SamplePatientsHasSampleDeleteFieldInput>
   >;
@@ -4091,9 +6127,13 @@ export type SampleDeleteInput = {
 };
 
 export type SampleDisconnectInput = {
+  cohortsHasCohortSample?: InputMaybe<
+    Array<SampleCohortsHasCohortSampleDisconnectFieldInput>
+  >;
   hasMetadataSampleMetadata?: InputMaybe<
     Array<SampleHasMetadataSampleMetadataDisconnectFieldInput>
   >;
+  hasTempoTempos?: InputMaybe<Array<SampleHasTempoTemposDisconnectFieldInput>>;
   patientsHasSample?: InputMaybe<
     Array<SamplePatientsHasSampleDisconnectFieldInput>
   >;
@@ -4712,6 +6752,73 @@ export type SampleHasMetadataSampleMetadataUpdateFieldInput = {
   >;
   update?: InputMaybe<SampleHasMetadataSampleMetadataUpdateConnectionInput>;
   where?: InputMaybe<SampleHasMetadataSampleMetadataConnectionWhere>;
+};
+
+export type SampleHasTempoTemposAggregateInput = {
+  AND?: InputMaybe<Array<SampleHasTempoTemposAggregateInput>>;
+  OR?: InputMaybe<Array<SampleHasTempoTemposAggregateInput>>;
+  count?: InputMaybe<Scalars["Int"]>;
+  count_GT?: InputMaybe<Scalars["Int"]>;
+  count_GTE?: InputMaybe<Scalars["Int"]>;
+  count_LT?: InputMaybe<Scalars["Int"]>;
+  count_LTE?: InputMaybe<Scalars["Int"]>;
+};
+
+export type SampleHasTempoTemposConnectFieldInput = {
+  connect?: InputMaybe<Array<TempoConnectInput>>;
+  where?: InputMaybe<TempoConnectWhere>;
+};
+
+export type SampleHasTempoTemposConnection = {
+  __typename?: "SampleHasTempoTemposConnection";
+  edges: Array<SampleHasTempoTemposRelationship>;
+  pageInfo: PageInfo;
+  totalCount: Scalars["Int"];
+};
+
+export type SampleHasTempoTemposConnectionWhere = {
+  AND?: InputMaybe<Array<SampleHasTempoTemposConnectionWhere>>;
+  OR?: InputMaybe<Array<SampleHasTempoTemposConnectionWhere>>;
+  node?: InputMaybe<TempoWhere>;
+  node_NOT?: InputMaybe<TempoWhere>;
+};
+
+export type SampleHasTempoTemposCreateFieldInput = {
+  node: TempoCreateInput;
+};
+
+export type SampleHasTempoTemposDeleteFieldInput = {
+  delete?: InputMaybe<TempoDeleteInput>;
+  where?: InputMaybe<SampleHasTempoTemposConnectionWhere>;
+};
+
+export type SampleHasTempoTemposDisconnectFieldInput = {
+  disconnect?: InputMaybe<TempoDisconnectInput>;
+  where?: InputMaybe<SampleHasTempoTemposConnectionWhere>;
+};
+
+export type SampleHasTempoTemposFieldInput = {
+  connect?: InputMaybe<Array<SampleHasTempoTemposConnectFieldInput>>;
+  create?: InputMaybe<Array<SampleHasTempoTemposCreateFieldInput>>;
+};
+
+export type SampleHasTempoTemposRelationship = {
+  __typename?: "SampleHasTempoTemposRelationship";
+  cursor: Scalars["String"];
+  node: Tempo;
+};
+
+export type SampleHasTempoTemposUpdateConnectionInput = {
+  node?: InputMaybe<TempoUpdateInput>;
+};
+
+export type SampleHasTempoTemposUpdateFieldInput = {
+  connect?: InputMaybe<Array<SampleHasTempoTemposConnectFieldInput>>;
+  create?: InputMaybe<Array<SampleHasTempoTemposCreateFieldInput>>;
+  delete?: InputMaybe<Array<SampleHasTempoTemposDeleteFieldInput>>;
+  disconnect?: InputMaybe<Array<SampleHasTempoTemposDisconnectFieldInput>>;
+  update?: InputMaybe<SampleHasTempoTemposUpdateConnectionInput>;
+  where?: InputMaybe<SampleHasTempoTemposConnectionWhere>;
 };
 
 export type SampleMetadata = {
@@ -5685,9 +7792,13 @@ export type SamplePatientsHasSampleUpdateFieldInput = {
 };
 
 export type SampleRelationInput = {
+  cohortsHasCohortSample?: InputMaybe<
+    Array<SampleCohortsHasCohortSampleCreateFieldInput>
+  >;
   hasMetadataSampleMetadata?: InputMaybe<
     Array<SampleHasMetadataSampleMetadataCreateFieldInput>
   >;
+  hasTempoTempos?: InputMaybe<Array<SampleHasTempoTemposCreateFieldInput>>;
   patientsHasSample?: InputMaybe<
     Array<SamplePatientsHasSampleCreateFieldInput>
   >;
@@ -6363,11 +8474,20 @@ export type SampleSort = {
   smileSampleId?: InputMaybe<SortDirection>;
 };
 
+export type SampleTempoHasTempoTemposAggregationSelection = {
+  __typename?: "SampleTempoHasTempoTemposAggregationSelection";
+  count: Scalars["Int"];
+};
+
 export type SampleUpdateInput = {
+  cohortsHasCohortSample?: InputMaybe<
+    Array<SampleCohortsHasCohortSampleUpdateFieldInput>
+  >;
   datasource?: InputMaybe<Scalars["String"]>;
   hasMetadataSampleMetadata?: InputMaybe<
     Array<SampleHasMetadataSampleMetadataUpdateFieldInput>
   >;
+  hasTempoTempos?: InputMaybe<Array<SampleHasTempoTemposUpdateFieldInput>>;
   patientsHasSample?: InputMaybe<
     Array<SamplePatientsHasSampleUpdateFieldInput>
   >;
@@ -6386,6 +8506,19 @@ export type SampleUpdateInput = {
 export type SampleWhere = {
   AND?: InputMaybe<Array<SampleWhere>>;
   OR?: InputMaybe<Array<SampleWhere>>;
+  cohortsHasCohortSampleAggregate?: InputMaybe<SampleCohortsHasCohortSampleAggregateInput>;
+  cohortsHasCohortSampleConnection_ALL?: InputMaybe<SampleCohortsHasCohortSampleConnectionWhere>;
+  cohortsHasCohortSampleConnection_NONE?: InputMaybe<SampleCohortsHasCohortSampleConnectionWhere>;
+  cohortsHasCohortSampleConnection_SINGLE?: InputMaybe<SampleCohortsHasCohortSampleConnectionWhere>;
+  cohortsHasCohortSampleConnection_SOME?: InputMaybe<SampleCohortsHasCohortSampleConnectionWhere>;
+  /** Return Samples where all of the related Cohorts match this filter */
+  cohortsHasCohortSample_ALL?: InputMaybe<CohortWhere>;
+  /** Return Samples where none of the related Cohorts match this filter */
+  cohortsHasCohortSample_NONE?: InputMaybe<CohortWhere>;
+  /** Return Samples where one of the related Cohorts match this filter */
+  cohortsHasCohortSample_SINGLE?: InputMaybe<CohortWhere>;
+  /** Return Samples where some of the related Cohorts match this filter */
+  cohortsHasCohortSample_SOME?: InputMaybe<CohortWhere>;
   datasource?: InputMaybe<Scalars["String"]>;
   datasource_CONTAINS?: InputMaybe<Scalars["String"]>;
   datasource_ENDS_WITH?: InputMaybe<Scalars["String"]>;
@@ -6409,6 +8542,19 @@ export type SampleWhere = {
   hasMetadataSampleMetadata_SINGLE?: InputMaybe<SampleMetadataWhere>;
   /** Return Samples where some of the related SampleMetadata match this filter */
   hasMetadataSampleMetadata_SOME?: InputMaybe<SampleMetadataWhere>;
+  hasTempoTemposAggregate?: InputMaybe<SampleHasTempoTemposAggregateInput>;
+  hasTempoTemposConnection_ALL?: InputMaybe<SampleHasTempoTemposConnectionWhere>;
+  hasTempoTemposConnection_NONE?: InputMaybe<SampleHasTempoTemposConnectionWhere>;
+  hasTempoTemposConnection_SINGLE?: InputMaybe<SampleHasTempoTemposConnectionWhere>;
+  hasTempoTemposConnection_SOME?: InputMaybe<SampleHasTempoTemposConnectionWhere>;
+  /** Return Samples where all of the related Tempos match this filter */
+  hasTempoTempos_ALL?: InputMaybe<TempoWhere>;
+  /** Return Samples where none of the related Tempos match this filter */
+  hasTempoTempos_NONE?: InputMaybe<TempoWhere>;
+  /** Return Samples where one of the related Tempos match this filter */
+  hasTempoTempos_SINGLE?: InputMaybe<TempoWhere>;
+  /** Return Samples where some of the related Tempos match this filter */
+  hasTempoTempos_SOME?: InputMaybe<TempoWhere>;
   patientsHasSampleAggregate?: InputMaybe<SamplePatientsHasSampleAggregateInput>;
   patientsHasSampleConnection_ALL?: InputMaybe<SamplePatientsHasSampleConnectionWhere>;
   patientsHasSampleConnection_NONE?: InputMaybe<SamplePatientsHasSampleConnectionWhere>;
@@ -7489,6 +9635,893 @@ export type StringAggregateSelectionNullable = {
   shortest?: Maybe<Scalars["String"]>;
 };
 
+export type Tempo = {
+  __typename?: "Tempo";
+  hasEventBamCompletes: Array<BamComplete>;
+  hasEventBamCompletesAggregate?: Maybe<TempoBamCompleteHasEventBamCompletesAggregationSelection>;
+  hasEventBamCompletesConnection: TempoHasEventBamCompletesConnection;
+  hasEventMafCompletes: Array<MafComplete>;
+  hasEventMafCompletesAggregate?: Maybe<TempoMafCompleteHasEventMafCompletesAggregationSelection>;
+  hasEventMafCompletesConnection: TempoHasEventMafCompletesConnection;
+  hasEventQcCompletes: Array<QcComplete>;
+  hasEventQcCompletesAggregate?: Maybe<TempoQcCompleteHasEventQcCompletesAggregationSelection>;
+  hasEventQcCompletesConnection: TempoHasEventQcCompletesConnection;
+  samplesHasTempo: Array<Sample>;
+  samplesHasTempoAggregate?: Maybe<TempoSampleSamplesHasTempoAggregationSelection>;
+  samplesHasTempoConnection: TempoSamplesHasTempoConnection;
+};
+
+export type TempoHasEventBamCompletesArgs = {
+  directed?: InputMaybe<Scalars["Boolean"]>;
+  options?: InputMaybe<BamCompleteOptions>;
+  where?: InputMaybe<BamCompleteWhere>;
+};
+
+export type TempoHasEventBamCompletesAggregateArgs = {
+  directed?: InputMaybe<Scalars["Boolean"]>;
+  where?: InputMaybe<BamCompleteWhere>;
+};
+
+export type TempoHasEventBamCompletesConnectionArgs = {
+  after?: InputMaybe<Scalars["String"]>;
+  directed?: InputMaybe<Scalars["Boolean"]>;
+  first?: InputMaybe<Scalars["Int"]>;
+  sort?: InputMaybe<Array<TempoHasEventBamCompletesConnectionSort>>;
+  where?: InputMaybe<TempoHasEventBamCompletesConnectionWhere>;
+};
+
+export type TempoHasEventMafCompletesArgs = {
+  directed?: InputMaybe<Scalars["Boolean"]>;
+  options?: InputMaybe<MafCompleteOptions>;
+  where?: InputMaybe<MafCompleteWhere>;
+};
+
+export type TempoHasEventMafCompletesAggregateArgs = {
+  directed?: InputMaybe<Scalars["Boolean"]>;
+  where?: InputMaybe<MafCompleteWhere>;
+};
+
+export type TempoHasEventMafCompletesConnectionArgs = {
+  after?: InputMaybe<Scalars["String"]>;
+  directed?: InputMaybe<Scalars["Boolean"]>;
+  first?: InputMaybe<Scalars["Int"]>;
+  sort?: InputMaybe<Array<TempoHasEventMafCompletesConnectionSort>>;
+  where?: InputMaybe<TempoHasEventMafCompletesConnectionWhere>;
+};
+
+export type TempoHasEventQcCompletesArgs = {
+  directed?: InputMaybe<Scalars["Boolean"]>;
+  options?: InputMaybe<QcCompleteOptions>;
+  where?: InputMaybe<QcCompleteWhere>;
+};
+
+export type TempoHasEventQcCompletesAggregateArgs = {
+  directed?: InputMaybe<Scalars["Boolean"]>;
+  where?: InputMaybe<QcCompleteWhere>;
+};
+
+export type TempoHasEventQcCompletesConnectionArgs = {
+  after?: InputMaybe<Scalars["String"]>;
+  directed?: InputMaybe<Scalars["Boolean"]>;
+  first?: InputMaybe<Scalars["Int"]>;
+  sort?: InputMaybe<Array<TempoHasEventQcCompletesConnectionSort>>;
+  where?: InputMaybe<TempoHasEventQcCompletesConnectionWhere>;
+};
+
+export type TempoSamplesHasTempoArgs = {
+  directed?: InputMaybe<Scalars["Boolean"]>;
+  options?: InputMaybe<SampleOptions>;
+  where?: InputMaybe<SampleWhere>;
+};
+
+export type TempoSamplesHasTempoAggregateArgs = {
+  directed?: InputMaybe<Scalars["Boolean"]>;
+  where?: InputMaybe<SampleWhere>;
+};
+
+export type TempoSamplesHasTempoConnectionArgs = {
+  after?: InputMaybe<Scalars["String"]>;
+  directed?: InputMaybe<Scalars["Boolean"]>;
+  first?: InputMaybe<Scalars["Int"]>;
+  sort?: InputMaybe<Array<TempoSamplesHasTempoConnectionSort>>;
+  where?: InputMaybe<TempoSamplesHasTempoConnectionWhere>;
+};
+
+export type TempoAggregateSelection = {
+  __typename?: "TempoAggregateSelection";
+  count: Scalars["Int"];
+};
+
+export type TempoBamCompleteHasEventBamCompletesAggregationSelection = {
+  __typename?: "TempoBamCompleteHasEventBamCompletesAggregationSelection";
+  count: Scalars["Int"];
+  node?: Maybe<TempoBamCompleteHasEventBamCompletesNodeAggregateSelection>;
+};
+
+export type TempoBamCompleteHasEventBamCompletesNodeAggregateSelection = {
+  __typename?: "TempoBamCompleteHasEventBamCompletesNodeAggregateSelection";
+  date: StringAggregateSelectionNonNullable;
+  status: StringAggregateSelectionNonNullable;
+};
+
+export type TempoConnectInput = {
+  hasEventBamCompletes?: InputMaybe<
+    Array<TempoHasEventBamCompletesConnectFieldInput>
+  >;
+  hasEventMafCompletes?: InputMaybe<
+    Array<TempoHasEventMafCompletesConnectFieldInput>
+  >;
+  hasEventQcCompletes?: InputMaybe<
+    Array<TempoHasEventQcCompletesConnectFieldInput>
+  >;
+  samplesHasTempo?: InputMaybe<Array<TempoSamplesHasTempoConnectFieldInput>>;
+};
+
+export type TempoConnectWhere = {
+  node: TempoWhere;
+};
+
+export type TempoCreateInput = {
+  hasEventBamCompletes?: InputMaybe<TempoHasEventBamCompletesFieldInput>;
+  hasEventMafCompletes?: InputMaybe<TempoHasEventMafCompletesFieldInput>;
+  hasEventQcCompletes?: InputMaybe<TempoHasEventQcCompletesFieldInput>;
+  samplesHasTempo?: InputMaybe<TempoSamplesHasTempoFieldInput>;
+};
+
+export type TempoDeleteInput = {
+  hasEventBamCompletes?: InputMaybe<
+    Array<TempoHasEventBamCompletesDeleteFieldInput>
+  >;
+  hasEventMafCompletes?: InputMaybe<
+    Array<TempoHasEventMafCompletesDeleteFieldInput>
+  >;
+  hasEventQcCompletes?: InputMaybe<
+    Array<TempoHasEventQcCompletesDeleteFieldInput>
+  >;
+  samplesHasTempo?: InputMaybe<Array<TempoSamplesHasTempoDeleteFieldInput>>;
+};
+
+export type TempoDisconnectInput = {
+  hasEventBamCompletes?: InputMaybe<
+    Array<TempoHasEventBamCompletesDisconnectFieldInput>
+  >;
+  hasEventMafCompletes?: InputMaybe<
+    Array<TempoHasEventMafCompletesDisconnectFieldInput>
+  >;
+  hasEventQcCompletes?: InputMaybe<
+    Array<TempoHasEventQcCompletesDisconnectFieldInput>
+  >;
+  samplesHasTempo?: InputMaybe<Array<TempoSamplesHasTempoDisconnectFieldInput>>;
+};
+
+export type TempoEdge = {
+  __typename?: "TempoEdge";
+  cursor: Scalars["String"];
+  node: Tempo;
+};
+
+export type TempoHasEventBamCompletesAggregateInput = {
+  AND?: InputMaybe<Array<TempoHasEventBamCompletesAggregateInput>>;
+  OR?: InputMaybe<Array<TempoHasEventBamCompletesAggregateInput>>;
+  count?: InputMaybe<Scalars["Int"]>;
+  count_GT?: InputMaybe<Scalars["Int"]>;
+  count_GTE?: InputMaybe<Scalars["Int"]>;
+  count_LT?: InputMaybe<Scalars["Int"]>;
+  count_LTE?: InputMaybe<Scalars["Int"]>;
+  node?: InputMaybe<TempoHasEventBamCompletesNodeAggregationWhereInput>;
+};
+
+export type TempoHasEventBamCompletesConnectFieldInput = {
+  connect?: InputMaybe<Array<BamCompleteConnectInput>>;
+  where?: InputMaybe<BamCompleteConnectWhere>;
+};
+
+export type TempoHasEventBamCompletesConnection = {
+  __typename?: "TempoHasEventBamCompletesConnection";
+  edges: Array<TempoHasEventBamCompletesRelationship>;
+  pageInfo: PageInfo;
+  totalCount: Scalars["Int"];
+};
+
+export type TempoHasEventBamCompletesConnectionSort = {
+  node?: InputMaybe<BamCompleteSort>;
+};
+
+export type TempoHasEventBamCompletesConnectionWhere = {
+  AND?: InputMaybe<Array<TempoHasEventBamCompletesConnectionWhere>>;
+  OR?: InputMaybe<Array<TempoHasEventBamCompletesConnectionWhere>>;
+  node?: InputMaybe<BamCompleteWhere>;
+  node_NOT?: InputMaybe<BamCompleteWhere>;
+};
+
+export type TempoHasEventBamCompletesCreateFieldInput = {
+  node: BamCompleteCreateInput;
+};
+
+export type TempoHasEventBamCompletesDeleteFieldInput = {
+  delete?: InputMaybe<BamCompleteDeleteInput>;
+  where?: InputMaybe<TempoHasEventBamCompletesConnectionWhere>;
+};
+
+export type TempoHasEventBamCompletesDisconnectFieldInput = {
+  disconnect?: InputMaybe<BamCompleteDisconnectInput>;
+  where?: InputMaybe<TempoHasEventBamCompletesConnectionWhere>;
+};
+
+export type TempoHasEventBamCompletesFieldInput = {
+  connect?: InputMaybe<Array<TempoHasEventBamCompletesConnectFieldInput>>;
+  create?: InputMaybe<Array<TempoHasEventBamCompletesCreateFieldInput>>;
+};
+
+export type TempoHasEventBamCompletesNodeAggregationWhereInput = {
+  AND?: InputMaybe<Array<TempoHasEventBamCompletesNodeAggregationWhereInput>>;
+  OR?: InputMaybe<Array<TempoHasEventBamCompletesNodeAggregationWhereInput>>;
+  date_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  date_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  date_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  date_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  date_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  date_EQUAL?: InputMaybe<Scalars["String"]>;
+  date_GT?: InputMaybe<Scalars["Int"]>;
+  date_GTE?: InputMaybe<Scalars["Int"]>;
+  date_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  date_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  date_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  date_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  date_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  date_LT?: InputMaybe<Scalars["Int"]>;
+  date_LTE?: InputMaybe<Scalars["Int"]>;
+  date_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  date_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  date_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  date_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  date_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  status_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  status_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  status_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  status_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  status_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  status_EQUAL?: InputMaybe<Scalars["String"]>;
+  status_GT?: InputMaybe<Scalars["Int"]>;
+  status_GTE?: InputMaybe<Scalars["Int"]>;
+  status_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  status_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  status_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  status_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  status_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  status_LT?: InputMaybe<Scalars["Int"]>;
+  status_LTE?: InputMaybe<Scalars["Int"]>;
+  status_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  status_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  status_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  status_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  status_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+};
+
+export type TempoHasEventBamCompletesRelationship = {
+  __typename?: "TempoHasEventBamCompletesRelationship";
+  cursor: Scalars["String"];
+  node: BamComplete;
+};
+
+export type TempoHasEventBamCompletesUpdateConnectionInput = {
+  node?: InputMaybe<BamCompleteUpdateInput>;
+};
+
+export type TempoHasEventBamCompletesUpdateFieldInput = {
+  connect?: InputMaybe<Array<TempoHasEventBamCompletesConnectFieldInput>>;
+  create?: InputMaybe<Array<TempoHasEventBamCompletesCreateFieldInput>>;
+  delete?: InputMaybe<Array<TempoHasEventBamCompletesDeleteFieldInput>>;
+  disconnect?: InputMaybe<Array<TempoHasEventBamCompletesDisconnectFieldInput>>;
+  update?: InputMaybe<TempoHasEventBamCompletesUpdateConnectionInput>;
+  where?: InputMaybe<TempoHasEventBamCompletesConnectionWhere>;
+};
+
+export type TempoHasEventMafCompletesAggregateInput = {
+  AND?: InputMaybe<Array<TempoHasEventMafCompletesAggregateInput>>;
+  OR?: InputMaybe<Array<TempoHasEventMafCompletesAggregateInput>>;
+  count?: InputMaybe<Scalars["Int"]>;
+  count_GT?: InputMaybe<Scalars["Int"]>;
+  count_GTE?: InputMaybe<Scalars["Int"]>;
+  count_LT?: InputMaybe<Scalars["Int"]>;
+  count_LTE?: InputMaybe<Scalars["Int"]>;
+  node?: InputMaybe<TempoHasEventMafCompletesNodeAggregationWhereInput>;
+};
+
+export type TempoHasEventMafCompletesConnectFieldInput = {
+  connect?: InputMaybe<Array<MafCompleteConnectInput>>;
+  where?: InputMaybe<MafCompleteConnectWhere>;
+};
+
+export type TempoHasEventMafCompletesConnection = {
+  __typename?: "TempoHasEventMafCompletesConnection";
+  edges: Array<TempoHasEventMafCompletesRelationship>;
+  pageInfo: PageInfo;
+  totalCount: Scalars["Int"];
+};
+
+export type TempoHasEventMafCompletesConnectionSort = {
+  node?: InputMaybe<MafCompleteSort>;
+};
+
+export type TempoHasEventMafCompletesConnectionWhere = {
+  AND?: InputMaybe<Array<TempoHasEventMafCompletesConnectionWhere>>;
+  OR?: InputMaybe<Array<TempoHasEventMafCompletesConnectionWhere>>;
+  node?: InputMaybe<MafCompleteWhere>;
+  node_NOT?: InputMaybe<MafCompleteWhere>;
+};
+
+export type TempoHasEventMafCompletesCreateFieldInput = {
+  node: MafCompleteCreateInput;
+};
+
+export type TempoHasEventMafCompletesDeleteFieldInput = {
+  delete?: InputMaybe<MafCompleteDeleteInput>;
+  where?: InputMaybe<TempoHasEventMafCompletesConnectionWhere>;
+};
+
+export type TempoHasEventMafCompletesDisconnectFieldInput = {
+  disconnect?: InputMaybe<MafCompleteDisconnectInput>;
+  where?: InputMaybe<TempoHasEventMafCompletesConnectionWhere>;
+};
+
+export type TempoHasEventMafCompletesFieldInput = {
+  connect?: InputMaybe<Array<TempoHasEventMafCompletesConnectFieldInput>>;
+  create?: InputMaybe<Array<TempoHasEventMafCompletesCreateFieldInput>>;
+};
+
+export type TempoHasEventMafCompletesNodeAggregationWhereInput = {
+  AND?: InputMaybe<Array<TempoHasEventMafCompletesNodeAggregationWhereInput>>;
+  OR?: InputMaybe<Array<TempoHasEventMafCompletesNodeAggregationWhereInput>>;
+  date_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  date_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  date_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  date_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  date_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  date_EQUAL?: InputMaybe<Scalars["String"]>;
+  date_GT?: InputMaybe<Scalars["Int"]>;
+  date_GTE?: InputMaybe<Scalars["Int"]>;
+  date_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  date_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  date_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  date_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  date_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  date_LT?: InputMaybe<Scalars["Int"]>;
+  date_LTE?: InputMaybe<Scalars["Int"]>;
+  date_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  date_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  date_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  date_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  date_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  normalPrimaryId_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  normalPrimaryId_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  normalPrimaryId_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  normalPrimaryId_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  normalPrimaryId_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  normalPrimaryId_EQUAL?: InputMaybe<Scalars["String"]>;
+  normalPrimaryId_GT?: InputMaybe<Scalars["Int"]>;
+  normalPrimaryId_GTE?: InputMaybe<Scalars["Int"]>;
+  normalPrimaryId_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  normalPrimaryId_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  normalPrimaryId_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  normalPrimaryId_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  normalPrimaryId_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  normalPrimaryId_LT?: InputMaybe<Scalars["Int"]>;
+  normalPrimaryId_LTE?: InputMaybe<Scalars["Int"]>;
+  normalPrimaryId_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  normalPrimaryId_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  normalPrimaryId_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  normalPrimaryId_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  normalPrimaryId_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  status_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  status_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  status_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  status_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  status_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  status_EQUAL?: InputMaybe<Scalars["String"]>;
+  status_GT?: InputMaybe<Scalars["Int"]>;
+  status_GTE?: InputMaybe<Scalars["Int"]>;
+  status_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  status_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  status_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  status_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  status_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  status_LT?: InputMaybe<Scalars["Int"]>;
+  status_LTE?: InputMaybe<Scalars["Int"]>;
+  status_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  status_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  status_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  status_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  status_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+};
+
+export type TempoHasEventMafCompletesRelationship = {
+  __typename?: "TempoHasEventMafCompletesRelationship";
+  cursor: Scalars["String"];
+  node: MafComplete;
+};
+
+export type TempoHasEventMafCompletesUpdateConnectionInput = {
+  node?: InputMaybe<MafCompleteUpdateInput>;
+};
+
+export type TempoHasEventMafCompletesUpdateFieldInput = {
+  connect?: InputMaybe<Array<TempoHasEventMafCompletesConnectFieldInput>>;
+  create?: InputMaybe<Array<TempoHasEventMafCompletesCreateFieldInput>>;
+  delete?: InputMaybe<Array<TempoHasEventMafCompletesDeleteFieldInput>>;
+  disconnect?: InputMaybe<Array<TempoHasEventMafCompletesDisconnectFieldInput>>;
+  update?: InputMaybe<TempoHasEventMafCompletesUpdateConnectionInput>;
+  where?: InputMaybe<TempoHasEventMafCompletesConnectionWhere>;
+};
+
+export type TempoHasEventQcCompletesAggregateInput = {
+  AND?: InputMaybe<Array<TempoHasEventQcCompletesAggregateInput>>;
+  OR?: InputMaybe<Array<TempoHasEventQcCompletesAggregateInput>>;
+  count?: InputMaybe<Scalars["Int"]>;
+  count_GT?: InputMaybe<Scalars["Int"]>;
+  count_GTE?: InputMaybe<Scalars["Int"]>;
+  count_LT?: InputMaybe<Scalars["Int"]>;
+  count_LTE?: InputMaybe<Scalars["Int"]>;
+  node?: InputMaybe<TempoHasEventQcCompletesNodeAggregationWhereInput>;
+};
+
+export type TempoHasEventQcCompletesConnectFieldInput = {
+  connect?: InputMaybe<Array<QcCompleteConnectInput>>;
+  where?: InputMaybe<QcCompleteConnectWhere>;
+};
+
+export type TempoHasEventQcCompletesConnection = {
+  __typename?: "TempoHasEventQcCompletesConnection";
+  edges: Array<TempoHasEventQcCompletesRelationship>;
+  pageInfo: PageInfo;
+  totalCount: Scalars["Int"];
+};
+
+export type TempoHasEventQcCompletesConnectionSort = {
+  node?: InputMaybe<QcCompleteSort>;
+};
+
+export type TempoHasEventQcCompletesConnectionWhere = {
+  AND?: InputMaybe<Array<TempoHasEventQcCompletesConnectionWhere>>;
+  OR?: InputMaybe<Array<TempoHasEventQcCompletesConnectionWhere>>;
+  node?: InputMaybe<QcCompleteWhere>;
+  node_NOT?: InputMaybe<QcCompleteWhere>;
+};
+
+export type TempoHasEventQcCompletesCreateFieldInput = {
+  node: QcCompleteCreateInput;
+};
+
+export type TempoHasEventQcCompletesDeleteFieldInput = {
+  delete?: InputMaybe<QcCompleteDeleteInput>;
+  where?: InputMaybe<TempoHasEventQcCompletesConnectionWhere>;
+};
+
+export type TempoHasEventQcCompletesDisconnectFieldInput = {
+  disconnect?: InputMaybe<QcCompleteDisconnectInput>;
+  where?: InputMaybe<TempoHasEventQcCompletesConnectionWhere>;
+};
+
+export type TempoHasEventQcCompletesFieldInput = {
+  connect?: InputMaybe<Array<TempoHasEventQcCompletesConnectFieldInput>>;
+  create?: InputMaybe<Array<TempoHasEventQcCompletesCreateFieldInput>>;
+};
+
+export type TempoHasEventQcCompletesNodeAggregationWhereInput = {
+  AND?: InputMaybe<Array<TempoHasEventQcCompletesNodeAggregationWhereInput>>;
+  OR?: InputMaybe<Array<TempoHasEventQcCompletesNodeAggregationWhereInput>>;
+  date_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  date_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  date_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  date_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  date_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  date_EQUAL?: InputMaybe<Scalars["String"]>;
+  date_GT?: InputMaybe<Scalars["Int"]>;
+  date_GTE?: InputMaybe<Scalars["Int"]>;
+  date_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  date_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  date_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  date_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  date_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  date_LT?: InputMaybe<Scalars["Int"]>;
+  date_LTE?: InputMaybe<Scalars["Int"]>;
+  date_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  date_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  date_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  date_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  date_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  reason_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  reason_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  reason_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  reason_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  reason_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  reason_EQUAL?: InputMaybe<Scalars["String"]>;
+  reason_GT?: InputMaybe<Scalars["Int"]>;
+  reason_GTE?: InputMaybe<Scalars["Int"]>;
+  reason_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  reason_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  reason_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  reason_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  reason_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  reason_LT?: InputMaybe<Scalars["Int"]>;
+  reason_LTE?: InputMaybe<Scalars["Int"]>;
+  reason_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  reason_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  reason_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  reason_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  reason_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  result_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  result_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  result_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  result_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  result_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  result_EQUAL?: InputMaybe<Scalars["String"]>;
+  result_GT?: InputMaybe<Scalars["Int"]>;
+  result_GTE?: InputMaybe<Scalars["Int"]>;
+  result_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  result_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  result_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  result_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  result_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  result_LT?: InputMaybe<Scalars["Int"]>;
+  result_LTE?: InputMaybe<Scalars["Int"]>;
+  result_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  result_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  result_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  result_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  result_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  status_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  status_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  status_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  status_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  status_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  status_EQUAL?: InputMaybe<Scalars["String"]>;
+  status_GT?: InputMaybe<Scalars["Int"]>;
+  status_GTE?: InputMaybe<Scalars["Int"]>;
+  status_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  status_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  status_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  status_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  status_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  status_LT?: InputMaybe<Scalars["Int"]>;
+  status_LTE?: InputMaybe<Scalars["Int"]>;
+  status_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  status_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  status_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  status_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  status_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+};
+
+export type TempoHasEventQcCompletesRelationship = {
+  __typename?: "TempoHasEventQcCompletesRelationship";
+  cursor: Scalars["String"];
+  node: QcComplete;
+};
+
+export type TempoHasEventQcCompletesUpdateConnectionInput = {
+  node?: InputMaybe<QcCompleteUpdateInput>;
+};
+
+export type TempoHasEventQcCompletesUpdateFieldInput = {
+  connect?: InputMaybe<Array<TempoHasEventQcCompletesConnectFieldInput>>;
+  create?: InputMaybe<Array<TempoHasEventQcCompletesCreateFieldInput>>;
+  delete?: InputMaybe<Array<TempoHasEventQcCompletesDeleteFieldInput>>;
+  disconnect?: InputMaybe<Array<TempoHasEventQcCompletesDisconnectFieldInput>>;
+  update?: InputMaybe<TempoHasEventQcCompletesUpdateConnectionInput>;
+  where?: InputMaybe<TempoHasEventQcCompletesConnectionWhere>;
+};
+
+export type TempoMafCompleteHasEventMafCompletesAggregationSelection = {
+  __typename?: "TempoMafCompleteHasEventMafCompletesAggregationSelection";
+  count: Scalars["Int"];
+  node?: Maybe<TempoMafCompleteHasEventMafCompletesNodeAggregateSelection>;
+};
+
+export type TempoMafCompleteHasEventMafCompletesNodeAggregateSelection = {
+  __typename?: "TempoMafCompleteHasEventMafCompletesNodeAggregateSelection";
+  date: StringAggregateSelectionNonNullable;
+  normalPrimaryId: StringAggregateSelectionNonNullable;
+  status: StringAggregateSelectionNonNullable;
+};
+
+export type TempoOptions = {
+  limit?: InputMaybe<Scalars["Int"]>;
+  offset?: InputMaybe<Scalars["Int"]>;
+};
+
+export type TempoQcCompleteHasEventQcCompletesAggregationSelection = {
+  __typename?: "TempoQcCompleteHasEventQcCompletesAggregationSelection";
+  count: Scalars["Int"];
+  node?: Maybe<TempoQcCompleteHasEventQcCompletesNodeAggregateSelection>;
+};
+
+export type TempoQcCompleteHasEventQcCompletesNodeAggregateSelection = {
+  __typename?: "TempoQcCompleteHasEventQcCompletesNodeAggregateSelection";
+  date: StringAggregateSelectionNonNullable;
+  reason: StringAggregateSelectionNonNullable;
+  result: StringAggregateSelectionNonNullable;
+  status: StringAggregateSelectionNonNullable;
+};
+
+export type TempoRelationInput = {
+  hasEventBamCompletes?: InputMaybe<
+    Array<TempoHasEventBamCompletesCreateFieldInput>
+  >;
+  hasEventMafCompletes?: InputMaybe<
+    Array<TempoHasEventMafCompletesCreateFieldInput>
+  >;
+  hasEventQcCompletes?: InputMaybe<
+    Array<TempoHasEventQcCompletesCreateFieldInput>
+  >;
+  samplesHasTempo?: InputMaybe<Array<TempoSamplesHasTempoCreateFieldInput>>;
+};
+
+export type TempoSampleSamplesHasTempoAggregationSelection = {
+  __typename?: "TempoSampleSamplesHasTempoAggregationSelection";
+  count: Scalars["Int"];
+  node?: Maybe<TempoSampleSamplesHasTempoNodeAggregateSelection>;
+};
+
+export type TempoSampleSamplesHasTempoNodeAggregateSelection = {
+  __typename?: "TempoSampleSamplesHasTempoNodeAggregateSelection";
+  datasource: StringAggregateSelectionNonNullable;
+  sampleCategory: StringAggregateSelectionNonNullable;
+  sampleClass: StringAggregateSelectionNonNullable;
+  smileSampleId: StringAggregateSelectionNonNullable;
+};
+
+export type TempoSamplesHasTempoAggregateInput = {
+  AND?: InputMaybe<Array<TempoSamplesHasTempoAggregateInput>>;
+  OR?: InputMaybe<Array<TempoSamplesHasTempoAggregateInput>>;
+  count?: InputMaybe<Scalars["Int"]>;
+  count_GT?: InputMaybe<Scalars["Int"]>;
+  count_GTE?: InputMaybe<Scalars["Int"]>;
+  count_LT?: InputMaybe<Scalars["Int"]>;
+  count_LTE?: InputMaybe<Scalars["Int"]>;
+  node?: InputMaybe<TempoSamplesHasTempoNodeAggregationWhereInput>;
+};
+
+export type TempoSamplesHasTempoConnectFieldInput = {
+  connect?: InputMaybe<Array<SampleConnectInput>>;
+  where?: InputMaybe<SampleConnectWhere>;
+};
+
+export type TempoSamplesHasTempoConnection = {
+  __typename?: "TempoSamplesHasTempoConnection";
+  edges: Array<TempoSamplesHasTempoRelationship>;
+  pageInfo: PageInfo;
+  totalCount: Scalars["Int"];
+};
+
+export type TempoSamplesHasTempoConnectionSort = {
+  node?: InputMaybe<SampleSort>;
+};
+
+export type TempoSamplesHasTempoConnectionWhere = {
+  AND?: InputMaybe<Array<TempoSamplesHasTempoConnectionWhere>>;
+  OR?: InputMaybe<Array<TempoSamplesHasTempoConnectionWhere>>;
+  node?: InputMaybe<SampleWhere>;
+  node_NOT?: InputMaybe<SampleWhere>;
+};
+
+export type TempoSamplesHasTempoCreateFieldInput = {
+  node: SampleCreateInput;
+};
+
+export type TempoSamplesHasTempoDeleteFieldInput = {
+  delete?: InputMaybe<SampleDeleteInput>;
+  where?: InputMaybe<TempoSamplesHasTempoConnectionWhere>;
+};
+
+export type TempoSamplesHasTempoDisconnectFieldInput = {
+  disconnect?: InputMaybe<SampleDisconnectInput>;
+  where?: InputMaybe<TempoSamplesHasTempoConnectionWhere>;
+};
+
+export type TempoSamplesHasTempoFieldInput = {
+  connect?: InputMaybe<Array<TempoSamplesHasTempoConnectFieldInput>>;
+  create?: InputMaybe<Array<TempoSamplesHasTempoCreateFieldInput>>;
+};
+
+export type TempoSamplesHasTempoNodeAggregationWhereInput = {
+  AND?: InputMaybe<Array<TempoSamplesHasTempoNodeAggregationWhereInput>>;
+  OR?: InputMaybe<Array<TempoSamplesHasTempoNodeAggregationWhereInput>>;
+  datasource_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  datasource_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  datasource_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  datasource_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  datasource_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  datasource_EQUAL?: InputMaybe<Scalars["String"]>;
+  datasource_GT?: InputMaybe<Scalars["Int"]>;
+  datasource_GTE?: InputMaybe<Scalars["Int"]>;
+  datasource_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  datasource_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  datasource_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  datasource_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  datasource_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  datasource_LT?: InputMaybe<Scalars["Int"]>;
+  datasource_LTE?: InputMaybe<Scalars["Int"]>;
+  datasource_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  datasource_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  datasource_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  datasource_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  datasource_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  sampleCategory_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  sampleCategory_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  sampleCategory_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  sampleCategory_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  sampleCategory_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  sampleCategory_EQUAL?: InputMaybe<Scalars["String"]>;
+  sampleCategory_GT?: InputMaybe<Scalars["Int"]>;
+  sampleCategory_GTE?: InputMaybe<Scalars["Int"]>;
+  sampleCategory_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  sampleCategory_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  sampleCategory_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  sampleCategory_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  sampleCategory_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  sampleCategory_LT?: InputMaybe<Scalars["Int"]>;
+  sampleCategory_LTE?: InputMaybe<Scalars["Int"]>;
+  sampleCategory_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  sampleCategory_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  sampleCategory_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  sampleCategory_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  sampleCategory_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  sampleClass_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  sampleClass_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  sampleClass_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  sampleClass_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  sampleClass_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  sampleClass_EQUAL?: InputMaybe<Scalars["String"]>;
+  sampleClass_GT?: InputMaybe<Scalars["Int"]>;
+  sampleClass_GTE?: InputMaybe<Scalars["Int"]>;
+  sampleClass_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  sampleClass_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  sampleClass_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  sampleClass_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  sampleClass_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  sampleClass_LT?: InputMaybe<Scalars["Int"]>;
+  sampleClass_LTE?: InputMaybe<Scalars["Int"]>;
+  sampleClass_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  sampleClass_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  sampleClass_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  sampleClass_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  sampleClass_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  smileSampleId_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  smileSampleId_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  smileSampleId_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  smileSampleId_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  smileSampleId_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  smileSampleId_EQUAL?: InputMaybe<Scalars["String"]>;
+  smileSampleId_GT?: InputMaybe<Scalars["Int"]>;
+  smileSampleId_GTE?: InputMaybe<Scalars["Int"]>;
+  smileSampleId_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  smileSampleId_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  smileSampleId_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  smileSampleId_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  smileSampleId_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  smileSampleId_LT?: InputMaybe<Scalars["Int"]>;
+  smileSampleId_LTE?: InputMaybe<Scalars["Int"]>;
+  smileSampleId_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  smileSampleId_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  smileSampleId_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  smileSampleId_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  smileSampleId_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+};
+
+export type TempoSamplesHasTempoRelationship = {
+  __typename?: "TempoSamplesHasTempoRelationship";
+  cursor: Scalars["String"];
+  node: Sample;
+};
+
+export type TempoSamplesHasTempoUpdateConnectionInput = {
+  node?: InputMaybe<SampleUpdateInput>;
+};
+
+export type TempoSamplesHasTempoUpdateFieldInput = {
+  connect?: InputMaybe<Array<TempoSamplesHasTempoConnectFieldInput>>;
+  create?: InputMaybe<Array<TempoSamplesHasTempoCreateFieldInput>>;
+  delete?: InputMaybe<Array<TempoSamplesHasTempoDeleteFieldInput>>;
+  disconnect?: InputMaybe<Array<TempoSamplesHasTempoDisconnectFieldInput>>;
+  update?: InputMaybe<TempoSamplesHasTempoUpdateConnectionInput>;
+  where?: InputMaybe<TempoSamplesHasTempoConnectionWhere>;
+};
+
+export type TempoUpdateInput = {
+  hasEventBamCompletes?: InputMaybe<
+    Array<TempoHasEventBamCompletesUpdateFieldInput>
+  >;
+  hasEventMafCompletes?: InputMaybe<
+    Array<TempoHasEventMafCompletesUpdateFieldInput>
+  >;
+  hasEventQcCompletes?: InputMaybe<
+    Array<TempoHasEventQcCompletesUpdateFieldInput>
+  >;
+  samplesHasTempo?: InputMaybe<Array<TempoSamplesHasTempoUpdateFieldInput>>;
+};
+
+export type TempoWhere = {
+  AND?: InputMaybe<Array<TempoWhere>>;
+  OR?: InputMaybe<Array<TempoWhere>>;
+  hasEventBamCompletesAggregate?: InputMaybe<TempoHasEventBamCompletesAggregateInput>;
+  hasEventBamCompletesConnection_ALL?: InputMaybe<TempoHasEventBamCompletesConnectionWhere>;
+  hasEventBamCompletesConnection_NONE?: InputMaybe<TempoHasEventBamCompletesConnectionWhere>;
+  hasEventBamCompletesConnection_SINGLE?: InputMaybe<TempoHasEventBamCompletesConnectionWhere>;
+  hasEventBamCompletesConnection_SOME?: InputMaybe<TempoHasEventBamCompletesConnectionWhere>;
+  /** Return Tempos where all of the related BamCompletes match this filter */
+  hasEventBamCompletes_ALL?: InputMaybe<BamCompleteWhere>;
+  /** Return Tempos where none of the related BamCompletes match this filter */
+  hasEventBamCompletes_NONE?: InputMaybe<BamCompleteWhere>;
+  /** Return Tempos where one of the related BamCompletes match this filter */
+  hasEventBamCompletes_SINGLE?: InputMaybe<BamCompleteWhere>;
+  /** Return Tempos where some of the related BamCompletes match this filter */
+  hasEventBamCompletes_SOME?: InputMaybe<BamCompleteWhere>;
+  hasEventMafCompletesAggregate?: InputMaybe<TempoHasEventMafCompletesAggregateInput>;
+  hasEventMafCompletesConnection_ALL?: InputMaybe<TempoHasEventMafCompletesConnectionWhere>;
+  hasEventMafCompletesConnection_NONE?: InputMaybe<TempoHasEventMafCompletesConnectionWhere>;
+  hasEventMafCompletesConnection_SINGLE?: InputMaybe<TempoHasEventMafCompletesConnectionWhere>;
+  hasEventMafCompletesConnection_SOME?: InputMaybe<TempoHasEventMafCompletesConnectionWhere>;
+  /** Return Tempos where all of the related MafCompletes match this filter */
+  hasEventMafCompletes_ALL?: InputMaybe<MafCompleteWhere>;
+  /** Return Tempos where none of the related MafCompletes match this filter */
+  hasEventMafCompletes_NONE?: InputMaybe<MafCompleteWhere>;
+  /** Return Tempos where one of the related MafCompletes match this filter */
+  hasEventMafCompletes_SINGLE?: InputMaybe<MafCompleteWhere>;
+  /** Return Tempos where some of the related MafCompletes match this filter */
+  hasEventMafCompletes_SOME?: InputMaybe<MafCompleteWhere>;
+  hasEventQcCompletesAggregate?: InputMaybe<TempoHasEventQcCompletesAggregateInput>;
+  hasEventQcCompletesConnection_ALL?: InputMaybe<TempoHasEventQcCompletesConnectionWhere>;
+  hasEventQcCompletesConnection_NONE?: InputMaybe<TempoHasEventQcCompletesConnectionWhere>;
+  hasEventQcCompletesConnection_SINGLE?: InputMaybe<TempoHasEventQcCompletesConnectionWhere>;
+  hasEventQcCompletesConnection_SOME?: InputMaybe<TempoHasEventQcCompletesConnectionWhere>;
+  /** Return Tempos where all of the related QcCompletes match this filter */
+  hasEventQcCompletes_ALL?: InputMaybe<QcCompleteWhere>;
+  /** Return Tempos where none of the related QcCompletes match this filter */
+  hasEventQcCompletes_NONE?: InputMaybe<QcCompleteWhere>;
+  /** Return Tempos where one of the related QcCompletes match this filter */
+  hasEventQcCompletes_SINGLE?: InputMaybe<QcCompleteWhere>;
+  /** Return Tempos where some of the related QcCompletes match this filter */
+  hasEventQcCompletes_SOME?: InputMaybe<QcCompleteWhere>;
+  samplesHasTempoAggregate?: InputMaybe<TempoSamplesHasTempoAggregateInput>;
+  samplesHasTempoConnection_ALL?: InputMaybe<TempoSamplesHasTempoConnectionWhere>;
+  samplesHasTempoConnection_NONE?: InputMaybe<TempoSamplesHasTempoConnectionWhere>;
+  samplesHasTempoConnection_SINGLE?: InputMaybe<TempoSamplesHasTempoConnectionWhere>;
+  samplesHasTempoConnection_SOME?: InputMaybe<TempoSamplesHasTempoConnectionWhere>;
+  /** Return Tempos where all of the related Samples match this filter */
+  samplesHasTempo_ALL?: InputMaybe<SampleWhere>;
+  /** Return Tempos where none of the related Samples match this filter */
+  samplesHasTempo_NONE?: InputMaybe<SampleWhere>;
+  /** Return Tempos where one of the related Samples match this filter */
+  samplesHasTempo_SINGLE?: InputMaybe<SampleWhere>;
+  /** Return Tempos where some of the related Samples match this filter */
+  samplesHasTempo_SOME?: InputMaybe<SampleWhere>;
+};
+
+export type TemposConnection = {
+  __typename?: "TemposConnection";
+  edges: Array<TempoEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars["Int"];
+};
+
+export type UpdateBamCompletesMutationResponse = {
+  __typename?: "UpdateBamCompletesMutationResponse";
+  bamCompletes: Array<BamComplete>;
+  info: UpdateInfo;
+};
+
+export type UpdateCohortCompletesMutationResponse = {
+  __typename?: "UpdateCohortCompletesMutationResponse";
+  cohortCompletes: Array<CohortComplete>;
+  info: UpdateInfo;
+};
+
+export type UpdateCohortsMutationResponse = {
+  __typename?: "UpdateCohortsMutationResponse";
+  cohorts: Array<Cohort>;
+  info: UpdateInfo;
+};
+
 export type UpdateInfo = {
   __typename?: "UpdateInfo";
   bookmark?: Maybe<Scalars["String"]>;
@@ -7496,6 +10529,12 @@ export type UpdateInfo = {
   nodesDeleted: Scalars["Int"];
   relationshipsCreated: Scalars["Int"];
   relationshipsDeleted: Scalars["Int"];
+};
+
+export type UpdateMafCompletesMutationResponse = {
+  __typename?: "UpdateMafCompletesMutationResponse";
+  info: UpdateInfo;
+  mafCompletes: Array<MafComplete>;
 };
 
 export type UpdatePatientAliasesMutationResponse = {
@@ -7514,6 +10553,12 @@ export type UpdateProjectsMutationResponse = {
   __typename?: "UpdateProjectsMutationResponse";
   info: UpdateInfo;
   projects: Array<Project>;
+};
+
+export type UpdateQcCompletesMutationResponse = {
+  __typename?: "UpdateQcCompletesMutationResponse";
+  info: UpdateInfo;
+  qcCompletes: Array<QcComplete>;
 };
 
 export type UpdateRequestMetadataMutationResponse = {
@@ -7550,6 +10595,12 @@ export type UpdateStatusesMutationResponse = {
   __typename?: "UpdateStatusesMutationResponse";
   info: UpdateInfo;
   statuses: Array<Status>;
+};
+
+export type UpdateTemposMutationResponse = {
+  __typename?: "UpdateTemposMutationResponse";
+  info: UpdateInfo;
+  tempos: Array<Tempo>;
 };
 
 export type RequestsListQueryVariables = Exact<{
@@ -7630,96 +10681,13 @@ export type PatientsListQuery = {
   }>;
 };
 
-export type RequestWithSamplesQueryVariables = Exact<{
-  options?: InputMaybe<RequestOptions>;
-  where?: InputMaybe<RequestWhere>;
-  hasSampleSamplesWhere2?: InputMaybe<SampleWhere>;
-  hasMetadataSampleMetadataWhere2?: InputMaybe<SampleMetadataWhere>;
-  hasSampleSamplesConnectionWhere2?: InputMaybe<RequestHasSampleSamplesConnectionWhere>;
-  hasMetadataSampleMetadataOptions2?: InputMaybe<SampleMetadataOptions>;
-}>;
-
-export type RequestWithSamplesQuery = {
-  __typename?: "Query";
-  requests: Array<{
-    __typename?: "Request";
-    igoRequestId: string;
-    igoProjectId: string;
-    genePanel: string;
-    dataAnalystName: string;
-    dataAnalystEmail: string;
-    dataAccessEmails: string;
-    bicAnalysis: boolean;
-    investigatorEmail: string;
-    investigatorName: string;
-    isCmoRequest: boolean;
-    labHeadEmail: string;
-    labHeadName: string;
-    libraryType?: string | null;
-    otherContactEmails: string;
-    piEmail: string;
-    projectManagerName: string;
-    qcAccessEmails: string;
-    smileRequestId: string;
-    hasSampleSamples: Array<{
-      __typename?: "Sample";
-      smileSampleId: string;
-      sampleCategory: string;
-      sampleClass: string;
-      datasource: string;
-      revisable: boolean;
-      hasMetadataSampleMetadata: Array<{
-        __typename?: "SampleMetadata";
-        additionalProperties: string;
-        baitSet?: string | null;
-        cfDNA2dBarcode?: string | null;
-        cmoInfoIgoId?: string | null;
-        cmoPatientId?: string | null;
-        cmoSampleIdFields: string;
-        cmoSampleName?: string | null;
-        collectionYear: string;
-        genePanel: string;
-        igoComplete?: boolean | null;
-        igoRequestId?: string | null;
-        importDate: string;
-        investigatorSampleId?: string | null;
-        libraries: string;
-        oncotreeCode?: string | null;
-        preservation?: string | null;
-        primaryId: string;
-        qcReports: string;
-        sampleClass: string;
-        sampleName?: string | null;
-        sampleOrigin?: string | null;
-        sampleType: string;
-        sex: string;
-        species: string;
-        tissueLocation?: string | null;
-        tubeId?: string | null;
-        tumorOrNormal: string;
-      }>;
-      patientsHasSample: Array<{
-        __typename?: "Patient";
-        smilePatientId: string;
-        patientAliasesIsAlias: Array<{
-          __typename?: "PatientAlias";
-          namespace: string;
-          value: string;
-        }>;
-      }>;
-    }>;
-    hasSampleSamplesConnection: {
-      __typename?: "RequestHasSampleSamplesConnection";
-      totalCount: number;
-    };
-  }>;
-};
-
 export type FindSamplesByInputValueQueryVariables = Exact<{
   where?: InputMaybe<SampleWhere>;
   first?: InputMaybe<Scalars["Int"]>;
-  options?: InputMaybe<SampleMetadataOptions>;
-  patientAliasesIsAliasWhere2?: InputMaybe<PatientAliasWhere>;
+  sampleMetadataOptions?: InputMaybe<SampleMetadataOptions>;
+  bamCompletesOptions?: InputMaybe<BamCompleteOptions>;
+  mafCompletesOptions?: InputMaybe<MafCompleteOptions>;
+  qcCompletesOptions?: InputMaybe<QcCompleteOptions>;
 }>;
 
 export type FindSamplesByInputValueQuery = {
@@ -7812,6 +10780,34 @@ export type FindSamplesByInputValueQuery = {
             };
           }>;
         };
+        cohortsHasCohortSampleConnection: {
+          __typename?: "SampleCohortsHasCohortSampleConnection";
+          edges: Array<{
+            __typename?: "SampleCohortsHasCohortSampleRelationship";
+            node: { __typename?: "Cohort"; cohortId: string };
+          }>;
+        };
+        hasTempoTempos: Array<{
+          __typename?: "Tempo";
+          hasEventBamCompletes: Array<{
+            __typename?: "BamComplete";
+            date: string;
+            status: string;
+          }>;
+          hasEventMafCompletes: Array<{
+            __typename?: "MafComplete";
+            date: string;
+            normalPrimaryId: string;
+            status: string;
+          }>;
+          hasEventQcCompletes: Array<{
+            __typename?: "QcComplete";
+            date: string;
+            reason: string;
+            result: string;
+            status: string;
+          }>;
+        }>;
       };
     }>;
   };
@@ -7992,6 +10988,36 @@ export type GetPatientIdsTripletsQuery = {
   } | null> | null;
 };
 
+export type CohortsListQueryVariables = Exact<{
+  where?: InputMaybe<CohortWhere>;
+  options?: InputMaybe<CohortOptions>;
+  cohortsConnectionWhere2?: InputMaybe<CohortWhere>;
+  hasCohortCompleteCohortCompletesOptions2?: InputMaybe<CohortCompleteOptions>;
+}>;
+
+export type CohortsListQuery = {
+  __typename?: "Query";
+  cohortsConnection: { __typename?: "CohortsConnection"; totalCount: number };
+  cohorts: Array<{
+    __typename?: "Cohort";
+    cohortId: string;
+    hasCohortCompleteCohortCompletes: Array<{
+      __typename?: "CohortComplete";
+      type: string;
+      endUsers?: Array<string | null> | null;
+      pmUsers?: Array<string | null> | null;
+      projectTitle?: string | null;
+      projectSubtitle?: string | null;
+      status: string;
+      date: string;
+    }>;
+    hasCohortSampleSamplesConnection: {
+      __typename?: "CohortHasCohortSampleSamplesConnection";
+      totalCount: number;
+    };
+  }>;
+};
+
 export const RequestPartsFragmentDoc = gql`
   fragment RequestParts on Request {
     igoRequestId
@@ -8113,61 +11139,20 @@ export type PatientsListQueryResult = Apollo.QueryResult<
   PatientsListQuery,
   PatientsListQueryVariables
 >;
-export const RequestWithSamplesDocument = gql`
-  query RequestWithSamples(
-    $options: RequestOptions
-    $where: RequestWhere
-    $hasSampleSamplesWhere2: SampleWhere
-    $hasMetadataSampleMetadataWhere2: SampleMetadataWhere
-    $hasSampleSamplesConnectionWhere2: RequestHasSampleSamplesConnectionWhere
-    $hasMetadataSampleMetadataOptions2: SampleMetadataOptions
-  ) {
-    requests(where: $where, options: $options) {
-      ...RequestParts
-      hasSampleSamples(where: $hasSampleSamplesWhere2) {
-        smileSampleId
-        sampleCategory
-        sampleClass
-        datasource
-        revisable
-        hasMetadataSampleMetadata(
-          where: $hasMetadataSampleMetadataWhere2
-          options: $hasMetadataSampleMetadataOptions2
-        ) {
-          ...SampleMetadataParts
-        }
-        patientsHasSample {
-          smilePatientId
-          patientAliasesIsAlias {
-            namespace
-            value
-          }
-        }
-      }
-      hasSampleSamplesConnection(where: $hasSampleSamplesConnectionWhere2) {
-        totalCount
-      }
-    }
-  }
-  ${RequestPartsFragmentDoc}
-  ${SampleMetadataPartsFragmentDoc}
-`;
-export type RequestWithSamplesQueryResult = Apollo.QueryResult<
-  RequestWithSamplesQuery,
-  RequestWithSamplesQueryVariables
->;
 export const FindSamplesByInputValueDocument = gql`
   query FindSamplesByInputValue(
     $where: SampleWhere
     $first: Int
-    $options: SampleMetadataOptions
-    $patientAliasesIsAliasWhere2: PatientAliasWhere
+    $sampleMetadataOptions: SampleMetadataOptions
+    $bamCompletesOptions: BamCompleteOptions
+    $mafCompletesOptions: MafCompleteOptions
+    $qcCompletesOptions: QcCompleteOptions
   ) {
     samplesConnection(where: $where, first: $first) {
       edges {
         node {
           ...SampleParts
-          hasMetadataSampleMetadata(options: $options) {
+          hasMetadataSampleMetadata(options: $sampleMetadataOptions) {
             ...SampleMetadataParts
             hasStatusStatuses {
               validationReport
@@ -8185,11 +11170,35 @@ export const FindSamplesByInputValueDocument = gql`
             edges {
               node {
                 smilePatientId
-                patientAliasesIsAlias(where: $patientAliasesIsAliasWhere2) {
+                patientAliasesIsAlias {
                   namespace
                   value
                 }
               }
+            }
+          }
+          cohortsHasCohortSampleConnection {
+            edges {
+              node {
+                cohortId
+              }
+            }
+          }
+          hasTempoTempos {
+            hasEventBamCompletes(options: $bamCompletesOptions) {
+              date
+              status
+            }
+            hasEventMafCompletes(options: $mafCompletesOptions) {
+              date
+              normalPrimaryId
+              status
+            }
+            hasEventQcCompletes(options: $qcCompletesOptions) {
+              date
+              reason
+              result
+              status
             }
           }
         }
@@ -8273,4 +11282,37 @@ export const GetPatientIdsTripletsDocument = gql`
 export type GetPatientIdsTripletsQueryResult = Apollo.QueryResult<
   GetPatientIdsTripletsQuery,
   GetPatientIdsTripletsQueryVariables
+>;
+export const CohortsListDocument = gql`
+  query CohortsList(
+    $where: CohortWhere
+    $options: CohortOptions
+    $cohortsConnectionWhere2: CohortWhere
+    $hasCohortCompleteCohortCompletesOptions2: CohortCompleteOptions
+  ) {
+    cohortsConnection(where: $cohortsConnectionWhere2) {
+      totalCount
+    }
+    cohorts(where: $where, options: $options) {
+      cohortId
+      hasCohortCompleteCohortCompletes(
+        options: $hasCohortCompleteCohortCompletesOptions2
+      ) {
+        type
+        endUsers
+        pmUsers
+        projectTitle
+        projectSubtitle
+        status
+        date
+      }
+      hasCohortSampleSamplesConnection {
+        totalCount
+      }
+    }
+  }
+`;
+export type CohortsListQueryResult = Apollo.QueryResult<
+  CohortsListQuery,
+  CohortsListQueryVariables
 >;

@@ -1,7 +1,7 @@
 import { chain } from "lodash";
 
-export function parseSearchQueries(value: string): string[] {
-  return chain(value)
+export function parseUserSearchVal(userSearchVal: string): string[] {
+  return chain(userSearchVal)
     .split(/[\s,]+/) // split on whitespaces and commas
     .compact()
     .uniq()

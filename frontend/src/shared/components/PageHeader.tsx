@@ -1,19 +1,9 @@
-import React from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import { NavLink } from "react-router-dom";
-import { FunctionComponent } from "react";
 
-interface IPageHeaderProps {
-  pageTitle: string;
-  pageRoute: string;
-}
-
-const PageHeader: FunctionComponent<IPageHeaderProps> = ({
-  pageTitle,
-  pageRoute,
-}) => {
-  pageTitle =
-    pageTitle.charAt(0).toUpperCase() + pageTitle.slice(1).toLowerCase();
+export function PageHeader({ dataName }: { dataName: string }) {
+  const pageTitle =
+    dataName.charAt(0).toUpperCase() + dataName.slice(1).toLowerCase();
 
   return (
     <Container fluid>
@@ -25,7 +15,7 @@ const PageHeader: FunctionComponent<IPageHeaderProps> = ({
                 <a href="/">Home</a>
               </li>
               <li className="breadcrumb-item active">
-                <NavLink to={pageRoute}>{pageTitle}</NavLink>
+                <NavLink to={`/${dataName}`}>{pageTitle}</NavLink>
               </li>
             </ol>
           </nav>
@@ -34,6 +24,4 @@ const PageHeader: FunctionComponent<IPageHeaderProps> = ({
       </Row>
     </Container>
   );
-};
-
-export default PageHeader;
+}

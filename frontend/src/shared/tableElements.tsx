@@ -4,6 +4,8 @@ import { Button, Col, Form, Row } from "react-bootstrap";
 import Spinner from "react-spinkit";
 import InfoIcon from "@material-ui/icons/InfoOutlined";
 import { Tooltip } from "@material-ui/core";
+import { DataName } from "./types";
+import { Dispatch, SetStateAction } from "react";
 
 export function LoadingSpinner() {
   return (
@@ -22,20 +24,20 @@ export function ErrorMessage({ error }: { error: ApolloError }) {
 }
 
 export function Toolbar({
-  searchTerm,
-  input,
-  setInput,
+  dataName,
+  userSearchVal,
+  setUserSearchVal,
   handleSearch,
-  clearInput,
+  clearUserSearchVal,
   matchingResultsCount,
   handleDownload,
   customUI,
 }: {
-  searchTerm: string;
-  input: string;
-  setInput: (input: string) => void;
+  dataName: DataName;
+  userSearchVal: string;
+  setUserSearchVal: Dispatch<SetStateAction<string>>;
   handleSearch: () => void;
-  clearInput: () => void;
+  clearUserSearchVal: () => void;
   matchingResultsCount: string;
   handleDownload: () => void;
   customUI?: JSX.Element;
@@ -53,20 +55,20 @@ export function Toolbar({
           className={"d-inline-block"}
           style={{ width: "300px" }}
           type="search"
-          placeholder={"Search " + searchTerm}
+          placeholder={"Search " + dataName}
           aria-label="Search"
-          value={input}
+          value={userSearchVal}
           onKeyDown={(event) => {
             if (event.key === "Enter") {
               handleSearch();
             }
           }}
           onInput={(event) => {
-            const currInput = event.currentTarget.value;
-            if (currInput === "") {
-              clearInput();
+            const userSearchVal = event.currentTarget.value;
+            if (userSearchVal === "") {
+              clearUserSearchVal();
             }
-            setInput(currInput);
+            setUserSearchVal(userSearchVal);
           }}
         />
       </Col>
