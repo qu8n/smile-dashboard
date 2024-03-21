@@ -123,7 +123,6 @@ export default function CohortsPage() {
           {
             hasCohortCompleteCohortCompletesOptions2: {
               sort: [{ date: SortDirection.Desc }],
-              limit: 1,
             },
           } as CohortCompleteOptions
         }

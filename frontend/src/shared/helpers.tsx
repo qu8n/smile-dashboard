@@ -517,7 +517,13 @@ export const CohortsListColumns: ColDef[] = [
     sortable: false,
   },
   {
-    headerName: "Cohort Complete Date",
+    headerName: "Delivery Date",
+    valueGetter: ({ data }) =>
+      data["hasCohortCompleteCohortCompletes"]?.slice(-1)[0]?.date,
+    sortable: false,
+  },
+  {
+    headerName: "Complete Date",
     valueGetter: ({ data }) =>
       data["hasCohortCompleteCohortCompletes"][0]?.date,
     sortable: false,
