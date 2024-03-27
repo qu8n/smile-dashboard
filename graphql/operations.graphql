@@ -87,6 +87,9 @@ query FindSamplesByInputValue(
           edges {
             node {
               cohortId
+              hasCohortCompleteCohortCompletes {
+                date
+              }
             }
           }
         }

@@ -8,7 +8,7 @@ import {
   RequestsListColumns,
   SampleDetailsColumns,
   defaultEditableColDef,
-  getMetadataFromSamples,
+  getSampleMetadataFromSamplesQuery,
   handleSearch,
   sampleFilterWhereVariables,
 } from "../../shared/helpers";
@@ -90,7 +90,7 @@ export default function RequestsPage() {
           sampleQueryParamValue &&
           `${sampleQueryParamHeaderName} ${sampleQueryParamValue}`
         }
-        getSamplesRowData={getMetadataFromSamples}
+        getSamplesRowData={getSampleMetadataFromSamplesQuery}
         samplesParentWhereVariables={
           {
             hasMetadataSampleMetadata_SOME: {

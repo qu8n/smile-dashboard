@@ -18,7 +18,7 @@ import {
   PatientsListColumns,
   SampleDetailsColumns,
   defaultEditableColDef,
-  getMetadataFromSamples,
+  getSampleMetadataFromSamplesQuery,
   sampleFilterWhereVariables,
 } from "../../shared/helpers";
 import { getUserEmail } from "../../utils/getUserEmail";
@@ -292,7 +292,7 @@ export default function PatientsPage({
           sampleQueryParamValue &&
           `${sampleQueryParamHeaderName} ${sampleQueryParamValue}`
         }
-        getSamplesRowData={getMetadataFromSamples}
+        getSamplesRowData={getSampleMetadataFromSamplesQuery}
         samplesParentWhereVariables={
           {
             OR: [

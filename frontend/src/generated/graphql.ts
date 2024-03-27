@@ -10785,7 +10785,14 @@ export type FindSamplesByInputValueQuery = {
           __typename?: "SampleCohortsHasCohortSampleConnection";
           edges: Array<{
             __typename?: "SampleCohortsHasCohortSampleRelationship";
-            node: { __typename?: "Cohort"; cohortId: string };
+            node: {
+              __typename?: "Cohort";
+              cohortId: string;
+              hasCohortCompleteCohortCompletes: Array<{
+                __typename?: "CohortComplete";
+                date: string;
+              }>;
+            };
           }>;
         };
         hasTempoTempos: Array<{
@@ -11280,6 +11287,9 @@ export const FindSamplesByInputValueDocument = gql`
             edges {
               node {
                 cohortId
+                hasCohortCompleteCohortCompletes {
+                  date
+                }
               }
             }
           }

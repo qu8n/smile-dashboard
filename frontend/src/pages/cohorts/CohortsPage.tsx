@@ -11,7 +11,7 @@ import {
   CohortsListColumns,
   cohortSampleFilterWhereVariables,
   defaultReadOnlyColDef,
-  getCohortDataFromSamples,
+  getSampleCohortDataFromSamplesQuery,
   handleSearch,
 } from "../../shared/helpers";
 import RecordsList from "../../components/RecordsList";
@@ -141,7 +141,7 @@ export default function CohortsPage() {
           sampleQueryParamValue &&
           `${sampleQueryParamHeaderName} "${sampleQueryParamValue}"`
         }
-        getSamplesRowData={getCohortDataFromSamples}
+        getSamplesRowData={getSampleCohortDataFromSamplesQuery}
         samplesParentWhereVariables={
           {
             cohortsHasCohortSampleConnection_SOME: {
