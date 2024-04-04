@@ -7,7 +7,6 @@ import { useState } from "react";
 import {
   RequestsListColumns,
   SampleDetailsColumns,
-  defaultEditableColDef,
   getSampleMetadataFromSamplesQuery,
   handleSearch,
   sampleFilterWhereVariables,
@@ -85,7 +84,6 @@ export default function RequestsPage() {
         setShowDownloadModal={setShowDownloadModal}
         handleDownload={() => setShowDownloadModal(true)}
         samplesColDefs={SampleDetailsColumns}
-        samplesDefaultColDef={defaultEditableColDef}
         samplesQueryParam={
           sampleQueryParamValue &&
           `${sampleQueryParamHeaderName} ${sampleQueryParamValue}`

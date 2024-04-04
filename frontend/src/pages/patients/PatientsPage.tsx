@@ -17,7 +17,6 @@ import { REACT_APP_EXPRESS_SERVER_ORIGIN } from "../../shared/constants";
 import {
   PatientsListColumns,
   SampleDetailsColumns,
-  defaultEditableColDef,
   getSampleMetadataFromSamplesQuery,
   sampleFilterWhereVariables,
 } from "../../shared/helpers";
@@ -287,7 +286,6 @@ export default function PatientsPage({
           setShowDownloadModal(true);
         }}
         samplesColDefs={SampleDetailsColumns}
-        samplesDefaultColDef={defaultEditableColDef}
         samplesQueryParam={
           sampleQueryParamValue &&
           `${sampleQueryParamHeaderName} ${sampleQueryParamValue}`

@@ -14,6 +14,7 @@ import { CSVFormulate } from "../utils/CSVExport";
 import {
   SampleChange,
   SampleMetadataExtended,
+  defaultColDef,
   handleSearch,
 } from "../shared/helpers";
 import { AgGridReact } from "ag-grid-react";
@@ -30,7 +31,6 @@ const max_rows = 500;
 
 interface ISampleListProps {
   columnDefs: ColDef[];
-  defaultColDef: ColDef;
   getRowData: (samples: Sample[]) => any[];
   setUnsavedChanges?: (unsavedChanges: boolean) => void;
   parentWhereVariables?: SampleWhere;
@@ -40,7 +40,6 @@ interface ISampleListProps {
 
 export default function SamplesList({
   columnDefs,
-  defaultColDef,
   getRowData,
   parentWhereVariables,
   refetchWhereVariables,

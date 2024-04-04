@@ -94,6 +94,9 @@ query FindSamplesByInputValue(
           }
         }
         hasTempoTempos {
+          billed
+          billedBy
+          costCenter
           hasEventBamCompletes(options: $bamCompletesOptions) {
             date
             status
@@ -245,6 +248,12 @@ query CohortsList(
     }
     hasCohortSampleSamplesConnection {
       totalCount
+    }
+    hasCohortSampleSamples {
+      smileSampleId
+      hasTempoTempos {
+        billed
+      }
     }
   }
 }

@@ -4,6 +4,7 @@ import {
   ICellRendererParams,
   IHeaderParams,
   RowNode,
+  ITooltipParams,
 } from "ag-grid-community";
 import { Button } from "react-bootstrap";
 import "ag-grid-enterprise";
@@ -15,8 +16,8 @@ import {
   TempoWhere,
 } from "../generated/graphql";
 import WarningIcon from "@material-ui/icons/Warning";
+import CheckIcon from "@material-ui/icons/Check";
 import { StatusTooltip } from "./components/StatusToolTip";
-import { ITooltipParams } from "ag-grid-community";
 import { parseUserSearchVal } from "../utils/parseSearchQueries";
 import { Dispatch, SetStateAction } from "react";
 
@@ -235,6 +236,17 @@ export const PatientsListColumns: ColDef[] = [
   },
 ];
 
+function LoadingIcon() {
+  return (
+    <div className="lds-ring">
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
+  );
+}
+
 export const SampleDetailsColumns: ColDef<SampleMetadataExtended>[] = [
   {
     field: "primaryId",
@@ -243,26 +255,15 @@ export const SampleDetailsColumns: ColDef<SampleMetadataExtended>[] = [
   {
     field: "revisable",
     headerName: "Status",
-    cellRenderer: (params: ICellRendererParams<SampleMetadataExtended>) => {
+    cellRenderer: (params: ICellRendererParams) => {
       if (params.data?.revisable) {
         return params.data?.hasStatusStatuses[0]?.validationStatus ? (
-          <div>
-            <strong>&#10003;</strong>
-          </div>
+          <CheckIcon />
         ) : (
-          <div>
-            <WarningIcon />
-          </div>
+          <WarningIcon />
         );
       } else {
-        return (
-          <div className="lds-ring">
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
-          </div>
-        );
+        return <LoadingIcon />;
       }
     },
     cellRendererParams: {
@@ -433,56 +434,58 @@ const readOnlyHeader = {
   `,
 };
 
-SampleDetailsColumns.forEach((colDef) => {
-  colDef.cellClassRules = {
-    unsubmittedChange: (params: any) => {
-      const changes = params.context.getChanges();
-      const changedValue = changes?.find((change: any) => {
-        return (
-          change.fieldName === params.colDef.field &&
-          change.primaryId === params.data.primaryId
-        );
-      });
-      return changedValue !== undefined;
-    },
-  };
-
-  if (colDef.valueGetter === undefined) {
-    colDef.valueGetter = (params) => {
-      const changes = params.context?.getChanges();
-
-      const changedValue = changes?.find((change: any) => {
-        return (
-          change.fieldName === params.colDef.field &&
-          change.primaryId === params.data?.primaryId
-        );
-      });
-      if (changedValue) {
-        return changedValue.newValue;
-      } else {
-        if (params?.colDef?.field! in params.data!) {
-          return params.data?.[
-            params.colDef?.field! as keyof SampleMetadataExtended
-          ];
-        } else {
-          return "N/A";
-        }
-      }
+function setupEditableSampleFields(samplesColDefs: ColDef[]) {
+  samplesColDefs.forEach((colDef) => {
+    colDef.cellClassRules = {
+      unsubmittedChange: (params: any) => {
+        const changes = params.context.getChanges();
+        const changedValue = changes?.find((change: any) => {
+          return (
+            change.fieldName === params.colDef.field &&
+            change.primaryId === params.data.primaryId
+          );
+        });
+        return changedValue !== undefined;
+      },
     };
-  }
 
-  colDef.editable = (params) => {
-    return (
-      !protectedFields.includes(params.colDef.field!) &&
-      params.data?.revisable === true
-    );
-  };
+    if (colDef.valueGetter === undefined) {
+      colDef.valueGetter = (params) => {
+        const changes = params.context?.getChanges();
 
-  colDef.headerComponentParams = (params: IHeaderParams) => {
-    if (protectedFields.includes(params.column.getColDef().field!))
-      return readOnlyHeader;
-  };
-});
+        const changedValue = changes?.find((change: any) => {
+          return (
+            change.fieldName === params.colDef.field &&
+            change.primaryId === params.data?.primaryId
+          );
+        });
+        if (changedValue) {
+          return changedValue.newValue;
+        } else {
+          if (params?.colDef?.field! in params.data!) {
+            return params.data?.[
+              params.colDef?.field! as keyof SampleMetadataExtended
+            ];
+          } else {
+            return "N/A";
+          }
+        }
+      };
+    }
+
+    colDef.editable = (params) => {
+      return (
+        editableSampleFields.includes(params.colDef.field!) &&
+        params.data?.revisable === true
+      );
+    };
+
+    colDef.headerComponentParams = (params: IHeaderParams) => {
+      if (!editableSampleFields.includes(params.column.getColDef().field!))
+        return readOnlyHeader;
+    };
+  });
+}
 
 export const CohortsListColumns: ColDef[] = [
   {
@@ -517,9 +520,21 @@ export const CohortsListColumns: ColDef[] = [
     sortable: false,
   },
   {
-    headerName: "Delivery Date",
-    valueGetter: ({ data }) =>
-      data["hasCohortCompleteCohortCompletes"]?.slice(-1)[0]?.date,
+    headerName: "Billed",
+    valueGetter: ({ data }) => {
+      return data["hasCohortSampleSamples"]?.every((sample: Sample) => {
+        return sample.hasTempoTempos?.[0]?.billed === true;
+      });
+    },
+    valueFormatter: (params) => (params.value === true ? "Yes" : "No"),
+  },
+  {
+    headerName: "Initial Cohort Delivery Date",
+    valueGetter: ({ data }) => {
+      const earliestCohortCompleteDate =
+        data["hasCohortCompleteCohortCompletes"]?.slice(-1)[0]?.date;
+      return formatCohortRelatedDate(earliestCohortCompleteDate);
+    },
     sortable: false,
   },
   {
@@ -527,6 +542,7 @@ export const CohortsListColumns: ColDef[] = [
     valueGetter: ({ data }) =>
       data["hasCohortCompleteCohortCompletes"][0]?.date,
     sortable: false,
+    hide: true,
   },
   {
     headerName: "End Users",
@@ -566,7 +582,7 @@ export const CohortsListColumns: ColDef[] = [
   },
 ];
 
-export const CohortSamplesDetailsColumns: ColDef[] = [
+export const CohortSampleDetailsColumns: ColDef[] = [
   {
     field: "primaryId",
     headerName: "Primary ID",
@@ -577,7 +593,27 @@ export const CohortSamplesDetailsColumns: ColDef[] = [
   },
   {
     field: "deliveryDate",
-    headerName: "Delivery Date",
+    headerName: "Initial Pipeline Run Date",
+  },
+  {
+    field: "billed",
+    headerName: "Billed",
+    editable: true,
+    cellEditor: "agRichSelectCellEditor",
+    cellEditorPopup: true,
+    cellEditorParams: {
+      values: [true, false],
+    },
+    valueFormatter: (params) => (params.value === true ? "Yes" : "No"),
+  },
+  {
+    field: "costCenter",
+    headerName: "Cost Center",
+    editable: true,
+  },
+  {
+    field: "billedBy",
+    headerName: "Billed By",
   },
   {
     field: "bamCompleteDate",
@@ -617,35 +653,30 @@ export const CohortSamplesDetailsColumns: ColDef[] = [
   },
 ];
 
+setupEditableSampleFields(SampleDetailsColumns);
+setupEditableSampleFields(CohortSampleDetailsColumns);
+
 export const defaultColDef: ColDef = {
   sortable: true,
   resizable: true,
+  editable: false,
   headerComponentParams: readOnlyHeader,
 };
 
-export const defaultEditableColDef: ColDef = {
-  ...defaultColDef,
-  editable: true,
-};
-
-export const defaultReadOnlyColDef: ColDef = {
-  ...defaultColDef,
-  editable: false,
-};
-
-const protectedFields: string[] = [
-  "cmoSampleName",
-  "igoComplete",
-  "importDate",
-  "primaryId",
-  "cmoSampleIdFields",
-  "libraries",
-  "genePanel",
-  "baitSet",
-  "species",
-  "validationStatus",
-  "validationReport",
-  "revisable",
+const editableSampleFields = [
+  "cmoPatientId",
+  "investigatorSampleId",
+  "sampleType",
+  "preservation",
+  "tumorOrNormal",
+  "sampleClass",
+  "oncotreeCode",
+  "collectionYear",
+  "sampleOrigin",
+  "tissueLocation",
+  "sex",
+  "billed",
+  "costCenter",
 ];
 
 export function sampleFilterWhereVariables(
@@ -705,6 +736,12 @@ export function cohortSampleFilterWhereVariables(
   if (parsedSearchVals.length > 1) {
     tempoWhere = [
       {
+        billedBy_IN: parsedSearchVals,
+      },
+      {
+        costCenter_IN: parsedSearchVals,
+      },
+      {
         hasEventBamCompletes_SOME: {
           date_IN: parsedSearchVals,
         },
@@ -752,6 +789,12 @@ export function cohortSampleFilterWhereVariables(
     ];
   } else {
     tempoWhere = [
+      {
+        billedBy_CONTAINS: parsedSearchVals[0],
+      },
+      {
+        costCenter_CONTAINS: parsedSearchVals[0],
+      },
       {
         hasEventBamCompletes_SOME: {
           date_CONTAINS: parsedSearchVals[0],
@@ -847,6 +890,8 @@ export function getSampleCohortDataFromSamplesQuery(samples: Sample[]) {
     const deliveryDate = cohortDates?.sort()[0]; // earliest cohort date
 
     const tempo = s.hasTempoTempos?.[0];
+    const { billed, billedBy, costCenter } = tempo ?? {};
+
     const bamComplete = tempo?.hasEventBamCompletes?.[0];
     const { date: bamCompleteDate, status: bamCompleteStatus } =
       bamComplete ?? {};
@@ -868,13 +913,17 @@ export function getSampleCohortDataFromSamplesQuery(samples: Sample[]) {
 
     return {
       ...s.hasMetadataSampleMetadata[0],
-      deliveryDate,
-      bamCompleteDate,
+      revisable: s.revisable,
+      deliveryDate: formatCohortRelatedDate(deliveryDate),
+      billed,
+      billedBy,
+      costCenter,
+      bamCompleteDate: formatCohortRelatedDate(bamCompleteDate),
       bamCompleteStatus,
-      mafCompleteDate,
+      mafCompleteDate: formatCohortRelatedDate(mafCompleteDate),
       mafCompleteStatus,
       mafCompleteNormalPrimaryId,
-      qcCompleteDate,
+      qcCompleteDate: formatCohortRelatedDate(qcCompleteDate),
       qcCompleteResult,
       qcCompleteReason,
       qcCompleteStatus,
@@ -888,4 +937,8 @@ export function handleSearch(
 ) {
   const parsedSearchVals = parseUserSearchVal(userSearchVal);
   setParsedSearchVals(parsedSearchVals);
+}
+
+function formatCohortRelatedDate(date: string) {
+  return date?.split(" ")[0];
 }

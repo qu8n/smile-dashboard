@@ -2,7 +2,6 @@ import { PageHeader } from "../../shared/components/PageHeader";
 import SamplesList from "../../components/SamplesList";
 import {
   SampleDetailsColumns,
-  defaultEditableColDef,
   getSampleMetadataFromSamplesQuery,
   sampleFilterWhereVariables,
 } from "../../shared/helpers";
@@ -15,7 +14,6 @@ export default function SamplesPage() {
 
       <SamplesList
         columnDefs={SampleDetailsColumns}
-        defaultColDef={defaultEditableColDef}
         getRowData={getSampleMetadataFromSamplesQuery}
         refetchWhereVariables={(parsedSearchVals) => {
           return {

@@ -44,6 +44,7 @@ export type BamCompleteTemposHasEventConnectionArgs = {
   after?: InputMaybe<Scalars["String"]>;
   directed?: InputMaybe<Scalars["Boolean"]>;
   first?: InputMaybe<Scalars["Int"]>;
+  sort?: InputMaybe<Array<BamCompleteTemposHasEventConnectionSort>>;
   where?: InputMaybe<BamCompleteTemposHasEventConnectionWhere>;
 };
 
@@ -106,6 +107,15 @@ export type BamCompleteSort = {
 export type BamCompleteTempoTemposHasEventAggregationSelection = {
   __typename?: "BamCompleteTempoTemposHasEventAggregationSelection";
   count: Scalars["Int"];
+  node?: Maybe<BamCompleteTempoTemposHasEventNodeAggregateSelection>;
+};
+
+export type BamCompleteTempoTemposHasEventNodeAggregateSelection = {
+  __typename?: "BamCompleteTempoTemposHasEventNodeAggregateSelection";
+  accessLevel: StringAggregateSelectionNonNullable;
+  billedBy: StringAggregateSelectionNonNullable;
+  costCenter: StringAggregateSelectionNonNullable;
+  custodianInformation: StringAggregateSelectionNonNullable;
 };
 
 export type BamCompleteTemposHasEventAggregateInput = {
@@ -116,6 +126,7 @@ export type BamCompleteTemposHasEventAggregateInput = {
   count_GTE?: InputMaybe<Scalars["Int"]>;
   count_LT?: InputMaybe<Scalars["Int"]>;
   count_LTE?: InputMaybe<Scalars["Int"]>;
+  node?: InputMaybe<BamCompleteTemposHasEventNodeAggregationWhereInput>;
 };
 
 export type BamCompleteTemposHasEventConnectFieldInput = {
@@ -128,6 +139,10 @@ export type BamCompleteTemposHasEventConnection = {
   edges: Array<BamCompleteTemposHasEventRelationship>;
   pageInfo: PageInfo;
   totalCount: Scalars["Int"];
+};
+
+export type BamCompleteTemposHasEventConnectionSort = {
+  node?: InputMaybe<TempoSort>;
 };
 
 export type BamCompleteTemposHasEventConnectionWhere = {
@@ -154,6 +169,91 @@ export type BamCompleteTemposHasEventDisconnectFieldInput = {
 export type BamCompleteTemposHasEventFieldInput = {
   connect?: InputMaybe<Array<BamCompleteTemposHasEventConnectFieldInput>>;
   create?: InputMaybe<Array<BamCompleteTemposHasEventCreateFieldInput>>;
+};
+
+export type BamCompleteTemposHasEventNodeAggregationWhereInput = {
+  AND?: InputMaybe<Array<BamCompleteTemposHasEventNodeAggregationWhereInput>>;
+  OR?: InputMaybe<Array<BamCompleteTemposHasEventNodeAggregationWhereInput>>;
+  accessLevel_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  accessLevel_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  accessLevel_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  accessLevel_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  accessLevel_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  accessLevel_EQUAL?: InputMaybe<Scalars["String"]>;
+  accessLevel_GT?: InputMaybe<Scalars["Int"]>;
+  accessLevel_GTE?: InputMaybe<Scalars["Int"]>;
+  accessLevel_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  accessLevel_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  accessLevel_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  accessLevel_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  accessLevel_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  accessLevel_LT?: InputMaybe<Scalars["Int"]>;
+  accessLevel_LTE?: InputMaybe<Scalars["Int"]>;
+  accessLevel_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  accessLevel_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  accessLevel_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  accessLevel_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  accessLevel_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  billedBy_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  billedBy_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  billedBy_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  billedBy_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  billedBy_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  billedBy_EQUAL?: InputMaybe<Scalars["String"]>;
+  billedBy_GT?: InputMaybe<Scalars["Int"]>;
+  billedBy_GTE?: InputMaybe<Scalars["Int"]>;
+  billedBy_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  billedBy_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  billedBy_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  billedBy_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  billedBy_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  billedBy_LT?: InputMaybe<Scalars["Int"]>;
+  billedBy_LTE?: InputMaybe<Scalars["Int"]>;
+  billedBy_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  billedBy_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  billedBy_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  billedBy_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  billedBy_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  costCenter_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  costCenter_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  costCenter_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  costCenter_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  costCenter_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  costCenter_EQUAL?: InputMaybe<Scalars["String"]>;
+  costCenter_GT?: InputMaybe<Scalars["Int"]>;
+  costCenter_GTE?: InputMaybe<Scalars["Int"]>;
+  costCenter_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  costCenter_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  costCenter_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  costCenter_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  costCenter_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  costCenter_LT?: InputMaybe<Scalars["Int"]>;
+  costCenter_LTE?: InputMaybe<Scalars["Int"]>;
+  costCenter_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  costCenter_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  costCenter_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  costCenter_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  costCenter_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  custodianInformation_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  custodianInformation_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  custodianInformation_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  custodianInformation_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  custodianInformation_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  custodianInformation_EQUAL?: InputMaybe<Scalars["String"]>;
+  custodianInformation_GT?: InputMaybe<Scalars["Int"]>;
+  custodianInformation_GTE?: InputMaybe<Scalars["Int"]>;
+  custodianInformation_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  custodianInformation_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  custodianInformation_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  custodianInformation_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  custodianInformation_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  custodianInformation_LT?: InputMaybe<Scalars["Int"]>;
+  custodianInformation_LTE?: InputMaybe<Scalars["Int"]>;
+  custodianInformation_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  custodianInformation_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  custodianInformation_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  custodianInformation_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  custodianInformation_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
 };
 
 export type BamCompleteTemposHasEventRelationship = {
@@ -1290,6 +1390,7 @@ export type MafCompleteTemposHasEventConnectionArgs = {
   after?: InputMaybe<Scalars["String"]>;
   directed?: InputMaybe<Scalars["Boolean"]>;
   first?: InputMaybe<Scalars["Int"]>;
+  sort?: InputMaybe<Array<MafCompleteTemposHasEventConnectionSort>>;
   where?: InputMaybe<MafCompleteTemposHasEventConnectionWhere>;
 };
 
@@ -1355,6 +1456,15 @@ export type MafCompleteSort = {
 export type MafCompleteTempoTemposHasEventAggregationSelection = {
   __typename?: "MafCompleteTempoTemposHasEventAggregationSelection";
   count: Scalars["Int"];
+  node?: Maybe<MafCompleteTempoTemposHasEventNodeAggregateSelection>;
+};
+
+export type MafCompleteTempoTemposHasEventNodeAggregateSelection = {
+  __typename?: "MafCompleteTempoTemposHasEventNodeAggregateSelection";
+  accessLevel: StringAggregateSelectionNonNullable;
+  billedBy: StringAggregateSelectionNonNullable;
+  costCenter: StringAggregateSelectionNonNullable;
+  custodianInformation: StringAggregateSelectionNonNullable;
 };
 
 export type MafCompleteTemposHasEventAggregateInput = {
@@ -1365,6 +1475,7 @@ export type MafCompleteTemposHasEventAggregateInput = {
   count_GTE?: InputMaybe<Scalars["Int"]>;
   count_LT?: InputMaybe<Scalars["Int"]>;
   count_LTE?: InputMaybe<Scalars["Int"]>;
+  node?: InputMaybe<MafCompleteTemposHasEventNodeAggregationWhereInput>;
 };
 
 export type MafCompleteTemposHasEventConnectFieldInput = {
@@ -1377,6 +1488,10 @@ export type MafCompleteTemposHasEventConnection = {
   edges: Array<MafCompleteTemposHasEventRelationship>;
   pageInfo: PageInfo;
   totalCount: Scalars["Int"];
+};
+
+export type MafCompleteTemposHasEventConnectionSort = {
+  node?: InputMaybe<TempoSort>;
 };
 
 export type MafCompleteTemposHasEventConnectionWhere = {
@@ -1403,6 +1518,91 @@ export type MafCompleteTemposHasEventDisconnectFieldInput = {
 export type MafCompleteTemposHasEventFieldInput = {
   connect?: InputMaybe<Array<MafCompleteTemposHasEventConnectFieldInput>>;
   create?: InputMaybe<Array<MafCompleteTemposHasEventCreateFieldInput>>;
+};
+
+export type MafCompleteTemposHasEventNodeAggregationWhereInput = {
+  AND?: InputMaybe<Array<MafCompleteTemposHasEventNodeAggregationWhereInput>>;
+  OR?: InputMaybe<Array<MafCompleteTemposHasEventNodeAggregationWhereInput>>;
+  accessLevel_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  accessLevel_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  accessLevel_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  accessLevel_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  accessLevel_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  accessLevel_EQUAL?: InputMaybe<Scalars["String"]>;
+  accessLevel_GT?: InputMaybe<Scalars["Int"]>;
+  accessLevel_GTE?: InputMaybe<Scalars["Int"]>;
+  accessLevel_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  accessLevel_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  accessLevel_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  accessLevel_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  accessLevel_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  accessLevel_LT?: InputMaybe<Scalars["Int"]>;
+  accessLevel_LTE?: InputMaybe<Scalars["Int"]>;
+  accessLevel_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  accessLevel_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  accessLevel_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  accessLevel_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  accessLevel_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  billedBy_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  billedBy_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  billedBy_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  billedBy_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  billedBy_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  billedBy_EQUAL?: InputMaybe<Scalars["String"]>;
+  billedBy_GT?: InputMaybe<Scalars["Int"]>;
+  billedBy_GTE?: InputMaybe<Scalars["Int"]>;
+  billedBy_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  billedBy_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  billedBy_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  billedBy_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  billedBy_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  billedBy_LT?: InputMaybe<Scalars["Int"]>;
+  billedBy_LTE?: InputMaybe<Scalars["Int"]>;
+  billedBy_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  billedBy_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  billedBy_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  billedBy_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  billedBy_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  costCenter_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  costCenter_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  costCenter_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  costCenter_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  costCenter_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  costCenter_EQUAL?: InputMaybe<Scalars["String"]>;
+  costCenter_GT?: InputMaybe<Scalars["Int"]>;
+  costCenter_GTE?: InputMaybe<Scalars["Int"]>;
+  costCenter_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  costCenter_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  costCenter_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  costCenter_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  costCenter_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  costCenter_LT?: InputMaybe<Scalars["Int"]>;
+  costCenter_LTE?: InputMaybe<Scalars["Int"]>;
+  costCenter_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  costCenter_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  costCenter_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  costCenter_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  costCenter_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  custodianInformation_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  custodianInformation_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  custodianInformation_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  custodianInformation_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  custodianInformation_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  custodianInformation_EQUAL?: InputMaybe<Scalars["String"]>;
+  custodianInformation_GT?: InputMaybe<Scalars["Int"]>;
+  custodianInformation_GTE?: InputMaybe<Scalars["Int"]>;
+  custodianInformation_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  custodianInformation_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  custodianInformation_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  custodianInformation_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  custodianInformation_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  custodianInformation_LT?: InputMaybe<Scalars["Int"]>;
+  custodianInformation_LTE?: InputMaybe<Scalars["Int"]>;
+  custodianInformation_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  custodianInformation_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  custodianInformation_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  custodianInformation_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  custodianInformation_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
 };
 
 export type MafCompleteTemposHasEventRelationship = {
@@ -3200,6 +3400,7 @@ export type QcCompleteTemposHasEventConnectionArgs = {
   after?: InputMaybe<Scalars["String"]>;
   directed?: InputMaybe<Scalars["Boolean"]>;
   first?: InputMaybe<Scalars["Int"]>;
+  sort?: InputMaybe<Array<QcCompleteTemposHasEventConnectionSort>>;
   where?: InputMaybe<QcCompleteTemposHasEventConnectionWhere>;
 };
 
@@ -3266,6 +3467,15 @@ export type QcCompleteSort = {
 export type QcCompleteTempoTemposHasEventAggregationSelection = {
   __typename?: "QcCompleteTempoTemposHasEventAggregationSelection";
   count: Scalars["Int"];
+  node?: Maybe<QcCompleteTempoTemposHasEventNodeAggregateSelection>;
+};
+
+export type QcCompleteTempoTemposHasEventNodeAggregateSelection = {
+  __typename?: "QcCompleteTempoTemposHasEventNodeAggregateSelection";
+  accessLevel: StringAggregateSelectionNonNullable;
+  billedBy: StringAggregateSelectionNonNullable;
+  costCenter: StringAggregateSelectionNonNullable;
+  custodianInformation: StringAggregateSelectionNonNullable;
 };
 
 export type QcCompleteTemposHasEventAggregateInput = {
@@ -3276,6 +3486,7 @@ export type QcCompleteTemposHasEventAggregateInput = {
   count_GTE?: InputMaybe<Scalars["Int"]>;
   count_LT?: InputMaybe<Scalars["Int"]>;
   count_LTE?: InputMaybe<Scalars["Int"]>;
+  node?: InputMaybe<QcCompleteTemposHasEventNodeAggregationWhereInput>;
 };
 
 export type QcCompleteTemposHasEventConnectFieldInput = {
@@ -3288,6 +3499,10 @@ export type QcCompleteTemposHasEventConnection = {
   edges: Array<QcCompleteTemposHasEventRelationship>;
   pageInfo: PageInfo;
   totalCount: Scalars["Int"];
+};
+
+export type QcCompleteTemposHasEventConnectionSort = {
+  node?: InputMaybe<TempoSort>;
 };
 
 export type QcCompleteTemposHasEventConnectionWhere = {
@@ -3314,6 +3529,91 @@ export type QcCompleteTemposHasEventDisconnectFieldInput = {
 export type QcCompleteTemposHasEventFieldInput = {
   connect?: InputMaybe<Array<QcCompleteTemposHasEventConnectFieldInput>>;
   create?: InputMaybe<Array<QcCompleteTemposHasEventCreateFieldInput>>;
+};
+
+export type QcCompleteTemposHasEventNodeAggregationWhereInput = {
+  AND?: InputMaybe<Array<QcCompleteTemposHasEventNodeAggregationWhereInput>>;
+  OR?: InputMaybe<Array<QcCompleteTemposHasEventNodeAggregationWhereInput>>;
+  accessLevel_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  accessLevel_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  accessLevel_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  accessLevel_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  accessLevel_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  accessLevel_EQUAL?: InputMaybe<Scalars["String"]>;
+  accessLevel_GT?: InputMaybe<Scalars["Int"]>;
+  accessLevel_GTE?: InputMaybe<Scalars["Int"]>;
+  accessLevel_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  accessLevel_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  accessLevel_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  accessLevel_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  accessLevel_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  accessLevel_LT?: InputMaybe<Scalars["Int"]>;
+  accessLevel_LTE?: InputMaybe<Scalars["Int"]>;
+  accessLevel_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  accessLevel_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  accessLevel_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  accessLevel_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  accessLevel_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  billedBy_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  billedBy_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  billedBy_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  billedBy_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  billedBy_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  billedBy_EQUAL?: InputMaybe<Scalars["String"]>;
+  billedBy_GT?: InputMaybe<Scalars["Int"]>;
+  billedBy_GTE?: InputMaybe<Scalars["Int"]>;
+  billedBy_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  billedBy_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  billedBy_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  billedBy_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  billedBy_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  billedBy_LT?: InputMaybe<Scalars["Int"]>;
+  billedBy_LTE?: InputMaybe<Scalars["Int"]>;
+  billedBy_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  billedBy_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  billedBy_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  billedBy_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  billedBy_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  costCenter_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  costCenter_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  costCenter_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  costCenter_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  costCenter_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  costCenter_EQUAL?: InputMaybe<Scalars["String"]>;
+  costCenter_GT?: InputMaybe<Scalars["Int"]>;
+  costCenter_GTE?: InputMaybe<Scalars["Int"]>;
+  costCenter_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  costCenter_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  costCenter_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  costCenter_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  costCenter_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  costCenter_LT?: InputMaybe<Scalars["Int"]>;
+  costCenter_LTE?: InputMaybe<Scalars["Int"]>;
+  costCenter_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  costCenter_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  costCenter_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  costCenter_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  costCenter_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  custodianInformation_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  custodianInformation_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  custodianInformation_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  custodianInformation_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  custodianInformation_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  custodianInformation_EQUAL?: InputMaybe<Scalars["String"]>;
+  custodianInformation_GT?: InputMaybe<Scalars["Int"]>;
+  custodianInformation_GTE?: InputMaybe<Scalars["Int"]>;
+  custodianInformation_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  custodianInformation_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  custodianInformation_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  custodianInformation_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  custodianInformation_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  custodianInformation_LT?: InputMaybe<Scalars["Int"]>;
+  custodianInformation_LTE?: InputMaybe<Scalars["Int"]>;
+  custodianInformation_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  custodianInformation_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  custodianInformation_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  custodianInformation_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  custodianInformation_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
 };
 
 export type QcCompleteTemposHasEventRelationship = {
@@ -3698,6 +3998,7 @@ export type QueryTemposAggregateArgs = {
 export type QueryTemposConnectionArgs = {
   after?: InputMaybe<Scalars["String"]>;
   first?: InputMaybe<Scalars["Int"]>;
+  sort?: InputMaybe<Array<InputMaybe<TempoSort>>>;
   where?: InputMaybe<TempoWhere>;
 };
 
@@ -5583,6 +5884,7 @@ export type SampleHasTempoTemposConnectionArgs = {
   after?: InputMaybe<Scalars["String"]>;
   directed?: InputMaybe<Scalars["Boolean"]>;
   first?: InputMaybe<Scalars["Int"]>;
+  sort?: InputMaybe<Array<SampleHasTempoTemposConnectionSort>>;
   where?: InputMaybe<SampleHasTempoTemposConnectionWhere>;
 };
 
@@ -6762,6 +7064,7 @@ export type SampleHasTempoTemposAggregateInput = {
   count_GTE?: InputMaybe<Scalars["Int"]>;
   count_LT?: InputMaybe<Scalars["Int"]>;
   count_LTE?: InputMaybe<Scalars["Int"]>;
+  node?: InputMaybe<SampleHasTempoTemposNodeAggregationWhereInput>;
 };
 
 export type SampleHasTempoTemposConnectFieldInput = {
@@ -6774,6 +7077,10 @@ export type SampleHasTempoTemposConnection = {
   edges: Array<SampleHasTempoTemposRelationship>;
   pageInfo: PageInfo;
   totalCount: Scalars["Int"];
+};
+
+export type SampleHasTempoTemposConnectionSort = {
+  node?: InputMaybe<TempoSort>;
 };
 
 export type SampleHasTempoTemposConnectionWhere = {
@@ -6800,6 +7107,91 @@ export type SampleHasTempoTemposDisconnectFieldInput = {
 export type SampleHasTempoTemposFieldInput = {
   connect?: InputMaybe<Array<SampleHasTempoTemposConnectFieldInput>>;
   create?: InputMaybe<Array<SampleHasTempoTemposCreateFieldInput>>;
+};
+
+export type SampleHasTempoTemposNodeAggregationWhereInput = {
+  AND?: InputMaybe<Array<SampleHasTempoTemposNodeAggregationWhereInput>>;
+  OR?: InputMaybe<Array<SampleHasTempoTemposNodeAggregationWhereInput>>;
+  accessLevel_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  accessLevel_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  accessLevel_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  accessLevel_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  accessLevel_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  accessLevel_EQUAL?: InputMaybe<Scalars["String"]>;
+  accessLevel_GT?: InputMaybe<Scalars["Int"]>;
+  accessLevel_GTE?: InputMaybe<Scalars["Int"]>;
+  accessLevel_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  accessLevel_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  accessLevel_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  accessLevel_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  accessLevel_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  accessLevel_LT?: InputMaybe<Scalars["Int"]>;
+  accessLevel_LTE?: InputMaybe<Scalars["Int"]>;
+  accessLevel_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  accessLevel_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  accessLevel_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  accessLevel_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  accessLevel_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  billedBy_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  billedBy_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  billedBy_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  billedBy_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  billedBy_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  billedBy_EQUAL?: InputMaybe<Scalars["String"]>;
+  billedBy_GT?: InputMaybe<Scalars["Int"]>;
+  billedBy_GTE?: InputMaybe<Scalars["Int"]>;
+  billedBy_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  billedBy_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  billedBy_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  billedBy_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  billedBy_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  billedBy_LT?: InputMaybe<Scalars["Int"]>;
+  billedBy_LTE?: InputMaybe<Scalars["Int"]>;
+  billedBy_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  billedBy_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  billedBy_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  billedBy_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  billedBy_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  costCenter_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  costCenter_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  costCenter_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  costCenter_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  costCenter_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  costCenter_EQUAL?: InputMaybe<Scalars["String"]>;
+  costCenter_GT?: InputMaybe<Scalars["Int"]>;
+  costCenter_GTE?: InputMaybe<Scalars["Int"]>;
+  costCenter_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  costCenter_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  costCenter_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  costCenter_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  costCenter_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  costCenter_LT?: InputMaybe<Scalars["Int"]>;
+  costCenter_LTE?: InputMaybe<Scalars["Int"]>;
+  costCenter_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  costCenter_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  costCenter_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  costCenter_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  costCenter_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  custodianInformation_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  custodianInformation_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  custodianInformation_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  custodianInformation_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  custodianInformation_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  custodianInformation_EQUAL?: InputMaybe<Scalars["String"]>;
+  custodianInformation_GT?: InputMaybe<Scalars["Int"]>;
+  custodianInformation_GTE?: InputMaybe<Scalars["Int"]>;
+  custodianInformation_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  custodianInformation_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  custodianInformation_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  custodianInformation_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  custodianInformation_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  custodianInformation_LT?: InputMaybe<Scalars["Int"]>;
+  custodianInformation_LTE?: InputMaybe<Scalars["Int"]>;
+  custodianInformation_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  custodianInformation_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  custodianInformation_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  custodianInformation_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  custodianInformation_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
 };
 
 export type SampleHasTempoTemposRelationship = {
@@ -8477,6 +8869,15 @@ export type SampleSort = {
 export type SampleTempoHasTempoTemposAggregationSelection = {
   __typename?: "SampleTempoHasTempoTemposAggregationSelection";
   count: Scalars["Int"];
+  node?: Maybe<SampleTempoHasTempoTemposNodeAggregateSelection>;
+};
+
+export type SampleTempoHasTempoTemposNodeAggregateSelection = {
+  __typename?: "SampleTempoHasTempoTemposNodeAggregateSelection";
+  accessLevel: StringAggregateSelectionNonNullable;
+  billedBy: StringAggregateSelectionNonNullable;
+  costCenter: StringAggregateSelectionNonNullable;
+  custodianInformation: StringAggregateSelectionNonNullable;
 };
 
 export type SampleUpdateInput = {
@@ -9637,6 +10038,11 @@ export type StringAggregateSelectionNullable = {
 
 export type Tempo = {
   __typename?: "Tempo";
+  accessLevel: Scalars["String"];
+  billed: Scalars["Boolean"];
+  billedBy: Scalars["String"];
+  costCenter: Scalars["String"];
+  custodianInformation: Scalars["String"];
   hasEventBamCompletes: Array<BamComplete>;
   hasEventBamCompletesAggregate?: Maybe<TempoBamCompleteHasEventBamCompletesAggregationSelection>;
   hasEventBamCompletesConnection: TempoHasEventBamCompletesConnection;
@@ -9729,7 +10135,11 @@ export type TempoSamplesHasTempoConnectionArgs = {
 
 export type TempoAggregateSelection = {
   __typename?: "TempoAggregateSelection";
+  accessLevel: StringAggregateSelectionNonNullable;
+  billedBy: StringAggregateSelectionNonNullable;
+  costCenter: StringAggregateSelectionNonNullable;
   count: Scalars["Int"];
+  custodianInformation: StringAggregateSelectionNonNullable;
 };
 
 export type TempoBamCompleteHasEventBamCompletesAggregationSelection = {
@@ -9762,6 +10172,11 @@ export type TempoConnectWhere = {
 };
 
 export type TempoCreateInput = {
+  accessLevel: Scalars["String"];
+  billed: Scalars["Boolean"];
+  billedBy: Scalars["String"];
+  costCenter: Scalars["String"];
+  custodianInformation: Scalars["String"];
   hasEventBamCompletes?: InputMaybe<TempoHasEventBamCompletesFieldInput>;
   hasEventMafCompletes?: InputMaybe<TempoHasEventMafCompletesFieldInput>;
   hasEventQcCompletes?: InputMaybe<TempoHasEventQcCompletesFieldInput>;
@@ -10227,6 +10642,8 @@ export type TempoMafCompleteHasEventMafCompletesNodeAggregateSelection = {
 export type TempoOptions = {
   limit?: InputMaybe<Scalars["Int"]>;
   offset?: InputMaybe<Scalars["Int"]>;
+  /** Specify one or more TempoSort objects to sort Tempos by. The sorts will be applied in the order in which they are arranged in the array. */
+  sort?: InputMaybe<Array<TempoSort>>;
 };
 
 export type TempoQcCompleteHasEventQcCompletesAggregationSelection = {
@@ -10427,7 +10844,21 @@ export type TempoSamplesHasTempoUpdateFieldInput = {
   where?: InputMaybe<TempoSamplesHasTempoConnectionWhere>;
 };
 
+/** Fields to sort Tempos by. The order in which sorts are applied is not guaranteed when specifying many fields in one TempoSort object. */
+export type TempoSort = {
+  accessLevel?: InputMaybe<SortDirection>;
+  billed?: InputMaybe<SortDirection>;
+  billedBy?: InputMaybe<SortDirection>;
+  costCenter?: InputMaybe<SortDirection>;
+  custodianInformation?: InputMaybe<SortDirection>;
+};
+
 export type TempoUpdateInput = {
+  accessLevel?: InputMaybe<Scalars["String"]>;
+  billed?: InputMaybe<Scalars["Boolean"]>;
+  billedBy?: InputMaybe<Scalars["String"]>;
+  costCenter?: InputMaybe<Scalars["String"]>;
+  custodianInformation?: InputMaybe<Scalars["String"]>;
   hasEventBamCompletes?: InputMaybe<
     Array<TempoHasEventBamCompletesUpdateFieldInput>
   >;
@@ -10443,6 +10874,48 @@ export type TempoUpdateInput = {
 export type TempoWhere = {
   AND?: InputMaybe<Array<TempoWhere>>;
   OR?: InputMaybe<Array<TempoWhere>>;
+  accessLevel?: InputMaybe<Scalars["String"]>;
+  accessLevel_CONTAINS?: InputMaybe<Scalars["String"]>;
+  accessLevel_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  accessLevel_IN?: InputMaybe<Array<Scalars["String"]>>;
+  accessLevel_NOT?: InputMaybe<Scalars["String"]>;
+  accessLevel_NOT_CONTAINS?: InputMaybe<Scalars["String"]>;
+  accessLevel_NOT_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  accessLevel_NOT_IN?: InputMaybe<Array<Scalars["String"]>>;
+  accessLevel_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  accessLevel_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  billed?: InputMaybe<Scalars["Boolean"]>;
+  billedBy?: InputMaybe<Scalars["String"]>;
+  billedBy_CONTAINS?: InputMaybe<Scalars["String"]>;
+  billedBy_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  billedBy_IN?: InputMaybe<Array<Scalars["String"]>>;
+  billedBy_NOT?: InputMaybe<Scalars["String"]>;
+  billedBy_NOT_CONTAINS?: InputMaybe<Scalars["String"]>;
+  billedBy_NOT_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  billedBy_NOT_IN?: InputMaybe<Array<Scalars["String"]>>;
+  billedBy_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  billedBy_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  billed_NOT?: InputMaybe<Scalars["Boolean"]>;
+  costCenter?: InputMaybe<Scalars["String"]>;
+  costCenter_CONTAINS?: InputMaybe<Scalars["String"]>;
+  costCenter_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  costCenter_IN?: InputMaybe<Array<Scalars["String"]>>;
+  costCenter_NOT?: InputMaybe<Scalars["String"]>;
+  costCenter_NOT_CONTAINS?: InputMaybe<Scalars["String"]>;
+  costCenter_NOT_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  costCenter_NOT_IN?: InputMaybe<Array<Scalars["String"]>>;
+  costCenter_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  costCenter_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  custodianInformation?: InputMaybe<Scalars["String"]>;
+  custodianInformation_CONTAINS?: InputMaybe<Scalars["String"]>;
+  custodianInformation_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  custodianInformation_IN?: InputMaybe<Array<Scalars["String"]>>;
+  custodianInformation_NOT?: InputMaybe<Scalars["String"]>;
+  custodianInformation_NOT_CONTAINS?: InputMaybe<Scalars["String"]>;
+  custodianInformation_NOT_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  custodianInformation_NOT_IN?: InputMaybe<Array<Scalars["String"]>>;
+  custodianInformation_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  custodianInformation_STARTS_WITH?: InputMaybe<Scalars["String"]>;
   hasEventBamCompletesAggregate?: InputMaybe<TempoHasEventBamCompletesAggregateInput>;
   hasEventBamCompletesConnection_ALL?: InputMaybe<TempoHasEventBamCompletesConnectionWhere>;
   hasEventBamCompletesConnection_NONE?: InputMaybe<TempoHasEventBamCompletesConnectionWhere>;
@@ -10796,6 +11269,9 @@ export type FindSamplesByInputValueQuery = {
         };
         hasTempoTempos: Array<{
           __typename?: "Tempo";
+          billed: boolean;
+          billedBy: string;
+          costCenter: string;
           hasEventBamCompletes: Array<{
             __typename?: "BamComplete";
             date: string;
@@ -11022,6 +11498,11 @@ export type CohortsListQuery = {
       __typename?: "CohortHasCohortSampleSamplesConnection";
       totalCount: number;
     };
+    hasCohortSampleSamples: Array<{
+      __typename?: "Sample";
+      smileSampleId: string;
+      hasTempoTempos: Array<{ __typename?: "Tempo"; billed: boolean }>;
+    }>;
   }>;
 };
 
@@ -11195,6 +11676,9 @@ export const FindSamplesByInputValueDocument = gql`
             }
           }
           hasTempoTempos {
+            billed
+            billedBy
+            costCenter
             hasEventBamCompletes(options: $bamCompletesOptions) {
               date
               status
@@ -11318,6 +11802,12 @@ export const CohortsListDocument = gql`
       }
       hasCohortSampleSamplesConnection {
         totalCount
+      }
+      hasCohortSampleSamples {
+        smileSampleId
+        hasTempoTempos {
+          billed
+        }
       }
     }
   }
