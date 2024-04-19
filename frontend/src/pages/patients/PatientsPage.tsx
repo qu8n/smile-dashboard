@@ -13,7 +13,6 @@ import { AlertModal } from "../../components/AlertModal";
 import { Tooltip } from "@material-ui/core";
 import InfoIcon from "@material-ui/icons/InfoOutlined";
 import { parseUserSearchVal } from "../../utils/parseSearchQueries";
-import { REACT_APP_EXPRESS_SERVER_ORIGIN } from "../../shared/constants";
 import {
   PatientsListColumns,
   SampleDetailsColumns,
@@ -21,6 +20,7 @@ import {
   sampleFilterWhereVariables,
 } from "../../shared/helpers";
 import { getUserEmail } from "../../utils/getUserEmail";
+import { openLoginPopup } from "../../utils/openLoginPopup";
 
 // Mirror the field types in the CRDB, where CMO_ID is stored without the "C-" prefix
 export type PatientIdsTriplet = {
@@ -140,16 +140,7 @@ export default function PatientsPage({
 
     if (error) {
       if (error.message === "401") {
-        const width = 800;
-        const height = 800;
-        const left = (window.screen.width - width) / 2;
-        const top = (window.screen.height - height) / 2;
-
-        window.open(
-          `${REACT_APP_EXPRESS_SERVER_ORIGIN}/auth/login`,
-          "_blank",
-          `toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width=${width}, height=${height}, top=${top}, left=${left}`
-        );
+        openLoginPopup();
       }
 
       if (error.message === "403") {
@@ -205,10 +196,11 @@ export default function PatientsPage({
   useEffect(() => {
     window.addEventListener("message", handleLogin);
 
-    function handleLogin(event: MessageEvent) {
-      if (event.data !== `success`) return;
+    async function handleLogin(event: MessageEvent) {
+      if (event.data !== "success") return;
 
-      getUserEmail(setUserEmail);
+      const userEmail = await getUserEmail();
+      setUserEmail(userEmail);
 
       setAlertModal({
         show: true,

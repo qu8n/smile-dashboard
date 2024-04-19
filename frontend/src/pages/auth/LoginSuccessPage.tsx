@@ -4,10 +4,7 @@ import { REACT_APP_REACT_SERVER_ORIGIN } from "../../shared/constants";
 export default function LoginSuccessPage() {
   useEffect(() => {
     if (window.opener) {
-      window.opener.postMessage(
-        "success",
-        `${REACT_APP_REACT_SERVER_ORIGIN}/patients`
-      );
+      window.opener.postMessage("success", `${REACT_APP_REACT_SERVER_ORIGIN}`);
 
       window.onload = () => {
         setTimeout(() => {

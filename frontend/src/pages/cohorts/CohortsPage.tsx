@@ -5,7 +5,7 @@ import {
   SortDirection,
   useCohortsListLazyQuery,
 } from "../../generated/graphql";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import {
   CohortSampleDetailsColumns,
   CohortsListColumns,
@@ -99,7 +99,15 @@ function cohortFilterWhereVariables(parsedSearchVals: string[]): CohortWhere[] {
   }
 }
 
-export default function CohortsPage() {
+interface ICohortsPageProps {
+  userEmail: string | null;
+  setUserEmail: Dispatch<SetStateAction<string | null>>;
+}
+
+export default function CohortsPage({
+  userEmail,
+  setUserEmail,
+}: ICohortsPageProps) {
   const params = useParams();
   const [userSearchVal, setUserSearchVal] = useState<string>("");
   const [parsedSearchVals, setParsedSearchVals] = useState<string[]>([]);
@@ -109,6 +117,7 @@ export default function CohortsPage() {
   const sampleQueryParamFieldName = "cohortId";
   const sampleQueryParamHeaderName = "Cohort ID";
   const sampleQueryParamValue = params[sampleQueryParamFieldName];
+  const sampleKeyForUpdate = "hasTempoTempos";
 
   return (
     <>
@@ -159,6 +168,9 @@ export default function CohortsPage() {
             OR: cohortSampleFilterWhereVariables(samplesParsedSearchVals),
           } as SampleWhere;
         }}
+        sampleKeyForUpdate={sampleKeyForUpdate}
+        userEmail={userEmail}
+        setUserEmail={setUserEmail}
       />
     </>
   );

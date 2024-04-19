@@ -1,4 +1,4 @@
-import { useState, FunctionComponent, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, Dispatch, SetStateAction } from "react";
 import { Button } from "react-bootstrap";
 import Modal from "react-bootstrap/Modal";
 import { AgGridReact } from "ag-grid-react";
@@ -6,17 +6,31 @@ import "ag-grid-enterprise";
 import styles from "./records.module.scss";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
-import { SampleChange, ChangeForSubmit } from "../shared/helpers";
+import { ChangesByPrimaryId, SampleChange } from "../shared/helpers";
 import { Sample, useUpdateSamplesMutation } from "../generated/graphql";
 import _ from "lodash";
 
-export const UpdateModal: FunctionComponent<{
+interface UpdateModalProps {
   changes: SampleChange[];
   onSuccess: () => void;
   onHide: () => void;
   samples: Sample[];
   onOpen?: () => void;
-}> = ({ changes, onHide, onSuccess, onOpen, samples }) => {
+  sampleKeyForUpdate: keyof Sample;
+  userEmail?: string | null;
+  setUserEmail?: Dispatch<SetStateAction<string | null>>;
+}
+
+export function UpdateModal({
+  changes,
+  onHide,
+  onSuccess,
+  onOpen,
+  samples,
+  sampleKeyForUpdate,
+  userEmail,
+  setUserEmail,
+}: UpdateModalProps) {
   const [rowData, setRowData] = useState(changes);
   const [columnDefs] = useState([
     { field: "primaryId", rowGroup: true, hide: true },
@@ -27,46 +41,39 @@ export const UpdateModal: FunctionComponent<{
 
   useEffect(() => {
     onOpen && onOpen();
+    // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
     setRowData(changes);
   }, [changes]);
 
-  const autoGroupColumnDef = useMemo(() => {
-    return {
-      headerName: "Primary Id",
-      field: "primaryId",
-    };
-  }, []);
+  const [updateSamplesMutation] = useUpdateSamplesMutation();
 
-  const [updateSamplesMutation, { data, loading, error }] =
-    useUpdateSamplesMutation();
-
-  const handleSubmitUpdates = () => {
-    const changesForSubmit: ChangeForSubmit = {};
-    for (const c of changes) {
-      if (changesForSubmit[c.primaryId]) {
-        changesForSubmit[c.primaryId][c.fieldName] = c.newValue;
+  async function handleSubmitUpdates() {
+    const changesByPrimaryId: ChangesByPrimaryId = {};
+    for (const { primaryId, fieldName, newValue } of changes) {
+      if (changesByPrimaryId[primaryId]) {
+        changesByPrimaryId[primaryId][fieldName] = newValue;
       } else {
-        changesForSubmit[c.primaryId] = { [c.fieldName]: c.newValue };
+        changesByPrimaryId[primaryId] = { [fieldName]: newValue };
       }
     }
 
     const updatedSamples = _.cloneDeep(samples);
     updatedSamples?.forEach((s) => {
       const primaryId = s.hasMetadataSampleMetadata[0].primaryId;
-      if (primaryId in changesForSubmit) {
+      if (primaryId in changesByPrimaryId) {
         s.revisable = false;
 
-        _.forEach(changesForSubmit[primaryId], (v, k) => {
+        _.forEach(changesByPrimaryId[primaryId], (v, k) => {
           /* @ts-ignore */
-          s.hasMetadataSampleMetadata[0][k] = v;
+          s[sampleKeyForUpdate][0][k] = v;
         });
       }
     });
 
-    for (const [key, value] of Object.entries(changesForSubmit)) {
+    for (const [key, value] of Object.entries(changesByPrimaryId)) {
       updateSamplesMutation({
         variables: {
           where: {
@@ -77,8 +84,7 @@ export const UpdateModal: FunctionComponent<{
             },
           },
           update: {
-            revisable: false,
-            hasMetadataSampleMetadata: [
+            [sampleKeyForUpdate]: [
               {
                 update: {
                   node: value!,
@@ -97,7 +103,14 @@ export const UpdateModal: FunctionComponent<{
 
     onSuccess();
     onHide();
-  };
+  }
+
+  const autoGroupColumnDef = useMemo(() => {
+    return {
+      headerName: "Primary Id",
+      field: "primaryId",
+    };
+  }, []);
 
   return (
     <Modal
@@ -136,4 +149,4 @@ export const UpdateModal: FunctionComponent<{
       </Modal.Footer>
     </Modal>
   );
-};
+}

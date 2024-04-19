@@ -6,7 +6,7 @@ import {
 } from "../generated/graphql";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { Button, Col } from "react-bootstrap";
-import { useEffect, useRef } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef } from "react";
 import { DownloadModal } from "./DownloadModal";
 import { UpdateModal } from "./UpdateModal";
 import { AlertModal } from "./AlertModal";
@@ -25,6 +25,8 @@ import "ag-grid-enterprise";
 import { CellValueChangedEvent, ColDef } from "ag-grid-community";
 import { ErrorMessage, LoadingSpinner, Toolbar } from "../shared/tableElements";
 import styles from "./records.module.scss";
+import { getUserEmail } from "../utils/getUserEmail";
+import { openLoginPopup } from "../utils/openLoginPopup";
 
 const POLLING_INTERVAL = 2000;
 const max_rows = 500;
@@ -36,6 +38,9 @@ interface ISampleListProps {
   parentWhereVariables?: SampleWhere;
   refetchWhereVariables: (parsedSearchVals: string[]) => SampleWhere;
   exportFileName?: string;
+  sampleKeyForUpdate?: keyof Sample;
+  userEmail?: string | null;
+  setUserEmail?: Dispatch<SetStateAction<string | null>>;
 }
 
 export default function SamplesList({
@@ -45,6 +50,9 @@ export default function SamplesList({
   refetchWhereVariables,
   setUnsavedChanges,
   exportFileName,
+  sampleKeyForUpdate = "hasMetadataSampleMetadata",
+  userEmail,
+  setUserEmail,
 }: ISampleListProps) {
   const { loading, error, data, startPolling, stopPolling, refetch } =
     useFindSamplesByInputValueQuery({
@@ -108,31 +116,75 @@ export default function SamplesList({
 
   const remoteCount = samples.length;
 
-  const onCellValueChanged = (
+  async function onCellValueChanged(
     params: CellValueChangedEvent<SampleMetadataExtended>
-  ) => {
-    if (editMode) {
-      const { oldValue, newValue } = params;
-      const rowNode = params.node;
-      const fieldName = params.colDef.field!;
-      const primaryId = params.data.primaryId;
+  ) {
+    if (!editMode) return;
+
+    const primaryId = params.data.primaryId;
+    const fieldName = params.colDef.field!;
+    const { oldValue, newValue, node: rowNode } = params;
+
+    // add/update the billedBy cell to/in the changes array
+    if (fieldName === "billed" && setUserEmail) {
+      let currUserEmail = userEmail;
+
+      if (!currUserEmail) {
+        currUserEmail = await new Promise<string | null>((resolve) => {
+          window.addEventListener("message", handleLogin);
+
+          function handleLogin(event: MessageEvent) {
+            if (event.data === "success") {
+              getUserEmail().then((email) => {
+                window.removeEventListener("message", handleLogin);
+                resolve(email);
+              });
+            }
+          }
+
+          openLoginPopup();
+        });
+
+        if (!currUserEmail) return;
+        setUserEmail(currUserEmail);
+      }
+
+      const currUsername = currUserEmail.split("@")[0];
 
       setChanges((changes) => {
-        const change = changes.find(
-          (c) => c.primaryId === primaryId && c.fieldName === fieldName
+        const billedBy = changes.find(
+          (c) => c.primaryId === primaryId && c.fieldName === "billedBy"
         );
-        if (change) {
-          change.newValue = newValue;
+        if (billedBy) {
+          billedBy.newValue = currUsername;
         } else {
-          changes.push({ primaryId, fieldName, oldValue, newValue, rowNode });
+          changes.push({
+            primaryId,
+            fieldName: "billedBy",
+            oldValue: "",
+            newValue: currUsername,
+            rowNode,
+          });
         }
-        // we always have produce a new array to trigger re-render
         return [...changes];
       });
-
-      setUnsavedChanges?.(true);
     }
-  };
+
+    // add/update the edited cell to/in the changes array
+    setChanges((changes) => {
+      const change = changes.find(
+        (c) => c.primaryId === primaryId && c.fieldName === fieldName
+      );
+      if (change) {
+        change.newValue = newValue;
+      } else {
+        changes.push({ primaryId, fieldName, oldValue, newValue, rowNode });
+      }
+      return [...changes];
+    });
+
+    setUnsavedChanges?.(true);
+  }
 
   const handleDiscardChanges = () => {
     setEditMode(false);
@@ -171,6 +223,9 @@ export default function SamplesList({
           onSuccess={handleDiscardChanges}
           onHide={() => setShowUpdateModal(false)}
           onOpen={() => stopPolling()}
+          sampleKeyForUpdate={sampleKeyForUpdate}
+          userEmail={userEmail}
+          setUserEmail={setUserEmail}
         />
       )}
 
