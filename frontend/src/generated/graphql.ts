@@ -114,8 +114,8 @@ export type BamCompleteTempoTemposHasEventAggregationSelection = {
 export type BamCompleteTempoTemposHasEventNodeAggregateSelection = {
   __typename?: "BamCompleteTempoTemposHasEventNodeAggregateSelection";
   accessLevel: StringAggregateSelectionNonNullable;
-  billedBy: StringAggregateSelectionNonNullable;
-  costCenter: StringAggregateSelectionNonNullable;
+  billedBy: StringAggregateSelectionNullable;
+  costCenter: StringAggregateSelectionNullable;
   custodianInformation: StringAggregateSelectionNonNullable;
 };
 
@@ -1463,8 +1463,8 @@ export type MafCompleteTempoTemposHasEventAggregationSelection = {
 export type MafCompleteTempoTemposHasEventNodeAggregateSelection = {
   __typename?: "MafCompleteTempoTemposHasEventNodeAggregateSelection";
   accessLevel: StringAggregateSelectionNonNullable;
-  billedBy: StringAggregateSelectionNonNullable;
-  costCenter: StringAggregateSelectionNonNullable;
+  billedBy: StringAggregateSelectionNullable;
+  costCenter: StringAggregateSelectionNullable;
   custodianInformation: StringAggregateSelectionNonNullable;
 };
 
@@ -3474,8 +3474,8 @@ export type QcCompleteTempoTemposHasEventAggregationSelection = {
 export type QcCompleteTempoTemposHasEventNodeAggregateSelection = {
   __typename?: "QcCompleteTempoTemposHasEventNodeAggregateSelection";
   accessLevel: StringAggregateSelectionNonNullable;
-  billedBy: StringAggregateSelectionNonNullable;
-  costCenter: StringAggregateSelectionNonNullable;
+  billedBy: StringAggregateSelectionNullable;
+  costCenter: StringAggregateSelectionNullable;
   custodianInformation: StringAggregateSelectionNonNullable;
 };
 
@@ -8876,8 +8876,8 @@ export type SampleTempoHasTempoTemposAggregationSelection = {
 export type SampleTempoHasTempoTemposNodeAggregateSelection = {
   __typename?: "SampleTempoHasTempoTemposNodeAggregateSelection";
   accessLevel: StringAggregateSelectionNonNullable;
-  billedBy: StringAggregateSelectionNonNullable;
-  costCenter: StringAggregateSelectionNonNullable;
+  billedBy: StringAggregateSelectionNullable;
+  costCenter: StringAggregateSelectionNullable;
   custodianInformation: StringAggregateSelectionNonNullable;
 };
 
@@ -10040,9 +10040,9 @@ export type StringAggregateSelectionNullable = {
 export type Tempo = {
   __typename?: "Tempo";
   accessLevel: Scalars["String"];
-  billed: Scalars["Boolean"];
-  billedBy: Scalars["String"];
-  costCenter: Scalars["String"];
+  billed?: Maybe<Scalars["Boolean"]>;
+  billedBy?: Maybe<Scalars["String"]>;
+  costCenter?: Maybe<Scalars["String"]>;
   custodianInformation: Scalars["String"];
   hasEventBamCompletes: Array<BamComplete>;
   hasEventBamCompletesAggregate?: Maybe<TempoBamCompleteHasEventBamCompletesAggregationSelection>;
@@ -10137,8 +10137,8 @@ export type TempoSamplesHasTempoConnectionArgs = {
 export type TempoAggregateSelection = {
   __typename?: "TempoAggregateSelection";
   accessLevel: StringAggregateSelectionNonNullable;
-  billedBy: StringAggregateSelectionNonNullable;
-  costCenter: StringAggregateSelectionNonNullable;
+  billedBy: StringAggregateSelectionNullable;
+  costCenter: StringAggregateSelectionNullable;
   count: Scalars["Int"];
   custodianInformation: StringAggregateSelectionNonNullable;
 };
@@ -10174,9 +10174,9 @@ export type TempoConnectWhere = {
 
 export type TempoCreateInput = {
   accessLevel: Scalars["String"];
-  billed: Scalars["Boolean"];
-  billedBy: Scalars["String"];
-  costCenter: Scalars["String"];
+  billed?: InputMaybe<Scalars["Boolean"]>;
+  billedBy?: InputMaybe<Scalars["String"]>;
+  costCenter?: InputMaybe<Scalars["String"]>;
   custodianInformation: Scalars["String"];
   hasEventBamCompletes?: InputMaybe<TempoHasEventBamCompletesFieldInput>;
   hasEventMafCompletes?: InputMaybe<TempoHasEventMafCompletesFieldInput>;
@@ -10889,22 +10889,22 @@ export type TempoWhere = {
   billedBy?: InputMaybe<Scalars["String"]>;
   billedBy_CONTAINS?: InputMaybe<Scalars["String"]>;
   billedBy_ENDS_WITH?: InputMaybe<Scalars["String"]>;
-  billedBy_IN?: InputMaybe<Array<Scalars["String"]>>;
+  billedBy_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
   billedBy_NOT?: InputMaybe<Scalars["String"]>;
   billedBy_NOT_CONTAINS?: InputMaybe<Scalars["String"]>;
   billedBy_NOT_ENDS_WITH?: InputMaybe<Scalars["String"]>;
-  billedBy_NOT_IN?: InputMaybe<Array<Scalars["String"]>>;
+  billedBy_NOT_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
   billedBy_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
   billedBy_STARTS_WITH?: InputMaybe<Scalars["String"]>;
   billed_NOT?: InputMaybe<Scalars["Boolean"]>;
   costCenter?: InputMaybe<Scalars["String"]>;
   costCenter_CONTAINS?: InputMaybe<Scalars["String"]>;
   costCenter_ENDS_WITH?: InputMaybe<Scalars["String"]>;
-  costCenter_IN?: InputMaybe<Array<Scalars["String"]>>;
+  costCenter_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
   costCenter_NOT?: InputMaybe<Scalars["String"]>;
   costCenter_NOT_CONTAINS?: InputMaybe<Scalars["String"]>;
   costCenter_NOT_ENDS_WITH?: InputMaybe<Scalars["String"]>;
-  costCenter_NOT_IN?: InputMaybe<Array<Scalars["String"]>>;
+  costCenter_NOT_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
   costCenter_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
   costCenter_STARTS_WITH?: InputMaybe<Scalars["String"]>;
   custodianInformation?: InputMaybe<Scalars["String"]>;
@@ -11114,43 +11114,35 @@ export type RequestsListQuery = {
 };
 
 export type PatientsListQueryVariables = Exact<{
-  options?: InputMaybe<PatientAliasOptions>;
-  where?: InputMaybe<PatientAliasWhere>;
-  patientAliasesConnectionWhere2?: InputMaybe<PatientAliasWhere>;
+  options?: InputMaybe<PatientOptions>;
+  where?: InputMaybe<PatientWhere>;
+  patientsConnectionWhere2?: InputMaybe<PatientWhere>;
 }>;
 
 export type PatientsListQuery = {
   __typename?: "Query";
-  patientAliasesConnection: {
-    __typename?: "PatientAliasesConnection";
-    totalCount: number;
-  };
-  patientAliases: Array<{
-    __typename?: "PatientAlias";
-    namespace: string;
-    value: string;
-    isAliasPatients: Array<{
-      __typename?: "Patient";
-      smilePatientId: string;
-      hasSampleSamples: Array<{
-        __typename?: "Sample";
-        smileSampleId: string;
-        hasMetadataSampleMetadata: Array<{
-          __typename?: "SampleMetadata";
-          primaryId: string;
-          cmoSampleName?: string | null;
-          additionalProperties: string;
-        }>;
+  patientsConnection: { __typename?: "PatientsConnection"; totalCount: number };
+  patients: Array<{
+    __typename?: "Patient";
+    smilePatientId: string;
+    hasSampleSamples: Array<{
+      __typename?: "Sample";
+      smileSampleId: string;
+      hasMetadataSampleMetadata: Array<{
+        __typename?: "SampleMetadata";
+        primaryId: string;
+        cmoSampleName?: string | null;
+        additionalProperties: string;
       }>;
-      hasSampleSamplesConnection: {
-        __typename?: "PatientHasSampleSamplesConnection";
-        totalCount: number;
-      };
-      patientAliasesIsAlias: Array<{
-        __typename?: "PatientAlias";
-        namespace: string;
-        value: string;
-      }>;
+    }>;
+    hasSampleSamplesConnection: {
+      __typename?: "PatientHasSampleSamplesConnection";
+      totalCount: number;
+    };
+    patientAliasesIsAlias: Array<{
+      __typename?: "PatientAlias";
+      namespace: string;
+      value: string;
     }>;
   }>;
 };
@@ -11243,15 +11235,7 @@ export type FindSamplesByInputValueQuery = {
           __typename?: "SamplePatientsHasSampleConnection";
           edges: Array<{
             __typename?: "SamplePatientsHasSampleRelationship";
-            node: {
-              __typename?: "Patient";
-              smilePatientId: string;
-              patientAliasesIsAlias: Array<{
-                __typename?: "PatientAlias";
-                namespace: string;
-                value: string;
-              }>;
-            };
+            node: { __typename?: "Patient"; smilePatientId: string };
           }>;
         };
         cohortsHasCohortSampleConnection: {
@@ -11270,9 +11254,9 @@ export type FindSamplesByInputValueQuery = {
         };
         hasTempoTempos: Array<{
           __typename?: "Tempo";
-          billed: boolean;
-          billedBy: string;
-          costCenter: string;
+          billed?: boolean | null;
+          billedBy?: string | null;
+          costCenter?: string | null;
           hasEventBamCompletes: Array<{
             __typename?: "BamComplete";
             date: string;
@@ -11502,7 +11486,7 @@ export type CohortsListQuery = {
     hasCohortSampleSamples: Array<{
       __typename?: "Sample";
       smileSampleId: string;
-      hasTempoTempos: Array<{ __typename?: "Tempo"; billed: boolean }>;
+      hasTempoTempos: Array<{ __typename?: "Tempo"; billed?: boolean | null }>;
     }>;
   }>;
 };
@@ -11642,33 +11626,29 @@ export type RequestsListQueryResult = Apollo.QueryResult<
 >;
 export const PatientsListDocument = gql`
   query PatientsList(
-    $options: PatientAliasOptions
-    $where: PatientAliasWhere
-    $patientAliasesConnectionWhere2: PatientAliasWhere
+    $options: PatientOptions
+    $where: PatientWhere
+    $patientsConnectionWhere2: PatientWhere
   ) {
-    patientAliasesConnection(where: $patientAliasesConnectionWhere2) {
+    patientsConnection(where: $patientsConnectionWhere2) {
       totalCount
     }
-    patientAliases(where: $where, options: $options) {
-      namespace
-      value
-      isAliasPatients {
-        smilePatientId
-        hasSampleSamples {
-          smileSampleId
-          hasMetadataSampleMetadata {
-            primaryId
-            cmoSampleName
-            additionalProperties
-          }
+    patients(where: $where, options: $options) {
+      smilePatientId
+      hasSampleSamples {
+        smileSampleId
+        hasMetadataSampleMetadata {
+          primaryId
+          cmoSampleName
+          additionalProperties
         }
-        hasSampleSamplesConnection {
-          totalCount
-        }
-        patientAliasesIsAlias {
-          namespace
-          value
-        }
+      }
+      hasSampleSamplesConnection {
+        totalCount
+      }
+      patientAliasesIsAlias {
+        namespace
+        value
       }
     }
   }
@@ -11688,7 +11668,7 @@ export const PatientsListDocument = gql`
  *   variables: {
  *      options: // value for 'options'
  *      where: // value for 'where'
- *      patientAliasesConnectionWhere2: // value for 'patientAliasesConnectionWhere2'
+ *      patientsConnectionWhere2: // value for 'patientsConnectionWhere2'
  *   },
  * });
  */
@@ -11757,10 +11737,6 @@ export const FindSamplesByInputValueDocument = gql`
             edges {
               node {
                 smilePatientId
-                patientAliasesIsAlias {
-                  namespace
-                  value
-                }
               }
             }
           }

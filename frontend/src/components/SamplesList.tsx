@@ -33,7 +33,7 @@ const max_rows = 500;
 
 interface ISampleListProps {
   columnDefs: ColDef[];
-  getRowData: (samples: Sample[]) => any[];
+  prepareDataForAgGrid: (samples: Sample[]) => any[];
   setUnsavedChanges?: (unsavedChanges: boolean) => void;
   parentWhereVariables?: SampleWhere;
   refetchWhereVariables: (parsedSearchVals: string[]) => SampleWhere;
@@ -45,7 +45,7 @@ interface ISampleListProps {
 
 export default function SamplesList({
   columnDefs,
-  getRowData,
+  prepareDataForAgGrid,
   parentWhereVariables,
   refetchWhereVariables,
   setUnsavedChanges,
@@ -206,7 +206,7 @@ export default function SamplesList({
         <DownloadModal
           loader={() => {
             return Promise.resolve(
-              CSVFormulate(getRowData(samples), columnDefs)
+              CSVFormulate(prepareDataForAgGrid(samples), columnDefs)
             );
           }}
           onComplete={() => {
@@ -312,7 +312,7 @@ export default function SamplesList({
                 },
               }}
               columnDefs={columnDefs}
-              rowData={getRowData(samples)}
+              rowData={prepareDataForAgGrid(samples)}
               onCellEditRequest={onCellValueChanged}
               readOnlyEdit={true}
               defaultColDef={defaultColDef}

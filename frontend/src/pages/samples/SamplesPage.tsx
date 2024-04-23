@@ -2,7 +2,7 @@ import { PageHeader } from "../../shared/components/PageHeader";
 import SamplesList from "../../components/SamplesList";
 import {
   SampleDetailsColumns,
-  getSampleMetadataFromSamplesQuery,
+  prepareSampleMetadataForAgGrid,
   sampleFilterWhereVariables,
 } from "../../shared/helpers";
 import { SampleWhere } from "../../generated/graphql";
@@ -14,7 +14,7 @@ export default function SamplesPage() {
 
       <SamplesList
         columnDefs={SampleDetailsColumns}
-        getRowData={getSampleMetadataFromSamplesQuery}
+        prepareDataForAgGrid={prepareSampleMetadataForAgGrid}
         refetchWhereVariables={(parsedSearchVals) => {
           return {
             hasMetadataSampleMetadata_SOME: {

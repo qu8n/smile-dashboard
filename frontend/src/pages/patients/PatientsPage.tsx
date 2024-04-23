@@ -1,5 +1,5 @@
 import {
-  PatientAliasWhere,
+  PatientWhere,
   SampleWhere,
   useGetPatientIdsTripletsLazyQuery,
   usePatientsListLazyQuery,
@@ -16,7 +16,7 @@ import { parseUserSearchVal } from "../../utils/parseSearchQueries";
 import {
   PatientsListColumns,
   SampleDetailsColumns,
-  getSampleMetadataFromSamplesQuery,
+  preparePatientDataForAgGrid,
   sampleFilterWhereVariables,
 } from "../../shared/helpers";
 import { getUserEmail } from "../../utils/getUserEmail";
@@ -29,51 +29,35 @@ export type PatientIdsTriplet = {
   DMP_ID: string | null;
 };
 
-function patientAliasFilterWhereVariables(
+function patientFilterWhereVariables(
   parsedSearchVals: string[]
-): PatientAliasWhere[] {
+): PatientWhere[] {
   if (parsedSearchVals.length > 1) {
     return [
-      { value_IN: parsedSearchVals },
-      { namespace_IN: parsedSearchVals },
       {
-        isAliasPatients_SOME: {
-          hasSampleSamples_SOME: {
-            hasMetadataSampleMetadata_SOME: {
-              cmoSampleName_IN: parsedSearchVals,
-            },
-          },
+        patientAliasesIsAlias_SOME: {
+          value_IN: parsedSearchVals,
         },
       },
       {
-        isAliasPatients_SOME: {
-          hasSampleSamples_SOME: {
-            hasMetadataSampleMetadata_SOME: {
-              primaryId_IN: parsedSearchVals,
-            },
+        hasSampleSamples_SOME: {
+          hasMetadataSampleMetadata_SOME: {
+            cmoSampleName_IN: parsedSearchVals,
           },
         },
       },
     ];
   } else {
     return [
-      { value_CONTAINS: parsedSearchVals[0] },
-      { namespace_CONTAINS: parsedSearchVals[0] },
       {
-        isAliasPatients_SOME: {
-          hasSampleSamples_SOME: {
-            hasMetadataSampleMetadata_SOME: {
-              cmoSampleName_CONTAINS: parsedSearchVals[0],
-            },
-          },
+        patientAliasesIsAlias_SOME: {
+          value_CONTAINS: parsedSearchVals[0],
         },
       },
       {
-        isAliasPatients_SOME: {
-          hasSampleSamples_SOME: {
-            hasMetadataSampleMetadata_SOME: {
-              primaryId_CONTAINS: parsedSearchVals[0],
-            },
+        hasSampleSamples_SOME: {
+          hasMetadataSampleMetadata_SOME: {
+            cmoSampleName_CONTAINS: parsedSearchVals[0],
           },
         },
       },
@@ -227,8 +211,14 @@ export default function PatientsPage({
         return {
           ...column,
           hide: false,
-          valueGetter: (params: any) => {
-            const cmoId = params.data.value;
+          valueGetter: ({
+            data,
+          }: {
+            data: ReturnType<
+              typeof preparePatientDataForAgGrid
+            >["patients"][number];
+          }) => {
+            const cmoId = data.cmoPatientId;
 
             const patientIdsTriplet = patientIdsTriplets.find(
               (triplet) => addCDashToCMOId(triplet.CMO_ID) === cmoId
@@ -248,9 +238,7 @@ export default function PatientsPage({
   }, [phiEnabled, patientIdsTriplets, userEmail]);
 
   const dataName = "patients";
-  const nodeName = "patientAliases";
-  const sampleQueryParamFieldName = "cmoPatientId";
-  const sampleQueryParamHeaderName = "CMO Patient ID";
+  const sampleQueryParamFieldName = "smilePatientId";
   const sampleQueryParamValue = params[sampleQueryParamFieldName];
 
   return (
@@ -260,9 +248,9 @@ export default function PatientsPage({
       <RecordsList
         colDefs={ActivePatientsListColumns}
         dataName={dataName}
-        nodeName={nodeName}
         lazyRecordsQuery={usePatientsListLazyQuery}
-        queryFilterWhereVariables={patientAliasFilterWhereVariables}
+        prepareDataForAgGrid={preparePatientDataForAgGrid}
+        queryFilterWhereVariables={patientFilterWhereVariables}
         userSearchVal={userSearchVal}
         setUserSearchVal={setUserSearchVal}
         parsedSearchVals={parsedSearchVals}
@@ -278,37 +266,28 @@ export default function PatientsPage({
           setShowDownloadModal(true);
         }}
         samplesColDefs={SampleDetailsColumns}
-        samplesQueryParam={
-          sampleQueryParamValue &&
-          `${sampleQueryParamHeaderName} ${sampleQueryParamValue}`
-        }
-        getSamplesRowData={getSampleMetadataFromSamplesQuery}
+        samplesQueryParam={sampleQueryParamValue && "Patient's Samples"}
         samplesParentWhereVariables={
           {
             OR: [
               {
                 patientsHasSampleConnection_SOME: {
                   node: {
-                    patientAliasesIsAlias_SOME: {
-                      value: sampleQueryParamValue,
-                    },
+                    [sampleQueryParamFieldName]: sampleQueryParamValue,
                   },
                 },
               },
             ],
           } as SampleWhere
         }
-        samplesRefetchWhereVariables={(parsedSearchVals) => {
+        samplesRefetchWhereVariables={(sampleParsedSearchVals) => {
           return {
-            hasMetadataSampleMetadata_SOME: {
-              OR: sampleFilterWhereVariables(parsedSearchVals),
-              ...(params[sampleQueryParamFieldName]
-                ? {
-                    [sampleQueryParamFieldName]:
-                      params[sampleQueryParamFieldName],
-                  }
-                : {}),
+            patientsHasSampleConnection_SOME: {
+              node: {
+                [sampleQueryParamFieldName]: sampleQueryParamValue,
+              },
             },
+            OR: sampleFilterWhereVariables(sampleParsedSearchVals),
           } as SampleWhere;
         }}
         setCustomSearchVals={setPatientIdsTriplets}

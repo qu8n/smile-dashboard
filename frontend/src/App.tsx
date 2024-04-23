@@ -36,7 +36,7 @@ export default function App() {
               <PatientsPage userEmail={userEmail} setUserEmail={setUserEmail} />
             }
           >
-            <Route path=":cmoPatientId" />
+            <Route path=":smilePatientId" />
           </Route>
           <Route path="/samples" element={<SamplesPage />} />
           <Route

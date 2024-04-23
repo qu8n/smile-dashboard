@@ -7,7 +7,7 @@ import { useState } from "react";
 import {
   RequestsListColumns,
   SampleDetailsColumns,
-  getSampleMetadataFromSamplesQuery,
+  prepareSampleMetadataForAgGrid,
   handleSearch,
   sampleFilterWhereVariables,
 } from "../../shared/helpers";
@@ -86,9 +86,9 @@ export default function RequestsPage() {
         samplesColDefs={SampleDetailsColumns}
         samplesQueryParam={
           sampleQueryParamValue &&
-          `${sampleQueryParamHeaderName} ${sampleQueryParamValue}`
+          `${sampleQueryParamHeaderName} "${sampleQueryParamValue}"`
         }
-        getSamplesRowData={getSampleMetadataFromSamplesQuery}
+        prepareSamplesDataForAgGrid={prepareSampleMetadataForAgGrid}
         samplesParentWhereVariables={
           {
             hasMetadataSampleMetadata_SOME: {

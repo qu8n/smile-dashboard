@@ -10,20 +10,27 @@ import styles from "./records.module.scss";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import "ag-grid-enterprise";
-import { ColDef, IServerSideGetRowsParams } from "ag-grid-community";
+import {
+  ColDef,
+  IServerSideDatasource,
+  IServerSideGetRowsParams,
+} from "ag-grid-community";
 import { DataName, useHookLazyGeneric } from "../shared/types";
 import SamplesList from "./SamplesList";
 import { Sample, SampleWhere } from "../generated/graphql";
-import { defaultColDef } from "../shared/helpers";
+import {
+  defaultColDef,
+  prepareSampleMetadataForAgGrid,
+} from "../shared/helpers";
 import { PatientIdsTriplet } from "../pages/patients/PatientsPage";
 import { ErrorMessage, LoadingSpinner, Toolbar } from "../shared/tableElements";
 
 interface IRecordsListProps {
   colDefs: ColDef[];
   dataName: DataName;
-  nodeName?: string;
   lazyRecordsQuery: typeof useHookLazyGeneric;
   lazyRecordsQueryAddlVariables?: Record<string, any>;
+  prepareDataForAgGrid?: (data: any) => any;
   queryFilterWhereVariables: (
     parsedSearchVals: string[]
   ) => Record<string, any>[];
@@ -36,7 +43,7 @@ interface IRecordsListProps {
   setShowDownloadModal: Dispatch<SetStateAction<boolean>>;
   handleDownload: () => void;
   samplesQueryParam: string | undefined;
-  getSamplesRowData: (samples: Sample[]) => any[];
+  prepareSamplesDataForAgGrid?: (samples: Sample[]) => any[];
   samplesColDefs: ColDef[];
   samplesParentWhereVariables: SampleWhere;
   samplesRefetchWhereVariables: (
@@ -52,9 +59,9 @@ interface IRecordsListProps {
 export default function RecordsList({
   colDefs,
   dataName,
-  nodeName = dataName,
   lazyRecordsQuery,
   lazyRecordsQueryAddlVariables,
+  prepareDataForAgGrid,
   queryFilterWhereVariables,
   userSearchVal,
   setUserSearchVal,
@@ -65,7 +72,7 @@ export default function RecordsList({
   setShowDownloadModal,
   handleDownload,
   samplesQueryParam,
-  getSamplesRowData,
+  prepareSamplesDataForAgGrid = prepareSampleMetadataForAgGrid,
   samplesColDefs,
   samplesParentWhereVariables,
   samplesRefetchWhereVariables,
@@ -89,9 +96,9 @@ export default function RecordsList({
       },
     });
 
-  const totalCountNodeName = `${nodeName}Connection`;
+  const totalCountNodeName = `${dataName}Connection`;
 
-  const datasource = useMemo(() => {
+  const datasource: IServerSideDatasource = useMemo(() => {
     return {
       // called by the grid when more rows are required
       getRows: (params: IServerSideGetRowsParams) => {
@@ -99,7 +106,7 @@ export default function RecordsList({
           where: {
             OR: queryFilterWhereVariables(parsedSearchVals),
           },
-          [`${nodeName}ConnectionWhere2`]: {
+          [`${dataName}ConnectionWhere2`]: {
             OR: queryFilterWhereVariables(parsedSearchVals),
           },
           options: {
@@ -120,10 +127,12 @@ export default function RecordsList({
                 variables: fetchInput,
               });
 
-        return thisFetch.then((d: any) => {
+        return thisFetch.then((d) => {
+          let data = d.data;
+          if (prepareDataForAgGrid) data = prepareDataForAgGrid(data);
           params.success({
-            rowData: d.data[nodeName],
-            rowCount: d.data?.[totalCountNodeName]?.totalCount,
+            rowData: data[dataName],
+            rowCount: data[totalCountNodeName].totalCount,
           });
         });
       },
@@ -161,11 +170,11 @@ export default function RecordsList({
                 },
               },
             }).then(({ data }: any) => {
-              return CSVFormulate(data[nodeName], colDefs);
+              return CSVFormulate(data[dataName], colDefs);
             });
           }}
           onComplete={() => setShowDownloadModal(false)}
-          exportFileName={`${nodeName}.tsv`}
+          exportFileName={`${dataName}.tsv`}
         />
       )}
 
@@ -218,7 +227,7 @@ export default function RecordsList({
                 <div className={styles.popupHeight}>
                   <SamplesList
                     columnDefs={samplesColDefs}
-                    getRowData={getSamplesRowData}
+                    prepareDataForAgGrid={prepareSamplesDataForAgGrid}
                     parentWhereVariables={samplesParentWhereVariables}
                     refetchWhereVariables={samplesRefetchWhereVariables}
                     setUnsavedChanges={setUnsavedChanges}

@@ -15,33 +15,29 @@ query RequestsList(
 }
 
 query PatientsList(
-  $options: PatientAliasOptions
-  $where: PatientAliasWhere
-  $patientAliasesConnectionWhere2: PatientAliasWhere
+  $options: PatientOptions
+  $where: PatientWhere
+  $patientsConnectionWhere2: PatientWhere
 ) {
-  patientAliasesConnection(where: $patientAliasesConnectionWhere2) {
+  patientsConnection(where: $patientsConnectionWhere2) {
     totalCount
   }
-  patientAliases(where: $where, options: $options) {
-    namespace
-    value
-    isAliasPatients {
-      smilePatientId
-      hasSampleSamples {
-        smileSampleId
-        hasMetadataSampleMetadata {
-          primaryId
-          cmoSampleName
-          additionalProperties
-        }
+  patients(where: $where, options: $options) {
+    smilePatientId
+    hasSampleSamples {
+      smileSampleId
+      hasMetadataSampleMetadata {
+        primaryId
+        cmoSampleName
+        additionalProperties
       }
-      hasSampleSamplesConnection {
-        totalCount
-      }
-      patientAliasesIsAlias {
-        namespace
-        value
-      }
+    }
+    hasSampleSamplesConnection {
+      totalCount
+    }
+    patientAliasesIsAlias {
+      namespace
+      value
     }
   }
 }
@@ -76,10 +72,6 @@ query FindSamplesByInputValue(
           edges {
             node {
               smilePatientId
-              patientAliasesIsAlias {
-                namespace
-                value
-              }
             }
           }
         }

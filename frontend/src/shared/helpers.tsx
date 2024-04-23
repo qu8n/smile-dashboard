@@ -1,5 +1,4 @@
 import {
-  CellClassParams,
   ColDef,
   ICellRendererParams,
   IHeaderParams,
@@ -9,6 +8,7 @@ import {
 import { Button } from "react-bootstrap";
 import "ag-grid-enterprise";
 import {
+  PatientsListQuery,
   Sample,
   SampleMetadata,
   SampleMetadataWhere,
@@ -30,7 +30,7 @@ export type SampleChange = {
   fieldName: string;
   oldValue: string;
   newValue: string;
-  rowNode: RowNode<any>;
+  rowNode: RowNode;
 };
 
 export type ChangesByPrimaryId = {
@@ -42,7 +42,7 @@ export type ChangesByPrimaryId = {
 export const RequestsListColumns: ColDef[] = [
   {
     headerName: "View Samples",
-    cellRenderer: (params: CellClassParams<any>) => {
+    cellRenderer: (params: ICellRendererParams) => {
       return (
         <Button
           variant="outline-secondary"
@@ -140,18 +140,69 @@ export const RequestsListColumns: ColDef[] = [
   },
 ];
 
+export function preparePatientDataForAgGrid(
+  patientsListQueryResult: PatientsListQuery
+) {
+  const { patientsConnection, patients } = patientsListQueryResult;
+
+  const newPatients = patients.map((p) => {
+    const {
+      smilePatientId,
+      patientAliasesIsAlias: patientAliases,
+      hasSampleSamplesConnection: samplesConnection,
+      hasSampleSamples: samples,
+    } = p;
+    const cmoPatientId = patientAliases?.find(
+      (pa) => pa.namespace === "cmoId"
+    )?.value;
+    const dmpPatientId = patientAliases?.find(
+      (pa) => pa.namespace === "dmpId"
+    )?.value;
+
+    const totalSamples = samplesConnection?.totalCount;
+
+    const cmoSampleIds = samples?.map((s) => {
+      const sampleMetadata = s.hasMetadataSampleMetadata[0];
+      return sampleMetadata?.cmoSampleName || sampleMetadata?.primaryId;
+    });
+
+    const additionalProperties =
+      samples[0]?.hasMetadataSampleMetadata[0]?.additionalProperties;
+    const additionalPropertiesJson = additionalProperties
+      ? JSON.parse(additionalProperties)
+      : {};
+    const consentPartA = additionalPropertiesJson["consent-parta"];
+    const consentPartC = additionalPropertiesJson["consent-partc"];
+
+    return {
+      cmoPatientId,
+      dmpPatientId,
+      totalSamples,
+      cmoSampleIds,
+      consentPartA,
+      consentPartC,
+      smilePatientId,
+    };
+  });
+
+  return {
+    patientsConnection,
+    patients: newPatients,
+  };
+}
+
 export const PatientsListColumns: ColDef[] = [
   {
     headerName: "View Samples",
-    cellRenderer: (params: CellClassParams<any>) => {
+    cellRenderer: (params: ICellRendererParams) => {
       return (
         <Button
           variant="outline-secondary"
           size="sm"
           onClick={() => {
-            if (params.data.value !== undefined) {
-              params.context.navigateFunction(`/patients/${params.data.value}`);
-            }
+            params.context.navigateFunction(
+              `/patients/${params.data.smilePatientId}`
+            );
           }}
         >
           View
@@ -170,68 +221,36 @@ export const PatientsListColumns: ColDef[] = [
   {
     field: "cmoPatientId",
     headerName: "CMO Patient ID",
-    valueGetter: function ({ data }) {
-      return data["isAliasPatients"][0]["patientAliasesIsAlias"].find(
-        (patientAlias: any) => patientAlias.namespace === "cmoId"
-      )?.value;
-    },
     sortable: false,
   },
   {
     field: "dmpPatientId",
     headerName: "DMP Patient ID",
-    valueGetter: function ({ data }) {
-      return data["isAliasPatients"][0]["patientAliasesIsAlias"].find(
-        (patientAlias: any) => patientAlias.namespace === "dmpId"
-      )?.value;
-    },
     sortable: false,
   },
   {
+    field: "totalSamples",
     headerName: "# Samples",
-    valueGetter: function ({ data }) {
-      return data["isAliasPatients"][0].hasSampleSamplesConnection.totalCount;
-    },
     sortable: false,
   },
   {
     field: "cmoSampleIds",
     headerName: "CMO Sample IDs",
-    valueGetter: function ({ data }) {
-      return data["isAliasPatients"][0].hasSampleSamples.map(
-        (sample: Sample) =>
-          sample.hasMetadataSampleMetadata[0].cmoSampleName ||
-          sample.hasMetadataSampleMetadata[0].primaryId
-      );
-    },
     sortable: false,
   },
   {
+    field: "consentPartA",
     headerName: "12-245 Part A",
-    valueGetter: function ({ data }) {
-      return JSON.parse(
-        data["isAliasPatients"][0].hasSampleSamples[0]
-          ?.hasMetadataSampleMetadata[0]?.additionalProperties
-      )["consent-parta"];
-    },
     sortable: false,
   },
   {
+    field: "consentPartC",
     headerName: "12-245 Part C",
-    valueGetter: function ({ data }) {
-      return JSON.parse(
-        data["isAliasPatients"][0].hasSampleSamples[0]
-          ?.hasMetadataSampleMetadata[0]?.additionalProperties
-      )["consent-partc"];
-    },
     sortable: false,
   },
   {
     field: "smilePatientId",
     headerName: "SMILE Patient ID",
-    valueGetter: function ({ data }) {
-      return data["isAliasPatients"][0].smilePatientId;
-    },
     hide: true,
   },
 ];
@@ -496,7 +515,7 @@ function setupEditableSampleFields(samplesColDefs: ColDef[]) {
 export const CohortsListColumns: ColDef[] = [
   {
     headerName: "View Samples",
-    cellRenderer: (params: CellClassParams<any>) => {
+    cellRenderer: (params: ICellRendererParams) => {
       return (
         <Button
           variant="outline-secondary"
@@ -878,7 +897,7 @@ export function cohortSampleFilterWhereVariables(
   ];
 }
 
-export function getSampleMetadataFromSamplesQuery(samples: Sample[]) {
+export function prepareSampleMetadataForAgGrid(samples: Sample[]) {
   return samples.map((s) => {
     return {
       ...s.hasMetadataSampleMetadata[0],
@@ -887,7 +906,7 @@ export function getSampleMetadataFromSamplesQuery(samples: Sample[]) {
   });
 }
 
-export function getSampleCohortDataFromSamplesQuery(samples: Sample[]) {
+export function prepareSampleCohortDataForAgGrid(samples: Sample[]) {
   return samples.map((s) => {
     const cohorts = s.cohortsHasCohortSampleConnection?.edges;
     const cohortDates = cohorts?.flatMap((c) => {

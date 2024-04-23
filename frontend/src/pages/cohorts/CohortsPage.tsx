@@ -10,7 +10,7 @@ import {
   CohortSampleDetailsColumns,
   CohortsListColumns,
   cohortSampleFilterWhereVariables,
-  getSampleCohortDataFromSamplesQuery,
+  prepareSampleCohortDataForAgGrid,
   handleSearch,
 } from "../../shared/helpers";
 import RecordsList from "../../components/RecordsList";
@@ -148,7 +148,7 @@ export default function CohortsPage({
           sampleQueryParamValue &&
           `${sampleQueryParamHeaderName} "${sampleQueryParamValue}"`
         }
-        getSamplesRowData={getSampleCohortDataFromSamplesQuery}
+        prepareSamplesDataForAgGrid={prepareSampleCohortDataForAgGrid}
         samplesParentWhereVariables={
           {
             cohortsHasCohortSampleConnection_SOME: {
@@ -158,7 +158,7 @@ export default function CohortsPage({
             },
           } as SampleWhere
         }
-        samplesRefetchWhereVariables={(samplesParsedSearchVals: string[]) => {
+        samplesRefetchWhereVariables={(samplesParsedSearchVals) => {
           return {
             cohortsHasCohortSampleConnection_SOME: {
               node: {
