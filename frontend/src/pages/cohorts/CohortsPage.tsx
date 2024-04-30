@@ -12,6 +12,7 @@ import {
   cohortSampleFilterWhereVariables,
   prepareSampleCohortDataForAgGrid,
   handleSearch,
+  prepareCohortDataForAgGrid,
 } from "../../shared/helpers";
 import RecordsList from "../../components/RecordsList";
 import { useParams } from "react-router-dom";
@@ -134,6 +135,7 @@ export default function CohortsPage({
             },
           } as CohortCompleteOptions
         }
+        prepareDataForAgGrid={prepareCohortDataForAgGrid}
         queryFilterWhereVariables={cohortFilterWhereVariables}
         userSearchVal={userSearchVal}
         setUserSearchVal={setUserSearchVal}

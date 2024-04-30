@@ -14,6 +14,7 @@ import {
   ColDef,
   IServerSideDatasource,
   IServerSideGetRowsParams,
+  IServerSideGetRowsRequest,
 } from "ag-grid-community";
 import { DataName, useHookLazyGeneric } from "../shared/types";
 import SamplesList from "./SamplesList";
@@ -30,7 +31,10 @@ interface IRecordsListProps {
   dataName: DataName;
   lazyRecordsQuery: typeof useHookLazyGeneric;
   lazyRecordsQueryAddlVariables?: Record<string, any>;
-  prepareDataForAgGrid?: (data: any) => any;
+  prepareDataForAgGrid?: (
+    data: any,
+    filterModel: IServerSideGetRowsRequest["filterModel"]
+  ) => any;
   queryFilterWhereVariables: (
     parsedSearchVals: string[]
   ) => Record<string, any>[];
@@ -129,7 +133,8 @@ export default function RecordsList({
 
         return thisFetch.then((d) => {
           let data = d.data;
-          if (prepareDataForAgGrid) data = prepareDataForAgGrid(data);
+          if (prepareDataForAgGrid)
+            data = prepareDataForAgGrid(data, params.request.filterModel);
           params.success({
             rowData: data[dataName],
             rowCount: data[totalCountNodeName].totalCount,
