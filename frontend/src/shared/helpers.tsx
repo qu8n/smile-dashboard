@@ -238,7 +238,7 @@ export const PatientsListColumns: ColDef[] = [
   },
   {
     field: "cmoSampleIds",
-    headerName: "CMO Sample IDs",
+    headerName: "Sample IDs",
     sortable: false,
   },
   {
