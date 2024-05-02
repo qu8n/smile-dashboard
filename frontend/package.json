@@ -27,6 +27,7 @@
     "mobx": "^6.6.1",
     "mobx-react": "^7.5.2",
     "mobx-react-lite": "^3.4.0",
+    "moment": "^2.30.1",
     "neo4j-graphql-cli": "^0.0.11",
     "pre-commit": "^1.2.2",
     "prettier": "1.19.1",

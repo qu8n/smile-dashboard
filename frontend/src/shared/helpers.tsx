@@ -23,6 +23,7 @@ import CheckIcon from "@material-ui/icons/Check";
 import { StatusTooltip } from "./components/StatusToolTip";
 import { parseUserSearchVal } from "../utils/parseSearchQueries";
 import { Dispatch, SetStateAction } from "react";
+import moment from "moment";
 
 export interface SampleMetadataExtended extends SampleMetadata {
   revisable: boolean;
@@ -690,6 +691,11 @@ export const CohortSampleDetailsColumns: ColDef[] = [
     headerName: "Initial Pipeline Run Date",
   },
   {
+    field: "embargoDate",
+    headerName: "Embargo Date",
+    editable: false,
+  },
+  {
     field: "billed",
     headerName: "Billed",
     editable: true,
@@ -990,6 +996,9 @@ export function prepareSampleCohortDataForAgGrid(samples: Sample[]) {
       });
     });
     const deliveryDate = cohortDates?.sort()[0]; // earliest cohort date
+    var embargoDateAsDate = new Date(deliveryDate);
+    embargoDateAsDate.setMonth(embargoDateAsDate.getMonth() + 18); // embargo date is 18 months post earliest delivery date
+    const embargoDate = moment(embargoDateAsDate).format("YYYY-MM-DD");
 
     const tempo = s.hasTempoTempos?.[0];
     const { billed, billedBy, costCenter } = tempo ?? {};
@@ -1017,6 +1026,7 @@ export function prepareSampleCohortDataForAgGrid(samples: Sample[]) {
       ...s.hasMetadataSampleMetadata[0],
       revisable: s.revisable,
       deliveryDate: formatCohortRelatedDate(deliveryDate),
+      embargoDate,
       billed,
       billedBy,
       costCenter,
