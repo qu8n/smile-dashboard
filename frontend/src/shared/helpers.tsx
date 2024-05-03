@@ -6,6 +6,8 @@ import {
   ITooltipParams,
   ValueFormatterParams,
   IServerSideGetRowsRequest,
+  ICellEditorParams,
+  NewValueParams,
 } from "ag-grid-community";
 import { Button } from "react-bootstrap";
 import "ag-grid-enterprise";
@@ -24,6 +26,7 @@ import { StatusTooltip } from "./components/StatusToolTip";
 import { parseUserSearchVal } from "../utils/parseSearchQueries";
 import { Dispatch, SetStateAction } from "react";
 import moment from "moment";
+import { createElement } from "react";
 
 export interface SampleMetadataExtended extends SampleMetadata {
   revisable: boolean;
@@ -714,8 +717,12 @@ export const CohortSampleDetailsColumns: ColDef[] = [
   },
   {
     field: "costCenter",
-    headerName: "Cost Center",
+    headerName: "Cost Center/Fund Number",
     editable: true,
+    // NOTE FOR QUAN
+    // TODO: still need to work on getting the cell styling to cooperate. it seems that the unsubmitted changes styling
+    // takes priority over the styling i was trying to add when the cost center entry is invalid
+    cellEditor: CostCenterCellEditor,
   },
   {
     field: "billedBy",
@@ -1053,4 +1060,78 @@ export function handleSearch(
 
 function formatCohortRelatedDate(date: string) {
   return date?.split(" ")[0];
+}
+
+// NOTE FOR QUAN
+// TO DO - cleanup and refactor to match our existing syntax
+// spent a lot of time just making sure that the behavior matches
+// the expected behavior. the idea here is that if the input is invalid
+// that a "costCenter-validation-error" class name will be added to
+// the element's class list and this would allow the user to see if
+// their input is valid or not immediately (as they're typing it in)
+// i.e., the cell will have red text if their input is anything other than
+// a valid cost center/fund number format (^[d{5}\\/d{5}])
+function CostCenterCellEditor() {}
+
+CostCenterCellEditor.prototype.init = function (params: any) {
+  this.eGui = document.createElement("div");
+  this.eGui.innerHTML = `
+    <input value=${params.value} />
+  `;
+  this.eInput = this.eGui.querySelector("input");
+  this.eInput.addEventListener("input", this.inputChanged.bind(this));
+};
+
+CostCenterCellEditor.prototype.inputChanged = function (event: any) {
+  let val = event.target.value;
+  console.log("testing if valid cost center input = ", val);
+  if (isValidCostCenter(val)) {
+    console.log("is valid", val);
+    this.eGui.classList.remove("costCenter-validation-error");
+  } else {
+    console.log("is NOT valid", val);
+    this.eGui.classList.add("costCenter-validation-error");
+  }
+  console.log("\n\n\nupdated class list");
+  console.log(this.eGui.classList);
+};
+
+function isEmpty(val: string) {
+  return val === undefined || val === null || val === "" || val === "null";
+}
+
+CostCenterCellEditor.prototype.isCancelAfterEnd = function () {
+  let value = this.getValue();
+  if (isEmpty(value)) {
+    return true;
+  }
+  return false;
+};
+
+CostCenterCellEditor.prototype.getValue = function () {
+  return isEmpty(this.eInput.value) ? "" : this.eInput.value;
+};
+
+CostCenterCellEditor.prototype.getGui = function () {
+  return this.eGui;
+};
+
+CostCenterCellEditor.prototype.destroy = function () {
+  this.eInput.removeEventListener("input", this.inputChanged);
+};
+
+export function isValidCostCenter(costCenter: string): boolean {
+  // NOTE FOR QUAN
+  // this is a quicker validation check sans regex because I had noticed
+  // some delay between the user input and the regex validation return
+  if (costCenter.length < 11) {
+    return false;
+  }
+  const validCostCenter = new RegExp("^[d{5}\\/d{5}]");
+  console.log(
+    "isValidCostCenter output = ",
+    costCenter,
+    validCostCenter.test(costCenter)
+  );
+  return validCostCenter.test(costCenter);
 }
