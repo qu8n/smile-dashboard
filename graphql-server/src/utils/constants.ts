@@ -33,6 +33,9 @@ export const props = {
   express_session_secret: properties.get("auth.express_session_secret"),
 
   log_dir: properties.get("log.log_dir"),
+
+  web_key_pem: properties.get("web.web_key_pem"),
+  web_cert_pem: properties.get("web.web_cert_pem"),
 };
 
 export const EXPRESS_SERVER_ORIGIN =

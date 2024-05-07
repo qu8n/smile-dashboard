@@ -2,6 +2,7 @@ import { Express } from "express";
 import path from "path";
 import fs from "fs";
 import https from "https";
+import { props } from "./constants";
 import { buildNeo4jDbSchema } from "../schemas/neo4j";
 import { mergeSchemas } from "@graphql-tools/schema";
 import { oracleDbSchema } from "../schemas/oracle";
@@ -16,12 +17,8 @@ import { corsOptions } from "./constants";
 export function initializeHttpsServer(app: Express) {
   const httpsServer = https.createServer(
     {
-      key: fs.readFileSync(
-        path.join(__dirname, "../../../.cert/smile-dashboard-web-key.pem")
-      ),
-      cert: fs.readFileSync(
-        path.join(__dirname, "../../../.cert/smile-dashboard-web-cert.pem")
-      ),
+      key: fs.readFileSync(props.web_key_pem),
+      cert: fs.readFileSync(props.web_cert_pem),
     },
     app
   );

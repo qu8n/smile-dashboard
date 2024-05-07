@@ -12,6 +12,7 @@ nats_filter_subject=
 
 [topics]
 pub_validate_igo_sample_update=
+pub_tempo_sample_billing=
 
 [db]
 neo4j_username=
@@ -20,3 +21,21 @@ neo4j_graphql_uri=
 
 [smile]
 smile_sample_endpoint=
+
+[crdb]
+oracle_user=
+oracle_password=
+oracle_connect_string=
+
+[auth]
+keycloak_client_id=
+keycloak_client_secret=
+keycloak_server_uri=
+express_session_secret=
+
+[log]
+log_dir=
+
+[web]
+web_key_pem=
+web_cert_pem=
