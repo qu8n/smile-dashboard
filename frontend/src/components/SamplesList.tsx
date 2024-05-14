@@ -16,6 +16,7 @@ import {
   SampleMetadataExtended,
   defaultColDef,
   handleSearch,
+  isValidCostCenter,
 } from "../shared/helpers";
 import { AgGridReact } from "ag-grid-react";
 import { useState } from "react";
@@ -27,9 +28,14 @@ import { ErrorMessage, LoadingSpinner, Toolbar } from "../shared/tableElements";
 import styles from "./records.module.scss";
 import { getUserEmail } from "../utils/getUserEmail";
 import { openLoginPopup } from "../utils/openLoginPopup";
+import _ from "lodash";
 
 const POLLING_INTERVAL = 2000;
 const max_rows = 500;
+const defaultAlertContent =
+  "You've reached the maximum number of samples that can be displayed. Please refine your search to see more samples.";
+const costCenterAlertContent =
+  "Please update your Cost Center/Fund Number input as #####/##### (5 digits, a forward slash, then 5 digits). For example: 12345/12345.";
 
 interface ISampleListProps {
   columnDefs: ColDef[];
@@ -93,6 +99,8 @@ export default function SamplesList({
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [changes, setChanges] = useState<SampleChange[]>([]);
   const [editMode, setEditMode] = useState(true);
+  const [alertContent, setAlertContent] = useState(defaultAlertContent);
+
   const gridRef = useRef<any>(null);
 
   useEffect(() => {
@@ -116,14 +124,41 @@ export default function SamplesList({
 
   const remoteCount = samples.length;
 
-  async function onCellValueChanged(
-    params: CellValueChangedEvent<SampleMetadataExtended>
-  ) {
+  async function onCellValueChanged(params: CellValueChangedEvent) {
     if (!editMode) return;
 
     const primaryId = params.data.primaryId;
     const fieldName = params.colDef.field!;
     const { oldValue, newValue, node: rowNode } = params;
+
+    // prevent registering a change if no actual changes are made
+    const noChangeInVal = rowNode.data[fieldName] === newValue;
+    const noChangeInEmptyCell =
+      _.isEmpty(rowNode.data[fieldName]) && _.isEmpty(newValue);
+    if (noChangeInVal || noChangeInEmptyCell) {
+      const updatedChanges = changes.filter(
+        (c) => !(c.primaryId === primaryId && c.fieldName === fieldName)
+      );
+      setChanges(updatedChanges);
+      if (updatedChanges.length === 0) setUnsavedChanges?.(false);
+      return;
+    }
+
+    // validate Cost Center inputs
+    if (fieldName === "costCenter") {
+      if (!isValidCostCenter(newValue)) {
+        setAlertContent(costCenterAlertContent);
+        setShowAlertModal(true);
+      } else {
+        const allRowNodesInView = rowNode.parent?.allLeafChildren;
+        const allRowsHaveValidCostCenter = allRowNodesInView?.every(
+          (rowNode) =>
+            rowNode.data?.costCenter &&
+            isValidCostCenter(rowNode.data.costCenter)
+        );
+        if (allRowsHaveValidCostCenter) setAlertContent(defaultAlertContent);
+      }
+    }
 
     // add/update the billedBy cell to/in the changes array
     if (fieldName === "billed" && setUserEmail) {
@@ -224,8 +259,6 @@ export default function SamplesList({
           onHide={() => setShowUpdateModal(false)}
           onOpen={() => stopPolling()}
           sampleKeyForUpdate={sampleKeyForUpdate}
-          userEmail={userEmail}
-          setUserEmail={setUserEmail}
         />
       )}
 
@@ -234,10 +267,8 @@ export default function SamplesList({
         onHide={() => {
           setShowAlertModal(false);
         }}
-        title={"Limit reached"}
-        content={
-          "You've reached the maximum number of samples that can be displayed. Please refine your search to see more samples."
-        }
+        title={"Warning"}
+        content={alertContent}
       />
 
       <Toolbar
@@ -271,6 +302,7 @@ export default function SamplesList({
               <Col className={"text-start"}>
                 <Button
                   className={"btn btn-success"}
+                  disabled={alertContent === costCenterAlertContent}
                   onClick={() => {
                     setShowUpdateModal(true);
                   }}

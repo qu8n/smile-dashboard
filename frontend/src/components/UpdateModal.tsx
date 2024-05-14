@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, Dispatch, SetStateAction } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Button } from "react-bootstrap";
 import Modal from "react-bootstrap/Modal";
 import { AgGridReact } from "ag-grid-react";
@@ -17,8 +17,6 @@ interface UpdateModalProps {
   samples: Sample[];
   onOpen?: () => void;
   sampleKeyForUpdate: keyof Sample;
-  userEmail?: string | null;
-  setUserEmail?: Dispatch<SetStateAction<string | null>>;
 }
 
 export function UpdateModal({
@@ -28,8 +26,6 @@ export function UpdateModal({
   onOpen,
   samples,
   sampleKeyForUpdate,
-  userEmail,
-  setUserEmail,
 }: UpdateModalProps) {
   const [rowData, setRowData] = useState(changes);
   const [columnDefs] = useState([
