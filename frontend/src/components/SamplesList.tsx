@@ -131,6 +131,13 @@ export default function SamplesList({
     const fieldName = params.colDef.field!;
     const { oldValue, newValue, node: rowNode } = params;
 
+    function resetAlertIfCostCentersAreAllValid(changes: SampleChange[]) {
+      const allRowsHaveValidCostCenter = changes.every(
+        (c) => c.fieldName !== "costCenter" || isValidCostCenter(c.newValue)
+      );
+      if (allRowsHaveValidCostCenter) setAlertContent(defaultAlertContent);
+    }
+
     // prevent registering a change if no actual changes are made
     const noChangeInVal = rowNode.data[fieldName] === newValue;
     const noChangeInEmptyCell =
@@ -141,23 +148,8 @@ export default function SamplesList({
       );
       setChanges(updatedChanges);
       if (updatedChanges.length === 0) setUnsavedChanges?.(false);
+      resetAlertIfCostCentersAreAllValid(updatedChanges);
       return;
-    }
-
-    // validate Cost Center inputs
-    if (fieldName === "costCenter") {
-      if (!isValidCostCenter(newValue)) {
-        setAlertContent(costCenterAlertContent);
-        setShowAlertModal(true);
-      } else {
-        const allRowNodesInView = rowNode.parent?.allLeafChildren;
-        const allRowsHaveValidCostCenter = allRowNodesInView?.every(
-          (rowNode) =>
-            rowNode.data?.costCenter &&
-            isValidCostCenter(rowNode.data.costCenter)
-        );
-        if (allRowsHaveValidCostCenter) setAlertContent(defaultAlertContent);
-      }
     }
 
     // add/update the billedBy cell to/in the changes array
@@ -217,6 +209,16 @@ export default function SamplesList({
       }
       return [...changes];
     });
+
+    // validate Cost Center inputs
+    if (fieldName === "costCenter") {
+      if (!isValidCostCenter(newValue)) {
+        setAlertContent(costCenterAlertContent);
+        setShowAlertModal(true);
+      } else {
+        resetAlertIfCostCentersAreAllValid(changes);
+      }
+    }
 
     setUnsavedChanges?.(true);
   }
