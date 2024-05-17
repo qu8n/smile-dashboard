@@ -89,6 +89,8 @@ query FindSamplesByInputValue(
           billed
           billedBy
           costCenter
+          custodianInformation
+          accessLevel
           hasEventBamCompletes(options: $bamCompletesOptions) {
             date
             status

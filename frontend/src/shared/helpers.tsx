@@ -722,13 +722,20 @@ export const CohortSampleDetailsColumns: ColDef[] = [
   {
     field: "costCenter",
     headerName: "Cost Center/Fund Number",
-    editable: true,
   },
   {
     field: "billedBy",
     headerName: "Edited By",
     headerTooltip: 'User who last updated the "Billed" status',
     headerComponentParams: createCustomHeader(lockIcon + toolTipIcon),
+  },
+  {
+    field: "custodianInformation",
+    headerName: "Data Custodian",
+  },
+  {
+    field: "accessLevel",
+    headerName: "Access Level",
   },
   {
     field: "bamCompleteDate",
@@ -792,6 +799,8 @@ const editableSampleFields = [
   "sex",
   "billed",
   "costCenter",
+  "custodianInformation",
+  "accessLevel",
 ];
 
 export function sampleFilterWhereVariables(
@@ -1009,6 +1018,8 @@ export function prepareSampleCohortDataForAgGrid(samples: Sample[]) {
 
     const tempo = s.hasTempoTempos?.[0];
     const { billed, billedBy, costCenter } = tempo ?? {};
+    const custodianInformation = tempo?.custodianInformation;
+    const accessLevel = tempo?.accessLevel;
 
     const bamComplete = tempo?.hasEventBamCompletes?.[0];
     const { date: bamCompleteDate, status: bamCompleteStatus } =
@@ -1037,6 +1048,8 @@ export function prepareSampleCohortDataForAgGrid(samples: Sample[]) {
       billed,
       billedBy,
       costCenter,
+      custodianInformation,
+      accessLevel,
       bamCompleteDate: formatCohortRelatedDate(bamCompleteDate),
       bamCompleteStatus,
       mafCompleteDate: formatCohortRelatedDate(mafCompleteDate),

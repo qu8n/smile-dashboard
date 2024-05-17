@@ -394,25 +394,23 @@ export type CohortCohortCompleteHasCohortCompleteCohortCompletesAggregationSelec
 export type CohortCohortCompleteHasCohortCompleteCohortCompletesNodeAggregateSelection =
   {
     __typename?: "CohortCohortCompleteHasCohortCompleteCohortCompletesNodeAggregateSelection";
-    analyst: StringAggregateSelectionNullable;
     date: StringAggregateSelectionNonNullable;
-    projectSubtitle: StringAggregateSelectionNullable;
-    projectTitle: StringAggregateSelectionNullable;
+    projectSubtitle: StringAggregateSelectionNonNullable;
+    projectTitle: StringAggregateSelectionNonNullable;
     status: StringAggregateSelectionNonNullable;
     type: StringAggregateSelectionNonNullable;
   };
 
 export type CohortComplete = {
   __typename?: "CohortComplete";
-  analyst?: Maybe<Scalars["String"]>;
   cohortsHasCohortComplete: Array<Cohort>;
   cohortsHasCohortCompleteAggregate?: Maybe<CohortCompleteCohortCohortsHasCohortCompleteAggregationSelection>;
   cohortsHasCohortCompleteConnection: CohortCompleteCohortsHasCohortCompleteConnection;
   date: Scalars["String"];
-  endUsers?: Maybe<Array<Maybe<Scalars["String"]>>>;
-  pmUsers?: Maybe<Array<Maybe<Scalars["String"]>>>;
-  projectSubtitle?: Maybe<Scalars["String"]>;
-  projectTitle?: Maybe<Scalars["String"]>;
+  endUsers: Array<Maybe<Scalars["String"]>>;
+  pmUsers: Array<Maybe<Scalars["String"]>>;
+  projectSubtitle: Scalars["String"];
+  projectTitle: Scalars["String"];
   status: Scalars["String"];
   type: Scalars["String"];
 };
@@ -440,11 +438,10 @@ export type CohortCompleteCohortsHasCohortCompleteConnectionArgs = {
 
 export type CohortCompleteAggregateSelection = {
   __typename?: "CohortCompleteAggregateSelection";
-  analyst: StringAggregateSelectionNullable;
   count: Scalars["Int"];
   date: StringAggregateSelectionNonNullable;
-  projectSubtitle: StringAggregateSelectionNullable;
-  projectTitle: StringAggregateSelectionNullable;
+  projectSubtitle: StringAggregateSelectionNonNullable;
+  projectTitle: StringAggregateSelectionNonNullable;
   status: StringAggregateSelectionNonNullable;
   type: StringAggregateSelectionNonNullable;
 };
@@ -587,13 +584,12 @@ export type CohortCompleteConnectWhere = {
 };
 
 export type CohortCompleteCreateInput = {
-  analyst?: InputMaybe<Scalars["String"]>;
   cohortsHasCohortComplete?: InputMaybe<CohortCompleteCohortsHasCohortCompleteFieldInput>;
   date: Scalars["String"];
-  endUsers?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
-  pmUsers?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
-  projectSubtitle?: InputMaybe<Scalars["String"]>;
-  projectTitle?: InputMaybe<Scalars["String"]>;
+  endUsers: Array<InputMaybe<Scalars["String"]>>;
+  pmUsers: Array<InputMaybe<Scalars["String"]>>;
+  projectSubtitle: Scalars["String"];
+  projectTitle: Scalars["String"];
   status: Scalars["String"];
   type: Scalars["String"];
 };
@@ -631,7 +627,6 @@ export type CohortCompleteRelationInput = {
 
 /** Fields to sort CohortCompletes by. The order in which sorts are applied is not guaranteed when specifying many fields in one CohortCompleteSort object. */
 export type CohortCompleteSort = {
-  analyst?: InputMaybe<SortDirection>;
   date?: InputMaybe<SortDirection>;
   projectSubtitle?: InputMaybe<SortDirection>;
   projectTitle?: InputMaybe<SortDirection>;
@@ -640,7 +635,6 @@ export type CohortCompleteSort = {
 };
 
 export type CohortCompleteUpdateInput = {
-  analyst?: InputMaybe<Scalars["String"]>;
   cohortsHasCohortComplete?: InputMaybe<
     Array<CohortCompleteCohortsHasCohortCompleteUpdateFieldInput>
   >;
@@ -660,16 +654,6 @@ export type CohortCompleteUpdateInput = {
 export type CohortCompleteWhere = {
   AND?: InputMaybe<Array<CohortCompleteWhere>>;
   OR?: InputMaybe<Array<CohortCompleteWhere>>;
-  analyst?: InputMaybe<Scalars["String"]>;
-  analyst_CONTAINS?: InputMaybe<Scalars["String"]>;
-  analyst_ENDS_WITH?: InputMaybe<Scalars["String"]>;
-  analyst_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
-  analyst_NOT?: InputMaybe<Scalars["String"]>;
-  analyst_NOT_CONTAINS?: InputMaybe<Scalars["String"]>;
-  analyst_NOT_ENDS_WITH?: InputMaybe<Scalars["String"]>;
-  analyst_NOT_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
-  analyst_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
-  analyst_STARTS_WITH?: InputMaybe<Scalars["String"]>;
   cohortsHasCohortCompleteAggregate?: InputMaybe<CohortCompleteCohortsHasCohortCompleteAggregateInput>;
   cohortsHasCohortCompleteConnection_ALL?: InputMaybe<CohortCompleteCohortsHasCohortCompleteConnectionWhere>;
   cohortsHasCohortCompleteConnection_NONE?: InputMaybe<CohortCompleteCohortsHasCohortCompleteConnectionWhere>;
@@ -704,21 +688,21 @@ export type CohortCompleteWhere = {
   projectSubtitle?: InputMaybe<Scalars["String"]>;
   projectSubtitle_CONTAINS?: InputMaybe<Scalars["String"]>;
   projectSubtitle_ENDS_WITH?: InputMaybe<Scalars["String"]>;
-  projectSubtitle_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  projectSubtitle_IN?: InputMaybe<Array<Scalars["String"]>>;
   projectSubtitle_NOT?: InputMaybe<Scalars["String"]>;
   projectSubtitle_NOT_CONTAINS?: InputMaybe<Scalars["String"]>;
   projectSubtitle_NOT_ENDS_WITH?: InputMaybe<Scalars["String"]>;
-  projectSubtitle_NOT_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  projectSubtitle_NOT_IN?: InputMaybe<Array<Scalars["String"]>>;
   projectSubtitle_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
   projectSubtitle_STARTS_WITH?: InputMaybe<Scalars["String"]>;
   projectTitle?: InputMaybe<Scalars["String"]>;
   projectTitle_CONTAINS?: InputMaybe<Scalars["String"]>;
   projectTitle_ENDS_WITH?: InputMaybe<Scalars["String"]>;
-  projectTitle_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  projectTitle_IN?: InputMaybe<Array<Scalars["String"]>>;
   projectTitle_NOT?: InputMaybe<Scalars["String"]>;
   projectTitle_NOT_CONTAINS?: InputMaybe<Scalars["String"]>;
   projectTitle_NOT_ENDS_WITH?: InputMaybe<Scalars["String"]>;
-  projectTitle_NOT_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  projectTitle_NOT_IN?: InputMaybe<Array<Scalars["String"]>>;
   projectTitle_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
   projectTitle_STARTS_WITH?: InputMaybe<Scalars["String"]>;
   status?: InputMaybe<Scalars["String"]>;
@@ -859,26 +843,6 @@ export type CohortHasCohortCompleteCohortCompletesNodeAggregationWhereInput = {
   OR?: InputMaybe<
     Array<CohortHasCohortCompleteCohortCompletesNodeAggregationWhereInput>
   >;
-  analyst_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
-  analyst_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
-  analyst_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
-  analyst_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
-  analyst_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
-  analyst_EQUAL?: InputMaybe<Scalars["String"]>;
-  analyst_GT?: InputMaybe<Scalars["Int"]>;
-  analyst_GTE?: InputMaybe<Scalars["Int"]>;
-  analyst_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
-  analyst_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
-  analyst_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
-  analyst_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
-  analyst_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
-  analyst_LT?: InputMaybe<Scalars["Int"]>;
-  analyst_LTE?: InputMaybe<Scalars["Int"]>;
-  analyst_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
-  analyst_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
-  analyst_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
-  analyst_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
-  analyst_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
   date_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
   date_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
   date_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
@@ -11257,6 +11221,8 @@ export type FindSamplesByInputValueQuery = {
           billed?: boolean | null;
           billedBy?: string | null;
           costCenter?: string | null;
+          custodianInformation: string;
+          accessLevel: string;
           hasEventBamCompletes: Array<{
             __typename?: "BamComplete";
             date: string;
@@ -11472,10 +11438,10 @@ export type CohortsListQuery = {
     hasCohortCompleteCohortCompletes: Array<{
       __typename?: "CohortComplete";
       type: string;
-      endUsers?: Array<string | null> | null;
-      pmUsers?: Array<string | null> | null;
-      projectTitle?: string | null;
-      projectSubtitle?: string | null;
+      endUsers: Array<string | null>;
+      pmUsers: Array<string | null>;
+      projectTitle: string;
+      projectSubtitle: string;
       status: string;
       date: string;
     }>;
@@ -11754,6 +11720,8 @@ export const FindSamplesByInputValueDocument = gql`
             billed
             billedBy
             costCenter
+            custodianInformation
+            accessLevel
             hasEventBamCompletes(options: $bamCompletesOptions) {
               date
               status
