@@ -117,6 +117,7 @@ export type BamCompleteTempoTemposHasEventNodeAggregateSelection = {
   billedBy: StringAggregateSelectionNullable;
   costCenter: StringAggregateSelectionNullable;
   custodianInformation: StringAggregateSelectionNonNullable;
+  smileTempoId: StringAggregateSelectionNonNullable;
 };
 
 export type BamCompleteTemposHasEventAggregateInput = {
@@ -255,6 +256,26 @@ export type BamCompleteTemposHasEventNodeAggregationWhereInput = {
   custodianInformation_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
   custodianInformation_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
   custodianInformation_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  smileTempoId_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  smileTempoId_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  smileTempoId_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  smileTempoId_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  smileTempoId_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  smileTempoId_EQUAL?: InputMaybe<Scalars["String"]>;
+  smileTempoId_GT?: InputMaybe<Scalars["Int"]>;
+  smileTempoId_GTE?: InputMaybe<Scalars["Int"]>;
+  smileTempoId_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  smileTempoId_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  smileTempoId_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  smileTempoId_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  smileTempoId_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  smileTempoId_LT?: InputMaybe<Scalars["Int"]>;
+  smileTempoId_LTE?: InputMaybe<Scalars["Int"]>;
+  smileTempoId_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  smileTempoId_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  smileTempoId_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  smileTempoId_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  smileTempoId_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
 };
 
 export type BamCompleteTemposHasEventRelationship = {
@@ -1430,6 +1451,7 @@ export type MafCompleteTempoTemposHasEventNodeAggregateSelection = {
   billedBy: StringAggregateSelectionNullable;
   costCenter: StringAggregateSelectionNullable;
   custodianInformation: StringAggregateSelectionNonNullable;
+  smileTempoId: StringAggregateSelectionNonNullable;
 };
 
 export type MafCompleteTemposHasEventAggregateInput = {
@@ -1568,6 +1590,26 @@ export type MafCompleteTemposHasEventNodeAggregationWhereInput = {
   custodianInformation_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
   custodianInformation_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
   custodianInformation_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  smileTempoId_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  smileTempoId_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  smileTempoId_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  smileTempoId_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  smileTempoId_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  smileTempoId_EQUAL?: InputMaybe<Scalars["String"]>;
+  smileTempoId_GT?: InputMaybe<Scalars["Int"]>;
+  smileTempoId_GTE?: InputMaybe<Scalars["Int"]>;
+  smileTempoId_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  smileTempoId_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  smileTempoId_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  smileTempoId_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  smileTempoId_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  smileTempoId_LT?: InputMaybe<Scalars["Int"]>;
+  smileTempoId_LTE?: InputMaybe<Scalars["Int"]>;
+  smileTempoId_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  smileTempoId_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  smileTempoId_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  smileTempoId_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  smileTempoId_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
 };
 
 export type MafCompleteTemposHasEventRelationship = {
@@ -3441,6 +3483,7 @@ export type QcCompleteTempoTemposHasEventNodeAggregateSelection = {
   billedBy: StringAggregateSelectionNullable;
   costCenter: StringAggregateSelectionNullable;
   custodianInformation: StringAggregateSelectionNonNullable;
+  smileTempoId: StringAggregateSelectionNonNullable;
 };
 
 export type QcCompleteTemposHasEventAggregateInput = {
@@ -3579,6 +3622,26 @@ export type QcCompleteTemposHasEventNodeAggregationWhereInput = {
   custodianInformation_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
   custodianInformation_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
   custodianInformation_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  smileTempoId_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  smileTempoId_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  smileTempoId_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  smileTempoId_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  smileTempoId_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  smileTempoId_EQUAL?: InputMaybe<Scalars["String"]>;
+  smileTempoId_GT?: InputMaybe<Scalars["Int"]>;
+  smileTempoId_GTE?: InputMaybe<Scalars["Int"]>;
+  smileTempoId_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  smileTempoId_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  smileTempoId_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  smileTempoId_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  smileTempoId_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  smileTempoId_LT?: InputMaybe<Scalars["Int"]>;
+  smileTempoId_LTE?: InputMaybe<Scalars["Int"]>;
+  smileTempoId_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  smileTempoId_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  smileTempoId_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  smileTempoId_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  smileTempoId_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
 };
 
 export type QcCompleteTemposHasEventRelationship = {
@@ -7157,6 +7220,26 @@ export type SampleHasTempoTemposNodeAggregationWhereInput = {
   custodianInformation_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
   custodianInformation_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
   custodianInformation_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  smileTempoId_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  smileTempoId_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  smileTempoId_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  smileTempoId_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  smileTempoId_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  smileTempoId_EQUAL?: InputMaybe<Scalars["String"]>;
+  smileTempoId_GT?: InputMaybe<Scalars["Int"]>;
+  smileTempoId_GTE?: InputMaybe<Scalars["Int"]>;
+  smileTempoId_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  smileTempoId_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  smileTempoId_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  smileTempoId_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  smileTempoId_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  smileTempoId_LT?: InputMaybe<Scalars["Int"]>;
+  smileTempoId_LTE?: InputMaybe<Scalars["Int"]>;
+  smileTempoId_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  smileTempoId_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  smileTempoId_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  smileTempoId_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  smileTempoId_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
 };
 
 export type SampleHasTempoTemposRelationship = {
@@ -8843,6 +8926,7 @@ export type SampleTempoHasTempoTemposNodeAggregateSelection = {
   billedBy: StringAggregateSelectionNullable;
   costCenter: StringAggregateSelectionNullable;
   custodianInformation: StringAggregateSelectionNonNullable;
+  smileTempoId: StringAggregateSelectionNonNullable;
 };
 
 export type SampleUpdateInput = {
@@ -10020,6 +10104,7 @@ export type Tempo = {
   samplesHasTempo: Array<Sample>;
   samplesHasTempoAggregate?: Maybe<TempoSampleSamplesHasTempoAggregationSelection>;
   samplesHasTempoConnection: TempoSamplesHasTempoConnection;
+  smileTempoId: Scalars["String"];
 };
 
 export type TempoHasEventBamCompletesArgs = {
@@ -10105,6 +10190,7 @@ export type TempoAggregateSelection = {
   costCenter: StringAggregateSelectionNullable;
   count: Scalars["Int"];
   custodianInformation: StringAggregateSelectionNonNullable;
+  smileTempoId: StringAggregateSelectionNonNullable;
 };
 
 export type TempoBamCompleteHasEventBamCompletesAggregationSelection = {
@@ -10146,6 +10232,7 @@ export type TempoCreateInput = {
   hasEventMafCompletes?: InputMaybe<TempoHasEventMafCompletesFieldInput>;
   hasEventQcCompletes?: InputMaybe<TempoHasEventQcCompletesFieldInput>;
   samplesHasTempo?: InputMaybe<TempoSamplesHasTempoFieldInput>;
+  smileTempoId: Scalars["String"];
 };
 
 export type TempoDeleteInput = {
@@ -10816,6 +10903,7 @@ export type TempoSort = {
   billedBy?: InputMaybe<SortDirection>;
   costCenter?: InputMaybe<SortDirection>;
   custodianInformation?: InputMaybe<SortDirection>;
+  smileTempoId?: InputMaybe<SortDirection>;
 };
 
 export type TempoUpdateInput = {
@@ -10834,6 +10922,7 @@ export type TempoUpdateInput = {
     Array<TempoHasEventQcCompletesUpdateFieldInput>
   >;
   samplesHasTempo?: InputMaybe<Array<TempoSamplesHasTempoUpdateFieldInput>>;
+  smileTempoId?: InputMaybe<Scalars["String"]>;
 };
 
 export type TempoWhere = {
@@ -10933,6 +11022,16 @@ export type TempoWhere = {
   samplesHasTempo_SINGLE?: InputMaybe<SampleWhere>;
   /** Return Tempos where some of the related Samples match this filter */
   samplesHasTempo_SOME?: InputMaybe<SampleWhere>;
+  smileTempoId?: InputMaybe<Scalars["String"]>;
+  smileTempoId_CONTAINS?: InputMaybe<Scalars["String"]>;
+  smileTempoId_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  smileTempoId_IN?: InputMaybe<Array<Scalars["String"]>>;
+  smileTempoId_NOT?: InputMaybe<Scalars["String"]>;
+  smileTempoId_NOT_CONTAINS?: InputMaybe<Scalars["String"]>;
+  smileTempoId_NOT_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  smileTempoId_NOT_IN?: InputMaybe<Array<Scalars["String"]>>;
+  smileTempoId_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  smileTempoId_STARTS_WITH?: InputMaybe<Scalars["String"]>;
 };
 
 export type TemposConnection = {
@@ -11218,6 +11317,7 @@ export type FindSamplesByInputValueQuery = {
         };
         hasTempoTempos: Array<{
           __typename?: "Tempo";
+          smileTempoId: string;
           billed?: boolean | null;
           billedBy?: string | null;
           costCenter?: string | null;
@@ -11354,6 +11454,13 @@ export type SamplesQuery = {
       tubeId?: string | null;
       tumorOrNormal: string;
     }>;
+    hasTempoTempos: Array<{
+      __typename?: "Tempo";
+      smileTempoId: string;
+      billed?: boolean | null;
+      billedBy?: string | null;
+      costCenter?: string | null;
+    }>;
   }>;
 };
 
@@ -11404,6 +11511,13 @@ export type UpdateSamplesMutation = {
         tubeId?: string | null;
         tumorOrNormal: string;
       }>;
+      hasTempoTempos: Array<{
+        __typename?: "Tempo";
+        smileTempoId: string;
+        billed?: boolean | null;
+        billedBy?: string | null;
+        costCenter?: string | null;
+      }>;
     }>;
   };
 };
@@ -11452,7 +11566,11 @@ export type CohortsListQuery = {
     hasCohortSampleSamples: Array<{
       __typename?: "Sample";
       smileSampleId: string;
-      hasTempoTempos: Array<{ __typename?: "Tempo"; billed?: boolean | null }>;
+      hasTempoTempos: Array<{
+        __typename?: "Tempo";
+        smileTempoId: string;
+        billed?: boolean | null;
+      }>;
     }>;
   }>;
 };
@@ -11717,6 +11835,7 @@ export const FindSamplesByInputValueDocument = gql`
             }
           }
           hasTempoTempos {
+            smileTempoId
             billed
             billedBy
             costCenter
@@ -11820,6 +11939,12 @@ export const SamplesDocument = gql`
       ) {
         ...SampleMetadataParts
       }
+      hasTempoTempos {
+        smileTempoId
+        billed
+        billedBy
+        costCenter
+      }
     }
   }
   ${SampleMetadataPartsFragmentDoc}
@@ -11882,6 +12007,12 @@ export const UpdateSamplesDocument = gql`
         sampleClass
         hasMetadataSampleMetadata {
           ...SampleMetadataParts
+        }
+        hasTempoTempos {
+          smileTempoId
+          billed
+          billedBy
+          costCenter
         }
       }
     }
@@ -12022,6 +12153,7 @@ export const CohortsListDocument = gql`
       hasCohortSampleSamples {
         smileSampleId
         hasTempoTempos {
+          smileTempoId
           billed
         }
       }

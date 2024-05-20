@@ -86,6 +86,7 @@ query FindSamplesByInputValue(
           }
         }
         hasTempoTempos {
+          smileTempoId
           billed
           billedBy
           costCenter
@@ -188,6 +189,12 @@ query Samples(
     ) {
       ...SampleMetadataParts
     }
+    hasTempoTempos {
+      smileTempoId
+      billed
+      billedBy
+      costCenter
+    }
   }
 }
 
@@ -205,6 +212,12 @@ mutation UpdateSamples(
       sampleClass
       hasMetadataSampleMetadata {
         ...SampleMetadataParts
+      }
+      hasTempoTempos {
+        smileTempoId
+        billed
+        billedBy
+        costCenter
       }
     }
   }
@@ -246,6 +259,7 @@ query CohortsList(
     hasCohortSampleSamples {
       smileSampleId
       hasTempoTempos {
+        smileTempoId
         billed
       }
     }

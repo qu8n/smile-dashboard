@@ -21,6 +21,9 @@ const cache = new InMemoryCache({
     SampleMetadata: {
       keyFields: ["primaryId"],
     },
+    Tempo: {
+      keyFields: ["smileTempoId"],
+    },
   },
 });
 
