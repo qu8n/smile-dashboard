@@ -28,7 +28,6 @@ import { ErrorMessage, LoadingSpinner, Toolbar } from "../shared/tableElements";
 import styles from "./records.module.scss";
 import { getUserEmail } from "../utils/getUserEmail";
 import { openLoginPopup } from "../utils/openLoginPopup";
-import _ from "lodash";
 
 const POLLING_INTERVAL = 2000;
 const max_rows = 500;
@@ -140,8 +139,7 @@ export default function SamplesList({
 
     // prevent registering a change if no actual changes are made
     const noChangeInVal = rowNode.data[fieldName] === newValue;
-    const noChangeInEmptyCell =
-      _.isEmpty(rowNode.data[fieldName]) && _.isEmpty(newValue);
+    const noChangeInEmptyCell = !rowNode.data[fieldName] && !newValue;
     if (noChangeInVal || noChangeInEmptyCell) {
       const updatedChanges = changes.filter(
         (c) => !(c.primaryId === primaryId && c.fieldName === fieldName)

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { Button } from "react-bootstrap";
 import Modal from "react-bootstrap/Modal";
 import { AgGridReact } from "ag-grid-react";
@@ -27,22 +27,17 @@ export function UpdateModal({
   samples,
   sampleKeyForUpdate,
 }: UpdateModalProps) {
-  const [rowData, setRowData] = useState(changes);
-  const [columnDefs] = useState([
+  const columnDefs = [
     { field: "primaryId", rowGroup: true, hide: true },
     { field: "fieldName" },
     { field: "oldValue" },
     { field: "newValue" },
-  ]);
+  ];
 
   useEffect(() => {
     onOpen && onOpen();
     // eslint-disable-next-line
   }, []);
-
-  useEffect(() => {
-    setRowData(changes);
-  }, [changes]);
 
   const [updateSamplesMutation] = useUpdateSamplesMutation();
 
@@ -69,13 +64,15 @@ export function UpdateModal({
       }
     });
 
-    for (const [key, value] of Object.entries(changesByPrimaryId)) {
+    for (const [primaryId, changedFields] of Object.entries(
+      changesByPrimaryId
+    )) {
       updateSamplesMutation({
         variables: {
           where: {
             hasMetadataSampleMetadataConnection_SOME: {
               node: {
-                primaryId: key,
+                primaryId: primaryId,
               },
             },
           },
@@ -83,7 +80,7 @@ export function UpdateModal({
             [sampleKeyForUpdate]: [
               {
                 update: {
-                  node: value!,
+                  node: changedFields!,
                 },
               },
             ],
@@ -126,7 +123,7 @@ export function UpdateModal({
         <p>Are you sure you want to submit the following changes?</p>
         <div className="ag-theme-alpine" style={{ height: 350 }}>
           <AgGridReact
-            rowData={rowData}
+            rowData={changes}
             columnDefs={columnDefs}
             groupRemoveSingleChildren={true}
             autoGroupColumnDef={autoGroupColumnDef}

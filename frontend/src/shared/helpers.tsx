@@ -25,7 +25,6 @@ import { StatusTooltip } from "./components/StatusToolTip";
 import { parseUserSearchVal } from "../utils/parseSearchQueries";
 import { Dispatch, SetStateAction } from "react";
 import moment from "moment";
-import _ from "lodash";
 
 export interface SampleMetadataExtended extends SampleMetadata {
   revisable: boolean;
@@ -1012,7 +1011,7 @@ export function prepareSampleCohortDataForAgGrid(samples: Sample[]) {
       });
     });
     const deliveryDate = cohortDates?.sort()[0]; // earliest cohort date
-    var embargoDateAsDate = new Date(deliveryDate);
+    let embargoDateAsDate = new Date(deliveryDate);
     embargoDateAsDate.setMonth(embargoDateAsDate.getMonth() + 18); // embargo date is 18 months post earliest delivery date
     const embargoDate = moment(embargoDateAsDate).format("YYYY-MM-DD");
 
@@ -1076,8 +1075,8 @@ function formatCohortRelatedDate(date: string) {
 }
 
 export function isValidCostCenter(costCenter: string): boolean {
-  if (_.isEmpty(costCenter)) return true;
-  if (costCenter && costCenter.length !== 11) return false;
+  if (!costCenter) return true;
+  if (costCenter.length !== 11) return false;
   const validCostCenter = new RegExp("^\\d{5}/\\d{5}$");
   return validCostCenter.test(costCenter);
 }

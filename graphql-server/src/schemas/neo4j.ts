@@ -3,17 +3,24 @@ import { Neo4jGraphQL } from "@neo4j/graphql";
 import { OGM } from "@neo4j/graphql-ogm";
 import { toGraphQLTypeDefs } from "@neo4j/introspector";
 import { createHttpLink } from "apollo-link-http";
-import { InMemoryCache } from "apollo-cache-inmemory";
+import { InMemoryCache, NormalizedCacheObject } from "apollo-cache-inmemory";
 import { props } from "../utils/constants";
 import {
-  FindSamplesByInputValueDocument,
+  SampleHasMetadataSampleMetadataUpdateFieldInput,
+  SampleHasTempoTemposUpdateFieldInput,
+  SampleMetadata,
+  SampleMetadataUpdateInput,
+  SampleUpdateInput,
+  SampleWhere,
   SamplesDocument,
   SortDirection,
+  Tempo,
+  UpdateSamplesMutationResponse,
 } from "../generated/graphql";
 import { connect, headers, StringCodec } from "nats";
 const fetch = require("node-fetch");
 const request = require("request-promise-native");
-const ApolloClient = require("apollo-client").ApolloClient;
+import { ApolloClient, ApolloQueryResult } from "apollo-client";
 
 export async function buildNeo4jDbSchema() {
   const driver = neo4j.driver(
@@ -51,13 +58,32 @@ export async function buildNeo4jDbSchema() {
   return neo4jDbSchema;
 }
 
-function buildResolvers(ogm: OGM, apolloClient: typeof ApolloClient) {
+function buildResolvers(
+  ogm: OGM,
+  apolloClient: ApolloClient<NormalizedCacheObject>
+) {
   return {
     Mutation: {
-      async updateSamples(_source: any, { where, update }: any) {
+      async updateSamples(
+        _source: any,
+        { where, update }: { where: SampleWhere; update: SampleUpdateInput }
+      ) {
+        // Grab data passed in from the frontend
         const primaryId =
-          where.hasMetadataSampleMetadataConnection_SOME.node.primaryId;
+          where.hasMetadataSampleMetadataConnection_SOME!.node!.primaryId!;
 
+        const sampleKeyForUpdate = Object.keys(
+          update
+        )[0] as keyof SampleUpdateInput;
+
+        const changedFields = (
+          update[sampleKeyForUpdate] as Array<
+            | SampleHasMetadataSampleMetadataUpdateFieldInput
+            | SampleHasTempoTemposUpdateFieldInput
+          >
+        )[0].update!.node!;
+
+        // Get sample manifest from SMILE API /sampleById and update fields that were changed
         const sampleManifest = await request(
           props.smile_sample_endpoint + primaryId,
           {
@@ -65,27 +91,52 @@ function buildResolvers(ogm: OGM, apolloClient: typeof ApolloClient) {
           }
         );
 
-        const sampleKeyForUpdate = Object.keys(update)[0];
+        Object.keys(changedFields).forEach((changedField) => {
+          const key = changedField as keyof SampleMetadataUpdateInput;
+          sampleManifest[key] =
+            changedFields[key as keyof typeof changedFields];
+        });
 
-        const changesByPrimaryId = update[sampleKeyForUpdate][0].update.node;
+        // Get the sample data from the database and update the fields that were changed
+        const updatedSamples: ApolloQueryResult<UpdateSamplesMutationResponse> =
+          await apolloClient.query({
+            query: SamplesDocument,
+            variables: {
+              where: {
+                smileSampleId: sampleManifest.smileSampleId,
+              },
+              hasMetadataSampleMetadataOptions2: {
+                sort: [{ importDate: SortDirection.Desc }],
+                limit: 1,
+              },
+            },
+          });
 
-        let updatedSamples: any;
+        Object.keys(changedFields).forEach((key) => {
+          const sample = updatedSamples.data.samples[0][sampleKeyForUpdate] as
+            | SampleMetadata[]
+            | Tempo[];
+          if (Array.isArray(sample) && sample.length > 0) {
+            sample[0][key as keyof typeof sample[0]] =
+              changedFields[key as keyof typeof changedFields];
+          }
+        });
+
+        // Publish the data updates to NATS
         if ("hasMetadataSampleMetadata" in update) {
-          updatedSamples = await updateSampleMetadata(
-            sampleManifest,
-            changesByPrimaryId,
-            ogm,
-            apolloClient
+          await publishNatsMessageForSampleMetadataUpdates(sampleManifest, ogm);
+        } else if ("hasTempoTempos" in update) {
+          await publishNatsMessageForSampleBillingUpdates(
+            primaryId,
+            updatedSamples
           );
         } else {
-          updatedSamples = await updateSampleBilling(
-            sampleManifest,
-            primaryId,
-            changesByPrimaryId,
-            apolloClient
-          );
+          throw new Error("Unknown update field");
         }
 
+        // Return the updated samples data to enable optimistic UI updates.
+        // The shape of the data returned here doesn't fully match the shape of the data
+        // in the frontend, but it has all the fields being updated
         return {
           samples: updatedSamples.data.samples,
         };
@@ -94,16 +145,10 @@ function buildResolvers(ogm: OGM, apolloClient: typeof ApolloClient) {
   };
 }
 
-async function updateSampleMetadata(
+async function publishNatsMessageForSampleMetadataUpdates(
   sampleManifest: any,
-  changesByPrimaryId: any,
-  ogm: OGM,
-  apolloClient: typeof ApolloClient
+  ogm: OGM
 ) {
-  Object.keys(changesByPrimaryId).forEach((primaryId: string) => {
-    sampleManifest[primaryId] = changesByPrimaryId[primaryId];
-  });
-
   // remove 'status' from sample metadata to ensure validator and label
   // generator use latest status data added during validation process
   delete sampleManifest["status"];
@@ -121,73 +166,23 @@ async function updateSampleMetadata(
       rd[0]["isCmoRequest"].toString();
   }
 
-  // fire and forget
   publishNatsMessage(
     props.pub_validate_sample_update,
     JSON.stringify(sampleManifest)
   );
 
-  let sample = ogm.model("Sample");
-
-  await sample.update({
+  await ogm.model("Sample").update({
     where: { smileSampleId: sampleManifest.smileSampleId },
     update: { revisable: false },
   });
-
-  const updatedSamples = await apolloClient.query({
-    query: SamplesDocument,
-    variables: {
-      where: {
-        smileSampleId: sampleManifest.smileSampleId,
-      },
-      hasMetadataSampleMetadataOptions2: {
-        sort: [{ importDate: SortDirection.Desc }],
-        limit: 1,
-      },
-    },
-  });
-
-  Object.keys(changesByPrimaryId).forEach((key: string) => {
-    updatedSamples.data.samples[0].hasMetadataSampleMetadata[0][key] =
-      changesByPrimaryId[key];
-  });
-
-  return updatedSamples;
 }
 
-async function updateSampleBilling(
-  sampleManifest: any,
+async function publishNatsMessageForSampleBillingUpdates(
   primaryId: string,
-  changesByPrimaryId: any,
-  apolloClient: typeof ApolloClient
+  updatedSamples: ApolloQueryResult<UpdateSamplesMutationResponse>
 ) {
-  const sampleData = await apolloClient.query({
-    query: FindSamplesByInputValueDocument,
-    variables: {
-      where: {
-        smileSampleId: sampleManifest.smileSampleId,
-      },
-      sampleMetadataOptions: {
-        sort: [{ importDate: SortDirection.Desc }],
-        limit: 1,
-      },
-      bamCompletesOptions: {
-        sort: [{ date: SortDirection.Desc }],
-        limit: 1,
-      },
-      mafCompletesOptions: {
-        sort: [{ date: SortDirection.Desc }],
-        limit: 1,
-      },
-      qcCompletesOptions: {
-        sort: [{ date: SortDirection.Desc }],
-        limit: 1,
-      },
-    },
-  });
-
   const { billed, billedBy, costCenter } =
-    sampleData.data.samplesConnection.edges[0].node.hasTempoTempos[0];
+    updatedSamples.data.samples[0].hasTempoTempos[0];
 
   const dataForTempoBillingUpdate = {
     primaryId,
@@ -196,34 +191,13 @@ async function updateSampleBilling(
     costCenter,
   };
 
-  for (const primaryId in changesByPrimaryId) {
-    dataForTempoBillingUpdate[
-      primaryId as keyof typeof dataForTempoBillingUpdate
-    ] = changesByPrimaryId[primaryId];
-  }
-
   publishNatsMessage(
     props.pub_tempo_sample_billing,
     JSON.stringify(dataForTempoBillingUpdate)
   );
-
-  const updatedSamples = await apolloClient.query({
-    query: SamplesDocument,
-    variables: {
-      where: {
-        smileSampleId: sampleManifest.smileSampleId,
-      },
-      hasMetadataSampleMetadataOptions2: {
-        sort: [{ importDate: SortDirection.Desc }],
-        limit: 1,
-      },
-    },
-  });
-
-  return updatedSamples;
 }
 
-async function publishNatsMessage(topic: string, message: any) {
+async function publishNatsMessage(topic: string, message: string) {
   const sc = StringCodec();
 
   const tlsOptions = {
