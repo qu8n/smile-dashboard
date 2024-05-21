@@ -86,12 +86,7 @@ query FindSamplesByInputValue(
           }
         }
         hasTempoTempos {
-          smileTempoId
-          billed
-          billedBy
-          costCenter
-          custodianInformation
-          accessLevel
+          ...TempoParts
           hasEventBamCompletes(options: $bamCompletesOptions) {
             date
             status
@@ -172,6 +167,15 @@ fragment SampleMetadataParts on SampleMetadata {
   tumorOrNormal
 }
 
+fragment TempoParts on Tempo {
+  smileTempoId
+  billed
+  billedBy
+  costCenter
+  custodianInformation
+  accessLevel
+}
+
 query Samples(
   $where: SampleWhere
   $hasMetadataSampleMetadataWhere2: SampleMetadataWhere
@@ -190,10 +194,7 @@ query Samples(
       ...SampleMetadataParts
     }
     hasTempoTempos {
-      smileTempoId
-      billed
-      billedBy
-      costCenter
+      ...TempoParts
     }
   }
 }
@@ -214,10 +215,7 @@ mutation UpdateSamples(
         ...SampleMetadataParts
       }
       hasTempoTempos {
-        smileTempoId
-        billed
-        billedBy
-        costCenter
+        ...TempoParts
       }
     }
   }

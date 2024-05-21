@@ -181,7 +181,7 @@ async function publishNatsMessageForSampleBillingUpdates(
   primaryId: string,
   updatedSamples: ApolloQueryResult<UpdateSamplesMutationResponse>
 ) {
-  const { billed, billedBy, costCenter } =
+  const { billed, billedBy, costCenter, accessLevel, custodianInformation } =
     updatedSamples.data.samples[0].hasTempoTempos[0];
 
   const dataForTempoBillingUpdate = {
@@ -189,7 +189,11 @@ async function publishNatsMessageForSampleBillingUpdates(
     billed,
     billedBy,
     costCenter,
+    accessLevel,
+    custodianInformation,
   };
+
+  console.log("dataForTempoBillingUpdate: ", dataForTempoBillingUpdate);
 
   publishNatsMessage(
     props.pub_tempo_sample_billing,

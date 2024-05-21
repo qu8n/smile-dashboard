@@ -11408,6 +11408,16 @@ export type SampleMetadataPartsFragment = {
   tumorOrNormal: string;
 };
 
+export type TempoPartsFragment = {
+  __typename?: "Tempo";
+  smileTempoId: string;
+  billed?: boolean | null;
+  billedBy?: string | null;
+  costCenter?: string | null;
+  custodianInformation: string;
+  accessLevel: string;
+};
+
 export type SamplesQueryVariables = Exact<{
   where?: InputMaybe<SampleWhere>;
   hasMetadataSampleMetadataWhere2?: InputMaybe<SampleMetadataWhere>;
@@ -11459,6 +11469,8 @@ export type SamplesQuery = {
       billed?: boolean | null;
       billedBy?: string | null;
       costCenter?: string | null;
+      custodianInformation: string;
+      accessLevel: string;
     }>;
   }>;
 };
@@ -11516,6 +11528,8 @@ export type UpdateSamplesMutation = {
         billed?: boolean | null;
         billedBy?: string | null;
         costCenter?: string | null;
+        custodianInformation: string;
+        accessLevel: string;
       }>;
     }>;
   };
@@ -11636,6 +11650,16 @@ export const SampleMetadataPartsFragmentDoc = gql`
     tumorOrNormal
   }
 `;
+export const TempoPartsFragmentDoc = gql`
+  fragment TempoParts on Tempo {
+    smileTempoId
+    billed
+    billedBy
+    costCenter
+    custodianInformation
+    accessLevel
+  }
+`;
 export const RequestsListDocument = gql`
   query RequestsList(
     $options: RequestOptions
@@ -11736,12 +11760,7 @@ export const FindSamplesByInputValueDocument = gql`
             }
           }
           hasTempoTempos {
-            smileTempoId
-            billed
-            billedBy
-            costCenter
-            custodianInformation
-            accessLevel
+            ...TempoParts
             hasEventBamCompletes(options: $bamCompletesOptions) {
               date
               status
@@ -11765,6 +11784,7 @@ export const FindSamplesByInputValueDocument = gql`
   ${SamplePartsFragmentDoc}
   ${SampleMetadataPartsFragmentDoc}
   ${RequestPartsFragmentDoc}
+  ${TempoPartsFragmentDoc}
 `;
 export type FindSamplesByInputValueQueryResult = Apollo.QueryResult<
   FindSamplesByInputValueQuery,
@@ -11789,14 +11809,12 @@ export const SamplesDocument = gql`
         ...SampleMetadataParts
       }
       hasTempoTempos {
-        smileTempoId
-        billed
-        billedBy
-        costCenter
+        ...TempoParts
       }
     }
   }
   ${SampleMetadataPartsFragmentDoc}
+  ${TempoPartsFragmentDoc}
 `;
 export type SamplesQueryResult = Apollo.QueryResult<
   SamplesQuery,
@@ -11819,15 +11837,13 @@ export const UpdateSamplesDocument = gql`
           ...SampleMetadataParts
         }
         hasTempoTempos {
-          smileTempoId
-          billed
-          billedBy
-          costCenter
+          ...TempoParts
         }
       }
     }
   }
   ${SampleMetadataPartsFragmentDoc}
+  ${TempoPartsFragmentDoc}
 `;
 export type UpdateSamplesMutationFn = Apollo.MutationFunction<
   UpdateSamplesMutation,
