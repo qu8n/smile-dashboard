@@ -1016,9 +1016,15 @@ export function prepareSampleCohortDataForAgGrid(samples: Sample[]) {
     const embargoDate = moment(embargoDateAsDate).format("YYYY-MM-DD");
 
     const tempo = s.hasTempoTempos?.[0];
-    const { billed, billedBy, costCenter } = tempo ?? {};
-    const custodianInformation = tempo?.custodianInformation;
-    const accessLevel = tempo?.accessLevel;
+    const { billedBy, costCenter, custodianInformation, accessLevel } =
+      tempo ?? {};
+
+    // Without setting null/undefined (falsy) values to false, the Billed column filter will
+    // display "No" 2x when there are both false and null/undefined values in the table.
+    let billed = tempo?.billed;
+    if (!billed) {
+      billed = false;
+    }
 
     const bamComplete = tempo?.hasEventBamCompletes?.[0];
     const { date: bamCompleteDate, status: bamCompleteStatus } =
