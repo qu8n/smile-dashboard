@@ -19,6 +19,7 @@ import {
   isValidCostCenter,
 } from "../shared/helpers";
 import { AgGridReact } from "ag-grid-react";
+import { AgGridReact as AgGridReactType } from "ag-grid-react/lib/agGridReact";
 import { useState } from "react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
@@ -99,8 +100,9 @@ export default function SamplesList({
   const [changes, setChanges] = useState<SampleChange[]>([]);
   const [editMode, setEditMode] = useState(true);
   const [alertContent, setAlertContent] = useState(defaultAlertContent);
+  const [rowCount, setRowCount] = useState(0);
 
-  const gridRef = useRef<any>(null);
+  const gridRef = useRef<AgGridReactType>(null);
 
   useEffect(() => {
     gridRef.current?.api?.showLoadingOverlay();
@@ -115,13 +117,15 @@ export default function SamplesList({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [parsedSearchVals]);
 
+  useEffect(() => {
+    setRowCount(data?.samplesConnection.edges.length || 0);
+  }, [data]);
+
   if (loading) return <LoadingSpinner />;
 
   if (error) return <ErrorMessage error={error} />;
 
   const samples = data!.samplesConnection.edges.map((e) => e.node) as Sample[];
-
-  const remoteCount = samples.length;
 
   async function onCellValueChanged(params: CellValueChangedEvent) {
     if (!editMode) return;
@@ -281,9 +285,9 @@ export default function SamplesList({
           setParsedSearchVals([]);
         }}
         matchingResultsCount={
-          remoteCount === max_rows
+          rowCount === max_rows
             ? `${max_rows}+ matching samples`
-            : `${remoteCount} matching samples`
+            : `${rowCount} matching samples`
         }
         handleDownload={() => setShowDownloadModal(true)}
         customUI={
@@ -365,6 +369,9 @@ export default function SamplesList({
                 if (params.api.getLastDisplayedRow() + 1 === max_rows) {
                   setShowAlertModal(true);
                 }
+              }}
+              onFilterChanged={(params) => {
+                setRowCount(params.api.getDisplayedRowCount());
               }}
             />
           </div>

@@ -149,7 +149,7 @@ export default function RecordsList({
 
   if (error) return <ErrorMessage error={error} />;
 
-  const remoteCount = data?.[totalCountNodeName]?.totalCount;
+  const rowCount = data?.[totalCountNodeName]?.totalCount;
 
   const handleClose = () => {
     if (unsavedChanges) {
@@ -257,8 +257,8 @@ export default function RecordsList({
           setCustomSearchVals && setCustomSearchVals([]);
           setParsedSearchVals([]);
         }}
-        matchingResultsCount={`${remoteCount?.toLocaleString()} matching ${
-          remoteCount > 1 ? dataName : dataName.slice(0, -1)
+        matchingResultsCount={`${rowCount?.toLocaleString()} matching ${
+          rowCount > 1 ? dataName : dataName.slice(0, -1)
         }`}
         handleDownload={handleDownload}
         customUI={customToolbarUI}
