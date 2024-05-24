@@ -46,6 +46,8 @@ interface IRecordsListProps {
   showDownloadModal: boolean;
   setShowDownloadModal: Dispatch<SetStateAction<boolean>>;
   handleDownload: () => void;
+  setFilterModel?: Dispatch<SetStateAction<Record<string, any>>>;
+  customFilterWhereVariables?: Record<string, any>;
   samplesQueryParam: string | undefined;
   prepareSamplesDataForAgGrid?: (samples: Sample[]) => any[];
   samplesColDefs: ColDef[];
@@ -75,6 +77,8 @@ export default function RecordsList({
   showDownloadModal,
   setShowDownloadModal,
   handleDownload,
+  setFilterModel,
+  customFilterWhereVariables,
   samplesQueryParam,
   prepareSamplesDataForAgGrid = prepareSampleMetadataForAgGrid,
   samplesColDefs,
@@ -88,6 +92,7 @@ export default function RecordsList({
 }: IRecordsListProps) {
   const [showClosingWarning, setShowClosingWarning] = useState(false);
   const [unsavedChanges, setUnsavedChanges] = useState(false);
+
   const navigate = useNavigate();
 
   // note that we aren't using initial fetch
@@ -109,13 +114,17 @@ export default function RecordsList({
         const fetchInput = {
           where: {
             OR: queryFilterWhereVariables(parsedSearchVals),
+            ...customFilterWhereVariables,
           },
           [`${dataName}ConnectionWhere2`]: {
             OR: queryFilterWhereVariables(parsedSearchVals),
+            ...customFilterWhereVariables,
           },
           options: {
             offset: params.request.startRow,
-            limit: params.request.endRow,
+            limit: customFilterWhereVariables
+              ? undefined
+              : params.request.endRow,
             sort: params.request.sortModel.map((sortModel) => {
               return { [sortModel.colId]: sortModel.sort?.toUpperCase() };
             }),
@@ -143,7 +152,7 @@ export default function RecordsList({
       },
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [parsedSearchVals]);
+  }, [parsedSearchVals, customFilterWhereVariables]);
 
   if (loading) return <LoadingSpinner />;
 
@@ -288,6 +297,9 @@ export default function RecordsList({
                 params.columnApi.autoSizeAllColumns();
               }}
               enableRangeSelection={true}
+              onFilterChanged={(params) => {
+                if (setFilterModel) setFilterModel(params.api.getFilterModel());
+              }}
             />
           </div>
         )}
