@@ -5,7 +5,7 @@ import {
   SortDirection,
   useCohortsListLazyQuery,
 } from "../../generated/graphql";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useMemo, useState } from "react";
 import {
   CohortSampleDetailsColumns,
   CohortsListColumns,
@@ -121,40 +121,45 @@ export default function CohortsPage({
   const sampleQueryParamValue = params[sampleQueryParamFieldName];
   const sampleKeyForUpdate = "hasTempoTempos";
 
-  let customFilterWhereVariables: Record<string, any> = {};
-  const billedFilterVals = filterModel.billed?.values;
-  if (billedFilterVals?.[0] === "Yes") {
-    customFilterWhereVariables = {
-      hasCohortSampleSamples_ALL: {
-        hasTempoTempos_ALL: {
-          billed: true,
-        },
-      },
-    };
-  } else if (billedFilterVals?.[0] === "No") {
-    customFilterWhereVariables = {
-      OR: [
-        {
-          hasCohortSampleSamples_NONE: {
-            hasTempoTempos_ALL: {
-              billed: true,
-            },
+  const customFilterWhereVariables = useMemo(() => {
+    let customFilterWhereVariables: Record<string, any> = {};
+
+    const billedFilterVals = filterModel.billed?.values;
+    if (billedFilterVals?.[0] === "Yes") {
+      customFilterWhereVariables = {
+        hasCohortSampleSamples_ALL: {
+          hasTempoTempos_ALL: {
+            billed: true,
           },
         },
-        {
-          hasCohortSampleSamples_SOME: {
-            hasTempoTempos_ALL: {
-              billed: false,
+      };
+    } else if (billedFilterVals?.[0] === "No") {
+      customFilterWhereVariables = {
+        OR: [
+          {
+            hasCohortSampleSamples_NONE: {
+              hasTempoTempos_ALL: {
+                billed: true,
+              },
             },
           },
-        },
-      ],
-    };
-  } else if (billedFilterVals?.length === 0) {
-    customFilterWhereVariables = {
-      cohortId: "No data", // forces a refetch that returns no data
-    };
-  }
+          {
+            hasCohortSampleSamples_SOME: {
+              hasTempoTempos_ALL: {
+                billed: false,
+              },
+            },
+          },
+        ],
+      };
+    } else if (billedFilterVals?.length === 0) {
+      customFilterWhereVariables = {
+        cohortId: "No data", // forces a refetch that returns no data
+      };
+    }
+
+    return customFilterWhereVariables;
+  }, [filterModel]);
 
   return (
     <>
