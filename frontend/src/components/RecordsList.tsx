@@ -46,8 +46,6 @@ interface IRecordsListProps {
   showDownloadModal: boolean;
   setShowDownloadModal: Dispatch<SetStateAction<boolean>>;
   handleDownload: () => void;
-  setFilterModel?: Dispatch<SetStateAction<Record<string, any>>>;
-  customFilterWhereVariables?: Record<string, any>;
   samplesQueryParam: string | undefined;
   prepareSamplesDataForAgGrid?: (samples: Sample[]) => any[];
   samplesColDefs: ColDef[];
@@ -77,8 +75,6 @@ export default function RecordsList({
   showDownloadModal,
   setShowDownloadModal,
   handleDownload,
-  setFilterModel,
-  customFilterWhereVariables,
   samplesQueryParam,
   prepareSamplesDataForAgGrid = prepareSampleMetadataForAgGrid,
   samplesColDefs,
@@ -92,6 +88,8 @@ export default function RecordsList({
 }: IRecordsListProps) {
   const [showClosingWarning, setShowClosingWarning] = useState(false);
   const [unsavedChanges, setUnsavedChanges] = useState(false);
+  const [filterModel, setFilterModel] = useState<Record<string, any>>({});
+  const [rowCount, setRowCount] = useState<number>(0);
 
   const navigate = useNavigate();
 
@@ -111,20 +109,20 @@ export default function RecordsList({
     return {
       // called by the grid when more rows are required
       getRows: (params: IServerSideGetRowsParams) => {
+        const noFilter = Object.keys(filterModel).length === 0;
+
         const fetchInput = {
           where: {
             OR: queryFilterWhereVariables(parsedSearchVals),
-            ...customFilterWhereVariables,
           },
           [`${dataName}ConnectionWhere2`]: {
             OR: queryFilterWhereVariables(parsedSearchVals),
-            ...customFilterWhereVariables,
           },
           options: {
-            offset: params.request.startRow,
-            limit: customFilterWhereVariables
-              ? undefined
-              : params.request.endRow,
+            // Removing offset and limit leads to a full data fetch, but
+            // it enables us to perform complex filtering on the client side
+            offset: noFilter ? params.request.startRow : undefined,
+            limit: noFilter ? params.request.endRow : undefined,
             sort: params.request.sortModel.map((sortModel) => {
               return { [sortModel.colId]: sortModel.sort?.toUpperCase() };
             }),
@@ -143,7 +141,8 @@ export default function RecordsList({
         return thisFetch.then((d) => {
           let data = d.data;
           if (prepareDataForAgGrid)
-            data = prepareDataForAgGrid(data, params.request.filterModel);
+            data = prepareDataForAgGrid(data, filterModel);
+          setRowCount(data[totalCountNodeName].totalCount);
           params.success({
             rowData: data[dataName],
             rowCount: data[totalCountNodeName].totalCount,
@@ -152,13 +151,11 @@ export default function RecordsList({
       },
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [parsedSearchVals, customFilterWhereVariables]);
+  }, [parsedSearchVals, filterModel]);
 
   if (loading) return <LoadingSpinner />;
 
   if (error) return <ErrorMessage error={error} />;
-
-  const rowCount = data?.[totalCountNodeName]?.totalCount;
 
   const handleClose = () => {
     if (unsavedChanges) {
@@ -298,7 +295,7 @@ export default function RecordsList({
               }}
               enableRangeSelection={true}
               onFilterChanged={(params) => {
-                if (setFilterModel) setFilterModel(params.api.getFilterModel());
+                setFilterModel(params.api.getFilterModel());
               }}
             />
           </div>

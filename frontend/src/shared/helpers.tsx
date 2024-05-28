@@ -577,17 +577,28 @@ export function prepareCohortDataForAgGrid(
 
   let newCohortsConnection = { ...cohortsConnection };
 
-  const selectedAll = JSON.stringify(filterModel) === "{}";
-  if (!selectedAll) {
+  if ("initialCohortDeliveryDate" in filterModel) {
+    const { dateFrom, dateTo } = filterModel.initialCohortDeliveryDate;
+    newCohorts = newCohorts.filter((cohort) => {
+      const deliveryDate = cohort.initialCohortDeliveryDate;
+      if (!deliveryDate) return false; // handles moment(undefined) returning today's date
+      return (
+        moment(deliveryDate).isSameOrAfter(dateFrom) &&
+        moment(deliveryDate).isSameOrBefore(dateTo)
+      );
+    });
+    newCohortsConnection.totalCount = newCohorts.length;
+  }
+
+  if ("billed" in filterModel) {
     const selectedValues = filterModel.billed.values;
     const selectedNone = selectedValues.length === 0;
-
     if (selectedNone) {
       newCohorts = [];
       newCohortsConnection.totalCount = 0;
     } else {
-      newCohorts = newCohorts.filter(
-        (cohort) => cohort.billed === selectedValues[0]
+      newCohorts = newCohorts.filter((cohort) =>
+        selectedValues.includes(cohort.billed)
       );
       newCohortsConnection.totalCount = newCohorts.length;
     }
@@ -644,6 +655,14 @@ export const CohortsListColumns: ColDef[] = [
     field: "initialCohortDeliveryDate",
     headerName: "Initial Cohort Delivery Date",
     sortable: false,
+    filter: "agDateColumnFilter",
+    filterParams: {
+      buttons: ["apply", "reset"],
+      filterOptions: ["inRange"],
+      inRangeInclusive: true,
+      minValidYear: 2016,
+      maxValidYear: new Date().getFullYear(),
+    },
   },
   {
     field: "completeDate",
