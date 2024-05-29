@@ -538,6 +538,8 @@ export function prepareCohortDataForAgGrid(
 
     const totalSamples = samplesConnection?.totalCount;
 
+    const smileSampleIds = samples?.map((s) => s.smileSampleId);
+
     const allSamplesBilled =
       samples.length > 0 &&
       samples?.every((sample) => {
@@ -561,6 +563,7 @@ export function prepareCohortDataForAgGrid(
     return {
       cohortId,
       totalSamples,
+      smileSampleIds,
       billed,
       initialCohortDeliveryDate: formatCohortRelatedDate(
         initialCohortDeliveryDate
@@ -604,9 +607,17 @@ export function prepareCohortDataForAgGrid(
     }
   }
 
+  const uniqueSmileSampleIds: Set<string> = new Set();
+  newCohorts.forEach((cohort) => {
+    cohort.smileSampleIds.forEach((id) => {
+      uniqueSmileSampleIds.add(id);
+    });
+  });
+
   return {
     cohorts: newCohorts,
     cohortsConnection: newCohortsConnection,
+    uniqueSampleCount: uniqueSmileSampleIds.size,
   };
 }
 

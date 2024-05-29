@@ -29,6 +29,7 @@ import { ErrorMessage, LoadingSpinner, Toolbar } from "../shared/tableElements";
 interface IRecordsListProps {
   colDefs: ColDef[];
   dataName: DataName;
+  enableInfiniteScroll?: boolean;
   lazyRecordsQuery: typeof useHookLazyGeneric;
   lazyRecordsQueryAddlVariables?: Record<string, any>;
   prepareDataForAgGrid?: (
@@ -63,6 +64,7 @@ interface IRecordsListProps {
 export default function RecordsList({
   colDefs,
   dataName,
+  enableInfiniteScroll = true,
   lazyRecordsQuery,
   lazyRecordsQueryAddlVariables,
   prepareDataForAgGrid,
@@ -90,6 +92,7 @@ export default function RecordsList({
   const [unsavedChanges, setUnsavedChanges] = useState(false);
   const [filterModel, setFilterModel] = useState<Record<string, any>>({});
   const [rowCount, setRowCount] = useState<number>(0);
+  const [uniqueSampleCount, setUniqueSampleCount] = useState<number>(0);
 
   const navigate = useNavigate();
 
@@ -109,8 +112,6 @@ export default function RecordsList({
     return {
       // called by the grid when more rows are required
       getRows: (params: IServerSideGetRowsParams) => {
-        const noFilter = Object.keys(filterModel).length === 0;
-
         const fetchInput = {
           where: {
             OR: queryFilterWhereVariables(parsedSearchVals),
@@ -119,10 +120,8 @@ export default function RecordsList({
             OR: queryFilterWhereVariables(parsedSearchVals),
           },
           options: {
-            // Removing offset and limit leads to a full data fetch, but
-            // it enables us to perform complex filtering on the client side
-            offset: noFilter ? params.request.startRow : undefined,
-            limit: noFilter ? params.request.endRow : undefined,
+            offset: params.request.startRow,
+            limit: params.request.endRow,
             sort: params.request.sortModel.map((sortModel) => {
               return { [sortModel.colId]: sortModel.sort?.toUpperCase() };
             }),
@@ -140,9 +139,15 @@ export default function RecordsList({
 
         return thisFetch.then((d) => {
           let data = d.data;
-          if (prepareDataForAgGrid)
+          if (prepareDataForAgGrid) {
             data = prepareDataForAgGrid(data, filterModel);
+          }
+
+          if ("uniqueSampleCount" in data) {
+            setUniqueSampleCount(data.uniqueSampleCount);
+          }
           setRowCount(data[totalCountNodeName].totalCount);
+
           params.success({
             rowData: data[dataName],
             rowCount: data[totalCountNodeName].totalCount,
@@ -264,7 +269,13 @@ export default function RecordsList({
           setParsedSearchVals([]);
         }}
         matchingResultsCount={`${rowCount?.toLocaleString()} matching ${
-          rowCount > 1 ? dataName : dataName.slice(0, -1)
+          rowCount !== 1 ? dataName : dataName.slice(0, -1)
+        }${
+          enableInfiniteScroll
+            ? ""
+            : ` (${uniqueSampleCount.toLocaleString()} unique ${
+                uniqueSampleCount !== 1 ? "samples" : "sample"
+              })`
         }`}
         handleDownload={handleDownload}
         customUI={customToolbarUI}
@@ -280,7 +291,7 @@ export default function RecordsList({
               rowModelType={"serverSide"}
               columnDefs={colDefs}
               serverSideDatasource={datasource}
-              serverSideInfiniteScroll={true}
+              serverSideInfiniteScroll={enableInfiniteScroll}
               cacheBlockSize={20}
               debug={false}
               context={{

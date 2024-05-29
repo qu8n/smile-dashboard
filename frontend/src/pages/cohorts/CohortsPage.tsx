@@ -127,6 +127,7 @@ export default function CohortsPage({
       <RecordsList
         colDefs={CohortsListColumns}
         dataName={dataName}
+        enableInfiniteScroll={false}
         lazyRecordsQuery={useCohortsListLazyQuery}
         lazyRecordsQueryAddlVariables={
           {
