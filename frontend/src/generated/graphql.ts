@@ -10088,7 +10088,7 @@ export type StringAggregateSelectionNullable = {
 export type Tempo = {
   __typename?: "Tempo";
   accessLevel: Scalars["String"];
-  billed?: Maybe<Scalars["Boolean"]>;
+  billed: Scalars["Boolean"];
   billedBy?: Maybe<Scalars["String"]>;
   costCenter?: Maybe<Scalars["String"]>;
   custodianInformation: Scalars["String"];
@@ -10224,7 +10224,7 @@ export type TempoConnectWhere = {
 
 export type TempoCreateInput = {
   accessLevel: Scalars["String"];
-  billed?: InputMaybe<Scalars["Boolean"]>;
+  billed: Scalars["Boolean"];
   billedBy?: InputMaybe<Scalars["String"]>;
   costCenter?: InputMaybe<Scalars["String"]>;
   custodianInformation: Scalars["String"];
@@ -11318,7 +11318,7 @@ export type FindSamplesByInputValueQuery = {
         hasTempoTempos: Array<{
           __typename?: "Tempo";
           smileTempoId: string;
-          billed?: boolean | null;
+          billed: boolean;
           billedBy?: string | null;
           costCenter?: string | null;
           custodianInformation: string;
@@ -11412,7 +11412,7 @@ export type SampleMetadataPartsFragment = {
 export type TempoPartsFragment = {
   __typename?: "Tempo";
   smileTempoId: string;
-  billed?: boolean | null;
+  billed: boolean;
   billedBy?: string | null;
   costCenter?: string | null;
   custodianInformation: string;
@@ -11467,7 +11467,7 @@ export type SamplesQuery = {
     hasTempoTempos: Array<{
       __typename?: "Tempo";
       smileTempoId: string;
-      billed?: boolean | null;
+      billed: boolean;
       billedBy?: string | null;
       costCenter?: string | null;
       custodianInformation: string;
@@ -11526,7 +11526,7 @@ export type UpdateSamplesMutation = {
       hasTempoTempos: Array<{
         __typename?: "Tempo";
         smileTempoId: string;
-        billed?: boolean | null;
+        billed: boolean;
         billedBy?: string | null;
         costCenter?: string | null;
         custodianInformation: string;
@@ -11583,7 +11583,7 @@ export type CohortsListQuery = {
       hasTempoTempos: Array<{
         __typename?: "Tempo";
         smileTempoId: string;
-        billed?: boolean | null;
+        billed: boolean;
       }>;
     }>;
   }>;

@@ -57,6 +57,13 @@ function cohortFilterWhereVariables(parsedSearchVals: string[]): CohortWhere[] {
           date_IN: parsedSearchVals,
         },
       },
+      {
+        hasCohortSampleSamples_SOME: {
+          hasMetadataSampleMetadata_SOME: {
+            primaryId_IN: parsedSearchVals,
+          },
+        },
+      },
     ];
   } else {
     return [
@@ -94,6 +101,13 @@ function cohortFilterWhereVariables(parsedSearchVals: string[]): CohortWhere[] {
       {
         hasCohortCompleteCohortCompletes_SOME: {
           date_CONTAINS: parsedSearchVals[0],
+        },
+      },
+      {
+        hasCohortSampleSamples_SOME: {
+          hasMetadataSampleMetadata_SOME: {
+            primaryId_CONTAINS: parsedSearchVals[0],
+          },
         },
       },
     ];
