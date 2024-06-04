@@ -1,5 +1,6 @@
 import {
   CohortCompleteOptions,
+  CohortCompleteWhere,
   CohortWhere,
   SampleWhere,
   SortDirection,
@@ -20,21 +21,11 @@ import { PageHeader } from "../../shared/components/PageHeader";
 
 function cohortFilterWhereVariables(parsedSearchVals: string[]): CohortWhere[] {
   if (parsedSearchVals.length > 1) {
-    return [
+    const whereVariables: CohortWhere[] = [
       { cohortId_IN: parsedSearchVals },
       {
         hasCohortCompleteCohortCompletes_SOME: {
           type_IN: parsedSearchVals,
-        },
-      },
-      {
-        hasCohortCompleteCohortCompletes_SOME: {
-          endUsers_INCLUDES: parsedSearchVals[0],
-        },
-      },
-      {
-        hasCohortCompleteCohortCompletes_SOME: {
-          pmUsers_INCLUDES: parsedSearchVals[0],
         },
       },
       {
@@ -65,6 +56,23 @@ function cohortFilterWhereVariables(parsedSearchVals: string[]): CohortWhere[] {
         },
       },
     ];
+
+    // Enable fuzzy search for these fields instead of exact match
+    // because their value type in the DB is a string
+    parsedSearchVals.forEach((val) => {
+      whereVariables.push({
+        hasCohortCompleteCohortCompletes_SOME: {
+          endUsers_CONTAINS: val,
+        },
+      });
+      whereVariables.push({
+        hasCohortCompleteCohortCompletes_SOME: {
+          pmUsers_CONTAINS: val,
+        },
+      });
+    });
+
+    return whereVariables;
   } else {
     return [
       { cohortId_CONTAINS: parsedSearchVals[0] },
@@ -75,12 +83,12 @@ function cohortFilterWhereVariables(parsedSearchVals: string[]): CohortWhere[] {
       },
       {
         hasCohortCompleteCohortCompletes_SOME: {
-          endUsers_INCLUDES: parsedSearchVals[0],
+          endUsers_CONTAINS: parsedSearchVals[0],
         },
       },
       {
         hasCohortCompleteCohortCompletes_SOME: {
-          pmUsers_INCLUDES: parsedSearchVals[0],
+          pmUsers_CONTAINS: parsedSearchVals[0],
         },
       },
       {
