@@ -1045,9 +1045,13 @@ export function prepareSampleCohortDataForAgGrid(samples: Sample[]) {
       });
     });
     const deliveryDate = cohortDates?.sort()[0]; // earliest cohort date
-    let embargoDateAsDate = new Date(deliveryDate);
-    embargoDateAsDate.setMonth(embargoDateAsDate.getMonth() + 18); // embargo date is 18 months post earliest delivery date
-    const embargoDate = moment(embargoDateAsDate).format("YYYY-MM-DD");
+
+    let embargoDate;
+    if (deliveryDate !== undefined) {
+      let embargoDateAsDate = new Date(deliveryDate);
+      embargoDateAsDate.setMonth(embargoDateAsDate.getMonth() + 18);
+      embargoDate = moment(embargoDateAsDate).format("YYYY-MM-DD");
+    }
 
     const tempo = s.hasTempoTempos?.[0];
     const { billedBy, costCenter, custodianInformation, accessLevel } =
