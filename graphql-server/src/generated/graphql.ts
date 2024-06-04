@@ -415,6 +415,8 @@ export type CohortCohortCompleteHasCohortCompleteCohortCompletesNodeAggregateSel
   {
     __typename?: "CohortCohortCompleteHasCohortCompleteCohortCompletesNodeAggregateSelection";
     date: StringAggregateSelectionNonNullable;
+    endUsers: StringAggregateSelectionNonNullable;
+    pmUsers: StringAggregateSelectionNonNullable;
     projectSubtitle: StringAggregateSelectionNonNullable;
     projectTitle: StringAggregateSelectionNonNullable;
     status: StringAggregateSelectionNonNullable;
@@ -427,8 +429,8 @@ export type CohortComplete = {
   cohortsHasCohortCompleteAggregate?: Maybe<CohortCompleteCohortCohortsHasCohortCompleteAggregationSelection>;
   cohortsHasCohortCompleteConnection: CohortCompleteCohortsHasCohortCompleteConnection;
   date: Scalars["String"];
-  endUsers: Array<Maybe<Scalars["String"]>>;
-  pmUsers: Array<Maybe<Scalars["String"]>>;
+  endUsers: Scalars["String"];
+  pmUsers: Scalars["String"];
   projectSubtitle: Scalars["String"];
   projectTitle: Scalars["String"];
   status: Scalars["String"];
@@ -460,6 +462,8 @@ export type CohortCompleteAggregateSelection = {
   __typename?: "CohortCompleteAggregateSelection";
   count: Scalars["Int"];
   date: StringAggregateSelectionNonNullable;
+  endUsers: StringAggregateSelectionNonNullable;
+  pmUsers: StringAggregateSelectionNonNullable;
   projectSubtitle: StringAggregateSelectionNonNullable;
   projectTitle: StringAggregateSelectionNonNullable;
   status: StringAggregateSelectionNonNullable;
@@ -606,8 +610,8 @@ export type CohortCompleteConnectWhere = {
 export type CohortCompleteCreateInput = {
   cohortsHasCohortComplete?: InputMaybe<CohortCompleteCohortsHasCohortCompleteFieldInput>;
   date: Scalars["String"];
-  endUsers: Array<InputMaybe<Scalars["String"]>>;
-  pmUsers: Array<InputMaybe<Scalars["String"]>>;
+  endUsers: Scalars["String"];
+  pmUsers: Scalars["String"];
   projectSubtitle: Scalars["String"];
   projectTitle: Scalars["String"];
   status: Scalars["String"];
@@ -648,6 +652,8 @@ export type CohortCompleteRelationInput = {
 /** Fields to sort CohortCompletes by. The order in which sorts are applied is not guaranteed when specifying many fields in one CohortCompleteSort object. */
 export type CohortCompleteSort = {
   date?: InputMaybe<SortDirection>;
+  endUsers?: InputMaybe<SortDirection>;
+  pmUsers?: InputMaybe<SortDirection>;
   projectSubtitle?: InputMaybe<SortDirection>;
   projectTitle?: InputMaybe<SortDirection>;
   status?: InputMaybe<SortDirection>;
@@ -659,12 +665,8 @@ export type CohortCompleteUpdateInput = {
     Array<CohortCompleteCohortsHasCohortCompleteUpdateFieldInput>
   >;
   date?: InputMaybe<Scalars["String"]>;
-  endUsers?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
-  endUsers_POP?: InputMaybe<Scalars["Int"]>;
-  endUsers_PUSH?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
-  pmUsers?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
-  pmUsers_POP?: InputMaybe<Scalars["Int"]>;
-  pmUsers_PUSH?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  endUsers?: InputMaybe<Scalars["String"]>;
+  pmUsers?: InputMaybe<Scalars["String"]>;
   projectSubtitle?: InputMaybe<Scalars["String"]>;
   projectTitle?: InputMaybe<Scalars["String"]>;
   status?: InputMaybe<Scalars["String"]>;
@@ -697,14 +699,26 @@ export type CohortCompleteWhere = {
   date_NOT_IN?: InputMaybe<Array<Scalars["String"]>>;
   date_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
   date_STARTS_WITH?: InputMaybe<Scalars["String"]>;
-  endUsers?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
-  endUsers_INCLUDES?: InputMaybe<Scalars["String"]>;
-  endUsers_NOT?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
-  endUsers_NOT_INCLUDES?: InputMaybe<Scalars["String"]>;
-  pmUsers?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
-  pmUsers_INCLUDES?: InputMaybe<Scalars["String"]>;
-  pmUsers_NOT?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
-  pmUsers_NOT_INCLUDES?: InputMaybe<Scalars["String"]>;
+  endUsers?: InputMaybe<Scalars["String"]>;
+  endUsers_CONTAINS?: InputMaybe<Scalars["String"]>;
+  endUsers_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  endUsers_IN?: InputMaybe<Array<Scalars["String"]>>;
+  endUsers_NOT?: InputMaybe<Scalars["String"]>;
+  endUsers_NOT_CONTAINS?: InputMaybe<Scalars["String"]>;
+  endUsers_NOT_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  endUsers_NOT_IN?: InputMaybe<Array<Scalars["String"]>>;
+  endUsers_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  endUsers_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  pmUsers?: InputMaybe<Scalars["String"]>;
+  pmUsers_CONTAINS?: InputMaybe<Scalars["String"]>;
+  pmUsers_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  pmUsers_IN?: InputMaybe<Array<Scalars["String"]>>;
+  pmUsers_NOT?: InputMaybe<Scalars["String"]>;
+  pmUsers_NOT_CONTAINS?: InputMaybe<Scalars["String"]>;
+  pmUsers_NOT_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  pmUsers_NOT_IN?: InputMaybe<Array<Scalars["String"]>>;
+  pmUsers_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  pmUsers_STARTS_WITH?: InputMaybe<Scalars["String"]>;
   projectSubtitle?: InputMaybe<Scalars["String"]>;
   projectSubtitle_CONTAINS?: InputMaybe<Scalars["String"]>;
   projectSubtitle_ENDS_WITH?: InputMaybe<Scalars["String"]>;
@@ -883,6 +897,46 @@ export type CohortHasCohortCompleteCohortCompletesNodeAggregationWhereInput = {
   date_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
   date_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
   date_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  endUsers_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  endUsers_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  endUsers_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  endUsers_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  endUsers_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  endUsers_EQUAL?: InputMaybe<Scalars["String"]>;
+  endUsers_GT?: InputMaybe<Scalars["Int"]>;
+  endUsers_GTE?: InputMaybe<Scalars["Int"]>;
+  endUsers_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  endUsers_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  endUsers_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  endUsers_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  endUsers_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  endUsers_LT?: InputMaybe<Scalars["Int"]>;
+  endUsers_LTE?: InputMaybe<Scalars["Int"]>;
+  endUsers_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  endUsers_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  endUsers_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  endUsers_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  endUsers_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  pmUsers_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  pmUsers_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  pmUsers_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  pmUsers_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  pmUsers_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  pmUsers_EQUAL?: InputMaybe<Scalars["String"]>;
+  pmUsers_GT?: InputMaybe<Scalars["Int"]>;
+  pmUsers_GTE?: InputMaybe<Scalars["Int"]>;
+  pmUsers_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  pmUsers_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  pmUsers_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  pmUsers_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  pmUsers_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  pmUsers_LT?: InputMaybe<Scalars["Int"]>;
+  pmUsers_LTE?: InputMaybe<Scalars["Int"]>;
+  pmUsers_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  pmUsers_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  pmUsers_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  pmUsers_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  pmUsers_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
   projectSubtitle_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
   projectSubtitle_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
   projectSubtitle_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
@@ -11565,8 +11619,8 @@ export type CohortsListQuery = {
     hasCohortCompleteCohortCompletes: Array<{
       __typename?: "CohortComplete";
       type: string;
-      endUsers: Array<string | null>;
-      pmUsers: Array<string | null>;
+      endUsers: string;
+      pmUsers: string;
       projectTitle: string;
       projectSubtitle: string;
       status: string;
