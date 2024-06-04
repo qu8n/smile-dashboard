@@ -47,7 +47,9 @@ function patientFilterWhereVariables(
         },
       },
     ];
-  } else {
+  }
+
+  if (parsedSearchVals.length === 1) {
     return [
       {
         patientAliasesIsAlias_SOME: {
@@ -63,6 +65,8 @@ function patientFilterWhereVariables(
       },
     ];
   }
+
+  return [];
 }
 
 function addCDashToCMOId(cmoId: string): string {

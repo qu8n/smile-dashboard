@@ -1,6 +1,5 @@
 import {
   CohortCompleteOptions,
-  CohortCompleteWhere,
   CohortWhere,
   SampleWhere,
   SortDirection,
@@ -73,7 +72,9 @@ function cohortFilterWhereVariables(parsedSearchVals: string[]): CohortWhere[] {
     });
 
     return whereVariables;
-  } else {
+  }
+
+  if (parsedSearchVals.length === 1) {
     return [
       { cohortId_CONTAINS: parsedSearchVals[0] },
       {
@@ -120,6 +121,8 @@ function cohortFilterWhereVariables(parsedSearchVals: string[]): CohortWhere[] {
       },
     ];
   }
+
+  return [];
 }
 
 interface ICohortsPageProps {

@@ -857,7 +857,9 @@ export function sampleFilterWhereVariables(
       { species_IN: parsedSearchVals },
       { genePanel_IN: parsedSearchVals },
     ];
-  } else {
+  }
+
+  if (parsedSearchVals.length === 1) {
     return [
       { cmoSampleName_CONTAINS: parsedSearchVals[0] },
       { importDate_CONTAINS: parsedSearchVals[0] },
@@ -880,6 +882,8 @@ export function sampleFilterWhereVariables(
       { genePanel_CONTAINS: parsedSearchVals[0] },
     ];
   }
+
+  return [];
 }
 
 export function cohortSampleFilterWhereVariables(

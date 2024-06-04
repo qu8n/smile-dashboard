@@ -35,7 +35,9 @@ function requestFilterWhereVariables(
       { dataAccessEmails_IN: parsedSearchVals },
       { otherContactEmails_IN: parsedSearchVals },
     ];
-  } else {
+  }
+
+  if (parsedSearchVals.length === 1) {
     return [
       { igoProjectId_CONTAINS: parsedSearchVals[0] },
       { igoRequestId_CONTAINS: parsedSearchVals[0] },
@@ -53,6 +55,8 @@ function requestFilterWhereVariables(
       { otherContactEmails_CONTAINS: parsedSearchVals[0] },
     ];
   }
+
+  return [];
 }
 
 export default function RequestsPage() {
