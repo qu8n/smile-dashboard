@@ -6,7 +6,7 @@ import {
 import { useState } from "react";
 import {
   RequestsListColumns,
-  SampleDetailsColumns,
+  SampleMetadataDetailsColumns,
   prepareSampleMetadataForAgGrid,
   handleSearch,
   sampleFilterWhereVariables,
@@ -87,7 +87,7 @@ export default function RequestsPage() {
         showDownloadModal={showDownloadModal}
         setShowDownloadModal={setShowDownloadModal}
         handleDownload={() => setShowDownloadModal(true)}
-        samplesColDefs={SampleDetailsColumns}
+        samplesColDefs={SampleMetadataDetailsColumns}
         samplesQueryParam={
           sampleQueryParamValue &&
           `${sampleQueryParamHeaderName} "${sampleQueryParamValue}"`
