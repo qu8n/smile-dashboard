@@ -271,7 +271,7 @@ function LoadingIcon() {
   );
 }
 
-export const SampleDetailsColumns: ColDef<SampleMetadataExtended>[] = [
+export const SampleMetadataDetailsColumns: ColDef<SampleMetadataExtended>[] = [
   {
     field: "primaryId",
     headerName: "Primary ID",
@@ -804,8 +804,20 @@ export const CohortSampleDetailsColumns: ColDef[] = [
   },
 ];
 
-setupEditableSampleFields(SampleDetailsColumns);
+setupEditableSampleFields(SampleMetadataDetailsColumns);
 setupEditableSampleFields(CohortSampleDetailsColumns);
+
+const seenColumns = new Set();
+export const combinedSampleDetailsColumns = [
+  ...SampleMetadataDetailsColumns,
+  ...CohortSampleDetailsColumns,
+].filter((col) => {
+  if (seenColumns.has(col.field)) {
+    return false;
+  }
+  seenColumns.add(col.field);
+  return true;
+});
 
 export const defaultColDef: ColDef = {
   sortable: true,
@@ -1046,6 +1058,19 @@ export function prepareSampleCohortDataForAgGrid(samples: Sample[]) {
       cmoSampleName: sampleMetadata.cmoSampleName,
       hasStatusStatuses: sampleMetadata.hasStatusStatuses,
       revisable: s.revisable,
+      ...tempoData,
+    };
+  });
+}
+
+export function prepareCombinedSampleDataForAgGrid(samples: Sample[]) {
+  return samples.map((s) => {
+    const sampleMetadata = s.hasMetadataSampleMetadata[0];
+    const tempoData = extractTempoFromSample(s);
+
+    return {
+      revisable: s.revisable,
+      ...sampleMetadata,
       ...tempoData,
     };
   });

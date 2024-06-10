@@ -15,7 +15,7 @@ import InfoIcon from "@material-ui/icons/InfoOutlined";
 import { parseUserSearchVal } from "../../utils/parseSearchQueries";
 import {
   PatientsListColumns,
-  SampleDetailsColumns,
+  SampleMetadataDetailsColumns,
   preparePatientDataForAgGrid,
   sampleFilterWhereVariables,
 } from "../../shared/helpers";
@@ -269,7 +269,7 @@ export default function PatientsPage({
           });
           setShowDownloadModal(true);
         }}
-        samplesColDefs={SampleDetailsColumns}
+        samplesColDefs={SampleMetadataDetailsColumns}
         samplesQueryParam={sampleQueryParamValue && "Patient's Samples"}
         samplesParentWhereVariables={
           {
