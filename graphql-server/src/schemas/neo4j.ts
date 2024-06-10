@@ -193,8 +193,6 @@ async function publishNatsMessageForSampleBillingUpdates(
     custodianInformation,
   };
 
-  console.log("dataForTempoBillingUpdate: ", dataForTempoBillingUpdate);
-
   publishNatsMessage(
     props.pub_tempo_sample_billing,
     JSON.stringify(dataForTempoBillingUpdate)
