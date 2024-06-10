@@ -911,6 +911,12 @@ export function cohortSampleFilterWhereVariables(
         costCenter_IN: parsedSearchVals,
       },
       {
+        custodianInformation_IN: parsedSearchVals,
+      },
+      {
+        accessLevel_IN: parsedSearchVals,
+      },
+      {
         hasEventBamCompletes_SOME: {
           date_IN: parsedSearchVals,
         },
@@ -963,6 +969,12 @@ export function cohortSampleFilterWhereVariables(
       },
       {
         costCenter_CONTAINS: parsedSearchVals[0],
+      },
+      {
+        custodianInformation_CONTAINS: parsedSearchVals[0],
+      },
+      {
+        accessLevel_CONTAINS: parsedSearchVals[0],
       },
       {
         hasEventBamCompletes_SOME: {
