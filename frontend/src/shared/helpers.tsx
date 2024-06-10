@@ -723,7 +723,7 @@ export const CohortSampleDetailsColumns: ColDef[] = [
     headerName: "CMO Sample Name",
   },
   {
-    field: "deliveryDate",
+    field: "initialPipelineRunDate",
     headerName: "Initial Pipeline Run Date",
   },
   {
@@ -1038,72 +1038,86 @@ export function prepareSampleMetadataForAgGrid(samples: Sample[]) {
 
 export function prepareSampleCohortDataForAgGrid(samples: Sample[]) {
   return samples.map((s) => {
-    const cohorts = s.cohortsHasCohortSampleConnection?.edges;
-    const cohortDates = cohorts?.flatMap((c) => {
-      return c.node.hasCohortCompleteCohortCompletes.map((cc) => {
-        return cc.date;
-      });
-    });
-    const deliveryDate = cohortDates?.sort()[0]; // earliest cohort date
-
-    let embargoDate;
-    if (deliveryDate !== undefined) {
-      let embargoDateAsDate = new Date(deliveryDate);
-      embargoDateAsDate.setMonth(embargoDateAsDate.getMonth() + 18);
-      embargoDate = moment(embargoDateAsDate).format("YYYY-MM-DD");
-    }
-
-    const tempo = s.hasTempoTempos?.[0];
-    const { billedBy, costCenter, custodianInformation, accessLevel } =
-      tempo ?? {};
-
-    // Without setting null/undefined (falsy) values to false, the Billed column filter will
-    // display "No" 2x when there are both false and null/undefined values in the table.
-    let billed = tempo?.billed;
-    if (!billed) {
-      billed = false;
-    }
-
-    const bamComplete = tempo?.hasEventBamCompletes?.[0];
-    const { date: bamCompleteDate, status: bamCompleteStatus } =
-      bamComplete ?? {};
-
-    const mafComplete = tempo?.hasEventMafCompletes?.[0];
-    const {
-      date: mafCompleteDate,
-      status: mafCompleteStatus,
-      normalPrimaryId: mafCompleteNormalPrimaryId,
-    } = mafComplete ?? {};
-
-    const qcComplete = tempo?.hasEventQcCompletes?.[0];
-    const {
-      date: qcCompleteDate,
-      result: qcCompleteResult,
-      reason: qcCompleteReason,
-      status: qcCompleteStatus,
-    } = qcComplete ?? {};
+    const sampleMetadata = s.hasMetadataSampleMetadata[0];
+    const tempoData = extractTempoFromSample(s);
 
     return {
-      ...s.hasMetadataSampleMetadata[0],
+      primaryId: sampleMetadata.primaryId,
+      cmoSampleName: sampleMetadata.cmoSampleName,
+      hasStatusStatuses: sampleMetadata.hasStatusStatuses,
       revisable: s.revisable,
-      deliveryDate: formatCohortRelatedDate(deliveryDate),
-      embargoDate,
-      billed,
-      billedBy,
-      costCenter,
-      custodianInformation,
-      accessLevel,
-      bamCompleteDate: formatCohortRelatedDate(bamCompleteDate),
-      bamCompleteStatus,
-      mafCompleteDate: formatCohortRelatedDate(mafCompleteDate),
-      mafCompleteStatus,
-      mafCompleteNormalPrimaryId,
-      qcCompleteDate: formatCohortRelatedDate(qcCompleteDate),
-      qcCompleteResult,
-      qcCompleteReason,
-      qcCompleteStatus,
+      ...tempoData,
     };
   });
+}
+
+function extractTempoFromSample(s: Sample) {
+  const cohorts = s.cohortsHasCohortSampleConnection?.edges;
+  const cohortDates = cohorts?.flatMap((c) => {
+    return c.node.hasCohortCompleteCohortCompletes.map((cc) => {
+      return cc.date;
+    });
+  });
+  let initialPipelineRunDate = cohortDates?.sort()[0]; // earliest cohort date
+  initialPipelineRunDate = formatCohortRelatedDate(initialPipelineRunDate);
+
+  let embargoDate;
+  if (initialPipelineRunDate !== undefined) {
+    let embargoDateAsDate = new Date(initialPipelineRunDate);
+    embargoDateAsDate.setMonth(embargoDateAsDate.getMonth() + 18);
+    embargoDate = moment(embargoDateAsDate).format("YYYY-MM-DD");
+  }
+
+  const tempo = s.hasTempoTempos?.[0];
+  const { billedBy, costCenter, custodianInformation, accessLevel } =
+    tempo ?? {};
+
+  // Without setting null/undefined (falsy) values to false, the Billed column filter will
+  // display "No" 2x when there are both false and null/undefined values in the table.
+  let billed = tempo?.billed;
+  if (!billed) {
+    billed = false;
+  }
+
+  const bamComplete = tempo?.hasEventBamCompletes?.[0];
+  let { date: bamCompleteDate, status: bamCompleteStatus } = bamComplete ?? {};
+  bamCompleteDate = formatCohortRelatedDate(bamCompleteDate);
+
+  const mafComplete = tempo?.hasEventMafCompletes?.[0];
+  let {
+    date: mafCompleteDate,
+    status: mafCompleteStatus,
+    normalPrimaryId: mafCompleteNormalPrimaryId,
+  } = mafComplete ?? {};
+  mafCompleteDate = formatCohortRelatedDate(mafCompleteDate);
+
+  const qcComplete = tempo?.hasEventQcCompletes?.[0];
+  let {
+    date: qcCompleteDate,
+    result: qcCompleteResult,
+    reason: qcCompleteReason,
+    status: qcCompleteStatus,
+  } = qcComplete ?? {};
+  qcCompleteDate = formatCohortRelatedDate(qcCompleteDate);
+
+  return {
+    initialPipelineRunDate,
+    embargoDate,
+    billed,
+    billedBy,
+    costCenter,
+    custodianInformation,
+    accessLevel,
+    bamCompleteDate,
+    bamCompleteStatus,
+    mafCompleteDate,
+    mafCompleteStatus,
+    mafCompleteNormalPrimaryId,
+    qcCompleteDate,
+    qcCompleteResult,
+    qcCompleteReason,
+    qcCompleteStatus,
+  };
 }
 
 export function handleSearch(
