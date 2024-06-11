@@ -25,6 +25,7 @@ import { StatusTooltip } from "./components/StatusToolTip";
 import { parseUserSearchVal } from "../utils/parseSearchQueries";
 import { Dispatch, SetStateAction } from "react";
 import moment from "moment";
+import _ from "lodash";
 
 export interface SampleMetadataExtended extends SampleMetadata {
   revisable: boolean;
@@ -464,7 +465,7 @@ const toolTipIcon =
 
 function setupEditableSampleFields(samplesColDefs: ColDef[]) {
   samplesColDefs.forEach((colDef) => {
-    colDef.cellClassRules = {
+    const newClassRule = {
       unsubmittedChange: (params: CellClassParams) => {
         const changes: SampleChange[] = params.context.getChanges();
         const changedValue = changes?.find((change) => {
@@ -475,13 +476,15 @@ function setupEditableSampleFields(samplesColDefs: ColDef[]) {
         });
         return changedValue !== undefined;
       },
-      "costCenter-validation-error": (params: CellClassParams) => {
-        if (params.colDef.field === "costCenter") {
-          return !isValidCostCenter(params.value);
-        }
-        return false;
-      },
     };
+    if (colDef.cellClassRules) {
+      colDef.cellClassRules = {
+        ...colDef.cellClassRules,
+        ...newClassRule,
+      };
+    } else {
+      colDef.cellClassRules = newClassRule;
+    }
 
     if (colDef.valueGetter === undefined) {
       colDef.valueGetter = (params) => {
@@ -751,6 +754,14 @@ export const CohortSampleDetailsColumns: ColDef[] = [
   {
     field: "costCenter",
     headerName: "Cost Center/Fund Number",
+    cellClassRules: {
+      "costCenter-validation-error": (params: CellClassParams) => {
+        if (params.colDef.field === "costCenter") {
+          return !isValidCostCenter(params.value);
+        }
+        return false;
+      },
+    },
   },
   {
     field: "billedBy",
@@ -804,13 +815,17 @@ export const CohortSampleDetailsColumns: ColDef[] = [
   },
 ];
 
+export const ReadOnlyCohortSampleDetailsColumns = _.cloneDeep(
+  CohortSampleDetailsColumns
+);
+
 setupEditableSampleFields(SampleMetadataDetailsColumns);
 setupEditableSampleFields(CohortSampleDetailsColumns);
 
 const seenColumns = new Set();
 export const combinedSampleDetailsColumns = [
   ...SampleMetadataDetailsColumns,
-  ...CohortSampleDetailsColumns,
+  ...ReadOnlyCohortSampleDetailsColumns,
 ].filter((col) => {
   if (seenColumns.has(col.field)) {
     return false;
