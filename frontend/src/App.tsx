@@ -27,11 +27,9 @@ export default function App() {
           <Route path="/" element={<RequestsPage />}>
             <Route path=":igoRequestId" />
           </Route>
-
           <Route path="/requests/" element={<RequestsPage />}>
             <Route path=":igoRequestId" />
           </Route>
-
           <Route
             path="/patients/"
             element={
@@ -40,14 +38,7 @@ export default function App() {
           >
             <Route path=":smilePatientId" />
           </Route>
-
-          <Route
-            path="/samples"
-            element={
-              <SamplesPage userEmail={userEmail} setUserEmail={setUserEmail} />
-            }
-          />
-
+          <Route path="/samples" element={<SamplesPage />} />
           <Route
             path="/cohorts/"
             element={
@@ -56,7 +47,6 @@ export default function App() {
           >
             <Route path=":cohortId" />
           </Route>
-
           <Route path="/auth/login-success" element={<LoginSuccessPage />} />
         </>
       </Routes>

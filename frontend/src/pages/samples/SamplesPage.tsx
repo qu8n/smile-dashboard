@@ -1,4 +1,3 @@
-import { Dispatch, SetStateAction } from "react";
 import { PageHeader } from "../../shared/components/PageHeader";
 import SamplesList from "../../components/SamplesList";
 import {
@@ -9,15 +8,7 @@ import {
 } from "../../shared/helpers";
 import { SampleWhere } from "../../generated/graphql";
 
-interface ISamplesPageProps {
-  userEmail: string | null;
-  setUserEmail: Dispatch<SetStateAction<string | null>>;
-}
-
-export default function SamplesPage({
-  userEmail,
-  setUserEmail,
-}: ISamplesPageProps) {
+export default function SamplesPage() {
   return (
     <>
       <PageHeader dataName={"samples"} />
@@ -34,8 +25,6 @@ export default function SamplesPage({
             }),
           } as SampleWhere;
         }}
-        userEmail={userEmail}
-        setUserEmail={setUserEmail}
       />
     </>
   );
