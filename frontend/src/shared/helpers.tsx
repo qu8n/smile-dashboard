@@ -149,23 +149,16 @@ export const RequestsListColumns: ColDef[] = [
 export function preparePatientDataForAgGrid(
   patientsListQueryResult: PatientsListQuery
 ) {
-  const { patientsConnection, patients } = patientsListQueryResult;
+  const newPatients = patientsListQueryResult.patients.map((patient) => {
+    const samples = patient.hasSampleSamples;
+    const patientAliases = patient.patientAliasesIsAlias;
 
-  const newPatients = patients.map((p) => {
-    const {
-      smilePatientId,
-      patientAliasesIsAlias: patientAliases,
-      hasSampleSamplesConnection: samplesConnection,
-      hasSampleSamples: samples,
-    } = p;
     const cmoPatientId = patientAliases?.find(
       (pa) => pa.namespace === "cmoId"
     )?.value;
     const dmpPatientId = patientAliases?.find(
       (pa) => pa.namespace === "dmpId"
     )?.value;
-
-    const totalSamples = samplesConnection?.totalCount;
 
     const cmoSampleIds = samples?.map((s) => {
       const sampleMetadata = s.hasMetadataSampleMetadata[0];
@@ -177,22 +170,20 @@ export function preparePatientDataForAgGrid(
     const additionalPropertiesJson = additionalProperties
       ? JSON.parse(additionalProperties)
       : {};
-    const consentPartA = additionalPropertiesJson["consent-parta"];
-    const consentPartC = additionalPropertiesJson["consent-partc"];
 
     return {
       cmoPatientId,
       dmpPatientId,
-      totalSamples,
       cmoSampleIds,
-      consentPartA,
-      consentPartC,
-      smilePatientId,
+      smilePatientId: patient.smilePatientId,
+      totalSamples: patient.hasSampleSamplesConnection?.totalCount,
+      consentPartA: additionalPropertiesJson["consent-parta"],
+      consentPartC: additionalPropertiesJson["consent-partc"],
     };
   });
 
   return {
-    patientsConnection,
+    patientsConnection: patientsListQueryResult.patientsConnection,
     patients: newPatients,
   };
 }
@@ -529,59 +520,37 @@ export function prepareCohortDataForAgGrid(
   cohortsListQueryResult: CohortsListQuery,
   filterModel: IServerSideGetRowsRequest["filterModel"]
 ) {
-  const { cohorts, cohortsConnection } = cohortsListQueryResult;
-
-  let newCohorts = cohorts.map((cohort) => {
-    const {
-      cohortId,
-      hasCohortSampleSamplesConnection: samplesConnection,
-      hasCohortSampleSamples: samples,
-      hasCohortCompleteCohortCompletes: cohortCompletes,
-    } = cohort;
-
-    const totalSamples = samplesConnection?.totalCount;
-
-    const smileSampleIds = samples?.map((s) => s.smileSampleId);
+  let newCohorts = cohortsListQueryResult.cohorts.map((cohort) => {
+    const samples = cohort.hasCohortSampleSamples;
+    const cohortCompletes = cohort.hasCohortCompleteCohortCompletes;
 
     const allSamplesBilled =
       samples.length > 0 &&
       samples?.every((sample) => {
         return sample.hasTempoTempos?.[0].billed === true;
       });
-    const billed = allSamplesBilled === true ? "Yes" : "No";
-
-    const initialCohortDeliveryDate = cohortCompletes?.slice(-1)[0]?.date;
 
     const latestCohortDeliveryDate = cohortCompletes?.[0];
-    const {
-      date: completeDate,
-      endUsers,
-      pmUsers,
-      projectTitle,
-      projectSubtitle,
-      status,
-      type,
-    } = latestCohortDeliveryDate ?? {};
 
     return {
-      cohortId,
-      totalSamples,
-      smileSampleIds,
-      billed,
-      initialCohortDeliveryDate: formatCohortRelatedDate(
-        initialCohortDeliveryDate
+      cohortId: cohort.cohortId,
+      totalSamples: cohort.hasCohortSampleSamplesConnection.totalCount,
+      smileSampleIds: samples.map((s) => s.smileSampleId),
+      billed: allSamplesBilled === true ? "Yes" : "No",
+      initialCohortDeliveryDate: formatDate(
+        cohortCompletes?.slice(-1)[0]?.date
       ),
-      completeDate: formatCohortRelatedDate(completeDate),
-      endUsers,
-      pmUsers,
-      projectTitle,
-      projectSubtitle,
-      status,
-      type,
+      completeDate: formatDate(latestCohortDeliveryDate?.date),
+      endUsers: latestCohortDeliveryDate?.endUsers,
+      pmUsers: latestCohortDeliveryDate?.pmUsers,
+      projectTitle: latestCohortDeliveryDate?.projectTitle,
+      projectSubtitle: latestCohortDeliveryDate?.projectSubtitle,
+      status: latestCohortDeliveryDate?.status,
+      type: latestCohortDeliveryDate?.type,
     };
   });
 
-  let newCohortsConnection = { ...cohortsConnection };
+  let newCohortsConnection = { ...cohortsListQueryResult.cohortsConnection };
 
   if ("initialCohortDeliveryDate" in filterModel) {
     const { dateFrom, dateTo } = filterModel.initialCohortDeliveryDate;
@@ -822,17 +791,10 @@ export const ReadOnlyCohortSampleDetailsColumns = _.cloneDeep(
 setupEditableSampleFields(SampleMetadataDetailsColumns);
 setupEditableSampleFields(CohortSampleDetailsColumns);
 
-const seenColumns = new Set();
-export const combinedSampleDetailsColumns = [
-  ...SampleMetadataDetailsColumns,
-  ...ReadOnlyCohortSampleDetailsColumns,
-].filter((col) => {
-  if (seenColumns.has(col.field)) {
-    return false;
-  }
-  seenColumns.add(col.field);
-  return true;
-});
+export const combinedSampleDetailsColumns = _.uniqBy(
+  [...SampleMetadataDetailsColumns, ...ReadOnlyCohortSampleDetailsColumns],
+  "field"
+);
 
 export const defaultColDef: ColDef = {
   sortable: true,
@@ -1110,65 +1072,36 @@ function extractTempoFromSample(s: Sample) {
       return cc.date;
     });
   });
-  let initialPipelineRunDate = cohortDates?.sort()[0]; // earliest cohort date
-  initialPipelineRunDate = formatCohortRelatedDate(initialPipelineRunDate);
+  const initialPipelineRunDate = cohortDates?.sort()[0];
 
   let embargoDate;
-  if (initialPipelineRunDate !== undefined) {
-    let embargoDateAsDate = new Date(initialPipelineRunDate);
-    embargoDateAsDate.setMonth(embargoDateAsDate.getMonth() + 18);
-    embargoDate = moment(embargoDateAsDate).format("YYYY-MM-DD");
+  if (initialPipelineRunDate) {
+    embargoDate = new Date(initialPipelineRunDate);
+    embargoDate.setMonth(embargoDate.getMonth() + 18);
   }
 
   const tempo = s.hasTempoTempos?.[0];
-  const { billedBy, costCenter, custodianInformation, accessLevel } =
-    tempo ?? {};
-
-  // Without setting null/undefined (falsy) values to false, the Billed column filter will
-  // display "No" 2x when there are both false and null/undefined values in the table.
-  let billed = tempo?.billed;
-  if (!billed) {
-    billed = false;
-  }
-
   const bamComplete = tempo?.hasEventBamCompletes?.[0];
-  let { date: bamCompleteDate, status: bamCompleteStatus } = bamComplete ?? {};
-  bamCompleteDate = formatCohortRelatedDate(bamCompleteDate);
-
   const mafComplete = tempo?.hasEventMafCompletes?.[0];
-  let {
-    date: mafCompleteDate,
-    status: mafCompleteStatus,
-    normalPrimaryId: mafCompleteNormalPrimaryId,
-  } = mafComplete ?? {};
-  mafCompleteDate = formatCohortRelatedDate(mafCompleteDate);
-
   const qcComplete = tempo?.hasEventQcCompletes?.[0];
-  let {
-    date: qcCompleteDate,
-    result: qcCompleteResult,
-    reason: qcCompleteReason,
-    status: qcCompleteStatus,
-  } = qcComplete ?? {};
-  qcCompleteDate = formatCohortRelatedDate(qcCompleteDate);
 
   return {
-    initialPipelineRunDate,
-    embargoDate,
-    billed,
-    billedBy,
-    costCenter,
-    custodianInformation,
-    accessLevel,
-    bamCompleteDate,
-    bamCompleteStatus,
-    mafCompleteDate,
-    mafCompleteStatus,
-    mafCompleteNormalPrimaryId,
-    qcCompleteDate,
-    qcCompleteResult,
-    qcCompleteReason,
-    qcCompleteStatus,
+    initialPipelineRunDate: formatDate(initialPipelineRunDate),
+    embargoDate: formatDate(embargoDate),
+    billed: tempo?.billed ?? false,
+    billedBy: tempo?.billedBy,
+    costCenter: tempo?.costCenter,
+    custodianInformation: tempo?.custodianInformation,
+    accessLevel: tempo?.accessLevel,
+    bamCompleteDate: formatDate(bamComplete?.date),
+    bamCompleteStatus: bamComplete?.status,
+    mafCompleteDate: formatDate(mafComplete?.date),
+    mafCompleteStatus: mafComplete?.status,
+    mafCompleteNormalPrimaryId: mafComplete?.normalPrimaryId,
+    qcCompleteDate: formatDate(qcComplete?.date),
+    qcCompleteResult: qcComplete?.result,
+    qcCompleteReason: qcComplete?.reason,
+    qcCompleteStatus: qcComplete?.status,
   };
 }
 
@@ -1180,8 +1113,8 @@ export function handleSearch(
   setParsedSearchVals(parsedSearchVals);
 }
 
-function formatCohortRelatedDate(date: string) {
-  return date?.split(" ")[0];
+function formatDate(date: moment.MomentInput) {
+  return date ? moment(date).format("YYYY-MM-DD") : null;
 }
 
 export function isValidCostCenter(costCenter: string): boolean {
