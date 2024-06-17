@@ -10,7 +10,7 @@ import { Dispatch, SetStateAction, useEffect, useRef } from "react";
 import { DownloadModal } from "./DownloadModal";
 import { UpdateModal } from "./UpdateModal";
 import { AlertModal } from "./AlertModal";
-import { CSVFormulate } from "../utils/CSVExport";
+import { buildTsvString } from "../utils/buildTsvString";
 import {
   SampleChange,
   SampleMetadataExtended,
@@ -245,7 +245,7 @@ export default function SamplesList({
         <DownloadModal
           loader={() => {
             return Promise.resolve(
-              CSVFormulate(prepareDataForAgGrid(samples), columnDefs)
+              buildTsvString(prepareDataForAgGrid(samples), columnDefs)
             );
           }}
           onComplete={() => {

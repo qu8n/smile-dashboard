@@ -3,7 +3,7 @@ import { Button, Container, Modal } from "react-bootstrap";
 import { Dispatch, SetStateAction, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { DownloadModal } from "./DownloadModal";
-import { CSVFormulate } from "../utils/CSVExport";
+import { buildTsvString } from "../utils/buildTsvString";
 import { AgGridReact } from "ag-grid-react";
 import { useState } from "react";
 import styles from "./records.module.scss";
@@ -185,8 +185,12 @@ export default function RecordsList({
                   limit: undefined,
                 },
               },
-            }).then(({ data }: any) => {
-              return CSVFormulate(data[dataName], colDefs);
+            }).then(({ data }) => {
+              let d = data;
+              if (prepareDataForAgGrid) {
+                d = prepareDataForAgGrid(d, filterModel);
+              }
+              return buildTsvString(d[dataName], colDefs);
             });
           }}
           onComplete={() => setShowDownloadModal(false)}
