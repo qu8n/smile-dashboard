@@ -32,7 +32,7 @@ interface IRecordsListProps {
   enableInfiniteScroll?: boolean;
   lazyRecordsQuery: typeof useHookLazyGeneric;
   lazyRecordsQueryAddlVariables?: Record<string, any>;
-  prepareDataForAgGrid?: (
+  prepareDataForAgGrid: (
     data: any,
     filterModel: IServerSideGetRowsRequest["filterModel"]
   ) => any;
@@ -138,19 +138,16 @@ export default function RecordsList({
               });
 
         return thisFetch.then((d) => {
-          let data = d.data;
-          if (prepareDataForAgGrid) {
-            data = prepareDataForAgGrid(data, filterModel);
-          }
+          const agGridData = prepareDataForAgGrid(d.data, filterModel);
 
-          if ("uniqueSampleCount" in data) {
-            setUniqueSampleCount(data.uniqueSampleCount);
+          if ("uniqueSampleCount" in agGridData) {
+            setUniqueSampleCount(agGridData.uniqueSampleCount);
           }
-          setRowCount(data[totalCountNodeName].totalCount);
+          setRowCount(agGridData[totalCountNodeName].totalCount);
 
           params.success({
-            rowData: data[dataName],
-            rowCount: data[totalCountNodeName].totalCount,
+            rowData: agGridData[dataName],
+            rowCount: agGridData[totalCountNodeName].totalCount,
           });
         });
       },
@@ -186,11 +183,8 @@ export default function RecordsList({
                 },
               },
             }).then(({ data }) => {
-              let d = data;
-              if (prepareDataForAgGrid) {
-                d = prepareDataForAgGrid(d, filterModel);
-              }
-              return buildTsvString(d[dataName], colDefs);
+              const agGridData = prepareDataForAgGrid(data, filterModel);
+              return buildTsvString(agGridData[dataName], colDefs);
             });
           }}
           onComplete={() => setShowDownloadModal(false)}

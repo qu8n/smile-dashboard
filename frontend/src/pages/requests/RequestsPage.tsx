@@ -10,6 +10,7 @@ import {
   prepareSampleMetadataForAgGrid,
   handleSearch,
   sampleFilterWhereVariables,
+  prepareRequestDataForAgGrid,
 } from "../../shared/helpers";
 import RecordsList from "../../components/RecordsList";
 import { useParams } from "react-router-dom";
@@ -78,6 +79,7 @@ export default function RequestsPage() {
         colDefs={RequestsListColumns}
         dataName={dataName}
         lazyRecordsQuery={useRequestsListLazyQuery}
+        prepareDataForAgGrid={prepareRequestDataForAgGrid}
         queryFilterWhereVariables={requestFilterWhereVariables}
         userSearchVal={userSearchVal}
         setUserSearchVal={setUserSearchVal}
