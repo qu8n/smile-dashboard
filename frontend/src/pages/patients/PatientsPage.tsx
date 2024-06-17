@@ -86,9 +86,9 @@ const UNAUTHORIZED_WARNING = {
 };
 
 const NO_PHI_SEARCH_RESULTS = {
-  title: "No results found",
+  title: "No PHI results found",
   content:
-    "No results were found for your search. No patient IDs in your search exist in either the SMILE or CRDB databases.",
+    "No PHI results were found for your search. No patient IDs in your search exist in either the SMILE or CRDB databases.",
 };
 
 interface IPatientsPageProps {
@@ -263,10 +263,12 @@ export default function PatientsPage({
         showDownloadModal={showDownloadModal}
         setShowDownloadModal={setShowDownloadModal}
         handleDownload={() => {
-          setAlertModal({
-            show: true,
-            ...PHI_WARNING,
-          });
+          if (phiEnabled) {
+            setAlertModal({
+              show: true,
+              ...PHI_WARNING,
+            });
+          }
           setShowDownloadModal(true);
         }}
         samplesColDefs={SampleMetadataDetailsColumns}
