@@ -12,6 +12,13 @@ export function buildTsvString(rows: any[], colDefs: ColDef[]) {
   const rowsAsTsvRows = rows
     .map((row) =>
       colDefsToExport.map((colDef) => {
+        if (colDef.valueGetter) {
+          // @ts-ignore
+          return colDef.valueGetter({
+            colDef,
+            data: row,
+          });
+        }
         if (colDef.field) {
           return row[colDef.field];
         }
