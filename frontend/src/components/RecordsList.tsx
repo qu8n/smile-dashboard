@@ -276,7 +276,7 @@ export default function RecordsList({
               })`
         }`}
         handleDownload={handleDownload}
-        customUI={customToolbarUI}
+        customUIRight={customToolbarUI}
       />
 
       <AutoSizer>

@@ -2,10 +2,9 @@ import { ApolloError } from "@apollo/client";
 import classNames from "classnames";
 import { Button, Col, Form, Row } from "react-bootstrap";
 import Spinner from "react-spinkit";
-import InfoIcon from "@material-ui/icons/InfoOutlined";
-import { Tooltip } from "@material-ui/core";
 import { DataName } from "./types";
 import { Dispatch, SetStateAction } from "react";
+import { InfoToolTip } from "./components/InfoToolTip";
 
 export function LoadingSpinner() {
   return (
@@ -23,6 +22,18 @@ export function ErrorMessage({ error }: { error: ApolloError }) {
   );
 }
 
+interface IToolbarProps {
+  dataName: DataName;
+  userSearchVal: string;
+  setUserSearchVal: Dispatch<SetStateAction<string>>;
+  handleSearch: () => void;
+  clearUserSearchVal: () => void;
+  matchingResultsCount: string;
+  handleDownload: () => void;
+  customUILeft?: JSX.Element;
+  customUIRight?: JSX.Element;
+}
+
 export function Toolbar({
   dataName,
   userSearchVal,
@@ -31,24 +42,12 @@ export function Toolbar({
   clearUserSearchVal,
   matchingResultsCount,
   handleDownload,
-  customUI,
-}: {
-  dataName: DataName;
-  userSearchVal: string;
-  setUserSearchVal: Dispatch<SetStateAction<string>>;
-  handleSearch: () => void;
-  clearUserSearchVal: () => void;
-  matchingResultsCount: string;
-  handleDownload: () => void;
-  customUI?: JSX.Element;
-}) {
+  customUILeft,
+  customUIRight,
+}: IToolbarProps) {
   return (
-    <Row
-      className={classNames(
-        "d-flex justify-content-between align-items-center tableControlsRow"
-      )}
-    >
-      <Col></Col>
+    <Row className={classNames("d-flex align-items-center tableControlsRow")}>
+      <Col>{customUILeft}</Col>
 
       <Col md="auto">
         <Form.Control
@@ -74,18 +73,11 @@ export function Toolbar({
       </Col>
 
       <Col md="auto" style={{ marginLeft: -15 }}>
-        <Tooltip
-          title={
-            <span style={{ fontSize: 12 }}>
-              After inputting your search query, click on &quot;Search&quot; or
-              press &quot;Enter&quot; to get your results. To bulk search, input
-              a list of values separated by spaces or commas (e.g. &quot;value1
-              value2 value3&quot;)
-            </span>
-          }
-        >
-          <InfoIcon style={{ fontSize: 18, color: "grey" }} />
-        </Tooltip>
+        <InfoToolTip>
+          After inputting your search query, click on "Search" or press "Enter"
+          to get your results. To bulk search, input a list of values separated
+          by spaces or commas (e.g. "value1 value2 value3")
+        </InfoToolTip>
       </Col>
 
       <Col md="auto" style={{ marginLeft: -15 }}>
@@ -100,11 +92,11 @@ export function Toolbar({
 
       <Col md="auto">{matchingResultsCount}</Col>
 
-      {customUI}
+      {customUIRight}
 
       <Col className={"text-end"}>
         <Button onClick={handleDownload} size={"sm"}>
-          Generate Report
+          Generate report
         </Button>
       </Col>
     </Row>
