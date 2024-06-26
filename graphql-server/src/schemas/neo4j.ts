@@ -142,6 +142,38 @@ function buildResolvers(
         };
       },
     },
+    Query: {
+      async cohorts(parent: any, args: any, context: any, info: any) {
+        const cohorts = await ogm.model("Cohort").find({
+          where: args?.where,
+          options: args?.options,
+          selectionSet: `{
+            cohortId
+            hasCohortCompleteCohortCompletes {
+              type
+              endUsers
+              pmUsers
+              projectTitle
+              projectSubtitle
+              status
+              date
+            }
+            hasCohortSampleSamplesConnection {
+              totalCount
+            }
+            hasCohortSampleSamples {
+              smileSampleId
+              hasTempoTempos {
+                smileTempoId
+                billed
+              }
+            }
+          }`,
+        });
+
+        return cohorts;
+      },
+    },
   };
 }
 
