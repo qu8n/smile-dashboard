@@ -240,6 +240,7 @@ query CohortsList(
   }
   cohorts(where: $where, options: $options) {
     cohortId
+    initialCohortDeliveryDate
     hasCohortCompleteCohortCompletes(
       options: $hasCohortCompleteCohortCompletesOptions2
     ) {

@@ -552,9 +552,7 @@ export function prepareCohortDataForAgGrid(
       totalSamples: cohort.hasCohortSampleSamplesConnection.totalCount,
       smileSampleIds: samples.map((s) => s.smileSampleId),
       billed: allSamplesBilled === true ? "Yes" : "No",
-      initialCohortDeliveryDate: formatDate(
-        cohortCompletes?.slice(-1)[0]?.date
-      ),
+      initialCohortDeliveryDate: formatDate(cohort.initialCohortDeliveryDate),
       completeDate: formatDate(latestCohortDeliveryDate?.date),
       endUsers: latestCohortDeliveryDate?.endUsers,
       pmUsers: latestCohortDeliveryDate?.pmUsers,

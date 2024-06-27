@@ -21,6 +21,7 @@ import { connect, headers, StringCodec } from "nats";
 const fetch = require("node-fetch");
 const request = require("request-promise-native");
 import { ApolloClient, ApolloQueryResult } from "apollo-client";
+import { gql } from "apollo-server";
 
 export async function buildNeo4jDbSchema() {
   const driver = neo4j.driver(
@@ -42,9 +43,17 @@ export async function buildNeo4jDbSchema() {
   });
 
   const typeDefs = await toGraphQLTypeDefs(sessionFactory, false);
-  const ogm = new OGM({ typeDefs: typeDefs, driver });
+  const extendedTypeDefs = gql`
+    ${typeDefs}
+
+    extend type Cohort {
+      initialCohortDeliveryDate: String
+    }
+  `;
+
+  const ogm = new OGM({ typeDefs: extendedTypeDefs, driver });
   const neoSchema = new Neo4jGraphQL({
-    typeDefs: typeDefs,
+    typeDefs: extendedTypeDefs,
     driver,
     config: {
       skipValidateTypeDefs: true,
@@ -149,6 +158,7 @@ function buildResolvers(
           options: args?.options,
           selectionSet: `{
             cohortId
+            initialCohortDeliveryDate
             hasCohortCompleteCohortCompletes {
               type
               endUsers
@@ -173,6 +183,10 @@ function buildResolvers(
 
         return cohorts;
       },
+    },
+    Cohort: {
+      initialCohortDeliveryDate: (parent: any) =>
+        parent.hasCohortCompleteCohortCompletes?.slice(-1)[0]?.date,
     },
   };
 }
