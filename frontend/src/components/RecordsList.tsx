@@ -116,9 +116,6 @@ export default function RecordsList({
           where: {
             OR: queryFilterWhereVariables(parsedSearchVals),
           },
-          [`${dataName}ConnectionWhere2`]: {
-            OR: queryFilterWhereVariables(parsedSearchVals),
-          },
           options: {
             offset: params.request.startRow,
             limit: params.request.endRow,

@@ -10493,7 +10493,6 @@ export type UpdateTemposMutationResponse = {
 export type RequestsListQueryVariables = Exact<{
   options?: InputMaybe<RequestOptions>;
   where?: InputMaybe<RequestWhere>;
-  requestsConnectionWhere2?: InputMaybe<RequestWhere>;
 }>;
 
 export type RequestsListQuery = {
@@ -10529,7 +10528,6 @@ export type RequestsListQuery = {
 export type PatientsListQueryVariables = Exact<{
   options?: InputMaybe<PatientOptions>;
   where?: InputMaybe<PatientWhere>;
-  patientsConnectionWhere2?: InputMaybe<PatientWhere>;
 }>;
 
 export type PatientsListQuery = {
@@ -10903,7 +10901,6 @@ export type GetPatientIdsTripletsQuery = {
 export type CohortsListQueryVariables = Exact<{
   where?: InputMaybe<CohortWhere>;
   options?: InputMaybe<CohortOptions>;
-  cohortsConnectionWhere2?: InputMaybe<CohortWhere>;
   hasCohortCompleteCohortCompletesOptions2?: InputMaybe<CohortCompleteOptions>;
 }>;
 
@@ -11013,12 +11010,8 @@ export const TempoPartsFragmentDoc = gql`
   }
 `;
 export const RequestsListDocument = gql`
-  query RequestsList(
-    $options: RequestOptions
-    $where: RequestWhere
-    $requestsConnectionWhere2: RequestWhere
-  ) {
-    requestsConnection(where: $requestsConnectionWhere2) {
+  query RequestsList($options: RequestOptions, $where: RequestWhere) {
+    requestsConnection(where: $where) {
       totalCount
     }
     requests(where: $where, options: $options) {
@@ -11035,12 +11028,8 @@ export type RequestsListQueryResult = Apollo.QueryResult<
   RequestsListQueryVariables
 >;
 export const PatientsListDocument = gql`
-  query PatientsList(
-    $options: PatientOptions
-    $where: PatientWhere
-    $patientsConnectionWhere2: PatientWhere
-  ) {
-    patientsConnection(where: $patientsConnectionWhere2) {
+  query PatientsList($options: PatientOptions, $where: PatientWhere) {
+    patientsConnection(where: $where) {
       totalCount
     }
     patients(where: $where, options: $options) {
@@ -11224,10 +11213,9 @@ export const CohortsListDocument = gql`
   query CohortsList(
     $where: CohortWhere
     $options: CohortOptions
-    $cohortsConnectionWhere2: CohortWhere
     $hasCohortCompleteCohortCompletesOptions2: CohortCompleteOptions
   ) {
-    cohortsConnection(where: $cohortsConnectionWhere2) {
+    cohortsConnection(where: $where) {
       totalCount
     }
     cohorts(where: $where, options: $options) {

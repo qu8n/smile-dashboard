@@ -1,9 +1,5 @@
-query RequestsList(
-  $options: RequestOptions
-  $where: RequestWhere
-  $requestsConnectionWhere2: RequestWhere
-) {
-  requestsConnection(where: $requestsConnectionWhere2) {
+query RequestsList($options: RequestOptions, $where: RequestWhere) {
+  requestsConnection(where: $where) {
     totalCount
   }
   requests(where: $where, options: $options) {
@@ -14,12 +10,8 @@ query RequestsList(
   }
 }
 
-query PatientsList(
-  $options: PatientOptions
-  $where: PatientWhere
-  $patientsConnectionWhere2: PatientWhere
-) {
-  patientsConnection(where: $patientsConnectionWhere2) {
+query PatientsList($options: PatientOptions, $where: PatientWhere) {
+  patientsConnection(where: $where) {
     totalCount
   }
   patients(where: $where, options: $options) {
@@ -232,10 +224,9 @@ query GetPatientIdsTriplets($patientIds: [String!]!) {
 query CohortsList(
   $where: CohortWhere
   $options: CohortOptions
-  $cohortsConnectionWhere2: CohortWhere
   $hasCohortCompleteCohortCompletesOptions2: CohortCompleteOptions
 ) {
-  cohortsConnection(where: $cohortsConnectionWhere2) {
+  cohortsConnection(where: $where) {
     totalCount
   }
   cohorts(where: $where, options: $options) {
