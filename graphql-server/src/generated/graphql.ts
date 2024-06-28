@@ -1444,6 +1444,14 @@ export type DeleteInfo = {
   relationshipsDeleted: Scalars["Int"];
 };
 
+export type IntAggregateSelectionNullable = {
+  __typename?: "IntAggregateSelectionNullable";
+  average?: Maybe<Scalars["Float"]>;
+  max?: Maybe<Scalars["Int"]>;
+  min?: Maybe<Scalars["Int"]>;
+  sum?: Maybe<Scalars["Int"]>;
+};
+
 export type MafComplete = {
   __typename?: "MafComplete";
   date: Scalars["String"];
@@ -3352,6 +3360,31 @@ export type ProjectHasRequestRequestsNodeAggregationWhereInput = {
   strand_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
   strand_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
   strand_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  totalSampleCount_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  totalSampleCount_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  totalSampleCount_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  totalSampleCount_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  totalSampleCount_EQUAL?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_GT?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_GTE?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_LT?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_LTE?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_MAX_EQUAL?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_MAX_GT?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_MAX_GTE?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_MAX_LT?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_MAX_LTE?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_MIN_EQUAL?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_MIN_GT?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_MIN_GTE?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_MIN_LT?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_MIN_LTE?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_SUM_EQUAL?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_SUM_GT?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_SUM_GTE?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_SUM_LT?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_SUM_LTE?: InputMaybe<Scalars["Int"]>;
 };
 
 export type ProjectHasRequestRequestsRelationship = {
@@ -3413,6 +3446,7 @@ export type ProjectRequestHasRequestRequestsNodeAggregateSelection = {
   requestJson: StringAggregateSelectionNonNullable;
   smileRequestId: StringAggregateSelectionNonNullable;
   strand: StringAggregateSelectionNullable;
+  totalSampleCount: IntAggregateSelectionNullable;
 };
 
 /** Fields to sort Projects by. The order in which sorts are applied is not guaranteed when specifying many fields in one ProjectSort object. */
@@ -4153,6 +4187,7 @@ export type Request = {
   requestJson: Scalars["String"];
   smileRequestId: Scalars["String"];
   strand?: Maybe<Scalars["String"]>;
+  totalSampleCount?: Maybe<Scalars["Int"]>;
 };
 
 export type RequestHasSampleSamplesArgs = {
@@ -4215,6 +4250,7 @@ export type RequestAggregateSelection = {
   requestJson: StringAggregateSelectionNonNullable;
   smileRequestId: StringAggregateSelectionNonNullable;
   strand: StringAggregateSelectionNullable;
+  totalSampleCount: IntAggregateSelectionNullable;
 };
 
 export type RequestConnectInput = {
@@ -4255,6 +4291,7 @@ export type RequestCreateInput = {
   requestJson: Scalars["String"];
   smileRequestId: Scalars["String"];
   strand?: InputMaybe<Scalars["String"]>;
+  totalSampleCount?: InputMaybe<Scalars["Int"]>;
 };
 
 export type RequestDeleteInput = {
@@ -4890,6 +4927,7 @@ export type RequestSort = {
   requestJson?: InputMaybe<SortDirection>;
   smileRequestId?: InputMaybe<SortDirection>;
   strand?: InputMaybe<SortDirection>;
+  totalSampleCount?: InputMaybe<SortDirection>;
 };
 
 export type RequestUpdateInput = {
@@ -4921,6 +4959,9 @@ export type RequestUpdateInput = {
   requestJson?: InputMaybe<Scalars["String"]>;
   smileRequestId?: InputMaybe<Scalars["String"]>;
   strand?: InputMaybe<Scalars["String"]>;
+  totalSampleCount?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_DECREMENT?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_INCREMENT?: InputMaybe<Scalars["Int"]>;
 };
 
 export type RequestWhere = {
@@ -5150,6 +5191,14 @@ export type RequestWhere = {
   strand_NOT_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
   strand_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
   strand_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  totalSampleCount?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_GT?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_GTE?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_IN?: InputMaybe<Array<InputMaybe<Scalars["Int"]>>>;
+  totalSampleCount_LT?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_LTE?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_NOT?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_NOT_IN?: InputMaybe<Array<InputMaybe<Scalars["Int"]>>>;
 };
 
 export type RequestsConnection = {
@@ -7625,6 +7674,7 @@ export type SampleRequestRequestsHasSampleNodeAggregateSelection = {
   requestJson: StringAggregateSelectionNonNullable;
   smileRequestId: StringAggregateSelectionNonNullable;
   strand: StringAggregateSelectionNullable;
+  totalSampleCount: IntAggregateSelectionNullable;
 };
 
 export type SampleRequestsHasSampleAggregateInput = {
@@ -8063,6 +8113,31 @@ export type SampleRequestsHasSampleNodeAggregationWhereInput = {
   strand_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
   strand_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
   strand_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  totalSampleCount_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  totalSampleCount_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  totalSampleCount_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  totalSampleCount_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  totalSampleCount_EQUAL?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_GT?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_GTE?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_LT?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_LTE?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_MAX_EQUAL?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_MAX_GT?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_MAX_GTE?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_MAX_LT?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_MAX_LTE?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_MIN_EQUAL?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_MIN_GT?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_MIN_GTE?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_MIN_LT?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_MIN_LTE?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_SUM_EQUAL?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_SUM_GT?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_SUM_GTE?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_SUM_LT?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_SUM_LTE?: InputMaybe<Scalars["Int"]>;
 };
 
 export type SampleRequestsHasSampleRelationship = {
@@ -10502,6 +10577,7 @@ export type RequestsListQuery = {
     __typename?: "Request";
     igoRequestId: string;
     igoProjectId: string;
+    totalSampleCount?: number | null;
     genePanel: string;
     dataAnalystName: string;
     dataAnalystEmail: string;
@@ -10623,6 +10699,7 @@ export type FindSamplesByInputValueQuery = {
               __typename?: "Request";
               igoRequestId: string;
               igoProjectId: string;
+              totalSampleCount?: number | null;
               genePanel: string;
               dataAnalystName: string;
               dataAnalystEmail: string;
@@ -10699,6 +10776,7 @@ export type RequestPartsFragment = {
   __typename?: "Request";
   igoRequestId: string;
   igoProjectId: string;
+  totalSampleCount?: number | null;
   genePanel: string;
   dataAnalystName: string;
   dataAnalystEmail: string;
@@ -10941,6 +11019,7 @@ export const RequestPartsFragmentDoc = gql`
   fragment RequestParts on Request {
     igoRequestId
     igoProjectId
+    totalSampleCount
     genePanel
     dataAnalystName
     dataAnalystEmail

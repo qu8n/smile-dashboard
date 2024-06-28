@@ -32,7 +32,7 @@ interface IRecordsListProps {
   enableInfiniteScroll?: boolean;
   lazyRecordsQuery: typeof useHookLazyGeneric;
   lazyRecordsQueryAddlVariables?: Record<string, any>;
-  prepareDataForAgGrid: (
+  prepareDataForAgGrid?: (
     data: any,
     filterModel: IServerSideGetRowsRequest["filterModel"]
   ) => any;
@@ -135,7 +135,10 @@ export default function RecordsList({
               });
 
         return thisFetch.then((d) => {
-          const agGridData = prepareDataForAgGrid(d.data, filterModel);
+          let agGridData = d.data;
+          if (prepareDataForAgGrid) {
+            agGridData = prepareDataForAgGrid(d.data, filterModel);
+          }
 
           if ("uniqueSampleCount" in agGridData) {
             setUniqueSampleCount(agGridData.uniqueSampleCount);
@@ -180,7 +183,10 @@ export default function RecordsList({
                 },
               },
             }).then(({ data }) => {
-              const agGridData = prepareDataForAgGrid(data, filterModel);
+              let agGridData = data;
+              if (prepareDataForAgGrid) {
+                agGridData = prepareDataForAgGrid(data, filterModel);
+              }
               return buildTsvString(agGridData[dataName], colDefs);
             });
           }}

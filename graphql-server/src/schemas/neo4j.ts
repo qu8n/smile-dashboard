@@ -6,6 +6,8 @@ import { createHttpLink } from "apollo-link-http";
 import { InMemoryCache, NormalizedCacheObject } from "apollo-cache-inmemory";
 import { props } from "../utils/constants";
 import {
+  CohortsListQuery,
+  RequestsListQuery,
   SampleHasMetadataSampleMetadataUpdateFieldInput,
   SampleHasTempoTemposUpdateFieldInput,
   SampleMetadata,
@@ -26,7 +28,8 @@ import { gql } from "apollo-server";
 export async function buildNeo4jDbSchema() {
   const driver = neo4j.driver(
     props.neo4j_graphql_uri,
-    neo4j.auth.basic(props.neo4j_username, props.neo4j_password)
+    neo4j.auth.basic(props.neo4j_username, props.neo4j_password),
+    { disableLosslessIntegers: true } // maps Cypher Integer to JavaScript Number
   );
 
   const sessionFactory = () =>
@@ -45,6 +48,10 @@ export async function buildNeo4jDbSchema() {
   const typeDefs = await toGraphQLTypeDefs(sessionFactory, false);
   const extendedTypeDefs = gql`
     ${typeDefs}
+
+    extend type Request {
+      totalSampleCount: Int
+    }
 
     extend type Cohort {
       initialCohortDeliveryDate: String
@@ -151,42 +158,17 @@ function buildResolvers(
         };
       },
     },
-    Query: {
-      async cohorts(parent: any, args: any, context: any, info: any) {
-        const cohorts = await ogm.model("Cohort").find({
-          where: args?.where,
-          options: args?.options,
-          selectionSet: `{
-            cohortId
-            initialCohortDeliveryDate
-            hasCohortCompleteCohortCompletes {
-              type
-              endUsers
-              pmUsers
-              projectTitle
-              projectSubtitle
-              status
-              date
-            }
-            hasCohortSampleSamplesConnection {
-              totalCount
-            }
-            hasCohortSampleSamples {
-              smileSampleId
-              hasTempoTempos {
-                smileTempoId
-                billed
-              }
-            }
-          }`,
-        });
-
-        return cohorts;
+    Request: {
+      totalSampleCount: (parent: RequestsListQuery["requests"][number]) => {
+        return parent.hasSampleSamplesConnection?.totalCount;
       },
     },
     Cohort: {
-      initialCohortDeliveryDate: (parent: any) =>
-        parent.hasCohortCompleteCohortCompletes?.slice(-1)[0]?.date,
+      initialCohortDeliveryDate: (
+        parent: CohortsListQuery["cohorts"][number]
+      ) => {
+        return parent.hasCohortCompleteCohortCompletes?.slice(-1)[0]?.date;
+      },
     },
   };
 }

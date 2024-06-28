@@ -103,6 +103,7 @@ query FindSamplesByInputValue(
 fragment RequestParts on Request {
   igoRequestId
   igoProjectId
+  totalSampleCount
   genePanel
   dataAnalystName
   dataAnalystEmail

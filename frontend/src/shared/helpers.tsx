@@ -13,7 +13,6 @@ import "ag-grid-enterprise";
 import {
   CohortsListQuery,
   PatientsListQuery,
-  RequestsListQuery,
   Sample,
   SampleMetadata,
   SampleMetadataWhere,
@@ -77,7 +76,7 @@ export const RequestsListColumns: ColDef[] = [
     headerName: "IGO Project ID",
   },
   {
-    field: "totalSamples",
+    field: "totalSampleCount",
     headerName: "# Samples",
     cellClass: (params) => {
       if (params.data.revisable === false) {
@@ -144,22 +143,6 @@ export const RequestsListColumns: ColDef[] = [
     headerName: "Other Contact Emails",
   },
 ];
-
-export function prepareRequestDataForAgGrid(
-  requestsListQueryResult: RequestsListQuery
-) {
-  const newRequests = requestsListQueryResult.requests.map((request) => {
-    return {
-      totalSamples: request.hasSampleSamplesConnection?.totalCount,
-      ...request,
-    };
-  });
-
-  return {
-    requestsConnection: requestsListQueryResult.requestsConnection,
-    requests: newRequests,
-  };
-}
 
 export function preparePatientDataForAgGrid(
   patientsListQueryResult: PatientsListQuery
