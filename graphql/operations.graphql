@@ -16,6 +16,12 @@ query PatientsList($options: PatientOptions, $where: PatientWhere) {
   }
   patients(where: $where, options: $options) {
     smilePatientId
+    cmoPatientId
+    dmpPatientId
+    totalSampleCount
+    cmoSampleIds
+    consentPartA
+    consentPartC
     hasSampleSamples {
       smileSampleId
       hasMetadataSampleMetadata {

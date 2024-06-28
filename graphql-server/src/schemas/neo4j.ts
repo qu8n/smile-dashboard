@@ -7,6 +7,7 @@ import { InMemoryCache, NormalizedCacheObject } from "apollo-cache-inmemory";
 import { props } from "../utils/constants";
 import {
   CohortsListQuery,
+  PatientsListQuery,
   RequestsListQuery,
   SampleHasMetadataSampleMetadataUpdateFieldInput,
   SampleHasTempoTemposUpdateFieldInput,
@@ -51,6 +52,15 @@ export async function buildNeo4jDbSchema() {
 
     extend type Request {
       totalSampleCount: Int
+    }
+
+    extend type Patient {
+      cmoPatientId: String
+      dmpPatientId: String
+      totalSampleCount: Int
+      cmoSampleIds: [String]
+      consentPartA: String
+      consentPartC: String
     }
 
     extend type Cohort {
@@ -161,6 +171,47 @@ function buildResolvers(
     Request: {
       totalSampleCount: (parent: RequestsListQuery["requests"][number]) => {
         return parent.hasSampleSamplesConnection?.totalCount;
+      },
+    },
+    Patient: {
+      cmoPatientId: (parent: PatientsListQuery["patients"][number]) => {
+        return parent.patientAliasesIsAlias?.find(
+          (patientAlias) => patientAlias.namespace === "cmoId"
+        )?.value;
+      },
+      dmpPatientId: (parent: PatientsListQuery["patients"][number]) => {
+        return parent.patientAliasesIsAlias?.find(
+          (patientAlias) => patientAlias.namespace === "dmpId"
+        )?.value;
+      },
+      totalSampleCount: (parent: PatientsListQuery["patients"][number]) => {
+        return parent.hasSampleSamplesConnection?.totalCount;
+      },
+      cmoSampleIds: (parent: PatientsListQuery["patients"][number]) => {
+        return parent.hasSampleSamples?.map((s) => {
+          const sampleMetadata = s.hasMetadataSampleMetadata[0];
+          return sampleMetadata?.cmoSampleName || sampleMetadata?.primaryId;
+        });
+      },
+      consentPartA: (parent: PatientsListQuery["patients"][number]) => {
+        try {
+          return JSON.parse(
+            parent.hasSampleSamples[0].hasMetadataSampleMetadata[0]
+              .additionalProperties
+          )["consent-parta"];
+        } catch {
+          return undefined;
+        }
+      },
+      consentPartC: (parent: PatientsListQuery["patients"][number]) => {
+        try {
+          return JSON.parse(
+            parent.hasSampleSamples[0].hasMetadataSampleMetadata[0]
+              .additionalProperties
+          )["consent-partc"];
+        } catch {
+          return undefined;
+        }
       },
     },
     Cohort: {

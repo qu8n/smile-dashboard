@@ -12,7 +12,6 @@ import { Button } from "react-bootstrap";
 import "ag-grid-enterprise";
 import {
   CohortsListQuery,
-  PatientsListQuery,
   Sample,
   SampleMetadata,
   SampleMetadataWhere,
@@ -144,48 +143,6 @@ export const RequestsListColumns: ColDef[] = [
   },
 ];
 
-export function preparePatientDataForAgGrid(
-  patientsListQueryResult: PatientsListQuery
-) {
-  const newPatients = patientsListQueryResult.patients.map((patient) => {
-    const samples = patient.hasSampleSamples;
-    const patientAliases = patient.patientAliasesIsAlias;
-
-    const cmoPatientId = patientAliases?.find(
-      (pa) => pa.namespace === "cmoId"
-    )?.value;
-    const dmpPatientId = patientAliases?.find(
-      (pa) => pa.namespace === "dmpId"
-    )?.value;
-
-    const cmoSampleIds = samples?.map((s) => {
-      const sampleMetadata = s.hasMetadataSampleMetadata[0];
-      return sampleMetadata?.cmoSampleName || sampleMetadata?.primaryId;
-    });
-
-    const additionalProperties =
-      samples[0]?.hasMetadataSampleMetadata[0]?.additionalProperties;
-    const additionalPropertiesJson = additionalProperties
-      ? JSON.parse(additionalProperties)
-      : {};
-
-    return {
-      cmoPatientId,
-      dmpPatientId,
-      cmoSampleIds,
-      smilePatientId: patient.smilePatientId,
-      totalSamples: patient.hasSampleSamplesConnection?.totalCount,
-      consentPartA: additionalPropertiesJson["consent-parta"],
-      consentPartC: additionalPropertiesJson["consent-partc"],
-    };
-  });
-
-  return {
-    patientsConnection: patientsListQueryResult.patientsConnection,
-    patients: newPatients,
-  };
-}
-
 export const PatientsListColumns: ColDef[] = [
   {
     headerName: "View Samples",
@@ -224,7 +181,7 @@ export const PatientsListColumns: ColDef[] = [
     sortable: false,
   },
   {
-    field: "totalSamples",
+    field: "totalSampleCount",
     headerName: "# Samples",
     sortable: false,
   },

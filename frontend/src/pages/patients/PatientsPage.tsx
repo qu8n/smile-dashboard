@@ -1,5 +1,6 @@
 import {
   PatientWhere,
+  PatientsListQuery,
   SampleWhere,
   useGetPatientIdsTripletsLazyQuery,
   usePatientsListLazyQuery,
@@ -16,7 +17,6 @@ import { parseUserSearchVal } from "../../utils/parseSearchQueries";
 import {
   PatientsListColumns,
   SampleMetadataDetailsColumns,
-  preparePatientDataForAgGrid,
   sampleFilterWhereVariables,
 } from "../../shared/helpers";
 import { getUserEmail } from "../../utils/getUserEmail";
@@ -218,9 +218,7 @@ export default function PatientsPage({
           valueGetter: ({
             data,
           }: {
-            data: ReturnType<
-              typeof preparePatientDataForAgGrid
-            >["patients"][number];
+            data: PatientsListQuery["patients"][number];
           }) => {
             const cmoId = data.cmoPatientId;
 
@@ -253,7 +251,6 @@ export default function PatientsPage({
         colDefs={ActivePatientsListColumns}
         dataName={dataName}
         lazyRecordsQuery={usePatientsListLazyQuery}
-        prepareDataForAgGrid={preparePatientDataForAgGrid}
         queryFilterWhereVariables={patientFilterWhereVariables}
         userSearchVal={userSearchVal}
         setUserSearchVal={setUserSearchVal}
