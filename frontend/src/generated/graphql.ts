@@ -350,7 +350,9 @@ export type BamCompletesConnection = {
 
 export type Cohort = {
   __typename?: "Cohort";
+  billed?: Maybe<Scalars["String"]>;
   cohortId: Scalars["String"];
+  endUsers?: Maybe<Scalars["String"]>;
   hasCohortCompleteCohortCompletes: Array<CohortComplete>;
   hasCohortCompleteCohortCompletesAggregate?: Maybe<CohortCohortCompleteHasCohortCompleteCohortCompletesAggregationSelection>;
   hasCohortCompleteCohortCompletesConnection: CohortHasCohortCompleteCohortCompletesConnection;
@@ -358,6 +360,13 @@ export type Cohort = {
   hasCohortSampleSamplesAggregate?: Maybe<CohortSampleHasCohortSampleSamplesAggregationSelection>;
   hasCohortSampleSamplesConnection: CohortHasCohortSampleSamplesConnection;
   initialCohortDeliveryDate?: Maybe<Scalars["String"]>;
+  pmUsers?: Maybe<Scalars["String"]>;
+  projectSubtitle?: Maybe<Scalars["String"]>;
+  projectTitle?: Maybe<Scalars["String"]>;
+  smileSampleIds?: Maybe<Array<Maybe<Scalars["String"]>>>;
+  status?: Maybe<Scalars["String"]>;
+  totalSampleCount?: Maybe<Scalars["Int"]>;
+  type?: Maybe<Scalars["String"]>;
 };
 
 export type CohortHasCohortCompleteCohortCompletesArgs = {
@@ -402,9 +411,17 @@ export type CohortHasCohortSampleSamplesConnectionArgs = {
 
 export type CohortAggregateSelection = {
   __typename?: "CohortAggregateSelection";
+  billed: StringAggregateSelectionNullable;
   cohortId: StringAggregateSelectionNonNullable;
   count: Scalars["Int"];
+  endUsers: StringAggregateSelectionNullable;
   initialCohortDeliveryDate: StringAggregateSelectionNullable;
+  pmUsers: StringAggregateSelectionNullable;
+  projectSubtitle: StringAggregateSelectionNullable;
+  projectTitle: StringAggregateSelectionNullable;
+  status: StringAggregateSelectionNullable;
+  totalSampleCount: IntAggregateSelectionNullable;
+  type: StringAggregateSelectionNullable;
 };
 
 export type CohortCohortCompleteHasCohortCompleteCohortCompletesAggregationSelection =
@@ -482,8 +499,16 @@ export type CohortCompleteCohortCohortsHasCohortCompleteAggregationSelection = {
 export type CohortCompleteCohortCohortsHasCohortCompleteNodeAggregateSelection =
   {
     __typename?: "CohortCompleteCohortCohortsHasCohortCompleteNodeAggregateSelection";
+    billed: StringAggregateSelectionNullable;
     cohortId: StringAggregateSelectionNonNullable;
+    endUsers: StringAggregateSelectionNullable;
     initialCohortDeliveryDate: StringAggregateSelectionNullable;
+    pmUsers: StringAggregateSelectionNullable;
+    projectSubtitle: StringAggregateSelectionNullable;
+    projectTitle: StringAggregateSelectionNullable;
+    status: StringAggregateSelectionNullable;
+    totalSampleCount: IntAggregateSelectionNullable;
+    type: StringAggregateSelectionNullable;
   };
 
 export type CohortCompleteCohortsHasCohortCompleteAggregateInput = {
@@ -552,6 +577,26 @@ export type CohortCompleteCohortsHasCohortCompleteNodeAggregationWhereInput = {
   OR?: InputMaybe<
     Array<CohortCompleteCohortsHasCohortCompleteNodeAggregationWhereInput>
   >;
+  billed_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  billed_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  billed_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  billed_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  billed_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  billed_EQUAL?: InputMaybe<Scalars["String"]>;
+  billed_GT?: InputMaybe<Scalars["Int"]>;
+  billed_GTE?: InputMaybe<Scalars["Int"]>;
+  billed_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  billed_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  billed_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  billed_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  billed_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  billed_LT?: InputMaybe<Scalars["Int"]>;
+  billed_LTE?: InputMaybe<Scalars["Int"]>;
+  billed_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  billed_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  billed_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  billed_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  billed_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
   cohortId_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
   cohortId_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
   cohortId_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
@@ -572,6 +617,26 @@ export type CohortCompleteCohortsHasCohortCompleteNodeAggregationWhereInput = {
   cohortId_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
   cohortId_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
   cohortId_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  endUsers_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  endUsers_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  endUsers_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  endUsers_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  endUsers_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  endUsers_EQUAL?: InputMaybe<Scalars["String"]>;
+  endUsers_GT?: InputMaybe<Scalars["Int"]>;
+  endUsers_GTE?: InputMaybe<Scalars["Int"]>;
+  endUsers_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  endUsers_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  endUsers_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  endUsers_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  endUsers_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  endUsers_LT?: InputMaybe<Scalars["Int"]>;
+  endUsers_LTE?: InputMaybe<Scalars["Int"]>;
+  endUsers_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  endUsers_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  endUsers_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  endUsers_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  endUsers_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
   initialCohortDeliveryDate_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
   initialCohortDeliveryDate_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
   initialCohortDeliveryDate_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
@@ -592,6 +657,131 @@ export type CohortCompleteCohortsHasCohortCompleteNodeAggregationWhereInput = {
   initialCohortDeliveryDate_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
   initialCohortDeliveryDate_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
   initialCohortDeliveryDate_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  pmUsers_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  pmUsers_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  pmUsers_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  pmUsers_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  pmUsers_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  pmUsers_EQUAL?: InputMaybe<Scalars["String"]>;
+  pmUsers_GT?: InputMaybe<Scalars["Int"]>;
+  pmUsers_GTE?: InputMaybe<Scalars["Int"]>;
+  pmUsers_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  pmUsers_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  pmUsers_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  pmUsers_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  pmUsers_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  pmUsers_LT?: InputMaybe<Scalars["Int"]>;
+  pmUsers_LTE?: InputMaybe<Scalars["Int"]>;
+  pmUsers_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  pmUsers_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  pmUsers_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  pmUsers_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  pmUsers_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  projectSubtitle_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  projectSubtitle_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  projectSubtitle_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  projectSubtitle_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  projectSubtitle_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  projectSubtitle_EQUAL?: InputMaybe<Scalars["String"]>;
+  projectSubtitle_GT?: InputMaybe<Scalars["Int"]>;
+  projectSubtitle_GTE?: InputMaybe<Scalars["Int"]>;
+  projectSubtitle_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  projectSubtitle_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  projectSubtitle_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  projectSubtitle_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  projectSubtitle_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  projectSubtitle_LT?: InputMaybe<Scalars["Int"]>;
+  projectSubtitle_LTE?: InputMaybe<Scalars["Int"]>;
+  projectSubtitle_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  projectSubtitle_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  projectSubtitle_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  projectSubtitle_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  projectSubtitle_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  projectTitle_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  projectTitle_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  projectTitle_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  projectTitle_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  projectTitle_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  projectTitle_EQUAL?: InputMaybe<Scalars["String"]>;
+  projectTitle_GT?: InputMaybe<Scalars["Int"]>;
+  projectTitle_GTE?: InputMaybe<Scalars["Int"]>;
+  projectTitle_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  projectTitle_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  projectTitle_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  projectTitle_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  projectTitle_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  projectTitle_LT?: InputMaybe<Scalars["Int"]>;
+  projectTitle_LTE?: InputMaybe<Scalars["Int"]>;
+  projectTitle_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  projectTitle_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  projectTitle_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  projectTitle_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  projectTitle_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  status_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  status_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  status_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  status_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  status_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  status_EQUAL?: InputMaybe<Scalars["String"]>;
+  status_GT?: InputMaybe<Scalars["Int"]>;
+  status_GTE?: InputMaybe<Scalars["Int"]>;
+  status_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  status_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  status_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  status_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  status_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  status_LT?: InputMaybe<Scalars["Int"]>;
+  status_LTE?: InputMaybe<Scalars["Int"]>;
+  status_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  status_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  status_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  status_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  status_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  totalSampleCount_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  totalSampleCount_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  totalSampleCount_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  totalSampleCount_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  totalSampleCount_EQUAL?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_GT?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_GTE?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_LT?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_LTE?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_MAX_EQUAL?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_MAX_GT?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_MAX_GTE?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_MAX_LT?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_MAX_LTE?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_MIN_EQUAL?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_MIN_GT?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_MIN_GTE?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_MIN_LT?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_MIN_LTE?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_SUM_EQUAL?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_SUM_GT?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_SUM_GTE?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_SUM_LT?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_SUM_LTE?: InputMaybe<Scalars["Int"]>;
+  type_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  type_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  type_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  type_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  type_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  type_EQUAL?: InputMaybe<Scalars["String"]>;
+  type_GT?: InputMaybe<Scalars["Int"]>;
+  type_GTE?: InputMaybe<Scalars["Int"]>;
+  type_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  type_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  type_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  type_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  type_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  type_LT?: InputMaybe<Scalars["Int"]>;
+  type_LTE?: InputMaybe<Scalars["Int"]>;
+  type_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  type_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  type_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  type_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  type_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
 };
 
 export type CohortCompleteCohortsHasCohortCompleteRelationship = {
@@ -806,10 +996,19 @@ export type CohortConnectWhere = {
 };
 
 export type CohortCreateInput = {
+  billed?: InputMaybe<Scalars["String"]>;
   cohortId: Scalars["String"];
+  endUsers?: InputMaybe<Scalars["String"]>;
   hasCohortCompleteCohortCompletes?: InputMaybe<CohortHasCohortCompleteCohortCompletesFieldInput>;
   hasCohortSampleSamples?: InputMaybe<CohortHasCohortSampleSamplesFieldInput>;
   initialCohortDeliveryDate?: InputMaybe<Scalars["String"]>;
+  pmUsers?: InputMaybe<Scalars["String"]>;
+  projectSubtitle?: InputMaybe<Scalars["String"]>;
+  projectTitle?: InputMaybe<Scalars["String"]>;
+  smileSampleIds?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  status?: InputMaybe<Scalars["String"]>;
+  totalSampleCount?: InputMaybe<Scalars["Int"]>;
+  type?: InputMaybe<Scalars["String"]>;
 };
 
 export type CohortDeleteInput = {
@@ -1264,12 +1463,22 @@ export type CohortSampleHasCohortSampleSamplesNodeAggregateSelection = {
 
 /** Fields to sort Cohorts by. The order in which sorts are applied is not guaranteed when specifying many fields in one CohortSort object. */
 export type CohortSort = {
+  billed?: InputMaybe<SortDirection>;
   cohortId?: InputMaybe<SortDirection>;
+  endUsers?: InputMaybe<SortDirection>;
   initialCohortDeliveryDate?: InputMaybe<SortDirection>;
+  pmUsers?: InputMaybe<SortDirection>;
+  projectSubtitle?: InputMaybe<SortDirection>;
+  projectTitle?: InputMaybe<SortDirection>;
+  status?: InputMaybe<SortDirection>;
+  totalSampleCount?: InputMaybe<SortDirection>;
+  type?: InputMaybe<SortDirection>;
 };
 
 export type CohortUpdateInput = {
+  billed?: InputMaybe<Scalars["String"]>;
   cohortId?: InputMaybe<Scalars["String"]>;
+  endUsers?: InputMaybe<Scalars["String"]>;
   hasCohortCompleteCohortCompletes?: InputMaybe<
     Array<CohortHasCohortCompleteCohortCompletesUpdateFieldInput>
   >;
@@ -1277,11 +1486,32 @@ export type CohortUpdateInput = {
     Array<CohortHasCohortSampleSamplesUpdateFieldInput>
   >;
   initialCohortDeliveryDate?: InputMaybe<Scalars["String"]>;
+  pmUsers?: InputMaybe<Scalars["String"]>;
+  projectSubtitle?: InputMaybe<Scalars["String"]>;
+  projectTitle?: InputMaybe<Scalars["String"]>;
+  smileSampleIds?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  smileSampleIds_POP?: InputMaybe<Scalars["Int"]>;
+  smileSampleIds_PUSH?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  status?: InputMaybe<Scalars["String"]>;
+  totalSampleCount?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_DECREMENT?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_INCREMENT?: InputMaybe<Scalars["Int"]>;
+  type?: InputMaybe<Scalars["String"]>;
 };
 
 export type CohortWhere = {
   AND?: InputMaybe<Array<CohortWhere>>;
   OR?: InputMaybe<Array<CohortWhere>>;
+  billed?: InputMaybe<Scalars["String"]>;
+  billed_CONTAINS?: InputMaybe<Scalars["String"]>;
+  billed_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  billed_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  billed_NOT?: InputMaybe<Scalars["String"]>;
+  billed_NOT_CONTAINS?: InputMaybe<Scalars["String"]>;
+  billed_NOT_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  billed_NOT_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  billed_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  billed_STARTS_WITH?: InputMaybe<Scalars["String"]>;
   cohortId?: InputMaybe<Scalars["String"]>;
   cohortId_CONTAINS?: InputMaybe<Scalars["String"]>;
   cohortId_ENDS_WITH?: InputMaybe<Scalars["String"]>;
@@ -1292,6 +1522,16 @@ export type CohortWhere = {
   cohortId_NOT_IN?: InputMaybe<Array<Scalars["String"]>>;
   cohortId_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
   cohortId_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  endUsers?: InputMaybe<Scalars["String"]>;
+  endUsers_CONTAINS?: InputMaybe<Scalars["String"]>;
+  endUsers_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  endUsers_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  endUsers_NOT?: InputMaybe<Scalars["String"]>;
+  endUsers_NOT_CONTAINS?: InputMaybe<Scalars["String"]>;
+  endUsers_NOT_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  endUsers_NOT_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  endUsers_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  endUsers_STARTS_WITH?: InputMaybe<Scalars["String"]>;
   hasCohortCompleteCohortCompletesAggregate?: InputMaybe<CohortHasCohortCompleteCohortCompletesAggregateInput>;
   hasCohortCompleteCohortCompletesConnection_ALL?: InputMaybe<CohortHasCohortCompleteCohortCompletesConnectionWhere>;
   hasCohortCompleteCohortCompletesConnection_NONE?: InputMaybe<CohortHasCohortCompleteCohortCompletesConnectionWhere>;
@@ -1332,6 +1572,68 @@ export type CohortWhere = {
   >;
   initialCohortDeliveryDate_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
   initialCohortDeliveryDate_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  pmUsers?: InputMaybe<Scalars["String"]>;
+  pmUsers_CONTAINS?: InputMaybe<Scalars["String"]>;
+  pmUsers_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  pmUsers_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  pmUsers_NOT?: InputMaybe<Scalars["String"]>;
+  pmUsers_NOT_CONTAINS?: InputMaybe<Scalars["String"]>;
+  pmUsers_NOT_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  pmUsers_NOT_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  pmUsers_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  pmUsers_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  projectSubtitle?: InputMaybe<Scalars["String"]>;
+  projectSubtitle_CONTAINS?: InputMaybe<Scalars["String"]>;
+  projectSubtitle_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  projectSubtitle_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  projectSubtitle_NOT?: InputMaybe<Scalars["String"]>;
+  projectSubtitle_NOT_CONTAINS?: InputMaybe<Scalars["String"]>;
+  projectSubtitle_NOT_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  projectSubtitle_NOT_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  projectSubtitle_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  projectSubtitle_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  projectTitle?: InputMaybe<Scalars["String"]>;
+  projectTitle_CONTAINS?: InputMaybe<Scalars["String"]>;
+  projectTitle_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  projectTitle_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  projectTitle_NOT?: InputMaybe<Scalars["String"]>;
+  projectTitle_NOT_CONTAINS?: InputMaybe<Scalars["String"]>;
+  projectTitle_NOT_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  projectTitle_NOT_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  projectTitle_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  projectTitle_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  smileSampleIds?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  smileSampleIds_INCLUDES?: InputMaybe<Scalars["String"]>;
+  smileSampleIds_NOT?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  smileSampleIds_NOT_INCLUDES?: InputMaybe<Scalars["String"]>;
+  status?: InputMaybe<Scalars["String"]>;
+  status_CONTAINS?: InputMaybe<Scalars["String"]>;
+  status_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  status_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  status_NOT?: InputMaybe<Scalars["String"]>;
+  status_NOT_CONTAINS?: InputMaybe<Scalars["String"]>;
+  status_NOT_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  status_NOT_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  status_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  status_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  totalSampleCount?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_GT?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_GTE?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_IN?: InputMaybe<Array<InputMaybe<Scalars["Int"]>>>;
+  totalSampleCount_LT?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_LTE?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_NOT?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_NOT_IN?: InputMaybe<Array<InputMaybe<Scalars["Int"]>>>;
+  type?: InputMaybe<Scalars["String"]>;
+  type_CONTAINS?: InputMaybe<Scalars["String"]>;
+  type_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  type_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  type_NOT?: InputMaybe<Scalars["String"]>;
+  type_NOT_CONTAINS?: InputMaybe<Scalars["String"]>;
+  type_NOT_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  type_NOT_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  type_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  type_STARTS_WITH?: InputMaybe<Scalars["String"]>;
 };
 
 export type CohortsConnection = {
@@ -5867,8 +6169,16 @@ export type SampleCohortCohortsHasCohortSampleAggregationSelection = {
 
 export type SampleCohortCohortsHasCohortSampleNodeAggregateSelection = {
   __typename?: "SampleCohortCohortsHasCohortSampleNodeAggregateSelection";
+  billed: StringAggregateSelectionNullable;
   cohortId: StringAggregateSelectionNonNullable;
+  endUsers: StringAggregateSelectionNullable;
   initialCohortDeliveryDate: StringAggregateSelectionNullable;
+  pmUsers: StringAggregateSelectionNullable;
+  projectSubtitle: StringAggregateSelectionNullable;
+  projectTitle: StringAggregateSelectionNullable;
+  status: StringAggregateSelectionNullable;
+  totalSampleCount: IntAggregateSelectionNullable;
+  type: StringAggregateSelectionNullable;
 };
 
 export type SampleCohortsHasCohortSampleAggregateInput = {
@@ -5929,6 +6239,26 @@ export type SampleCohortsHasCohortSampleNodeAggregationWhereInput = {
     Array<SampleCohortsHasCohortSampleNodeAggregationWhereInput>
   >;
   OR?: InputMaybe<Array<SampleCohortsHasCohortSampleNodeAggregationWhereInput>>;
+  billed_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  billed_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  billed_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  billed_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  billed_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  billed_EQUAL?: InputMaybe<Scalars["String"]>;
+  billed_GT?: InputMaybe<Scalars["Int"]>;
+  billed_GTE?: InputMaybe<Scalars["Int"]>;
+  billed_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  billed_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  billed_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  billed_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  billed_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  billed_LT?: InputMaybe<Scalars["Int"]>;
+  billed_LTE?: InputMaybe<Scalars["Int"]>;
+  billed_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  billed_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  billed_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  billed_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  billed_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
   cohortId_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
   cohortId_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
   cohortId_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
@@ -5949,6 +6279,26 @@ export type SampleCohortsHasCohortSampleNodeAggregationWhereInput = {
   cohortId_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
   cohortId_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
   cohortId_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  endUsers_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  endUsers_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  endUsers_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  endUsers_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  endUsers_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  endUsers_EQUAL?: InputMaybe<Scalars["String"]>;
+  endUsers_GT?: InputMaybe<Scalars["Int"]>;
+  endUsers_GTE?: InputMaybe<Scalars["Int"]>;
+  endUsers_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  endUsers_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  endUsers_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  endUsers_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  endUsers_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  endUsers_LT?: InputMaybe<Scalars["Int"]>;
+  endUsers_LTE?: InputMaybe<Scalars["Int"]>;
+  endUsers_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  endUsers_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  endUsers_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  endUsers_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  endUsers_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
   initialCohortDeliveryDate_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
   initialCohortDeliveryDate_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
   initialCohortDeliveryDate_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
@@ -5969,6 +6319,131 @@ export type SampleCohortsHasCohortSampleNodeAggregationWhereInput = {
   initialCohortDeliveryDate_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
   initialCohortDeliveryDate_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
   initialCohortDeliveryDate_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  pmUsers_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  pmUsers_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  pmUsers_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  pmUsers_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  pmUsers_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  pmUsers_EQUAL?: InputMaybe<Scalars["String"]>;
+  pmUsers_GT?: InputMaybe<Scalars["Int"]>;
+  pmUsers_GTE?: InputMaybe<Scalars["Int"]>;
+  pmUsers_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  pmUsers_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  pmUsers_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  pmUsers_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  pmUsers_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  pmUsers_LT?: InputMaybe<Scalars["Int"]>;
+  pmUsers_LTE?: InputMaybe<Scalars["Int"]>;
+  pmUsers_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  pmUsers_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  pmUsers_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  pmUsers_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  pmUsers_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  projectSubtitle_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  projectSubtitle_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  projectSubtitle_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  projectSubtitle_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  projectSubtitle_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  projectSubtitle_EQUAL?: InputMaybe<Scalars["String"]>;
+  projectSubtitle_GT?: InputMaybe<Scalars["Int"]>;
+  projectSubtitle_GTE?: InputMaybe<Scalars["Int"]>;
+  projectSubtitle_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  projectSubtitle_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  projectSubtitle_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  projectSubtitle_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  projectSubtitle_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  projectSubtitle_LT?: InputMaybe<Scalars["Int"]>;
+  projectSubtitle_LTE?: InputMaybe<Scalars["Int"]>;
+  projectSubtitle_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  projectSubtitle_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  projectSubtitle_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  projectSubtitle_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  projectSubtitle_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  projectTitle_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  projectTitle_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  projectTitle_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  projectTitle_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  projectTitle_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  projectTitle_EQUAL?: InputMaybe<Scalars["String"]>;
+  projectTitle_GT?: InputMaybe<Scalars["Int"]>;
+  projectTitle_GTE?: InputMaybe<Scalars["Int"]>;
+  projectTitle_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  projectTitle_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  projectTitle_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  projectTitle_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  projectTitle_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  projectTitle_LT?: InputMaybe<Scalars["Int"]>;
+  projectTitle_LTE?: InputMaybe<Scalars["Int"]>;
+  projectTitle_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  projectTitle_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  projectTitle_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  projectTitle_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  projectTitle_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  status_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  status_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  status_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  status_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  status_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  status_EQUAL?: InputMaybe<Scalars["String"]>;
+  status_GT?: InputMaybe<Scalars["Int"]>;
+  status_GTE?: InputMaybe<Scalars["Int"]>;
+  status_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  status_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  status_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  status_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  status_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  status_LT?: InputMaybe<Scalars["Int"]>;
+  status_LTE?: InputMaybe<Scalars["Int"]>;
+  status_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  status_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  status_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  status_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  status_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  totalSampleCount_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  totalSampleCount_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  totalSampleCount_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  totalSampleCount_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  totalSampleCount_EQUAL?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_GT?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_GTE?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_LT?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_LTE?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_MAX_EQUAL?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_MAX_GT?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_MAX_GTE?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_MAX_LT?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_MAX_LTE?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_MIN_EQUAL?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_MIN_GT?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_MIN_GTE?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_MIN_LT?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_MIN_LTE?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_SUM_EQUAL?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_SUM_GT?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_SUM_GTE?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_SUM_LT?: InputMaybe<Scalars["Int"]>;
+  totalSampleCount_SUM_LTE?: InputMaybe<Scalars["Int"]>;
+  type_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  type_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  type_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  type_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  type_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  type_EQUAL?: InputMaybe<Scalars["String"]>;
+  type_GT?: InputMaybe<Scalars["Int"]>;
+  type_GTE?: InputMaybe<Scalars["Int"]>;
+  type_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  type_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  type_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  type_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  type_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  type_LT?: InputMaybe<Scalars["Int"]>;
+  type_LTE?: InputMaybe<Scalars["Int"]>;
+  type_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  type_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  type_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  type_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  type_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
 };
 
 export type SampleCohortsHasCohortSampleRelationship = {
@@ -11299,16 +11774,25 @@ export type CohortsListQuery = {
   cohorts: Array<{
     __typename?: "Cohort";
     cohortId: string;
+    smileSampleIds?: Array<string | null> | null;
+    totalSampleCount?: number | null;
+    billed?: string | null;
     initialCohortDeliveryDate?: string | null;
+    endUsers?: string | null;
+    pmUsers?: string | null;
+    projectTitle?: string | null;
+    projectSubtitle?: string | null;
+    status?: string | null;
+    type?: string | null;
     hasCohortCompleteCohortCompletes: Array<{
       __typename?: "CohortComplete";
-      type: string;
+      date: string;
       endUsers: string;
       pmUsers: string;
       projectTitle: string;
       projectSubtitle: string;
       status: string;
-      date: string;
+      type: string;
     }>;
     hasCohortSampleSamplesConnection: {
       __typename?: "CohortHasCohortSampleSamplesConnection";
@@ -11885,17 +12369,26 @@ export const CohortsListDocument = gql`
     }
     cohorts(where: $where, options: $options) {
       cohortId
+      smileSampleIds
+      totalSampleCount
+      billed
       initialCohortDeliveryDate
+      endUsers
+      pmUsers
+      projectTitle
+      projectSubtitle
+      status
+      type
       hasCohortCompleteCohortCompletes(
         options: $hasCohortCompleteCohortCompletesOptions2
       ) {
-        type
+        date
         endUsers
         pmUsers
         projectTitle
         projectSubtitle
         status
-        date
+        type
       }
       hasCohortSampleSamplesConnection {
         totalCount

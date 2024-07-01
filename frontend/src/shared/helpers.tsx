@@ -475,34 +475,7 @@ export function prepareCohortDataForAgGrid(
   cohortsListQueryResult: CohortsListQuery,
   filterModel: IServerSideGetRowsRequest["filterModel"]
 ) {
-  let newCohorts = cohortsListQueryResult.cohorts.map((cohort) => {
-    const samples = cohort.hasCohortSampleSamples;
-    const cohortCompletes = cohort.hasCohortCompleteCohortCompletes;
-
-    const allSamplesBilled =
-      samples.length > 0 &&
-      samples?.every((sample) => {
-        return sample.hasTempoTempos?.[0].billed === true;
-      });
-
-    const latestCohortDeliveryDate = cohortCompletes?.[0];
-
-    return {
-      cohortId: cohort.cohortId,
-      totalSamples: cohort.hasCohortSampleSamplesConnection.totalCount,
-      smileSampleIds: samples.map((s) => s.smileSampleId),
-      billed: allSamplesBilled === true ? "Yes" : "No",
-      initialCohortDeliveryDate: formatDate(cohort.initialCohortDeliveryDate),
-      completeDate: formatDate(latestCohortDeliveryDate?.date),
-      endUsers: latestCohortDeliveryDate?.endUsers,
-      pmUsers: latestCohortDeliveryDate?.pmUsers,
-      projectTitle: latestCohortDeliveryDate?.projectTitle,
-      projectSubtitle: latestCohortDeliveryDate?.projectSubtitle,
-      status: latestCohortDeliveryDate?.status,
-      type: latestCohortDeliveryDate?.type,
-    };
-  });
-
+  let newCohorts = [...cohortsListQueryResult.cohorts];
   let newCohortsConnection = { ...cohortsListQueryResult.cohortsConnection };
 
   if ("initialCohortDeliveryDate" in filterModel) {
@@ -534,8 +507,8 @@ export function prepareCohortDataForAgGrid(
 
   const uniqueSmileSampleIds: Set<string> = new Set();
   newCohorts.forEach((cohort) => {
-    cohort.smileSampleIds.forEach((id) => {
-      uniqueSmileSampleIds.add(id);
+    cohort.smileSampleIds?.forEach((id) => {
+      uniqueSmileSampleIds.add(id!);
     });
   });
 
@@ -599,6 +572,7 @@ export const CohortsListColumns: ColDef[] = [
       minValidYear: 2016,
       maxValidYear: new Date().getFullYear(),
     },
+    valueFormatter: (params) => params.value && formatDate(params.value),
   },
   {
     field: "completeDate",

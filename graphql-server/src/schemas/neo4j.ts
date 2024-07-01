@@ -64,7 +64,16 @@ export async function buildNeo4jDbSchema() {
     }
 
     extend type Cohort {
+      totalSampleCount: Int
+      smileSampleIds: [String]
+      billed: String
       initialCohortDeliveryDate: String
+      endUsers: String
+      pmUsers: String
+      projectTitle: String
+      projectSubtitle: String
+      status: String
+      type: String
     }
   `;
 
@@ -215,10 +224,41 @@ function buildResolvers(
       },
     },
     Cohort: {
+      totalSampleCount: (parent: CohortsListQuery["cohorts"][number]) => {
+        return parent.hasCohortSampleSamplesConnection?.totalCount;
+      },
+      smileSampleIds: (parent: CohortsListQuery["cohorts"][number]) => {
+        return parent.hasCohortSampleSamples?.map((s) => s.smileSampleId);
+      },
+      billed: (parent: CohortsListQuery["cohorts"][number]) => {
+        const samples = parent.hasCohortSampleSamples;
+        const allSamplesBilled =
+          samples?.length > 0 &&
+          samples.every((sample) => sample.hasTempoTempos?.[0]?.billed);
+        return allSamplesBilled ? "Yes" : "No";
+      },
       initialCohortDeliveryDate: (
         parent: CohortsListQuery["cohorts"][number]
       ) => {
         return parent.hasCohortCompleteCohortCompletes?.slice(-1)[0]?.date;
+      },
+      endUsers: (parent: CohortsListQuery["cohorts"][number]) => {
+        return parent.hasCohortCompleteCohortCompletes?.[0]?.endUsers; // latest
+      },
+      pmUsers: (parent: CohortsListQuery["cohorts"][number]) => {
+        return parent.hasCohortCompleteCohortCompletes?.[0]?.pmUsers;
+      },
+      projectTitle: (parent: CohortsListQuery["cohorts"][number]) => {
+        return parent.hasCohortCompleteCohortCompletes?.[0]?.projectTitle;
+      },
+      projectSubtitle: (parent: CohortsListQuery["cohorts"][number]) => {
+        return parent.hasCohortCompleteCohortCompletes?.[0]?.projectSubtitle;
+      },
+      status: (parent: CohortsListQuery["cohorts"][number]) => {
+        return parent.hasCohortCompleteCohortCompletes?.[0]?.status;
+      },
+      type: (parent: CohortsListQuery["cohorts"][number]) => {
+        return parent.hasCohortCompleteCohortCompletes?.[0]?.type;
       },
     },
   };
