@@ -47,7 +47,7 @@ export default function SamplesPage() {
               variant="outline-secondary"
               active={_.isEqual(columnDefs, combinedSampleDetailsColumns)}
             >
-              View all
+              View all columns
             </Button>{" "}
             <Button
               onClick={() => {
@@ -57,7 +57,7 @@ export default function SamplesPage() {
               variant="outline-secondary"
               active={_.isEqual(columnDefs, ReadOnlyCohortSampleDetailsColumns)}
             >
-              Tempo fields
+              View TEMPO columns
             </Button>
           </>
         }

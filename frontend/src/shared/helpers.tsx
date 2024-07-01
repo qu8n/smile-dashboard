@@ -546,7 +546,7 @@ export const CohortsListColumns: ColDef[] = [
     headerName: "Cohort ID",
   },
   {
-    field: "totalSamples",
+    field: "totalSampleCount",
     headerName: "# Samples",
     sortable: false,
   },
