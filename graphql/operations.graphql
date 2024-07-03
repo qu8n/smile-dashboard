@@ -4,6 +4,11 @@ query RequestsList($options: RequestOptions, $where: RequestWhere) {
   }
   requests(where: $where, options: $options) {
     ...RequestParts
+    importDate
+    totalSampleCount
+    hasMetadataRequestMetadata {
+      importDate
+    }
     hasSampleSamplesConnection {
       totalCount
     }
@@ -109,7 +114,6 @@ query FindSamplesByInputValue(
 fragment RequestParts on Request {
   igoRequestId
   igoProjectId
-  totalSampleCount
   genePanel
   dataAnalystName
   dataAnalystEmail
