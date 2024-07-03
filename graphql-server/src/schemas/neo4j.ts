@@ -51,6 +51,7 @@ export async function buildNeo4jDbSchema() {
     ${typeDefs}
 
     extend type Request {
+      importDate: String
       totalSampleCount: Int
     }
 
@@ -178,6 +179,9 @@ function buildResolvers(
       },
     },
     Request: {
+      importDate: (parent: RequestsListQuery["requests"][number]) => {
+        return parent.hasMetadataRequestMetadata[0].importDate;
+      },
       totalSampleCount: (parent: RequestsListQuery["requests"][number]) => {
         return parent.hasSampleSamplesConnection?.totalCount;
       },

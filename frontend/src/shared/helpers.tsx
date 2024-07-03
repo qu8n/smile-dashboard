@@ -75,6 +75,10 @@ export const RequestsListColumns: ColDef[] = [
     headerName: "IGO Project ID",
   },
   {
+    field: "importDate",
+    headerName: "Import Date",
+  },
+  {
     field: "totalSampleCount",
     headerName: "# Samples",
     cellClass: (params) => {
