@@ -18,7 +18,12 @@ import {
 } from "ag-grid-community";
 import { DataName, useHookLazyGeneric } from "../shared/types";
 import SamplesList from "./SamplesList";
-import { Sample, SampleWhere, SortDirection } from "../generated/graphql";
+import {
+  FindSamplesByInputValueQuery,
+  Sample,
+  SampleWhere,
+  SortDirection,
+} from "../generated/graphql";
 import {
   defaultColDef,
   prepareSampleMetadataForAgGrid,
@@ -49,7 +54,9 @@ interface IRecordsListProps {
   setShowDownloadModal: Dispatch<SetStateAction<boolean>>;
   handleDownload: () => void;
   samplesQueryParam: string | undefined;
-  prepareSamplesDataForAgGrid?: (samples: Sample[]) => any[];
+  prepareSamplesDataForAgGrid?: (
+    samples: FindSamplesByInputValueQuery["samples"]
+  ) => any[];
   samplesColDefs: ColDef[];
   samplesParentWhereVariables: SampleWhere;
   samplesRefetchWhereVariables: (

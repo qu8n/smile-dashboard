@@ -3,6 +3,7 @@ import {
   Sample,
   SampleWhere,
   useFindSamplesByInputValueQuery,
+  FindSamplesByInputValueQuery,
 } from "../generated/graphql";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { Button, Col } from "react-bootstrap";
@@ -39,7 +40,9 @@ const costCenterAlertContent =
 
 interface ISampleListProps {
   columnDefs: ColDef[];
-  prepareDataForAgGrid: (samples: Sample[]) => any[];
+  prepareDataForAgGrid: (
+    samples: FindSamplesByInputValueQuery["samples"]
+  ) => any[];
   setUnsavedChanges?: (unsavedChanges: boolean) => void;
   parentWhereVariables?: SampleWhere;
   refetchWhereVariables: (parsedSearchVals: string[]) => SampleWhere;
@@ -65,15 +68,14 @@ export default function SamplesList({
   const { loading, error, data, startPolling, stopPolling, refetch } =
     useFindSamplesByInputValueQuery({
       variables: {
-        ...(parentWhereVariables
-          ? {
-              where: {
-                ...parentWhereVariables,
-              },
-            }
-          : {
-              first: max_rows,
-            }),
+        ...(parentWhereVariables && {
+          where: {
+            ...parentWhereVariables,
+          },
+        }),
+        options: {
+          limit: max_rows,
+        },
         sampleMetadataOptions: {
           sort: [{ importDate: SortDirection.Desc }],
           limit: 1,
@@ -120,14 +122,14 @@ export default function SamplesList({
   }, [parsedSearchVals]);
 
   useEffect(() => {
-    setRowCount(data?.samplesConnection.edges.length || 0);
+    setRowCount(data?.samplesConnection.totalCount || 0);
   }, [data]);
 
   if (loading) return <LoadingSpinner />;
 
   if (error) return <ErrorMessage error={error} />;
 
-  const samples = data!.samplesConnection.edges.map((e) => e.node) as Sample[];
+  const samples = data!.samples;
 
   async function onCellValueChanged(params: CellValueChangedEvent) {
     if (!editMode) return;
@@ -289,7 +291,7 @@ export default function SamplesList({
         matchingResultsCount={
           rowCount === max_rows
             ? `${max_rows}+ matching samples`
-            : `${rowCount} matching samples`
+            : `${rowCount.toLocaleString()} matching samples`
         }
         handleDownload={() => setShowDownloadModal(true)}
         customUILeft={customToolbarUI}

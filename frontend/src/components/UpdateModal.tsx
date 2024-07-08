@@ -7,14 +7,18 @@ import styles from "./records.module.scss";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import { ChangesByPrimaryId, SampleChange } from "../shared/helpers";
-import { Sample, useUpdateSamplesMutation } from "../generated/graphql";
+import {
+  FindSamplesByInputValueQuery,
+  Sample,
+  useUpdateSamplesMutation,
+} from "../generated/graphql";
 import _ from "lodash";
 
 interface UpdateModalProps {
   changes: SampleChange[];
   onSuccess: () => void;
   onHide: () => void;
-  samples: Sample[];
+  samples: FindSamplesByInputValueQuery["samples"];
   onOpen?: () => void;
   sampleKeyForUpdate: keyof Sample;
 }

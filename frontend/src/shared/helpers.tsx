@@ -12,7 +12,7 @@ import { Button } from "react-bootstrap";
 import "ag-grid-enterprise";
 import {
   CohortsListQuery,
-  Sample,
+  FindSamplesByInputValueQuery,
   SampleMetadata,
   SampleMetadataWhere,
   SampleWhere,
@@ -959,7 +959,9 @@ export function cohortSampleFilterWhereVariables(
   ];
 }
 
-export function prepareSampleMetadataForAgGrid(samples: Sample[]) {
+export function prepareSampleMetadataForAgGrid(
+  samples: FindSamplesByInputValueQuery["samples"]
+) {
   return samples.map((s) => {
     return {
       ...s.hasMetadataSampleMetadata[0],
@@ -968,7 +970,9 @@ export function prepareSampleMetadataForAgGrid(samples: Sample[]) {
   });
 }
 
-export function prepareSampleCohortDataForAgGrid(samples: Sample[]) {
+export function prepareSampleCohortDataForAgGrid(
+  samples: FindSamplesByInputValueQuery["samples"]
+) {
   return samples.map((s) => {
     const sampleMetadata = s.hasMetadataSampleMetadata[0];
     const tempoData = extractTempoFromSample(s);
@@ -983,7 +987,9 @@ export function prepareSampleCohortDataForAgGrid(samples: Sample[]) {
   });
 }
 
-export function prepareCombinedSampleDataForAgGrid(samples: Sample[]) {
+export function prepareCombinedSampleDataForAgGrid(
+  samples: FindSamplesByInputValueQuery["samples"]
+) {
   return samples.map((s) => {
     const sampleMetadata = s.hasMetadataSampleMetadata[0];
     const tempoData = extractTempoFromSample(s);
@@ -996,10 +1002,12 @@ export function prepareCombinedSampleDataForAgGrid(samples: Sample[]) {
   });
 }
 
-function extractTempoFromSample(s: Sample) {
-  const cohorts = s.cohortsHasCohortSampleConnection?.edges;
+function extractTempoFromSample(
+  s: FindSamplesByInputValueQuery["samples"][number]
+) {
+  const cohorts = s.cohortsHasCohortSample;
   const cohortDates = cohorts?.flatMap((c) => {
-    return c.node.hasCohortCompleteCohortCompletes.map((cc) => {
+    return c.hasCohortCompleteCohortCompletes.map((cc) => {
       return cc.date;
     });
   });

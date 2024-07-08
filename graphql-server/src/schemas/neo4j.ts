@@ -7,6 +7,7 @@ import { InMemoryCache, NormalizedCacheObject } from "apollo-cache-inmemory";
 import { props } from "../utils/constants";
 import {
   CohortsListQuery,
+  FindSamplesByInputValueQuery,
   PatientsListQuery,
   RequestsListQuery,
   SampleHasMetadataSampleMetadataUpdateFieldInput,
@@ -229,6 +230,132 @@ function buildResolvers(
         }
 
         return requests;
+      },
+      async samples(_source: undefined, args: any) {
+        const samples: FindSamplesByInputValueQuery["samples"] = await ogm
+          .model("Sample")
+          .find({
+            where: args.where,
+            selectionSet: `{
+            smileSampleId
+            datasource
+            revisable
+            sampleCategory
+            sampleClass
+            hasMetadataSampleMetadata {
+              additionalProperties
+              baitSet
+              cfDNA2dBarcode
+              cmoInfoIgoId
+              cmoPatientId
+              cmoSampleIdFields
+              cmoSampleName
+              collectionYear
+              genePanel
+              igoComplete
+              igoRequestId
+              importDate
+              investigatorSampleId
+              libraries
+              oncotreeCode
+              preservation
+              primaryId
+              qcReports
+              sampleClass
+              sampleName
+              sampleOrigin
+              sampleType
+              sex
+              species
+              tissueLocation
+              tubeId
+              tumorOrNormal
+              hasStatusStatuses {
+                validationReport
+                validationStatus
+              }
+            }
+            requestsHasSample {
+              igoRequestId
+              igoProjectId
+              genePanel
+              dataAnalystName
+              dataAnalystEmail
+              dataAccessEmails
+              bicAnalysis
+              investigatorEmail
+              investigatorName
+              isCmoRequest
+              labHeadEmail
+              labHeadName
+              libraryType
+              otherContactEmails
+              piEmail
+              projectManagerName
+              qcAccessEmails
+              smileRequestId
+            }
+            patientsHasSample {
+              smilePatientId
+            }
+            cohortsHasCohortSample {
+              cohortId
+              hasCohortCompleteCohortCompletes {
+                date
+              }
+            }
+            hasTempoTempos {
+              smileTempoId
+              billed
+              billedBy
+              costCenter
+              custodianInformation
+              accessLevel
+              hasEventBamCompletes {
+                date
+                status
+              }
+              hasEventMafCompletes {
+                date
+                normalPrimaryId
+                status
+              }
+              hasEventQcCompletes {
+                date
+                reason
+                result
+                status
+              }
+            }
+          }`,
+          });
+
+        function keepLatestOnly(array: any[], key: string) {
+          if (array) {
+            array.sort((a, b) => (a[key] < b[key] ? 1 : -1)); // descending order
+            array.splice(1);
+          }
+        }
+
+        for (const sample of samples) {
+          keepLatestOnly(sample.hasMetadataSampleMetadata, "importDate");
+          const tempo = sample.hasTempoTempos?.[0];
+          if (tempo) {
+            keepLatestOnly(tempo.hasEventBamCompletes, "date");
+            keepLatestOnly(tempo.hasEventMafCompletes, "date");
+            keepLatestOnly(tempo.hasEventQcCompletes, "date");
+          }
+        }
+
+        samples.sort((a, b) => {
+          const importDateA = a.hasMetadataSampleMetadata[0].importDate;
+          const importDateB = b.hasMetadataSampleMetadata[0].importDate;
+          return importDateA < importDateB ? 1 : -1; // descending order
+        });
+
+        samples.splice(args.options.limit);
+
+        return samples;
       },
       async cohorts(_source: undefined, args: any) {
         const cohorts = await ogm.model("Cohort").find({
