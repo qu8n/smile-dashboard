@@ -178,6 +178,59 @@ function buildResolvers(
         };
       },
     },
+    Query: {
+      async requests(_source: undefined, args: any) {
+        const requests = await ogm.model("Request").find({
+          where: args.where,
+          options: args.options,
+          selectionSet: `{
+            igoRequestId
+            igoProjectId
+            genePanel
+            dataAnalystName
+            dataAnalystEmail
+            dataAccessEmails
+            bicAnalysis
+            investigatorEmail
+            investigatorName
+            isCmoRequest
+            labHeadEmail
+            labHeadName
+            libraryType
+            otherContactEmails
+            piEmail
+            projectManagerName
+            qcAccessEmails
+            smileRequestId
+            hasMetadataRequestMetadata {
+              importDate
+            }
+            hasSampleSamplesConnection {
+              totalCount
+            }
+          }`,
+        });
+
+        if (args.options?.sort) {
+          const sortField = Object.keys(args.options.sort[0])[0];
+          const sortOrder = Object.values(args.options.sort[0])[0];
+
+          if (sortField === "importDate") {
+            requests.sort((a, b) => {
+              const importDateA = a.hasMetadataRequestMetadata[0].importDate;
+              const importDateB = b.hasMetadataRequestMetadata[0].importDate;
+              if (sortOrder === "ASC") {
+                return importDateA > importDateB ? 1 : -1;
+              } else {
+                return importDateA < importDateB ? 1 : -1;
+              }
+            });
+          }
+        }
+
+        return requests;
+      },
+    },
     Request: {
       importDate: (parent: RequestsListQuery["requests"][number]) => {
         return parent.hasMetadataRequestMetadata[0].importDate;
