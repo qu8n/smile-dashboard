@@ -1,6 +1,7 @@
 import {
   RequestWhere,
   SampleWhere,
+  SortDirection,
   useRequestsListLazyQuery,
 } from "../../generated/graphql";
 import { useState } from "react";
@@ -69,6 +70,7 @@ export default function RequestsPage() {
   const sampleQueryParamFieldName = "igoRequestId";
   const sampleQueryParamHeaderName = "IGO Request ID";
   const sampleQueryParamValue = params[sampleQueryParamFieldName];
+  const defaultSort = [{ importDate: SortDirection.Desc }];
 
   return (
     <>
@@ -79,6 +81,7 @@ export default function RequestsPage() {
         dataName={dataName}
         lazyRecordsQuery={useRequestsListLazyQuery}
         queryFilterWhereVariables={requestFilterWhereVariables}
+        defaultSort={defaultSort}
         userSearchVal={userSearchVal}
         setUserSearchVal={setUserSearchVal}
         parsedSearchVals={parsedSearchVals}
