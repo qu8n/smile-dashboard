@@ -230,6 +230,56 @@ function buildResolvers(
 
         return requests;
       },
+      async cohorts(_source: undefined, args: any) {
+        const cohorts = await ogm.model("Cohort").find({
+          where: args.where,
+          options: args.options,
+          selectionSet: `{
+            cohortId
+            smileSampleIds
+            hasCohortCompleteCohortCompletes {
+              date
+              endUsers
+              pmUsers
+              projectTitle
+              projectSubtitle
+              status
+              type
+            }
+            hasCohortSampleSamplesConnection {
+              totalCount
+            }
+            hasCohortSampleSamples {
+              smileSampleId
+              hasTempoTempos {
+                smileTempoId
+                billed
+              }
+            }
+          }`,
+        });
+
+        if (args.options?.sort) {
+          const sortField = Object.keys(args.options.sort[0])[0];
+          const sortOrder = Object.values(args.options.sort[0])[0];
+
+          if (sortField === "initialCohortDeliveryDate") {
+            cohorts.sort((a, b) => {
+              const dateA =
+                a.hasCohortCompleteCohortCompletes?.slice(-1)[0]?.date;
+              const dateB =
+                b.hasCohortCompleteCohortCompletes?.slice(-1)[0]?.date;
+              if (sortOrder === "ASC") {
+                return dateA > dateB ? 1 : -1;
+              } else {
+                return dateA < dateB ? 1 : -1;
+              }
+            });
+          }
+        }
+
+        return cohorts;
+      },
     },
     Request: {
       importDate: (parent: RequestsListQuery["requests"][number]) => {

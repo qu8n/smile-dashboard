@@ -144,6 +144,7 @@ export default function CohortsPage({
   const sampleQueryParamHeaderName = "Cohort ID";
   const sampleQueryParamValue = params[sampleQueryParamFieldName];
   const sampleKeyForUpdate = "hasTempoTempos";
+  const defaultSort = [{ initialCohortDeliveryDate: SortDirection.Desc }];
 
   return (
     <>
@@ -163,6 +164,7 @@ export default function CohortsPage({
         }
         prepareDataForAgGrid={prepareCohortDataForAgGrid}
         queryFilterWhereVariables={cohortFilterWhereVariables}
+        defaultSort={defaultSort}
         userSearchVal={userSearchVal}
         setUserSearchVal={setUserSearchVal}
         parsedSearchVals={parsedSearchVals}
