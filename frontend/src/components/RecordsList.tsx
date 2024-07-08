@@ -184,6 +184,7 @@ export default function RecordsList({
                 options: {
                   offset: 0,
                   limit: undefined,
+                  sort: defaultSort,
                 },
               },
             }).then(({ data }) => {
