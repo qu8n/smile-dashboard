@@ -233,17 +233,31 @@ function buildResolvers(
         return requests;
       },
       async samples(_source: undefined, args: any) {
+        const neo4jWheres = {
+          igoRequestId: "",
+        };
+
+        if ("hasMetadataSampleMetadata_SOME" in args.where) {
+          const igoRequestId =
+            args.where.hasMetadataSampleMetadata_SOME.igoRequestId;
+          neo4jWheres.igoRequestId = `WHERE sm.igoRequestId = "${igoRequestId}"`;
+        }
+
         const session = driver.session();
         let samples = [];
         try {
           const tx = session.beginTransaction();
           const result = await tx.run(`
             MATCH (s:Sample)
+            ${
+              neo4jWheres.igoRequestId ? "" : "OPTIONAL"
+            } MATCH (s)-[:HAS_METADATA]->(sm:SampleMetadata) ${
+            neo4jWheres.igoRequestId
+          }
             OPTIONAL MATCH (s)<-[:HAS_SAMPLE]-(r:Request)
             OPTIONAL MATCH (s)<-[:HAS_SAMPLE]-(p:Patient)
             OPTIONAL MATCH (s)<-[:HAS_COHORT_SAMPLE]-(c:Cohort)
             OPTIONAL MATCH (c)-[:HAS_COHORT_COMPLETE]->(ch:CohortComplete)
-            OPTIONAL MATCH (s)-[:HAS_METADATA]->(sm:SampleMetadata)
             OPTIONAL MATCH (sm)-[:HAS_STATUS]->(st:Status)
             OPTIONAL MATCH (s)-[:HAS_TEMPO]->(t:Tempo)
             OPTIONAL MATCH (t)-[:HAS_EVENT]->(bc:BamComplete)
