@@ -1,4 +1,4 @@
-import neo4j from "neo4j-driver";
+import neo4j, { Driver } from "neo4j-driver";
 import { Neo4jGraphQL } from "@neo4j/graphql";
 import { OGM } from "@neo4j/graphql-ogm";
 import { toGraphQLTypeDefs } from "@neo4j/introspector";
@@ -86,7 +86,7 @@ export async function buildNeo4jDbSchema() {
     config: {
       skipValidateTypeDefs: true,
     },
-    resolvers: buildResolvers(ogm, client),
+    resolvers: buildResolvers(ogm, client, driver),
   });
 
   await ogm.init();
@@ -97,7 +97,8 @@ export async function buildNeo4jDbSchema() {
 
 function buildResolvers(
   ogm: OGM,
-  apolloClient: ApolloClient<NormalizedCacheObject>
+  apolloClient: ApolloClient<NormalizedCacheObject>,
+  driver: Driver
 ) {
   return {
     Mutation: {
@@ -232,129 +233,184 @@ function buildResolvers(
         return requests;
       },
       async samples(_source: undefined, args: any) {
-        const samples: FindSamplesByInputValueQuery["samples"] = await ogm
-          .model("Sample")
-          .find({
-            where: args.where,
-            selectionSet: `{
-            smileSampleId
-            datasource
-            revisable
-            sampleCategory
-            sampleClass
-            hasMetadataSampleMetadata {
-              additionalProperties
-              baitSet
-              cfDNA2dBarcode
-              cmoInfoIgoId
-              cmoPatientId
-              cmoSampleIdFields
-              cmoSampleName
-              collectionYear
-              genePanel
-              igoComplete
-              igoRequestId
-              importDate
-              investigatorSampleId
-              libraries
-              oncotreeCode
-              preservation
-              primaryId
-              qcReports
-              sampleClass
-              sampleName
-              sampleOrigin
-              sampleType
-              sex
-              species
-              tissueLocation
-              tubeId
-              tumorOrNormal
-              hasStatusStatuses {
-                validationReport
-                validationStatus
-              }
-            }
-            requestsHasSample {
-              igoRequestId
-              igoProjectId
-              genePanel
-              dataAnalystName
-              dataAnalystEmail
-              dataAccessEmails
-              bicAnalysis
-              investigatorEmail
-              investigatorName
-              isCmoRequest
-              labHeadEmail
-              labHeadName
-              libraryType
-              otherContactEmails
-              piEmail
-              projectManagerName
-              qcAccessEmails
-              smileRequestId
-            }
-            patientsHasSample {
-              smilePatientId
-            }
-            cohortsHasCohortSample {
-              cohortId
-              hasCohortCompleteCohortCompletes {
-                date
-              }
-            }
-            hasTempoTempos {
-              smileTempoId
-              billed
-              billedBy
-              costCenter
-              custodianInformation
-              accessLevel
-              hasEventBamCompletes {
-                date
-                status
-              }
-              hasEventMafCompletes {
-                date
-                normalPrimaryId
-                status
-              }
-              hasEventQcCompletes {
-                date
-                reason
-                result
-                status
-              }
-            }
-          }`,
-          });
-
-        function keepLatestOnly(array: any[], key: string) {
-          if (array) {
-            array.sort((a, b) => (a[key] < b[key] ? 1 : -1)); // descending order
-            array.splice(1);
-          }
+        const session = driver.session();
+        let samples = [];
+        try {
+          const tx = session.beginTransaction();
+          const result = await tx.run(`
+            MATCH (s:Sample)
+            OPTIONAL MATCH (s)<-[:HAS_SAMPLE]-(r:Request)
+            OPTIONAL MATCH (s)<-[:HAS_SAMPLE]-(p:Patient)
+            OPTIONAL MATCH (s)<-[:HAS_COHORT_SAMPLE]-(c:Cohort)
+            OPTIONAL MATCH (c)-[:HAS_COHORT_COMPLETE]->(ch:CohortComplete)
+            OPTIONAL MATCH (s)-[:HAS_METADATA]->(sm:SampleMetadata)
+            OPTIONAL MATCH (sm)-[:HAS_STATUS]->(st:Status)
+            OPTIONAL MATCH (s)-[:HAS_TEMPO]->(t:Tempo)
+            OPTIONAL MATCH (t)-[:HAS_EVENT]->(bc:BamComplete)
+            OPTIONAL MATCH (t)-[:HAS_EVENT]->(mc:MafComplete)
+            OPTIONAL MATCH (t)-[:HAS_EVENT]->(qc:QcComplete)
+            WITH
+              s,
+              r,
+              p,
+              c,
+              t,
+              sm,
+              COLLECT(
+                st {
+                  .validationReport,
+                  .validationStatus
+                }
+              ) AS hasStatusStatuses,
+              COLLECT(
+                ch {
+                  .date
+                }
+              ) AS hasCohortCompleteCohortCompletes,
+              COLLECT(
+                bc {
+                  .date,
+                  .status
+                }
+              )  AS bamCompletes,
+              COLLECT(
+                mc {
+                  .date,
+                  .normalPrimaryId,
+                  .status
+                }
+              ) AS mafCompletes,
+              COLLECT(
+                qc {
+                  .date,
+                  .reason,
+                  .result,
+                  .status
+                }
+              ) AS qcCompletes
+            WITH
+              s,
+              r,
+              p,
+              c,
+              t,
+              sm,
+              hasStatusStatuses,
+              hasCohortCompleteCohortCompletes,
+              CASE
+                WHEN SIZE(bamCompletes) > 0 THEN apoc.coll.sortMulti(bamCompletes, ['date'], 1)
+                ELSE []
+              END AS hasEventBamCompletes,
+              CASE
+                WHEN SIZE(mafCompletes) > 0 THEN apoc.coll.sortMulti(mafCompletes, ['date'], 1)
+                ELSE []
+              END AS hasEventMafCompletes,
+              CASE
+                WHEN SIZE(qcCompletes) > 0 THEN apoc.coll.sortMulti(qcCompletes, ['date'], 1)
+                ELSE []
+              END AS hasEventQcCompletes
+            WITH
+              s,
+              apoc.coll.sortMulti(
+                COLLECT(
+                  sm {
+                    .additionalProperties,
+                    .baitSet,
+                    .cfDNA2dBarcode,
+                    .cmoInfoIgoId,
+                    .cmoPatientId,
+                    .cmoSampleIdFields,
+                    .cmoSampleName,
+                    .collectionYear,
+                    .genePanel,
+                    .igoComplete,
+                    .igoRequestId,
+                    .importDate,
+                    .investigatorSampleId,
+                    .libraries,
+                    .oncotreeCode,
+                    .preservation,
+                    .primaryId,
+                    .qcReports,
+                    .sampleClass,
+                    .sampleName,
+                    .sampleOrigin,
+                    .sampleType,
+                    .sex,
+                    .species,
+                    .tissueLocation,
+                    .tubeId,
+                    .tumorOrNormal,
+                    hasStatusStatuses: hasStatusStatuses
+                  }
+                ),
+                ['importDate'], 1
+              ) AS hasMetadataSampleMetadata,
+              COLLECT(
+                r {
+                    .igoRequestId,
+                    .igoProjectId,
+                    .genePanel,
+                    .dataAnalystName,
+                    .dataAnalystEmail,
+                    .dataAccessEmails,
+                    .bicAnalysis,
+                    .investigatorEmail,
+                    .investigatorName,
+                    .isCmoRequest,
+                    .labHeadEmail,
+                    .labHeadName,
+                    .libraryType,
+                    .otherContactEmails,
+                    .piEmail,
+                    .projectManagerName,
+                    .qcAccessEmails,
+                    .smileRequestId
+                }
+              ) AS requestsHasSample,
+              COLLECT(
+                p {
+                    .smilePatientId
+                }
+              ) AS patientsHasSample,
+              COLLECT(
+                c {
+                    .cohortId,
+                    hasCohortCompleteCohortCompletes: hasCohortCompleteCohortCompletes
+                }
+              ) AS cohortsHasCohortSample,
+              COLLECT(
+                t {
+                    .smileTempoId,
+                    .billed,
+                    .billedBy,
+                    .costCenter,
+                    .custodianInformation,
+                    .accessLevel,
+                    hasEventBamCompletes: hasEventBamCompletes,
+                    hasEventMafCompletes: hasEventMafCompletes,
+                    hasEventQcCompletes: hasEventQcCompletes
+                }
+              ) AS hasTempoTempos
+            RETURN
+              s.smileSampleId AS smileSampleId,
+              s.datasource AS datasource,
+              s.revisable AS revisable,
+              s.sampleCategory AS sampleCategory,
+              s.sampleClass AS sampleClass,
+              hasMetadataSampleMetadata,
+              requestsHasSample,
+              patientsHasSample,
+              cohortsHasCohortSample,
+              hasTempoTempos
+            ORDER BY hasMetadataSampleMetadata[0].importDate DESC
+            LIMIT 500
+          `);
+          await tx.close();
+          samples = result.records.map((record) => record.toObject());
+        } finally {
+          await session.close();
         }
-
-        for (const sample of samples) {
-          keepLatestOnly(sample.hasMetadataSampleMetadata, "importDate");
-          const tempo = sample.hasTempoTempos?.[0];
-          if (tempo) {
-            keepLatestOnly(tempo.hasEventBamCompletes, "date");
-            keepLatestOnly(tempo.hasEventMafCompletes, "date");
-            keepLatestOnly(tempo.hasEventQcCompletes, "date");
-          }
-        }
-
-        samples.sort((a, b) => {
-          const importDateA = a.hasMetadataSampleMetadata[0].importDate;
-          const importDateB = b.hasMetadataSampleMetadata[0].importDate;
-          return importDateA < importDateB ? 1 : -1; // descending order
-        });
-
-        samples.splice(args.options.limit);
-
         return samples;
       },
       async cohorts(_source: undefined, args: any) {
