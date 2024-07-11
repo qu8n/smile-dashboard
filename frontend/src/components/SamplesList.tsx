@@ -1,5 +1,4 @@
 import {
-  SortDirection,
   Sample,
   SampleWhere,
   useFindSamplesByInputValueQuery,
@@ -67,32 +66,9 @@ export default function SamplesList({
 }: ISampleListProps) {
   const { loading, error, data, startPolling, stopPolling, refetch } =
     useFindSamplesByInputValueQuery({
-      variables: {
-        ...(parentWhereVariables && {
-          where: {
-            ...parentWhereVariables,
-          },
-        }),
-        options: {
-          limit: max_rows,
-        },
-        sampleMetadataOptions: {
-          sort: [{ importDate: SortDirection.Desc }],
-          limit: 1,
-        },
-        bamCompletesOptions: {
-          sort: [{ date: SortDirection.Desc }],
-          limit: 1,
-        },
-        mafCompletesOptions: {
-          sort: [{ date: SortDirection.Desc }],
-          limit: 1,
-        },
-        qcCompletesOptions: {
-          sort: [{ date: SortDirection.Desc }],
-          limit: 1,
-        },
-      },
+      variables: parentWhereVariables
+        ? { where: { ...parentWhereVariables } }
+        : {},
       pollInterval: POLLING_INTERVAL,
     });
 

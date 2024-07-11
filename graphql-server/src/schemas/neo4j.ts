@@ -233,25 +233,40 @@ function buildResolvers(
         return requests;
       },
       async samples(_source: undefined, args: any) {
-        // Filters for Request/Patient/Cohort Samples views
-        const neo4jWheres = {
-          igoRequestId: "",
-          smilePatientId: "",
-          cohortId: "",
+        const wheresByView = {
+          requestSamples: "",
+          patientSamples: "",
+          cohortSamples: "",
         };
         if ("hasMetadataSampleMetadata_SOME" in args.where) {
           const igoRequestId =
             args.where.hasMetadataSampleMetadata_SOME.igoRequestId;
-          neo4jWheres.igoRequestId = `WHERE sm.igoRequestId = "${igoRequestId}"`;
+          wheresByView.requestSamples = `WHERE sm.igoRequestId = "${igoRequestId}"`;
+
+          if (args.where.hasMetadataSampleMetadata_SOME.OR?.length > 0) {
+            wheresByView.requestSamples +=
+              "AND ANY(prop in keys(sm) WHERE TOSTRING(sm[prop]) ";
+
+            const searchValues = Object.values(
+              args.where.hasMetadataSampleMetadata_SOME.OR[0]
+            )[0] as string[] | string;
+            if (Array.isArray(searchValues)) {
+              wheresByView.requestSamples += `IN ${JSON.stringify(
+                searchValues
+              )})`;
+            } else {
+              wheresByView.requestSamples += `CONTAINS "${searchValues}")`;
+            }
+          }
         }
         if ("patientsHasSample_SOME" in args.where) {
           const smilePatientId =
             args.where.patientsHasSample_SOME.smilePatientId;
-          neo4jWheres.smilePatientId = `WHERE p.smilePatientId = "${smilePatientId}"`;
+          wheresByView.patientSamples = `WHERE p.smilePatientId = "${smilePatientId}"`;
         }
         if ("cohortsHasCohortSample_SOME" in args.where) {
           const cohortId = args.where.cohortsHasCohortSample_SOME.cohortId;
-          neo4jWheres.cohortId = `WHERE c.cohortId = "${cohortId}"`;
+          wheresByView.cohortSamples = `WHERE c.cohortId = "${cohortId}"`;
         }
 
         const session = driver.session();
@@ -261,17 +276,17 @@ function buildResolvers(
           const result = await tx.run(`
             MATCH (s:Sample)
 
-            ${neo4jWheres.igoRequestId ? "" : "OPTIONAL"} 
+            ${wheresByView.requestSamples ? "" : "OPTIONAL"} 
               MATCH (s)-[:HAS_METADATA]->(sm:SampleMetadata)
-              ${neo4jWheres.igoRequestId}
+              ${wheresByView.requestSamples}
             
-            ${neo4jWheres.smilePatientId ? "" : "OPTIONAL"} 
+            ${wheresByView.patientSamples ? "" : "OPTIONAL"} 
               MATCH (s)<-[:HAS_SAMPLE]-(p:Patient) 
-              ${neo4jWheres.smilePatientId}
+              ${wheresByView.patientSamples}
             
-            ${neo4jWheres.cohortId ? "" : "OPTIONAL"}
+            ${wheresByView.cohortSamples ? "" : "OPTIONAL"}
               MATCH (s)<-[:HAS_COHORT_SAMPLE]-(c:Cohort)
-              ${neo4jWheres.cohortId}
+              ${wheresByView.cohortSamples}
             
             OPTIONAL MATCH (c)-[:HAS_COHORT_COMPLETE]->(ch:CohortComplete)
             OPTIONAL MATCH (sm)-[:HAS_STATUS]->(st:Status)
