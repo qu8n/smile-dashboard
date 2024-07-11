@@ -233,11 +233,12 @@ function buildResolvers(
         return requests;
       },
       async samples(_source: undefined, args: any) {
+        // Filters for Request/Patient/Cohort Samples views
         const neo4jWheres = {
           igoRequestId: "",
           smilePatientId: "",
+          cohortId: "",
         };
-
         if ("hasMetadataSampleMetadata_SOME" in args.where) {
           const igoRequestId =
             args.where.hasMetadataSampleMetadata_SOME.igoRequestId;
@@ -248,6 +249,10 @@ function buildResolvers(
             args.where.patientsHasSample_SOME.smilePatientId;
           neo4jWheres.smilePatientId = `WHERE p.smilePatientId = "${smilePatientId}"`;
         }
+        if ("cohortsHasCohortSample_SOME" in args.where) {
+          const cohortId = args.where.cohortsHasCohortSample_SOME.cohortId;
+          neo4jWheres.cohortId = `WHERE c.cohortId = "${cohortId}"`;
+        }
 
         const session = driver.session();
         let samples = [];
@@ -255,27 +260,34 @@ function buildResolvers(
           const tx = session.beginTransaction();
           const result = await tx.run(`
             MATCH (s:Sample)
-            ${
-              neo4jWheres.igoRequestId ? "" : "OPTIONAL"
-            } MATCH (s)-[:HAS_METADATA]->(sm:SampleMetadata) ${
-            neo4jWheres.igoRequestId
-          }
-            ${
-              neo4jWheres.smilePatientId ? "" : "OPTIONAL"
-            } MATCH (s)<-[:HAS_SAMPLE]-(p:Patient) ${neo4jWheres.smilePatientId}
-            OPTIONAL MATCH (s)<-[:HAS_COHORT_SAMPLE]-(c:Cohort)
+
+            ${neo4jWheres.igoRequestId ? "" : "OPTIONAL"} 
+              MATCH (s)-[:HAS_METADATA]->(sm:SampleMetadata)
+              ${neo4jWheres.igoRequestId}
+            
+            ${neo4jWheres.smilePatientId ? "" : "OPTIONAL"} 
+              MATCH (s)<-[:HAS_SAMPLE]-(p:Patient) 
+              ${neo4jWheres.smilePatientId}
+            
+            ${neo4jWheres.cohortId ? "" : "OPTIONAL"}
+              MATCH (s)<-[:HAS_COHORT_SAMPLE]-(c:Cohort)
+              ${neo4jWheres.cohortId}
+            
             OPTIONAL MATCH (c)-[:HAS_COHORT_COMPLETE]->(ch:CohortComplete)
             OPTIONAL MATCH (sm)-[:HAS_STATUS]->(st:Status)
             OPTIONAL MATCH (s)-[:HAS_TEMPO]->(t:Tempo)
             OPTIONAL MATCH (t)-[:HAS_EVENT]->(bc:BamComplete)
             OPTIONAL MATCH (t)-[:HAS_EVENT]->(mc:MafComplete)
             OPTIONAL MATCH (t)-[:HAS_EVENT]->(qc:QcComplete)
+
             WITH
               s,
               p,
               c,
               t,
               sm,
+              // Preparation for nested objects at level 3. As Neo4j doesn't support
+              // COLLECT inside another COLLect, we need to do it in two steps.
               COLLECT(
                 st {
                   .validationReport,
@@ -308,6 +320,7 @@ function buildResolvers(
                   .status
                 }
               ) AS qcCompletes
+
             WITH
               s,
               p,
@@ -316,6 +329,9 @@ function buildResolvers(
               sm,
               hasStatusStatuses,
               hasCohortCompleteCohortCompletes,
+              // Sort each CohortComplete event type by 'date' and keep only the latest.
+              // Unlike SampleMetadata below, these events might be undefined, so we need to
+              // handle that case instead of calling apoc.coll.sortMulti directly on COLLECT.
               CASE
                 WHEN SIZE(bamCompletes) > 0 THEN apoc.coll.sortMulti(bamCompletes, ['date'], 1)
                 ELSE []
@@ -328,6 +344,7 @@ function buildResolvers(
                 WHEN SIZE(qcCompletes) > 0 THEN apoc.coll.sortMulti(qcCompletes, ['date'], 1)
                 ELSE []
               END AS hasEventQcCompletes
+
             WITH
               s,
               apoc.coll.sortMulti(
@@ -384,12 +401,14 @@ function buildResolvers(
                     hasEventQcCompletes: hasEventQcCompletes
                 }
               ) AS hasTempoTempos
+
             RETURN
               s.smileSampleId AS smileSampleId,
               s.revisable AS revisable,
               hasMetadataSampleMetadata,
               cohortsHasCohortSample,
               hasTempoTempos
+
             ORDER BY hasMetadataSampleMetadata[0].importDate DESC
             LIMIT 500
           `);

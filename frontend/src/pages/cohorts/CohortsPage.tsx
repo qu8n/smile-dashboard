@@ -181,19 +181,15 @@ export default function CohortsPage({
         prepareSamplesDataForAgGrid={prepareSampleCohortDataForAgGrid}
         samplesParentWhereVariables={
           {
-            cohortsHasCohortSampleConnection_SOME: {
-              node: {
-                [sampleQueryParamFieldName]: sampleQueryParamValue,
-              },
+            cohortsHasCohortSample_SOME: {
+              [sampleQueryParamFieldName]: sampleQueryParamValue,
             },
           } as SampleWhere
         }
         samplesRefetchWhereVariables={(samplesParsedSearchVals) => {
           return {
-            cohortsHasCohortSampleConnection_SOME: {
-              node: {
-                [sampleQueryParamFieldName]: sampleQueryParamValue,
-              },
+            cohortsHasCohortSample_SOME: {
+              [sampleQueryParamFieldName]: sampleQueryParamValue,
             },
             OR: cohortSampleFilterWhereVariables(samplesParsedSearchVals),
           } as SampleWhere;
