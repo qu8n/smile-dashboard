@@ -57,19 +57,14 @@ query FindSamplesByInputValue(
     totalCount
   }
   samples(where: $where, options: $options) {
-    ...SampleParts
+    smileSampleId
+    revisable
     hasMetadataSampleMetadata(options: $sampleMetadataOptions) {
       ...SampleMetadataParts
       hasStatusStatuses {
         validationReport
         validationStatus
       }
-    }
-    requestsHasSample {
-      ...RequestParts
-    }
-    patientsHasSample {
-      smilePatientId
     }
     cohortsHasCohortSample {
       cohortId
@@ -119,14 +114,6 @@ fragment RequestParts on Request {
   smileRequestId
 }
 
-fragment SampleParts on Sample {
-  datasource
-  revisable
-  sampleCategory
-  sampleClass
-  smileSampleId
-}
-
 fragment SampleMetadataParts on SampleMetadata {
   additionalProperties
   baitSet
@@ -174,9 +161,6 @@ query Samples(
   samples(where: $where) {
     smileSampleId
     revisable
-    sampleCategory
-    sampleClass
-    datasource
     hasMetadataSampleMetadata(
       where: $hasMetadataSampleMetadataWhere2
       options: $hasMetadataSampleMetadataOptions2
@@ -198,9 +182,6 @@ mutation UpdateSamples(
     samples {
       smileSampleId
       revisable
-      datasource
-      sampleCategory
-      sampleClass
       hasMetadataSampleMetadata {
         ...SampleMetadataParts
       }

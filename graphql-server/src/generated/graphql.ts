@@ -12308,11 +12308,8 @@ export type FindSamplesByInputValueQuery = {
   samplesConnection: { __typename?: "SamplesConnection"; totalCount: number };
   samples: Array<{
     __typename?: "Sample";
-    datasource: string;
-    revisable: boolean;
-    sampleCategory: string;
-    sampleClass: string;
     smileSampleId: string;
+    revisable: boolean;
     hasMetadataSampleMetadata: Array<{
       __typename?: "SampleMetadata";
       additionalProperties: string;
@@ -12347,31 +12344,6 @@ export type FindSamplesByInputValueQuery = {
         validationReport: string;
         validationStatus: boolean;
       }>;
-    }>;
-    requestsHasSample: Array<{
-      __typename?: "Request";
-      igoRequestId: string;
-      igoProjectId: string;
-      genePanel: string;
-      dataAnalystName: string;
-      dataAnalystEmail: string;
-      dataAccessEmails: string;
-      bicAnalysis: boolean;
-      investigatorEmail: string;
-      investigatorName: string;
-      isCmoRequest: boolean;
-      labHeadEmail: string;
-      labHeadName: string;
-      libraryType?: string | null;
-      otherContactEmails: string;
-      piEmail: string;
-      projectManagerName: string;
-      qcAccessEmails: string;
-      smileRequestId: string;
-    }>;
-    patientsHasSample: Array<{
-      __typename?: "Patient";
-      smilePatientId: string;
     }>;
     cohortsHasCohortSample: Array<{
       __typename?: "Cohort";
@@ -12433,15 +12405,6 @@ export type RequestPartsFragment = {
   smileRequestId: string;
 };
 
-export type SamplePartsFragment = {
-  __typename?: "Sample";
-  datasource: string;
-  revisable: boolean;
-  sampleCategory: string;
-  sampleClass: string;
-  smileSampleId: string;
-};
-
 export type SampleMetadataPartsFragment = {
   __typename?: "SampleMetadata";
   additionalProperties: string;
@@ -12495,9 +12458,6 @@ export type SamplesQuery = {
     __typename?: "Sample";
     smileSampleId: string;
     revisable: boolean;
-    sampleCategory: string;
-    sampleClass: string;
-    datasource: string;
     hasMetadataSampleMetadata: Array<{
       __typename?: "SampleMetadata";
       additionalProperties: string;
@@ -12554,9 +12514,6 @@ export type UpdateSamplesMutation = {
       __typename?: "Sample";
       smileSampleId: string;
       revisable: boolean;
-      datasource: string;
-      sampleCategory: string;
-      sampleClass: string;
       hasMetadataSampleMetadata: Array<{
         __typename?: "SampleMetadata";
         additionalProperties: string;
@@ -12684,15 +12641,6 @@ export const RequestPartsFragmentDoc = gql`
     smileRequestId
   }
 `;
-export const SamplePartsFragmentDoc = gql`
-  fragment SampleParts on Sample {
-    datasource
-    revisable
-    sampleCategory
-    sampleClass
-    smileSampleId
-  }
-`;
 export const SampleMetadataPartsFragmentDoc = gql`
   fragment SampleMetadataParts on SampleMetadata {
     additionalProperties
@@ -12805,19 +12753,14 @@ export const FindSamplesByInputValueDocument = gql`
       totalCount
     }
     samples(where: $where, options: $options) {
-      ...SampleParts
+      smileSampleId
+      revisable
       hasMetadataSampleMetadata(options: $sampleMetadataOptions) {
         ...SampleMetadataParts
         hasStatusStatuses {
           validationReport
           validationStatus
         }
-      }
-      requestsHasSample {
-        ...RequestParts
-      }
-      patientsHasSample {
-        smilePatientId
       }
       cohortsHasCohortSample {
         cohortId
@@ -12845,9 +12788,7 @@ export const FindSamplesByInputValueDocument = gql`
       }
     }
   }
-  ${SamplePartsFragmentDoc}
   ${SampleMetadataPartsFragmentDoc}
-  ${RequestPartsFragmentDoc}
   ${TempoPartsFragmentDoc}
 `;
 export type FindSamplesByInputValueQueryResult = Apollo.QueryResult<
@@ -12863,9 +12804,6 @@ export const SamplesDocument = gql`
     samples(where: $where) {
       smileSampleId
       revisable
-      sampleCategory
-      sampleClass
-      datasource
       hasMetadataSampleMetadata(
         where: $hasMetadataSampleMetadataWhere2
         options: $hasMetadataSampleMetadataOptions2
@@ -12894,9 +12832,6 @@ export const UpdateSamplesDocument = gql`
       samples {
         smileSampleId
         revisable
-        datasource
-        sampleCategory
-        sampleClass
         hasMetadataSampleMetadata {
           ...SampleMetadataParts
         }

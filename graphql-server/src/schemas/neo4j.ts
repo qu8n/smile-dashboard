@@ -235,12 +235,18 @@ function buildResolvers(
       async samples(_source: undefined, args: any) {
         const neo4jWheres = {
           igoRequestId: "",
+          smilePatientId: "",
         };
 
         if ("hasMetadataSampleMetadata_SOME" in args.where) {
           const igoRequestId =
             args.where.hasMetadataSampleMetadata_SOME.igoRequestId;
           neo4jWheres.igoRequestId = `WHERE sm.igoRequestId = "${igoRequestId}"`;
+        }
+        if ("patientsHasSample_SOME" in args.where) {
+          const smilePatientId =
+            args.where.patientsHasSample_SOME.smilePatientId;
+          neo4jWheres.smilePatientId = `WHERE p.smilePatientId = "${smilePatientId}"`;
         }
 
         const session = driver.session();
@@ -254,8 +260,9 @@ function buildResolvers(
             } MATCH (s)-[:HAS_METADATA]->(sm:SampleMetadata) ${
             neo4jWheres.igoRequestId
           }
-            OPTIONAL MATCH (s)<-[:HAS_SAMPLE]-(r:Request)
-            OPTIONAL MATCH (s)<-[:HAS_SAMPLE]-(p:Patient)
+            ${
+              neo4jWheres.smilePatientId ? "" : "OPTIONAL"
+            } MATCH (s)<-[:HAS_SAMPLE]-(p:Patient) ${neo4jWheres.smilePatientId}
             OPTIONAL MATCH (s)<-[:HAS_COHORT_SAMPLE]-(c:Cohort)
             OPTIONAL MATCH (c)-[:HAS_COHORT_COMPLETE]->(ch:CohortComplete)
             OPTIONAL MATCH (sm)-[:HAS_STATUS]->(st:Status)
@@ -265,7 +272,6 @@ function buildResolvers(
             OPTIONAL MATCH (t)-[:HAS_EVENT]->(qc:QcComplete)
             WITH
               s,
-              r,
               p,
               c,
               t,
@@ -304,7 +310,6 @@ function buildResolvers(
               ) AS qcCompletes
             WITH
               s,
-              r,
               p,
               c,
               t,
@@ -361,33 +366,6 @@ function buildResolvers(
                 ['importDate'], 1
               ) AS hasMetadataSampleMetadata,
               COLLECT(
-                r {
-                    .igoRequestId,
-                    .igoProjectId,
-                    .genePanel,
-                    .dataAnalystName,
-                    .dataAnalystEmail,
-                    .dataAccessEmails,
-                    .bicAnalysis,
-                    .investigatorEmail,
-                    .investigatorName,
-                    .isCmoRequest,
-                    .labHeadEmail,
-                    .labHeadName,
-                    .libraryType,
-                    .otherContactEmails,
-                    .piEmail,
-                    .projectManagerName,
-                    .qcAccessEmails,
-                    .smileRequestId
-                }
-              ) AS requestsHasSample,
-              COLLECT(
-                p {
-                    .smilePatientId
-                }
-              ) AS patientsHasSample,
-              COLLECT(
                 c {
                     .cohortId,
                     hasCohortCompleteCohortCompletes: hasCohortCompleteCohortCompletes
@@ -408,13 +386,8 @@ function buildResolvers(
               ) AS hasTempoTempos
             RETURN
               s.smileSampleId AS smileSampleId,
-              s.datasource AS datasource,
               s.revisable AS revisable,
-              s.sampleCategory AS sampleCategory,
-              s.sampleClass AS sampleClass,
               hasMetadataSampleMetadata,
-              requestsHasSample,
-              patientsHasSample,
               cohortsHasCohortSample,
               hasTempoTempos
             ORDER BY hasMetadataSampleMetadata[0].importDate DESC

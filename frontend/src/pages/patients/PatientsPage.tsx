@@ -274,10 +274,8 @@ export default function PatientsPage({
           {
             OR: [
               {
-                patientsHasSampleConnection_SOME: {
-                  node: {
-                    [sampleQueryParamFieldName]: sampleQueryParamValue,
-                  },
+                patientsHasSample_SOME: {
+                  [sampleQueryParamFieldName]: sampleQueryParamValue,
                 },
               },
             ],
@@ -285,10 +283,8 @@ export default function PatientsPage({
         }
         samplesRefetchWhereVariables={(sampleParsedSearchVals) => {
           return {
-            patientsHasSampleConnection_SOME: {
-              node: {
-                [sampleQueryParamFieldName]: sampleQueryParamValue,
-              },
+            patientsHasSample_SOME: {
+              [sampleQueryParamFieldName]: sampleQueryParamValue,
             },
             OR: sampleFilterWhereVariables(sampleParsedSearchVals),
           } as SampleWhere;
