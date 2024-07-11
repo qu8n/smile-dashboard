@@ -238,32 +238,47 @@ function buildResolvers(
           patientSamples: "",
           cohortSamples: "",
         };
+
         if ("hasMetadataSampleMetadata_SOME" in args.where) {
           const igoRequestId =
             args.where.hasMetadataSampleMetadata_SOME.igoRequestId;
-          wheresByView.requestSamples = `WHERE sm.igoRequestId = "${igoRequestId}"`;
+          if (igoRequestId) {
+            wheresByView.requestSamples = `WHERE sm.igoRequestId = "${igoRequestId}"`;
+          }
 
           if (args.where.hasMetadataSampleMetadata_SOME.OR?.length > 0) {
+            const argCount = Object.keys(
+              args.where.hasMetadataSampleMetadata_SOME
+            ).length;
+            if (argCount > 1) {
+              wheresByView.requestSamples += " AND";
+            } else if (argCount == 1) {
+              wheresByView.requestSamples += "WHERE ";
+            }
+
             wheresByView.requestSamples +=
-              "AND ANY(prop in keys(sm) WHERE TOSTRING(sm[prop]) ";
+              " ANY(prop in keys(sm) WHERE TOSTRING(sm[prop])";
 
             const searchValues = Object.values(
               args.where.hasMetadataSampleMetadata_SOME.OR[0]
             )[0] as string[] | string;
+
             if (Array.isArray(searchValues)) {
-              wheresByView.requestSamples += `IN ${JSON.stringify(
+              wheresByView.requestSamples += ` IN ${JSON.stringify(
                 searchValues
               )})`;
             } else {
-              wheresByView.requestSamples += `CONTAINS "${searchValues}")`;
+              wheresByView.requestSamples += ` CONTAINS "${searchValues}")`;
             }
           }
         }
+
         if ("patientsHasSample_SOME" in args.where) {
           const smilePatientId =
             args.where.patientsHasSample_SOME.smilePatientId;
           wheresByView.patientSamples = `WHERE p.smilePatientId = "${smilePatientId}"`;
         }
+
         if ("cohortsHasCohortSample_SOME" in args.where) {
           const cohortId = args.where.cohortsHasCohortSample_SOME.cohortId;
           wheresByView.cohortSamples = `WHERE c.cohortId = "${cohortId}"`;

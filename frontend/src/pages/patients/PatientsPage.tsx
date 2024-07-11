@@ -286,7 +286,9 @@ export default function PatientsPage({
             patientsHasSample_SOME: {
               [sampleQueryParamFieldName]: sampleQueryParamValue,
             },
-            OR: sampleFilterWhereVariables(sampleParsedSearchVals),
+            hasMetadataSampleMetadata_SOME: {
+              OR: sampleFilterWhereVariables(sampleParsedSearchVals),
+            },
           } as SampleWhere;
         }}
         setCustomSearchVals={setPatientIdsTriplets}
