@@ -239,6 +239,7 @@ function buildResolvers(
           cohortSamples: "",
         };
 
+        // Handle searching in Request Samples and Patient Samples views
         if ("hasMetadataSampleMetadata_SOME" in args.where) {
           const igoRequestId =
             args.where.hasMetadataSampleMetadata_SOME.igoRequestId;
@@ -273,6 +274,26 @@ function buildResolvers(
           }
         }
 
+        // Handle searching in Cohort Samples view
+        const nestedSmWhere = args.where.OR?.find((obj: any) =>
+          obj.hasOwnProperty("hasMetadataSampleMetadata_SOME")
+        )?.hasMetadataSampleMetadata_SOME?.OR[0];
+        if (nestedSmWhere && Object.keys(nestedSmWhere).length > 0) {
+          wheresByView.requestSamples =
+            "WHERE ANY(prop in keys(sm) WHERE TOSTRING(sm[prop])";
+          const searchValues = Object.values(nestedSmWhere)[0] as
+            | string[]
+            | string;
+
+          if (Array.isArray(searchValues)) {
+            wheresByView.requestSamples += ` IN ${JSON.stringify(
+              searchValues
+            )})`;
+          } else {
+            wheresByView.requestSamples += ` CONTAINS "${searchValues}")`;
+          }
+        }
+
         if ("patientsHasSample_SOME" in args.where) {
           const smilePatientId =
             args.where.patientsHasSample_SOME.smilePatientId;
@@ -296,7 +317,7 @@ function buildResolvers(
               ${wheresByView.requestSamples}
             
             ${wheresByView.patientSamples ? "" : "OPTIONAL"} 
-              MATCH (s)<-[:HAS_SAMPLE]-(p:Patient) 
+              MATCH (s)<-[:HAS_SAMPLE]-(p:Patient)
               ${wheresByView.patientSamples}
             
             ${wheresByView.cohortSamples ? "" : "OPTIONAL"}
