@@ -232,19 +232,19 @@ function buildResolvers(
 
         return requests;
       },
+      // For Cohort Samples view, handle tempo and each complete event separately
       async samples(_source: undefined, args: any) {
-        const wheresByView = {
-          requestSamples: "",
-          patientSamples: "",
-          cohortSamples: "",
-        };
+        let requestWhere = "",
+          patientWhere = "",
+          cohortWhere = "",
+          tempoWhere = "";
 
         // Handle searching in Request Samples and Patient Samples views
         if ("hasMetadataSampleMetadata_SOME" in args.where) {
           const igoRequestId =
             args.where.hasMetadataSampleMetadata_SOME.igoRequestId;
           if (igoRequestId) {
-            wheresByView.requestSamples = `WHERE sm.igoRequestId = "${igoRequestId}"`;
+            requestWhere = `WHERE sm.igoRequestId = "${igoRequestId}"`;
           }
 
           if (args.where.hasMetadataSampleMetadata_SOME.OR?.length > 0) {
@@ -252,24 +252,21 @@ function buildResolvers(
               args.where.hasMetadataSampleMetadata_SOME
             ).length;
             if (argCount > 1) {
-              wheresByView.requestSamples += " AND";
+              requestWhere += " AND";
             } else if (argCount == 1) {
-              wheresByView.requestSamples += "WHERE ";
+              requestWhere += "WHERE ";
             }
 
-            wheresByView.requestSamples +=
-              " ANY(prop in keys(sm) WHERE TOSTRING(sm[prop])";
+            requestWhere += " ANY(prop in keys(sm) WHERE TOSTRING(sm[prop])";
 
             const searchValues = Object.values(
               args.where.hasMetadataSampleMetadata_SOME.OR[0]
             )[0] as string[] | string;
 
             if (Array.isArray(searchValues)) {
-              wheresByView.requestSamples += ` IN ${JSON.stringify(
-                searchValues
-              )})`;
+              requestWhere += ` IN ${JSON.stringify(searchValues)})`;
             } else {
-              wheresByView.requestSamples += ` CONTAINS "${searchValues}")`;
+              requestWhere += ` CONTAINS "${searchValues}")`;
             }
           }
         }
@@ -279,57 +276,90 @@ function buildResolvers(
           obj.hasOwnProperty("hasMetadataSampleMetadata_SOME")
         )?.hasMetadataSampleMetadata_SOME?.OR[0];
         if (nestedSmWhere && Object.keys(nestedSmWhere).length > 0) {
-          wheresByView.requestSamples =
-            "WHERE ANY(prop in keys(sm) WHERE TOSTRING(sm[prop])";
+          requestWhere = "WHERE ANY(prop in keys(sm) WHERE TOSTRING(sm[prop])";
           const searchValues = Object.values(nestedSmWhere)[0] as
             | string[]
             | string;
 
           if (Array.isArray(searchValues)) {
-            wheresByView.requestSamples += ` IN ${JSON.stringify(
-              searchValues
-            )})`;
+            requestWhere += ` IN ${JSON.stringify(searchValues)})`;
           } else {
-            wheresByView.requestSamples += ` CONTAINS "${searchValues}")`;
+            requestWhere += ` CONTAINS "${searchValues}")`;
+          }
+        }
+
+        const nestedTempoWhere = args.where.OR?.find((obj: any) =>
+          obj.hasOwnProperty("hasTempoTempos_SOME")
+        )?.hasTempoTempos_SOME?.OR[0];
+        if (nestedTempoWhere && Object.keys(nestedTempoWhere).length > 0) {
+          tempoWhere = "WHERE";
+          const searchValues = Object.values(nestedTempoWhere)[0] as
+            | string[]
+            | string;
+
+          for (const node of ["t", "bc", "mc", "qc"]) {
+            if (node !== "t") {
+              tempoWhere += " OR";
+            }
+            tempoWhere += ` ANY(prop in keys(t) WHERE TOSTRING(${node}[prop])`;
+
+            if (Array.isArray(searchValues)) {
+              tempoWhere += ` IN ${JSON.stringify(searchValues)})`;
+            } else {
+              tempoWhere += ` CONTAINS "${searchValues}")`;
+            }
           }
         }
 
         if ("patientsHasSample_SOME" in args.where) {
           const smilePatientId =
             args.where.patientsHasSample_SOME.smilePatientId;
-          wheresByView.patientSamples = `WHERE p.smilePatientId = "${smilePatientId}"`;
+          patientWhere = `WHERE p.smilePatientId = "${smilePatientId}"`;
         }
 
         if ("cohortsHasCohortSample_SOME" in args.where) {
           const cohortId = args.where.cohortsHasCohortSample_SOME.cohortId;
-          wheresByView.cohortSamples = `WHERE c.cohortId = "${cohortId}"`;
+          cohortWhere = `WHERE c.cohortId = "${cohortId}"`;
         }
 
         const session = driver.session();
         let samples = [];
         try {
           const tx = session.beginTransaction();
-          const result = await tx.run(`
+          const neo4jQuery = `
             MATCH (s:Sample)
 
-            ${wheresByView.requestSamples ? "" : "OPTIONAL"} 
+            ${requestWhere ? "" : "OPTIONAL"} 
               MATCH (s)-[:HAS_METADATA]->(sm:SampleMetadata)
-              ${wheresByView.requestSamples}
+              ${requestWhere}
             
-            ${wheresByView.patientSamples ? "" : "OPTIONAL"} 
+            ${patientWhere ? "" : "OPTIONAL"} 
               MATCH (s)<-[:HAS_SAMPLE]-(p:Patient)
-              ${wheresByView.patientSamples}
+              ${patientWhere}
             
-            ${wheresByView.cohortSamples ? "" : "OPTIONAL"}
+            ${cohortWhere ? "" : "OPTIONAL"}
               MATCH (s)<-[:HAS_COHORT_SAMPLE]-(c:Cohort)
-              ${wheresByView.cohortSamples}
+              ${cohortWhere}
             
+            ${
+              tempoWhere
+                ? `
+              MATCH (s)-[:HAS_TEMPO]->(t:Tempo)
+              MATCH (t)-[:HAS_EVENT]->(bc:BamComplete)
+              MATCH (t)-[:HAS_EVENT]->(mc:MafComplete)
+              MATCH (t)-[:HAS_EVENT]->(qc:QcComplete)
+              ${tempoWhere}
+            `
+                : `
+              OPTIONAL MATCH (s)-[:HAS_TEMPO]->(t:Tempo)
+              OPTIONAL MATCH (t)-[:HAS_EVENT]->(bc:BamComplete)
+              OPTIONAL MATCH (t)-[:HAS_EVENT]->(mc:MafComplete)
+              OPTIONAL MATCH (t)-[:HAS_EVENT]->(qc:QcComplete)
+            `
+            }
+          
             OPTIONAL MATCH (c)-[:HAS_COHORT_COMPLETE]->(ch:CohortComplete)
             OPTIONAL MATCH (sm)-[:HAS_STATUS]->(st:Status)
-            OPTIONAL MATCH (s)-[:HAS_TEMPO]->(t:Tempo)
-            OPTIONAL MATCH (t)-[:HAS_EVENT]->(bc:BamComplete)
-            OPTIONAL MATCH (t)-[:HAS_EVENT]->(mc:MafComplete)
-            OPTIONAL MATCH (t)-[:HAS_EVENT]->(qc:QcComplete)
 
             WITH
               s,
@@ -462,7 +492,9 @@ function buildResolvers(
 
             ORDER BY hasMetadataSampleMetadata[0].importDate DESC
             LIMIT 500
-          `);
+          `;
+          console.log(neo4jQuery);
+          const result = await tx.run(neo4jQuery);
           await tx.close();
           samples = result.records.map((record) => record.toObject());
         } finally {
