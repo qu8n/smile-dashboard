@@ -182,7 +182,9 @@ function buildResolvers(
       async requests(_source: undefined, args: any) {
         const requests = await ogm.model("Request").find({
           where: args.where,
-          options: args.options,
+          options: {
+            sort: args.options.sort,
+          },
           selectionSet: `{
             igoRequestId
             igoProjectId
@@ -240,7 +242,7 @@ function buildResolvers(
           }
         }
 
-        return requests;
+        return requests.slice(args.options.offset, args.options.limit + 1);
       },
       async cohorts(_source: undefined, args: any) {
         const cohorts = await ogm.model("Cohort").find({
