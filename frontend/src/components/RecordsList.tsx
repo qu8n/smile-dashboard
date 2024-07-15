@@ -1,6 +1,6 @@
 import AutoSizer from "react-virtualized-auto-sizer";
 import { Button, Container, Modal } from "react-bootstrap";
-import { Dispatch, SetStateAction, useMemo } from "react";
+import { Dispatch, SetStateAction, useMemo, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { DownloadModal } from "./DownloadModal";
 import { buildTsvString } from "../utils/buildTsvString";
@@ -25,6 +25,7 @@ import {
 } from "../shared/helpers";
 import { PatientIdsTriplet } from "../pages/patients/PatientsPage";
 import { ErrorMessage, LoadingSpinner, Toolbar } from "../shared/tableElements";
+import { AgGridReact as AgGridReactType } from "ag-grid-react/lib/agGridReact";
 
 interface IRecordsListProps {
   colDefs: ColDef[];
@@ -96,6 +97,7 @@ export default function RecordsList({
   const [rowCount, setRowCount] = useState<number>(0);
   const [uniqueSampleCount, setUniqueSampleCount] = useState<number>(0);
 
+  const grid = useRef<AgGridReactType>(null);
   const navigate = useNavigate();
 
   // note that we aren't using initial fetch
@@ -114,6 +116,19 @@ export default function RecordsList({
 
   const totalCountNodeName = `${dataName}Connection`;
 
+  function getSortModel() {
+    const sortModel = grid.current?.columnApi
+      ?.getColumnState()
+      .filter(({ sort }) => sort)
+      .map(({ colId, sort }) => ({
+        [colId]: sort?.toUpperCase() as SortDirection,
+      }));
+    if (sortModel && sortModel.length > 0) {
+      return sortModel;
+    }
+    return defaultSort;
+  }
+
   const datasource: IServerSideDatasource = useMemo(() => {
     return {
       // called by the grid when more rows are required
@@ -125,7 +140,7 @@ export default function RecordsList({
           options: {
             offset: params.request.startRow,
             limit: params.request.endRow,
-            sort: defaultSort,
+            sort: getSortModel(),
           },
         };
 
@@ -175,8 +190,8 @@ export default function RecordsList({
     <Container fluid>
       {showDownloadModal && (
         <DownloadModal
-          loader={() => {
-            return fetchMore({
+          loader={async () => {
+            const { data } = await fetchMore({
               variables: {
                 where: {
                   OR: queryFilterWhereVariables(parsedSearchVals),
@@ -184,16 +199,15 @@ export default function RecordsList({
                 options: {
                   offset: 0,
                   limit: undefined,
-                  sort: defaultSort,
+                  sort: getSortModel(),
                 },
               },
-            }).then(({ data }) => {
-              let agGridData = data;
-              if (prepareDataForAgGrid) {
-                agGridData = prepareDataForAgGrid(data, filterModel);
-              }
-              return buildTsvString(agGridData[dataName], colDefs);
             });
+            let agGridData = data;
+            if (prepareDataForAgGrid) {
+              agGridData = prepareDataForAgGrid(data, filterModel);
+            }
+            return buildTsvString(agGridData[dataName], colDefs);
           }}
           onComplete={() => setShowDownloadModal(false)}
           exportFileName={`${dataName}.tsv`}
@@ -294,6 +308,7 @@ export default function RecordsList({
             style={{ width: width }}
           >
             <AgGridReact
+              ref={grid}
               rowModelType={"serverSide"}
               columnDefs={colDefs}
               serverSideDatasource={datasource}

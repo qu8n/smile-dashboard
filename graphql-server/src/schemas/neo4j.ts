@@ -226,6 +226,18 @@ function buildResolvers(
               }
             });
           }
+
+          if (sortField === "totalSampleCount") {
+            requests.sort((a, b) => {
+              const countA = a.hasSampleSamplesConnection?.totalCount;
+              const countB = b.hasSampleSamplesConnection?.totalCount;
+              if (sortOrder === "ASC") {
+                return countA > countB ? 1 : -1;
+              } else {
+                return countA < countB ? 1 : -1;
+              }
+            });
+          }
         }
 
         return requests;

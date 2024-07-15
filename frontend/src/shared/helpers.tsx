@@ -87,7 +87,6 @@ export const RequestsListColumns: ColDef[] = [
       }
       return undefined;
     },
-    sortable: false,
   },
   {
     field: "projectManagerName",
