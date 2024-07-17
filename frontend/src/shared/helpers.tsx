@@ -176,37 +176,30 @@ export const PatientsListColumns: ColDef[] = [
   {
     field: "cmoPatientId",
     headerName: "CMO Patient ID",
-    sortable: false,
   },
   {
     field: "dmpPatientId",
     headerName: "DMP Patient ID",
-    sortable: false,
   },
   {
     field: "totalSampleCount",
     headerName: "# Samples",
-    sortable: false,
   },
   {
     field: "cmoSampleIds",
     headerName: "Sample IDs",
-    sortable: false,
   },
   {
     field: "consentPartA",
     headerName: "12-245 Part A",
-    sortable: false,
   },
   {
     field: "consentPartC",
     headerName: "12-245 Part C",
-    sortable: false,
   },
   {
     field: "smilePatientId",
     headerName: "SMILE Patient ID",
-    hide: true,
   },
 ];
 

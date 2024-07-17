@@ -2427,7 +2427,7 @@ export type PageInfo = {
 export type Patient = {
   __typename?: "Patient";
   cmoPatientId?: Maybe<Scalars["String"]>;
-  cmoSampleIds?: Maybe<Array<Maybe<Scalars["String"]>>>;
+  cmoSampleIds?: Maybe<Scalars["String"]>;
   consentPartA?: Maybe<Scalars["String"]>;
   consentPartC?: Maybe<Scalars["String"]>;
   dmpPatientId?: Maybe<Scalars["String"]>;
@@ -2482,6 +2482,7 @@ export type PatientPatientAliasesIsAliasConnectionArgs = {
 export type PatientAggregateSelection = {
   __typename?: "PatientAggregateSelection";
   cmoPatientId: StringAggregateSelectionNullable;
+  cmoSampleIds: StringAggregateSelectionNullable;
   consentPartA: StringAggregateSelectionNullable;
   consentPartC: StringAggregateSelectionNullable;
   count: Scalars["Int"];
@@ -2635,6 +2636,26 @@ export type PatientAliasIsAliasPatientsNodeAggregationWhereInput = {
   cmoPatientId_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
   cmoPatientId_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
   cmoPatientId_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  cmoSampleIds_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  cmoSampleIds_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  cmoSampleIds_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  cmoSampleIds_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  cmoSampleIds_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  cmoSampleIds_EQUAL?: InputMaybe<Scalars["String"]>;
+  cmoSampleIds_GT?: InputMaybe<Scalars["Int"]>;
+  cmoSampleIds_GTE?: InputMaybe<Scalars["Int"]>;
+  cmoSampleIds_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  cmoSampleIds_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  cmoSampleIds_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  cmoSampleIds_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  cmoSampleIds_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  cmoSampleIds_LT?: InputMaybe<Scalars["Int"]>;
+  cmoSampleIds_LTE?: InputMaybe<Scalars["Int"]>;
+  cmoSampleIds_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  cmoSampleIds_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  cmoSampleIds_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  cmoSampleIds_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  cmoSampleIds_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
   consentPartA_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
   consentPartA_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
   consentPartA_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
@@ -2779,6 +2800,7 @@ export type PatientAliasPatientIsAliasPatientsAggregationSelection = {
 export type PatientAliasPatientIsAliasPatientsNodeAggregateSelection = {
   __typename?: "PatientAliasPatientIsAliasPatientsNodeAggregateSelection";
   cmoPatientId: StringAggregateSelectionNullable;
+  cmoSampleIds: StringAggregateSelectionNullable;
   consentPartA: StringAggregateSelectionNullable;
   consentPartC: StringAggregateSelectionNullable;
   dmpPatientId: StringAggregateSelectionNullable;
@@ -2866,7 +2888,7 @@ export type PatientConnectWhere = {
 
 export type PatientCreateInput = {
   cmoPatientId?: InputMaybe<Scalars["String"]>;
-  cmoSampleIds?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  cmoSampleIds?: InputMaybe<Scalars["String"]>;
   consentPartA?: InputMaybe<Scalars["String"]>;
   consentPartC?: InputMaybe<Scalars["String"]>;
   dmpPatientId?: InputMaybe<Scalars["String"]>;
@@ -3226,6 +3248,7 @@ export type PatientSampleHasSampleSamplesNodeAggregateSelection = {
 /** Fields to sort Patients by. The order in which sorts are applied is not guaranteed when specifying many fields in one PatientSort object. */
 export type PatientSort = {
   cmoPatientId?: InputMaybe<SortDirection>;
+  cmoSampleIds?: InputMaybe<SortDirection>;
   consentPartA?: InputMaybe<SortDirection>;
   consentPartC?: InputMaybe<SortDirection>;
   dmpPatientId?: InputMaybe<SortDirection>;
@@ -3235,9 +3258,7 @@ export type PatientSort = {
 
 export type PatientUpdateInput = {
   cmoPatientId?: InputMaybe<Scalars["String"]>;
-  cmoSampleIds?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
-  cmoSampleIds_POP?: InputMaybe<Scalars["Int"]>;
-  cmoSampleIds_PUSH?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  cmoSampleIds?: InputMaybe<Scalars["String"]>;
   consentPartA?: InputMaybe<Scalars["String"]>;
   consentPartC?: InputMaybe<Scalars["String"]>;
   dmpPatientId?: InputMaybe<Scalars["String"]>;
@@ -3264,10 +3285,16 @@ export type PatientWhere = {
   cmoPatientId_NOT_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
   cmoPatientId_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
   cmoPatientId_STARTS_WITH?: InputMaybe<Scalars["String"]>;
-  cmoSampleIds?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
-  cmoSampleIds_INCLUDES?: InputMaybe<Scalars["String"]>;
-  cmoSampleIds_NOT?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
-  cmoSampleIds_NOT_INCLUDES?: InputMaybe<Scalars["String"]>;
+  cmoSampleIds?: InputMaybe<Scalars["String"]>;
+  cmoSampleIds_CONTAINS?: InputMaybe<Scalars["String"]>;
+  cmoSampleIds_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  cmoSampleIds_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  cmoSampleIds_NOT?: InputMaybe<Scalars["String"]>;
+  cmoSampleIds_NOT_CONTAINS?: InputMaybe<Scalars["String"]>;
+  cmoSampleIds_NOT_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  cmoSampleIds_NOT_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  cmoSampleIds_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  cmoSampleIds_STARTS_WITH?: InputMaybe<Scalars["String"]>;
   consentPartA?: InputMaybe<Scalars["String"]>;
   consentPartA_CONTAINS?: InputMaybe<Scalars["String"]>;
   consentPartA_ENDS_WITH?: InputMaybe<Scalars["String"]>;
@@ -9047,6 +9074,7 @@ export type SamplePatientPatientsHasSampleAggregationSelection = {
 export type SamplePatientPatientsHasSampleNodeAggregateSelection = {
   __typename?: "SamplePatientPatientsHasSampleNodeAggregateSelection";
   cmoPatientId: StringAggregateSelectionNullable;
+  cmoSampleIds: StringAggregateSelectionNullable;
   consentPartA: StringAggregateSelectionNullable;
   consentPartC: StringAggregateSelectionNullable;
   dmpPatientId: StringAggregateSelectionNullable;
@@ -9130,6 +9158,26 @@ export type SamplePatientsHasSampleNodeAggregationWhereInput = {
   cmoPatientId_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
   cmoPatientId_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
   cmoPatientId_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  cmoSampleIds_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  cmoSampleIds_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  cmoSampleIds_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  cmoSampleIds_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  cmoSampleIds_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  cmoSampleIds_EQUAL?: InputMaybe<Scalars["String"]>;
+  cmoSampleIds_GT?: InputMaybe<Scalars["Int"]>;
+  cmoSampleIds_GTE?: InputMaybe<Scalars["Int"]>;
+  cmoSampleIds_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  cmoSampleIds_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  cmoSampleIds_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  cmoSampleIds_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  cmoSampleIds_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  cmoSampleIds_LT?: InputMaybe<Scalars["Int"]>;
+  cmoSampleIds_LTE?: InputMaybe<Scalars["Int"]>;
+  cmoSampleIds_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  cmoSampleIds_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  cmoSampleIds_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  cmoSampleIds_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  cmoSampleIds_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
   consentPartA_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
   consentPartA_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
   consentPartA_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
@@ -12269,7 +12317,7 @@ export type PatientsListQuery = {
     cmoPatientId?: string | null;
     dmpPatientId?: string | null;
     totalSampleCount?: number | null;
-    cmoSampleIds?: Array<string | null> | null;
+    cmoSampleIds?: string | null;
     consentPartA?: string | null;
     consentPartC?: string | null;
     hasSampleSamples: Array<{
