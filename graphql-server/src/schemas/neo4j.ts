@@ -217,35 +217,10 @@ function buildResolvers(
 
         if (args.options?.sort) {
           const sortField = Object.keys(args.options.sort[0])[0];
-          const sortOrder = Object.values(args.options.sort[0])[0];
-
-          if (sortField === "importDate") {
-            requests.sort((a, b) => {
-              const importDateA = a.hasMetadataRequestMetadata[0].importDate;
-              const importDateB = b.hasMetadataRequestMetadata[0].importDate;
-              if (importDateA === null || importDateA === undefined) return 1;
-              if (importDateB === null || importDateB === undefined) return -1;
-              if (sortOrder === "ASC") {
-                return importDateA > importDateB ? 1 : -1;
-              } else {
-                return importDateA < importDateB ? 1 : -1;
-              }
-            });
-          }
-
-          if (sortField === "totalSampleCount") {
-            requests.sort((a, b) => {
-              const countA = a.hasSampleSamplesConnection?.totalCount;
-              const countB = b.hasSampleSamplesConnection?.totalCount;
-              if (countA === null || countA === undefined) return 1;
-              if (countB === null || countB === undefined) return -1;
-              if (sortOrder === "ASC") {
-                return countA > countB ? 1 : -1;
-              } else {
-                return countA < countB ? 1 : -1;
-              }
-            });
-          }
+          const sortOrder = Object.values(
+            args.options.sort[0]
+          )[0] as SortDirection;
+          sortArrayByNestedField(requests, "Request", sortField, sortOrder);
         }
 
         return requests.slice(args.options.offset, args.options.limit + 1);
@@ -490,10 +465,10 @@ function buildResolvers(
     },
     Request: {
       importDate: (parent: RequestsListQuery["requests"][number]) => {
-        return parent.hasMetadataRequestMetadata[0].importDate;
+        return getNestedValue(parent, "Request", "importDate");
       },
       totalSampleCount: (parent: RequestsListQuery["requests"][number]) => {
-        return parent.hasSampleSamplesConnection?.totalCount;
+        return getNestedValue(parent, "Request", "totalSampleCount");
       },
     },
     Patient: {
@@ -578,6 +553,50 @@ function buildResolvers(
       },
     },
   };
+}
+
+function sortArrayByNestedField(
+  arr: any[],
+  nodeLabel: string,
+  fieldName: string,
+  sortOrder: SortDirection
+) {
+  arr.sort((objA, objB) => {
+    let a = getNestedValue(objA, nodeLabel, fieldName);
+    let b = getNestedValue(objB, nodeLabel, fieldName);
+
+    if (a === null || a === undefined) return 1;
+    if (b === null || b === undefined) return -1;
+
+    if (Array.isArray(a)) a = a.join(", ");
+    if (Array.isArray(b)) b = b.join(", ");
+
+    if (typeof a === "number") {
+      return sortOrder === "ASC" ? a - b : b - a;
+    } else if (typeof a === "string") {
+      return sortOrder === "ASC"
+        ? a.localeCompare(b, "en", { sensitivity: "base" })
+        : b.localeCompare(a, "en", { sensitivity: "base" });
+    } else {
+      return 0;
+    }
+  });
+}
+
+function getNestedValue(node: any, nodeLabel: string, fieldName: string) {
+  switch (nodeLabel) {
+    case "Request":
+      switch (fieldName) {
+        case "importDate":
+          return node.hasMetadataRequestMetadata[0]?.importDate;
+        case "totalSampleCount":
+          return node.hasSampleSamplesConnection?.totalCount;
+      }
+    case "Patient":
+      return `hasSampleSamples { hasMetadataSampleMetadata { ${fieldName} } }`;
+    case "Cohort":
+      return `hasCohortSampleSamples { hasTempoTempos { ${fieldName} } }`;
+  }
 }
 
 async function publishNatsMessageForSampleMetadataUpdates(

@@ -544,12 +544,10 @@ export const CohortsListColumns: ColDef[] = [
   {
     field: "totalSampleCount",
     headerName: "# Samples",
-    sortable: false,
   },
   {
     field: "billed",
     headerName: "Billed",
-    sortable: false,
     filter: true,
     filterParams: {
       values: ["Yes", "No"],
@@ -559,7 +557,6 @@ export const CohortsListColumns: ColDef[] = [
   {
     field: "initialCohortDeliveryDate",
     headerName: "Initial Cohort Delivery Date",
-    sortable: false,
     filter: "agDateColumnFilter",
     filterParams: {
       buttons: ["apply", "reset"],
@@ -579,32 +576,26 @@ export const CohortsListColumns: ColDef[] = [
   {
     field: "endUsers",
     headerName: "End Users",
-    sortable: false,
   },
   {
     field: "pmUsers",
     headerName: "PM Users",
-    sortable: false,
   },
   {
     field: "projectTitle",
     headerName: "Project Title",
-    sortable: false,
   },
   {
     field: "projectSubtitle",
     headerName: "Project Subtitle",
-    sortable: false,
   },
   {
     field: "status",
     headerName: "Status",
-    sortable: false,
   },
   {
     field: "type",
     headerName: "Type",
-    sortable: false,
   },
 ];
 
