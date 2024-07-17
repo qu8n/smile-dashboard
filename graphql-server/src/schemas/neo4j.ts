@@ -28,6 +28,8 @@ const request = require("request-promise-native");
 import { ApolloClient, ApolloQueryResult } from "apollo-client";
 import { gql } from "apollo-server";
 
+type SortOptions = { [key: string]: SortDirection }[];
+
 export async function buildNeo4jDbSchema() {
   const driver = neo4j.driver(
     props.neo4j_graphql_uri,
@@ -216,11 +218,13 @@ function buildResolvers(
         });
 
         if (args.options?.sort) {
-          const sortField = Object.keys(args.options.sort[0])[0];
-          const sortOrder = Object.values(
-            args.options.sort[0]
-          )[0] as SortDirection;
-          sortArrayByNestedField(requests, "Request", sortField, sortOrder);
+          const sortOptions: SortOptions = args.options.sort;
+          const sortField = Object.keys(sortOptions[0])[0];
+          const sortOrder = Object.values(sortOptions[0])[0];
+
+          if (["importDate", "totalSampleCount"].includes(sortField)) {
+            sortArrayByNestedField(requests, "Request", sortField, sortOrder);
+          }
         }
 
         return requests.slice(args.options.offset, args.options.limit + 1);
@@ -252,161 +256,21 @@ function buildResolvers(
         });
 
         if (args.options?.sort) {
-          const sortField = Object.keys(args.options.sort[0])[0];
-          const sortOrder = Object.values(args.options.sort[0])[0];
+          const sortOptions: SortOptions = args.options.sort;
+          const sortField = Object.keys(sortOptions[0])[0];
+          const sortOrder = Object.values(sortOptions[0])[0];
 
-          if (sortField === "cmoPatientId") {
-            patients.sort((a, b) => {
-              const cmoIdA = a.patientAliasesIsAlias?.find(
-                (patientAlias: PatientAlias) =>
-                  patientAlias.namespace === "cmoId"
-              )?.value;
-              const cmoIdB = b.patientAliasesIsAlias?.find(
-                (patientAlias: PatientAlias) =>
-                  patientAlias.namespace === "cmoId"
-              )?.value;
-              if (cmoIdA === null || cmoIdA === undefined) return 1;
-              if (cmoIdB === null || cmoIdB === undefined) return -1;
-              if (sortOrder === "ASC") {
-                return cmoIdA > cmoIdB ? 1 : -1;
-              } else {
-                return cmoIdA < cmoIdB ? 1 : -1;
-              }
-            });
-          }
-
-          if (sortField === "dmpPatientId") {
-            patients.sort((a, b) => {
-              const dmpIdA = a.patientAliasesIsAlias?.find(
-                (patientAlias: PatientAlias) =>
-                  patientAlias.namespace === "dmpId"
-              )?.value;
-              const dmpIdB = b.patientAliasesIsAlias?.find(
-                (patientAlias: PatientAlias) =>
-                  patientAlias.namespace === "dmpId"
-              )?.value;
-              if (dmpIdA === null || dmpIdA === undefined) return 1;
-              if (dmpIdB === null || dmpIdB === undefined) return -1;
-              if (sortOrder === "ASC") {
-                return dmpIdA > dmpIdB ? 1 : -1;
-              } else {
-                return dmpIdA < dmpIdB ? 1 : -1;
-              }
-            });
-          }
-
-          if (sortField === "totalSampleCount") {
-            patients.sort((a, b) => {
-              const countA = a.hasSampleSamplesConnection?.totalCount;
-              const countB = b.hasSampleSamplesConnection?.totalCount;
-              if (countA === null || countA === undefined) return 1;
-              if (countB === null || countB === undefined) return -1;
-              if (sortOrder === "ASC") {
-                return countA > countB ? 1 : -1;
-              } else {
-                return countA < countB ? 1 : -1;
-              }
-            });
-          }
-
-          if (sortField === "cmoSampleIds") {
-            patients.sort((a, b) => {
-              let cmoSampleIdsA = a.hasSampleSamples?.map((s: Sample) => {
-                const sampleMetadata = s.hasMetadataSampleMetadata[0];
-                return (
-                  sampleMetadata?.cmoSampleName || sampleMetadata?.primaryId
-                );
-              });
-              let cmoSampleIdsB = b.hasSampleSamples?.map((s: Sample) => {
-                const sampleMetadata = s.hasMetadataSampleMetadata[0];
-                return (
-                  sampleMetadata?.cmoSampleName || sampleMetadata?.primaryId
-                );
-              });
-              if (cmoSampleIdsA === null || cmoSampleIdsA === undefined)
-                return 1;
-              if (cmoSampleIdsB === null || cmoSampleIdsB === undefined)
-                return -1;
-              cmoSampleIdsA = cmoSampleIdsA.join(", ");
-              cmoSampleIdsB = cmoSampleIdsB.join(", ");
-              if (sortOrder === "ASC") {
-                return cmoSampleIdsA > cmoSampleIdsB ? 1 : -1;
-              } else {
-                return cmoSampleIdsA < cmoSampleIdsB ? 1 : -1;
-              }
-            });
-          }
-
-          if (sortField === "consentPartA") {
-            patients.sort((a, b) => {
-              const additionalPropertiesA =
-                a.hasSampleSamples[0]?.hasMetadataSampleMetadata[0]
-                  ?.additionalProperties;
-              const additionalPropertiesB =
-                b.hasSampleSamples[0]?.hasMetadataSampleMetadata[0]
-                  ?.additionalProperties;
-              if (
-                additionalPropertiesA === null ||
-                additionalPropertiesA === undefined
-              )
-                return 1;
-              if (
-                additionalPropertiesB === null ||
-                additionalPropertiesB === undefined
-              )
-                return -1;
-              const consentPartAa = JSON.parse(additionalPropertiesA)[
-                "consent-parta"
-              ];
-              const consentPartAb = JSON.parse(additionalPropertiesB)[
-                "consent-parta"
-              ];
-              if (consentPartAa === null || consentPartAa === undefined)
-                return 1;
-              if (consentPartAb === null || consentPartAb === undefined)
-                return -1;
-              if (sortOrder === "ASC") {
-                return consentPartAa > consentPartAb ? 1 : -1;
-              } else {
-                return consentPartAa < consentPartAb ? 1 : -1;
-              }
-            });
-          }
-
-          if (sortField === "consentPartC") {
-            patients.sort((a, b) => {
-              const additionalPropertiesA =
-                a.hasSampleSamples[0]?.hasMetadataSampleMetadata[0]
-                  ?.additionalProperties;
-              const additionalPropertiesB =
-                b.hasSampleSamples[0]?.hasMetadataSampleMetadata[0]
-                  ?.additionalProperties;
-              if (
-                additionalPropertiesA === null ||
-                additionalPropertiesA === undefined
-              )
-                return 1;
-              if (
-                additionalPropertiesB === null ||
-                additionalPropertiesB === undefined
-              )
-                return -1;
-              const consentPartCa = JSON.parse(additionalPropertiesA)[
-                "consent-partc"
-              ];
-              const consentPartCb = JSON.parse(additionalPropertiesB)[
-                "consent-partc"
-              ];
-              if (consentPartCa === null || consentPartCa === undefined)
-                return 1;
-              if (consentPartCb === null || consentPartCb === undefined)
-                return -1;
-              if (sortOrder === "ASC") {
-                return consentPartCa > consentPartCb ? 1 : -1;
-              } else {
-                return consentPartCa < consentPartCb ? 1 : -1;
-              }
-            });
+          if (
+            [
+              "cmoPatientId",
+              "dmpPatientId",
+              "totalSampleCount",
+              "cmoSampleIds",
+              "consentPartA",
+              "consentPartC",
+            ].includes(sortField)
+          ) {
+            sortArrayByNestedField(patients, "Patient", sortField, sortOrder);
           }
         }
 
@@ -442,21 +306,17 @@ function buildResolvers(
         });
 
         if (args.options?.sort) {
-          const sortField = Object.keys(args.options.sort[0])[0];
-          const sortOrder = Object.values(args.options.sort[0])[0];
+          const sortOptions: SortOptions = args.options.sort;
+          const sortField = Object.keys(sortOptions[0])[0];
+          const sortOrder = Object.values(sortOptions[0])[0];
 
           if (sortField === "initialCohortDeliveryDate") {
-            cohorts.sort((a, b) => {
-              const dateA =
-                a.hasCohortCompleteCohortCompletes?.slice(-1)[0]?.date;
-              const dateB =
-                b.hasCohortCompleteCohortCompletes?.slice(-1)[0]?.date;
-              if (sortOrder === "ASC") {
-                return dateA > dateB ? 1 : -1;
-              } else {
-                return dateA < dateB ? 1 : -1;
-              }
-            });
+            sortArrayByNestedField(
+              cohorts,
+              "Cohort",
+              "initialCohortDeliveryDate",
+              sortOrder
+            );
           }
         }
 
@@ -473,83 +333,56 @@ function buildResolvers(
     },
     Patient: {
       cmoPatientId: (parent: PatientsListQuery["patients"][number]) => {
-        return parent.patientAliasesIsAlias?.find(
-          (patientAlias) => patientAlias.namespace === "cmoId"
-        )?.value;
+        return getNestedValue(parent, "Patient", "cmoPatientId");
       },
       dmpPatientId: (parent: PatientsListQuery["patients"][number]) => {
-        return parent.patientAliasesIsAlias?.find(
-          (patientAlias) => patientAlias.namespace === "dmpId"
-        )?.value;
+        return getNestedValue(parent, "Patient", "dmpPatientId");
       },
       totalSampleCount: (parent: PatientsListQuery["patients"][number]) => {
-        return parent.hasSampleSamplesConnection?.totalCount;
+        return getNestedValue(parent, "Patient", "totalSampleCount");
       },
       cmoSampleIds: (parent: PatientsListQuery["patients"][number]) => {
-        return parent.hasSampleSamples
-          ?.map((s) => {
-            const sampleMetadata = s.hasMetadataSampleMetadata[0];
-            return sampleMetadata?.cmoSampleName || sampleMetadata?.primaryId;
-          })
-          ?.join(", ");
+        return getNestedValue(parent, "Patient", "cmoSampleIds");
       },
       consentPartA: (parent: PatientsListQuery["patients"][number]) => {
-        try {
-          return JSON.parse(
-            parent.hasSampleSamples[0].hasMetadataSampleMetadata[0]
-              .additionalProperties
-          )["consent-parta"];
-        } catch {
-          return undefined;
-        }
+        return getNestedValue(parent, "Patient", "consentPartA");
       },
       consentPartC: (parent: PatientsListQuery["patients"][number]) => {
-        try {
-          return JSON.parse(
-            parent.hasSampleSamples[0].hasMetadataSampleMetadata[0]
-              .additionalProperties
-          )["consent-partc"];
-        } catch {
-          return undefined;
-        }
+        return getNestedValue(parent, "Patient", "consentPartC");
       },
     },
     Cohort: {
       totalSampleCount: (parent: CohortsListQuery["cohorts"][number]) => {
-        return parent.hasCohortSampleSamplesConnection?.totalCount;
+        return getNestedValue(parent, "Cohort", "totalSampleCount");
       },
       smileSampleIds: (parent: CohortsListQuery["cohorts"][number]) => {
-        return parent.hasCohortSampleSamples?.map((s) => s.smileSampleId);
+        return getNestedValue(parent, "Cohort", "smileSampleIds");
       },
       billed: (parent: CohortsListQuery["cohorts"][number]) => {
-        const samples = parent.hasCohortSampleSamples;
-        const allSamplesBilled =
-          samples?.length > 0 &&
-          samples.every((sample) => sample.hasTempoTempos?.[0]?.billed);
-        return allSamplesBilled ? "Yes" : "No";
+        return getNestedValue(parent, "Cohort", "billed");
       },
       initialCohortDeliveryDate: (
         parent: CohortsListQuery["cohorts"][number]
       ) => {
-        return parent.hasCohortCompleteCohortCompletes?.slice(-1)[0]?.date;
+        return getNestedValue(parent, "Cohort", "initialCohortDeliveryDate");
       },
       endUsers: (parent: CohortsListQuery["cohorts"][number]) => {
-        return parent.hasCohortCompleteCohortCompletes?.[0]?.endUsers; // latest
+        return getNestedValue(parent, "Cohort", "endUsers");
       },
       pmUsers: (parent: CohortsListQuery["cohorts"][number]) => {
-        return parent.hasCohortCompleteCohortCompletes?.[0]?.pmUsers;
+        return getNestedValue(parent, "Cohort", "pmUsers");
       },
       projectTitle: (parent: CohortsListQuery["cohorts"][number]) => {
-        return parent.hasCohortCompleteCohortCompletes?.[0]?.projectTitle;
+        return getNestedValue(parent, "Cohort", "projectTitle");
       },
       projectSubtitle: (parent: CohortsListQuery["cohorts"][number]) => {
-        return parent.hasCohortCompleteCohortCompletes?.[0]?.projectSubtitle;
+        return getNestedValue(parent, "Cohort", "projectSubtitle");
       },
       status: (parent: CohortsListQuery["cohorts"][number]) => {
-        return parent.hasCohortCompleteCohortCompletes?.[0]?.status;
+        return getNestedValue(parent, "Cohort", "status");
       },
       type: (parent: CohortsListQuery["cohorts"][number]) => {
-        return parent.hasCohortCompleteCohortCompletes?.[0]?.type;
+        return getNestedValue(parent, "Cohort", "type");
       },
     },
   };
@@ -584,18 +417,82 @@ function sortArrayByNestedField(
 }
 
 function getNestedValue(node: any, nodeLabel: string, fieldName: string) {
-  switch (nodeLabel) {
-    case "Request":
-      switch (fieldName) {
-        case "importDate":
-          return node.hasMetadataRequestMetadata[0]?.importDate;
-        case "totalSampleCount":
-          return node.hasSampleSamplesConnection?.totalCount;
-      }
-    case "Patient":
-      return `hasSampleSamples { hasMetadataSampleMetadata { ${fieldName} } }`;
-    case "Cohort":
-      return `hasCohortSampleSamples { hasTempoTempos { ${fieldName} } }`;
+  if (nodeLabel === "Request") {
+    switch (fieldName) {
+      case "importDate":
+        return node.hasMetadataRequestMetadata[0]?.importDate;
+      case "totalSampleCount":
+        return node.hasSampleSamplesConnection?.totalCount;
+    }
+  }
+
+  if (nodeLabel === "Patient") {
+    switch (fieldName) {
+      case "cmoPatientId":
+        return node.patientAliasesIsAlias?.find(
+          (patientAlias: PatientAlias) => patientAlias.namespace === "cmoId"
+        )?.value;
+      case "dmpPatientId":
+        return node.patientAliasesIsAlias?.find(
+          (patientAlias: PatientAlias) => patientAlias.namespace === "dmpId"
+        )?.value;
+      case "totalSampleCount":
+        return node.hasSampleSamplesConnection?.totalCount;
+      case "cmoSampleIds":
+        return node.hasSampleSamples
+          ?.map((s: Sample) => {
+            const sampleMetadata = s.hasMetadataSampleMetadata[0];
+            return sampleMetadata?.cmoSampleName || sampleMetadata?.primaryId;
+          })
+          ?.join(", ");
+      case "consentPartA":
+        try {
+          return JSON.parse(
+            node.hasSampleSamples[0].hasMetadataSampleMetadata[0]
+              .additionalProperties
+          )["consent-parta"];
+        } catch {
+          return undefined;
+        }
+      case "consentPartC":
+        try {
+          return JSON.parse(
+            node.hasSampleSamples[0].hasMetadataSampleMetadata[0]
+              .additionalProperties
+          )["consent-partc"];
+        } catch {
+          return undefined;
+        }
+    }
+  }
+
+  if (nodeLabel === "Cohort") {
+    switch (fieldName) {
+      case "totalSampleCount":
+        return node.hasCohortSampleSamplesConnection?.totalCount;
+      case "smileSampleIds":
+        return node.hasCohortSampleSamples?.map((s: Sample) => s.smileSampleId);
+      case "billed":
+        const samples: Sample[] = node.hasCohortSampleSamples;
+        const allSamplesBilled =
+          samples?.length > 0 &&
+          samples.every((sample) => sample.hasTempoTempos?.[0]?.billed);
+        return allSamplesBilled ? "Yes" : "No";
+      case "initialCohortDeliveryDate":
+        return node.hasCohortCompleteCohortCompletes?.slice(-1)[0]?.date;
+      case "endUsers":
+        return node.hasCohortCompleteCohortCompletes?.[0]?.endUsers;
+      case "pmUsers":
+        return node.hasCohortCompleteCohortCompletes?.[0]?.pmUsers;
+      case "projectTitle":
+        return node.hasCohortCompleteCohortCompletes?.[0]?.projectTitle;
+      case "projectSubtitle":
+        return node.hasCohortCompleteCohortCompletes?.[0]?.projectSubtitle;
+      case "status":
+        return node.hasCohortCompleteCohortCompletes?.[0]?.status;
+      case "type":
+        return node.hasCohortCompleteCohortCompletes?.[0]?.type;
+    }
   }
 }
 
