@@ -1,6 +1,6 @@
 import AutoSizer from "react-virtualized-auto-sizer";
 import { Button, Container, Modal } from "react-bootstrap";
-import { Dispatch, SetStateAction, useMemo, useRef } from "react";
+import { Dispatch, SetStateAction, useCallback, useMemo, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { DownloadModal } from "./DownloadModal";
 import { buildTsvString } from "../utils/buildTsvString";
@@ -117,7 +117,7 @@ export default function RecordsList({
 
   const totalCountNodeName = `${dataName}Connection`;
 
-  function getSortModel() {
+  const getSortModel = useCallback(() => {
     const sortModel = grid.current?.columnApi
       ?.getColumnState()
       .filter(({ sort }) => sort)
@@ -128,7 +128,7 @@ export default function RecordsList({
       return sortModel;
     }
     return defaultSort;
-  }
+  }, [defaultSort]);
 
   const datasource: IServerSideDatasource = useMemo(() => {
     return {
