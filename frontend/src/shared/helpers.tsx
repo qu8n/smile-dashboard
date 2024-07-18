@@ -16,6 +16,7 @@ import {
   SampleMetadata,
   SampleMetadataWhere,
   SampleWhere,
+  SortDirection,
   TempoWhere,
 } from "../generated/graphql";
 import WarningIcon from "@material-ui/icons/Warning";
@@ -469,7 +470,8 @@ function setupEditableSampleFields(samplesColDefs: ColDef[]) {
 
 export function prepareCohortDataForAgGrid(
   cohortsListQueryResult: CohortsListQuery,
-  filterModel: IServerSideGetRowsRequest["filterModel"]
+  filterModel: IServerSideGetRowsRequest["filterModel"],
+  sortModel: { [key: string]: SortDirection }[] | undefined
 ) {
   let newCohorts = [...cohortsListQueryResult.cohorts];
   let newCohortsConnection = { ...cohortsListQueryResult.cohortsConnection };
@@ -507,6 +509,33 @@ export function prepareCohortDataForAgGrid(
       uniqueSmileSampleIds.add(id!);
     });
   });
+
+  if (sortModel) {
+    const sortField = Object.keys(
+      sortModel[0]
+    )[0] as keyof typeof newCohorts[number];
+    const sortOrder = sortModel[0][sortField];
+    newCohorts.sort((objA, objB) => {
+      let a = objA[sortField],
+        b = objB[sortField];
+
+      if (a === null || a === undefined) return 1;
+      if (b === null || b === undefined) return -1;
+
+      if (Array.isArray(a)) a = a.join(", ");
+      if (Array.isArray(b)) b = b.join(", ");
+
+      if (typeof a === "number" && typeof b === "number") {
+        return sortOrder === "ASC" ? a - b : b - a;
+      } else if (typeof a === "string" && typeof b === "string") {
+        return sortOrder === "ASC"
+          ? a.localeCompare(b, "en", { sensitivity: "base" })
+          : b.localeCompare(a, "en", { sensitivity: "base" });
+      } else {
+        return 0;
+      }
+    });
+  }
 
   return {
     cohorts: newCohorts,

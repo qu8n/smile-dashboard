@@ -35,7 +35,8 @@ interface IRecordsListProps {
   lazyRecordsQueryAddlVariables?: Record<string, any>;
   prepareDataForAgGrid?: (
     data: any,
-    filterModel: IServerSideGetRowsRequest["filterModel"]
+    filterModel: IServerSideGetRowsRequest["filterModel"],
+    sortModel?: { [key: string]: SortDirection }[] | undefined
   ) => any;
   queryFilterWhereVariables: (
     parsedSearchVals: string[]
@@ -191,6 +192,8 @@ export default function RecordsList({
       {showDownloadModal && (
         <DownloadModal
           loader={async () => {
+            const sortModel = getSortModel();
+
             const { data } = await fetchMore({
               variables: {
                 where: {
@@ -199,14 +202,16 @@ export default function RecordsList({
                 options: {
                   offset: 0,
                   limit: undefined,
-                  sort: getSortModel(),
+                  sort: sortModel,
                 },
               },
             });
+
             let agGridData = data;
             if (prepareDataForAgGrid) {
-              agGridData = prepareDataForAgGrid(data, filterModel);
+              agGridData = prepareDataForAgGrid(data, filterModel, sortModel);
             }
+
             return buildTsvString(agGridData[dataName], colDefs);
           }}
           onComplete={() => setShowDownloadModal(false)}

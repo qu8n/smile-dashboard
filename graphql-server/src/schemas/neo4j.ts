@@ -187,7 +187,7 @@ function buildResolvers(
         const requests = await ogm.model("Request").find({
           where: args.where,
           options: {
-            sort: args.options.sort,
+            sort: args.options?.sort,
           },
           selectionSet: `{
             igoRequestId
@@ -227,13 +227,16 @@ function buildResolvers(
           }
         }
 
-        return requests.slice(args.options.offset, args.options.limit + 1);
+        if (args.options?.limit == null) {
+          return requests;
+        }
+        return requests.slice(args.options.offset, args.options.limit);
       },
       async patients(_source: undefined, args: any) {
         const patients = await ogm.model("Patient").find({
           where: args.where,
           options: {
-            sort: args.options.sort,
+            sort: args.options?.sort,
           },
           selectionSet: `{
             smilePatientId
@@ -274,6 +277,9 @@ function buildResolvers(
           }
         }
 
+        if (args.options?.limit == null) {
+          return patients;
+        }
         return patients.slice(args.options.offset, args.options.limit + 1);
       },
       async cohorts(_source: undefined, args: any) {
@@ -404,9 +410,9 @@ function sortArrayByNestedField(
     if (Array.isArray(a)) a = a.join(", ");
     if (Array.isArray(b)) b = b.join(", ");
 
-    if (typeof a === "number") {
+    if (typeof a === "number" && typeof b === "number") {
       return sortOrder === "ASC" ? a - b : b - a;
-    } else if (typeof a === "string") {
+    } else if (typeof a === "string" && typeof b === "string") {
       return sortOrder === "ASC"
         ? a.localeCompare(b, "en", { sensitivity: "base" })
         : b.localeCompare(a, "en", { sensitivity: "base" });
