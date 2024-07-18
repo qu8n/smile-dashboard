@@ -201,6 +201,7 @@ export const PatientsListColumns: ColDef[] = [
   {
     field: "smilePatientId",
     headerName: "SMILE Patient ID",
+    hide: true,
   },
 ];
 
@@ -476,6 +477,7 @@ export function prepareCohortDataForAgGrid(
   let newCohorts = [...cohortsListQueryResult.cohorts];
   let newCohortsConnection = { ...cohortsListQueryResult.cohortsConnection };
 
+  // Handle filtering
   if ("initialCohortDeliveryDate" in filterModel) {
     const { dateFrom, dateTo } = filterModel.initialCohortDeliveryDate;
     newCohorts = newCohorts.filter((cohort) => {
@@ -510,31 +512,14 @@ export function prepareCohortDataForAgGrid(
     });
   });
 
+  // Handle sorting the Cohort records when users perform an export while a sort is active
+  // The sorting logic cover cases when the value is null/undefined, string, and number
   if (sortModel) {
     const sortField = Object.keys(
       sortModel[0]
     )[0] as keyof typeof newCohorts[number];
     const sortOrder = sortModel[0][sortField];
-    newCohorts.sort((objA, objB) => {
-      let a = objA[sortField],
-        b = objB[sortField];
-
-      if (a === null || a === undefined) return 1;
-      if (b === null || b === undefined) return -1;
-
-      if (Array.isArray(a)) a = a.join(", ");
-      if (Array.isArray(b)) b = b.join(", ");
-
-      if (typeof a === "number" && typeof b === "number") {
-        return sortOrder === "ASC" ? a - b : b - a;
-      } else if (typeof a === "string" && typeof b === "string") {
-        return sortOrder === "ASC"
-          ? a.localeCompare(b, "en", { sensitivity: "base" })
-          : b.localeCompare(a, "en", { sensitivity: "base" });
-      } else {
-        return 0;
-      }
-    });
+    sortArray(newCohorts, sortField, sortOrder);
   }
 
   return {
@@ -542,6 +527,29 @@ export function prepareCohortDataForAgGrid(
     cohortsConnection: newCohortsConnection,
     uniqueSampleCount: uniqueSmileSampleIds.size,
   };
+}
+
+function sortArray(arr: any[], sortField: string, sortOrder: SortDirection) {
+  arr.sort((objA, objB) => {
+    let a = objA[sortField],
+      b = objB[sortField];
+
+    if (a === null || a === undefined) return 1;
+    if (b === null || b === undefined) return -1;
+
+    if (Array.isArray(a)) a = a.join(", ");
+    if (Array.isArray(b)) b = b.join(", ");
+
+    if (typeof a === "number" && typeof b === "number") {
+      return sortOrder === "ASC" ? a - b : b - a;
+    } else if (typeof a === "string" && typeof b === "string") {
+      return sortOrder === "ASC"
+        ? a.localeCompare(b, "en", { sensitivity: "base" })
+        : b.localeCompare(a, "en", { sensitivity: "base" });
+    } else {
+      return 0;
+    }
+  });
 }
 
 export const CohortsListColumns: ColDef[] = [
