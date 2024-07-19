@@ -269,7 +269,7 @@ export default function PatientsPage({
           setShowDownloadModal(true);
         }}
         samplesColDefs={SampleMetadataDetailsColumns}
-        samplesQueryParam={sampleQueryParamValue && "Patient's Samples"}
+        samplesQueryParam={sampleQueryParamValue && "Patient"}
         samplesParentWhereVariables={
           {
             OR: [

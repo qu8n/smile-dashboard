@@ -176,7 +176,7 @@ export default function CohortsPage({
         samplesColDefs={CohortSampleDetailsColumns}
         samplesQueryParam={
           sampleQueryParamValue &&
-          `${sampleQueryParamHeaderName} "${sampleQueryParamValue}"`
+          `${sampleQueryParamHeaderName} ${sampleQueryParamValue}`
         }
         prepareSamplesDataForAgGrid={prepareSampleCohortDataForAgGrid}
         samplesParentWhereVariables={

@@ -272,7 +272,7 @@ export default function RecordsList({
                     parentWhereVariables={samplesParentWhereVariables}
                     refetchWhereVariables={samplesRefetchWhereVariables}
                     setUnsavedChanges={setUnsavedChanges}
-                    exportFileName={`${samplesQueryParam}.tsv`}
+                    exportFileName={`Samples of ${samplesQueryParam}.tsv`}
                     sampleKeyForUpdate={sampleKeyForUpdate}
                     userEmail={userEmail}
                     setUserEmail={setUserEmail}
