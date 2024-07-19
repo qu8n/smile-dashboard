@@ -733,6 +733,14 @@ export const CohortSampleDetailsColumns: ColDef[] = [
     field: "qcCompleteStatus",
     headerName: "QC Complete Status",
   },
+  {
+    field: "genePanel",
+    headerName: "Gene Panel",
+  },
+  {
+    field: "baitSet",
+    headerName: "Bait Set",
+  },
 ];
 
 export const ReadOnlyCohortSampleDetailsColumns = _.cloneDeep(
@@ -997,6 +1005,8 @@ export function prepareSampleCohortDataForAgGrid(samples: Sample[]) {
       primaryId: sampleMetadata.primaryId,
       cmoSampleName: sampleMetadata.cmoSampleName,
       hasStatusStatuses: sampleMetadata.hasStatusStatuses,
+      genePanel: sampleMetadata.genePanel,
+      baitSet: sampleMetadata.baitSet,
       revisable: s.revisable,
       ...tempoData,
     };
