@@ -5,16 +5,17 @@ import {
   useFindSamplesByInputValueQuery,
 } from "../generated/graphql";
 import AutoSizer from "react-virtualized-auto-sizer";
-import { Button, Col } from "react-bootstrap";
-import { Dispatch, SetStateAction, useEffect, useRef } from "react";
+import { Button, Col, Container } from "react-bootstrap";
+import { Dispatch, SetStateAction, useEffect, useMemo, useRef } from "react";
 import { DownloadModal } from "./DownloadModal";
 import { UpdateModal } from "./UpdateModal";
 import { AlertModal } from "./AlertModal";
-import { buildTsvString } from "../utils/buildTsvString";
+import { buildTsvString } from "../utils/stringBuilders";
 import {
   SampleChange,
   SampleMetadataExtended,
   defaultColDef,
+  getSamplePopupParamId,
   handleSearch,
   isValidCostCenter,
 } from "../shared/helpers";
@@ -29,6 +30,9 @@ import { ErrorMessage, LoadingSpinner, Toolbar } from "../shared/tableElements";
 import styles from "./records.module.scss";
 import { getUserEmail } from "../utils/getUserEmail";
 import { openLoginPopup } from "../utils/openLoginPopup";
+import { PageHeader } from "../shared/components/PageHeader";
+import { BreadCrumb } from "../shared/components/BreadCrumb";
+import { useParams } from "react-router-dom";
 
 const POLLING_INTERVAL = 2000;
 const max_rows = 500;
@@ -105,6 +109,7 @@ export default function SamplesList({
   const [rowCount, setRowCount] = useState(0);
 
   const gridRef = useRef<AgGridReactType>(null);
+  const params = useParams();
 
   useEffect(() => {
     gridRef.current?.api?.showLoadingOverlay();
@@ -123,11 +128,22 @@ export default function SamplesList({
     setRowCount(data?.samplesConnection.edges.length || 0);
   }, [data]);
 
+  const samples = data?.samplesConnection?.edges.map((e) => e.node) as Sample[];
+
+  const popupPageHeader = useMemo(() => {
+    if (parentWhereVariables && samples && params) {
+      return getSamplePopupParamId(
+        parentWhereVariables,
+        samples,
+        Object.values(params)?.[0]!
+      );
+    }
+    return undefined;
+  }, [parentWhereVariables, params, samples]);
+
   if (loading) return <LoadingSpinner />;
 
   if (error) return <ErrorMessage error={error} />;
-
-  const samples = data!.samplesConnection.edges.map((e) => e.node) as Sample[];
 
   async function onCellValueChanged(params: CellValueChangedEvent) {
     if (!editMode) return;
@@ -243,6 +259,13 @@ export default function SamplesList({
 
   return (
     <>
+      <Container fluid>
+        {!parentWhereVariables && <BreadCrumb currPageTitle="samples" />}
+        <PageHeader
+          title={[popupPageHeader, "samples"].filter(Boolean).join(" ")}
+        />
+      </Container>
+
       {showDownloadModal && (
         <DownloadModal
           loader={() => {
@@ -253,7 +276,9 @@ export default function SamplesList({
           onComplete={() => {
             setShowDownloadModal(false);
           }}
-          exportFileName={exportFileName || "samples.tsv"}
+          exportFileName={[popupPageHeader, "samples.tsv"]
+            .filter(Boolean)
+            .join("_")}
         />
       )}
 
@@ -323,7 +348,11 @@ export default function SamplesList({
       <AutoSizer>
         {({ width }) => (
           <div
-            className={`ag-theme-alpine ${styles.tableHeight}`}
+            className={`ag-theme-alpine ${
+              parentWhereVariables
+                ? styles.popupTableHeight
+                : styles.tableHeight
+            }`}
             style={{ width: width }}
           >
             <AgGridReact<SampleMetadataExtended>

@@ -1084,3 +1084,26 @@ export function isValidCostCenter(costCenter: string): boolean {
   const validCostCenter = new RegExp("^\\d{5}/\\d{5}$");
   return validCostCenter.test(costCenter);
 }
+
+export function getSamplePopupParamId(
+  parentWhereVariables: SampleWhere,
+  samples: Sample[],
+  paramId: string
+) {
+  if (parentWhereVariables.OR?.[0].patientsHasSampleConnection_SOME) {
+    console.log(samples);
+    const patient = samples[0].patientsHasSampleConnection?.edges?.[0]?.node;
+
+    const cmoPatientId = patient.patientAliasesIsAlias.find(
+      (patientAlias) => patientAlias.namespace === "cmoId"
+    )?.value;
+    if (cmoPatientId) return cmoPatientId;
+
+    const dmpPatientId = patient.patientAliasesIsAlias.find(
+      (patientAlias) => patientAlias.namespace === "dmpId"
+    )?.value;
+    if (dmpPatientId) return dmpPatientId;
+  }
+
+  return paramId;
+}

@@ -8,7 +8,6 @@ import {
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 import RecordsList from "../../components/RecordsList";
 import { useParams } from "react-router-dom";
-import { PageHeader } from "../../shared/components/PageHeader";
 import { Col, Form } from "react-bootstrap";
 import { AlertModal } from "../../components/AlertModal";
 import { Tooltip } from "@material-ui/core";
@@ -241,12 +240,11 @@ export default function PatientsPage({
 
   const dataName = "patients";
   const sampleQueryParamFieldName = "smilePatientId";
+  const sampleQueryParamHeaderName = "Patient";
   const sampleQueryParamValue = params[sampleQueryParamFieldName];
 
   return (
     <>
-      <PageHeader dataName={dataName} />
-
       <RecordsList
         colDefs={ActivePatientsListColumns}
         dataName={dataName}
@@ -269,7 +267,10 @@ export default function PatientsPage({
           setShowDownloadModal(true);
         }}
         samplesColDefs={SampleMetadataDetailsColumns}
-        samplesQueryParam={sampleQueryParamValue && "Patient"}
+        samplesQueryParam={
+          sampleQueryParamValue &&
+          `${sampleQueryParamHeaderName} ${sampleQueryParamValue}`
+        }
         samplesParentWhereVariables={
           {
             OR: [

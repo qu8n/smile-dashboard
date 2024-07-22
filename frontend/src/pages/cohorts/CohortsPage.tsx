@@ -16,7 +16,6 @@ import {
 } from "../../shared/helpers";
 import RecordsList from "../../components/RecordsList";
 import { useParams } from "react-router-dom";
-import { PageHeader } from "../../shared/components/PageHeader";
 
 function cohortFilterWhereVariables(parsedSearchVals: string[]): CohortWhere[] {
   if (parsedSearchVals.length > 1) {
@@ -147,61 +146,57 @@ export default function CohortsPage({
   const defaultSort = [{ initialCohortDeliveryDate: SortDirection.Desc }];
 
   return (
-    <>
-      <PageHeader dataName={dataName} />
-
-      <RecordsList
-        colDefs={CohortsListColumns}
-        dataName={dataName}
-        enableInfiniteScroll={false}
-        lazyRecordsQuery={useCohortsListLazyQuery}
-        lazyRecordsQueryAddlVariables={
-          {
-            hasCohortCompleteCohortCompletesOptions2: {
-              sort: [{ date: SortDirection.Desc }],
+    <RecordsList
+      colDefs={CohortsListColumns}
+      dataName={dataName}
+      enableInfiniteScroll={false}
+      lazyRecordsQuery={useCohortsListLazyQuery}
+      lazyRecordsQueryAddlVariables={
+        {
+          hasCohortCompleteCohortCompletesOptions2: {
+            sort: [{ date: SortDirection.Desc }],
+          },
+        } as CohortCompleteOptions
+      }
+      prepareDataForAgGrid={prepareCohortDataForAgGrid}
+      queryFilterWhereVariables={cohortFilterWhereVariables}
+      defaultSort={defaultSort}
+      userSearchVal={userSearchVal}
+      setUserSearchVal={setUserSearchVal}
+      parsedSearchVals={parsedSearchVals}
+      setParsedSearchVals={setParsedSearchVals}
+      handleSearch={() => handleSearch(userSearchVal, setParsedSearchVals)}
+      showDownloadModal={showDownloadModal}
+      setShowDownloadModal={setShowDownloadModal}
+      handleDownload={() => setShowDownloadModal(true)}
+      samplesColDefs={CohortSampleDetailsColumns}
+      samplesQueryParam={
+        sampleQueryParamValue &&
+        `${sampleQueryParamHeaderName} ${sampleQueryParamValue}`
+      }
+      prepareSamplesDataForAgGrid={prepareSampleCohortDataForAgGrid}
+      samplesParentWhereVariables={
+        {
+          cohortsHasCohortSampleConnection_SOME: {
+            node: {
+              [sampleQueryParamFieldName]: sampleQueryParamValue,
             },
-          } as CohortCompleteOptions
-        }
-        prepareDataForAgGrid={prepareCohortDataForAgGrid}
-        queryFilterWhereVariables={cohortFilterWhereVariables}
-        defaultSort={defaultSort}
-        userSearchVal={userSearchVal}
-        setUserSearchVal={setUserSearchVal}
-        parsedSearchVals={parsedSearchVals}
-        setParsedSearchVals={setParsedSearchVals}
-        handleSearch={() => handleSearch(userSearchVal, setParsedSearchVals)}
-        showDownloadModal={showDownloadModal}
-        setShowDownloadModal={setShowDownloadModal}
-        handleDownload={() => setShowDownloadModal(true)}
-        samplesColDefs={CohortSampleDetailsColumns}
-        samplesQueryParam={
-          sampleQueryParamValue &&
-          `${sampleQueryParamHeaderName} ${sampleQueryParamValue}`
-        }
-        prepareSamplesDataForAgGrid={prepareSampleCohortDataForAgGrid}
-        samplesParentWhereVariables={
-          {
-            cohortsHasCohortSampleConnection_SOME: {
-              node: {
-                [sampleQueryParamFieldName]: sampleQueryParamValue,
-              },
+          },
+        } as SampleWhere
+      }
+      samplesRefetchWhereVariables={(samplesParsedSearchVals) => {
+        return {
+          cohortsHasCohortSampleConnection_SOME: {
+            node: {
+              [sampleQueryParamFieldName]: sampleQueryParamValue,
             },
-          } as SampleWhere
-        }
-        samplesRefetchWhereVariables={(samplesParsedSearchVals) => {
-          return {
-            cohortsHasCohortSampleConnection_SOME: {
-              node: {
-                [sampleQueryParamFieldName]: sampleQueryParamValue,
-              },
-            },
-            OR: cohortSampleFilterWhereVariables(samplesParsedSearchVals),
-          } as SampleWhere;
-        }}
-        sampleKeyForUpdate={sampleKeyForUpdate}
-        userEmail={userEmail}
-        setUserEmail={setUserEmail}
-      />
-    </>
+          },
+          OR: cohortSampleFilterWhereVariables(samplesParsedSearchVals),
+        } as SampleWhere;
+      }}
+      sampleKeyForUpdate={sampleKeyForUpdate}
+      userEmail={userEmail}
+      setUserEmail={setUserEmail}
+    />
   );
 }

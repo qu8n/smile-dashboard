@@ -29,3 +29,7 @@ export function buildTsvString(rows: any[], colDefs: ColDef[]) {
 
   return [colHeadersAsTsvRow, ...rowsAsTsvRows].join("\n");
 }
+
+export function buildSentenceCaseString(str: string) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}

@@ -12430,7 +12430,17 @@ export type FindSamplesByInputValueQuery = {
           __typename?: "SamplePatientsHasSampleConnection";
           edges: Array<{
             __typename?: "SamplePatientsHasSampleRelationship";
-            node: { __typename?: "Patient"; smilePatientId: string };
+            node: {
+              __typename?: "Patient";
+              smilePatientId: string;
+              cmoPatientId?: string | null;
+              dmpPatientId?: string | null;
+              patientAliasesIsAlias: Array<{
+                __typename?: "PatientAlias";
+                namespace: string;
+                value: string;
+              }>;
+            };
           }>;
         };
         cohortsHasCohortSampleConnection: {
@@ -12891,6 +12901,12 @@ export const FindSamplesByInputValueDocument = gql`
             edges {
               node {
                 smilePatientId
+                cmoPatientId
+                dmpPatientId
+                patientAliasesIsAlias {
+                  namespace
+                  value
+                }
               }
             }
           }

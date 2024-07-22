@@ -1,4 +1,3 @@
-import { PageHeader } from "../../shared/components/PageHeader";
 import SamplesList from "../../components/SamplesList";
 import {
   ReadOnlyCohortSampleDetailsColumns,
@@ -17,51 +16,47 @@ export default function SamplesPage() {
   const [columnDefs, setColumnDefs] = useState(combinedSampleDetailsColumns);
 
   return (
-    <>
-      <PageHeader dataName={"samples"} />
-
-      <SamplesList
-        columnDefs={columnDefs}
-        prepareDataForAgGrid={prepareCombinedSampleDataForAgGrid}
-        refetchWhereVariables={(parsedSearchVals) => {
-          return {
-            OR: cohortSampleFilterWhereVariables(parsedSearchVals).concat({
-              hasMetadataSampleMetadata_SOME: {
-                OR: sampleFilterWhereVariables(parsedSearchVals),
-              },
-            }),
-          } as SampleWhere;
-        }}
-        customToolbarUI={
-          <>
-            <InfoToolTip>
-              These tabs change the fields displayed in the table below. "View
-              All" shows all fields, including both SampleMetadata and Tempo
-              fields.
-            </InfoToolTip>{" "}
-            <Button
-              onClick={() => {
-                setColumnDefs(combinedSampleDetailsColumns);
-              }}
-              size="sm"
-              variant="outline-secondary"
-              active={_.isEqual(columnDefs, combinedSampleDetailsColumns)}
-            >
-              View all columns
-            </Button>{" "}
-            <Button
-              onClick={() => {
-                setColumnDefs(ReadOnlyCohortSampleDetailsColumns);
-              }}
-              size="sm"
-              variant="outline-secondary"
-              active={_.isEqual(columnDefs, ReadOnlyCohortSampleDetailsColumns)}
-            >
-              View TEMPO columns
-            </Button>
-          </>
-        }
-      />
-    </>
+    <SamplesList
+      columnDefs={columnDefs}
+      prepareDataForAgGrid={prepareCombinedSampleDataForAgGrid}
+      refetchWhereVariables={(parsedSearchVals) => {
+        return {
+          OR: cohortSampleFilterWhereVariables(parsedSearchVals).concat({
+            hasMetadataSampleMetadata_SOME: {
+              OR: sampleFilterWhereVariables(parsedSearchVals),
+            },
+          }),
+        } as SampleWhere;
+      }}
+      customToolbarUI={
+        <>
+          <InfoToolTip>
+            These tabs change the fields displayed in the table below. "View
+            All" shows all fields, including both SampleMetadata and Tempo
+            fields.
+          </InfoToolTip>{" "}
+          <Button
+            onClick={() => {
+              setColumnDefs(combinedSampleDetailsColumns);
+            }}
+            size="sm"
+            variant="outline-secondary"
+            active={_.isEqual(columnDefs, combinedSampleDetailsColumns)}
+          >
+            View all columns
+          </Button>{" "}
+          <Button
+            onClick={() => {
+              setColumnDefs(ReadOnlyCohortSampleDetailsColumns);
+            }}
+            size="sm"
+            variant="outline-secondary"
+            active={_.isEqual(columnDefs, ReadOnlyCohortSampleDetailsColumns)}
+          >
+            View TEMPO columns
+          </Button>
+        </>
+      }
+    />
   );
 }

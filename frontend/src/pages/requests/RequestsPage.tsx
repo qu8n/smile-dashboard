@@ -14,7 +14,6 @@ import {
 } from "../../shared/helpers";
 import RecordsList from "../../components/RecordsList";
 import { useParams } from "react-router-dom";
-import { PageHeader } from "../../shared/components/PageHeader";
 
 function requestFilterWhereVariables(
   parsedSearchVals: string[]
@@ -73,49 +72,45 @@ export default function RequestsPage() {
   const defaultSort = [{ importDate: SortDirection.Desc }];
 
   return (
-    <>
-      <PageHeader dataName={dataName} />
-
-      <RecordsList
-        colDefs={RequestsListColumns}
-        dataName={dataName}
-        lazyRecordsQuery={useRequestsListLazyQuery}
-        queryFilterWhereVariables={requestFilterWhereVariables}
-        defaultSort={defaultSort}
-        userSearchVal={userSearchVal}
-        setUserSearchVal={setUserSearchVal}
-        parsedSearchVals={parsedSearchVals}
-        setParsedSearchVals={setParsedSearchVals}
-        handleSearch={() => handleSearch(userSearchVal, setParsedSearchVals)}
-        showDownloadModal={showDownloadModal}
-        setShowDownloadModal={setShowDownloadModal}
-        handleDownload={() => setShowDownloadModal(true)}
-        samplesColDefs={SampleMetadataDetailsColumns}
-        samplesQueryParam={
-          sampleQueryParamValue &&
-          `${sampleQueryParamHeaderName} ${sampleQueryParamValue}`
-        }
-        prepareSamplesDataForAgGrid={prepareSampleMetadataForAgGrid}
-        samplesParentWhereVariables={
-          {
-            hasMetadataSampleMetadata_SOME: {
-              [sampleQueryParamFieldName]: sampleQueryParamValue,
-            },
-          } as SampleWhere
-        }
-        samplesRefetchWhereVariables={(sampleParsedSearchVals) => {
-          return {
-            hasMetadataSampleMetadata_SOME: {
-              OR: sampleFilterWhereVariables(sampleParsedSearchVals),
-              ...(sampleQueryParamValue
-                ? {
-                    [sampleQueryParamFieldName]: sampleQueryParamValue,
-                  }
-                : {}),
-            },
-          } as SampleWhere;
-        }}
-      />
-    </>
+    <RecordsList
+      colDefs={RequestsListColumns}
+      dataName={dataName}
+      lazyRecordsQuery={useRequestsListLazyQuery}
+      queryFilterWhereVariables={requestFilterWhereVariables}
+      defaultSort={defaultSort}
+      userSearchVal={userSearchVal}
+      setUserSearchVal={setUserSearchVal}
+      parsedSearchVals={parsedSearchVals}
+      setParsedSearchVals={setParsedSearchVals}
+      handleSearch={() => handleSearch(userSearchVal, setParsedSearchVals)}
+      showDownloadModal={showDownloadModal}
+      setShowDownloadModal={setShowDownloadModal}
+      handleDownload={() => setShowDownloadModal(true)}
+      samplesColDefs={SampleMetadataDetailsColumns}
+      samplesQueryParam={
+        sampleQueryParamValue &&
+        `${sampleQueryParamHeaderName} ${sampleQueryParamValue}`
+      }
+      prepareSamplesDataForAgGrid={prepareSampleMetadataForAgGrid}
+      samplesParentWhereVariables={
+        {
+          hasMetadataSampleMetadata_SOME: {
+            [sampleQueryParamFieldName]: sampleQueryParamValue,
+          },
+        } as SampleWhere
+      }
+      samplesRefetchWhereVariables={(sampleParsedSearchVals) => {
+        return {
+          hasMetadataSampleMetadata_SOME: {
+            OR: sampleFilterWhereVariables(sampleParsedSearchVals),
+            ...(sampleQueryParamValue
+              ? {
+                  [sampleQueryParamFieldName]: sampleQueryParamValue,
+                }
+              : {}),
+          },
+        } as SampleWhere;
+      }}
+    />
   );
 }

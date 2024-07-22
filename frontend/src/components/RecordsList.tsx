@@ -3,7 +3,7 @@ import { Button, Container, Modal } from "react-bootstrap";
 import { Dispatch, SetStateAction, useCallback, useMemo, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { DownloadModal } from "./DownloadModal";
-import { buildTsvString } from "../utils/buildTsvString";
+import { buildTsvString } from "../utils/stringBuilders";
 import { AgGridReact } from "ag-grid-react";
 import { useState } from "react";
 import styles from "./records.module.scss";
@@ -26,6 +26,8 @@ import {
 import { PatientIdsTriplet } from "../pages/patients/PatientsPage";
 import { ErrorMessage, LoadingSpinner, Toolbar } from "../shared/tableElements";
 import { AgGridReact as AgGridReactType } from "ag-grid-react/lib/agGridReact";
+import { BreadCrumb } from "../shared/components/BreadCrumb";
+import { PageHeader } from "../shared/components/PageHeader";
 
 interface IRecordsListProps {
   colDefs: ColDef[];
@@ -50,7 +52,7 @@ interface IRecordsListProps {
   showDownloadModal: boolean;
   setShowDownloadModal: Dispatch<SetStateAction<boolean>>;
   handleDownload: () => void;
-  samplesQueryParam: string | undefined;
+  samplesQueryParam: string | undefined | any; // TODO
   prepareSamplesDataForAgGrid?: (samples: Sample[]) => any[];
   samplesColDefs: ColDef[];
   samplesParentWhereVariables: SampleWhere;
@@ -189,6 +191,9 @@ export default function RecordsList({
 
   return (
     <Container fluid>
+      <BreadCrumb currPageTitle={dataName} />
+      <PageHeader title={dataName} />
+
       {showDownloadModal && (
         <DownloadModal
           loader={async () => {
@@ -261,9 +266,7 @@ export default function RecordsList({
         <AutoSizer>
           {({ height, width }) => (
             <Modal show={true} dialogClassName="modal-90w" onHide={handleClose}>
-              <Modal.Header closeButton>
-                <Modal.Title>{`Viewing ${samplesQueryParam}`}</Modal.Title>
-              </Modal.Header>
+              <Modal.Header closeButton />
               <Modal.Body>
                 <div className={styles.popupHeight}>
                   <SamplesList
