@@ -240,7 +240,6 @@ export default function PatientsPage({
 
   const dataName = "patients";
   const sampleQueryParamFieldName = "smilePatientId";
-  const sampleQueryParamHeaderName = "Patient";
   const sampleQueryParamValue = params[sampleQueryParamFieldName];
 
   return (
@@ -267,10 +266,6 @@ export default function PatientsPage({
           setShowDownloadModal(true);
         }}
         samplesColDefs={SampleMetadataDetailsColumns}
-        samplesQueryParam={
-          sampleQueryParamValue &&
-          `${sampleQueryParamHeaderName} ${sampleQueryParamValue}`
-        }
         samplesParentWhereVariables={
           {
             OR: [

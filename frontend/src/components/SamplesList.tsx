@@ -30,9 +30,10 @@ import { ErrorMessage, LoadingSpinner, Toolbar } from "../shared/tableElements";
 import styles from "./records.module.scss";
 import { getUserEmail } from "../utils/getUserEmail";
 import { openLoginPopup } from "../utils/openLoginPopup";
-import { PageHeader } from "../shared/components/PageHeader";
+import { Title } from "../shared/components/Title";
 import { BreadCrumb } from "../shared/components/BreadCrumb";
 import { useParams } from "react-router-dom";
+import { DataName } from "../shared/types";
 
 const POLLING_INTERVAL = 2000;
 const max_rows = 500;
@@ -45,9 +46,9 @@ interface ISampleListProps {
   columnDefs: ColDef[];
   prepareDataForAgGrid: (samples: Sample[]) => any[];
   setUnsavedChanges?: (unsavedChanges: boolean) => void;
+  parentDataName?: DataName;
   parentWhereVariables?: SampleWhere;
   refetchWhereVariables: (parsedSearchVals: string[]) => SampleWhere;
-  exportFileName?: string;
   sampleKeyForUpdate?: keyof Sample;
   userEmail?: string | null;
   setUserEmail?: Dispatch<SetStateAction<string | null>>;
@@ -57,10 +58,10 @@ interface ISampleListProps {
 export default function SamplesList({
   columnDefs,
   prepareDataForAgGrid,
+  parentDataName,
   parentWhereVariables,
   refetchWhereVariables,
   setUnsavedChanges,
-  exportFileName,
   sampleKeyForUpdate = "hasMetadataSampleMetadata",
   userEmail,
   setUserEmail,
@@ -130,7 +131,7 @@ export default function SamplesList({
 
   const samples = data?.samplesConnection?.edges.map((e) => e.node) as Sample[];
 
-  const popupPageHeader = useMemo(() => {
+  const popupParamId = useMemo(() => {
     if (parentWhereVariables && samples && params) {
       return getSamplePopupParamId(
         parentWhereVariables,
@@ -261,8 +262,15 @@ export default function SamplesList({
     <>
       <Container fluid>
         {!parentWhereVariables && <BreadCrumb currPageTitle="samples" />}
-        <PageHeader
-          title={[popupPageHeader, "samples"].filter(Boolean).join(" ")}
+        <Title
+          text={
+            popupParamId
+              ? `Viewing ${parentDataName?.slice(
+                  0,
+                  -1
+                )} ${popupParamId}'s samples`
+              : "samples"
+          }
         />
       </Container>
 
@@ -276,7 +284,11 @@ export default function SamplesList({
           onComplete={() => {
             setShowDownloadModal(false);
           }}
-          exportFileName={[popupPageHeader, "samples.tsv"]
+          exportFileName={[
+            parentDataName?.slice(0, -1),
+            popupParamId,
+            "samples.tsv",
+          ]
             .filter(Boolean)
             .join("_")}
         />

@@ -1091,7 +1091,6 @@ export function getSamplePopupParamId(
   paramId: string
 ) {
   if (parentWhereVariables.OR?.[0].patientsHasSampleConnection_SOME) {
-    console.log(samples);
     const patient = samples[0].patientsHasSampleConnection?.edges?.[0]?.node;
 
     const cmoPatientId = patient.patientAliasesIsAlias.find(

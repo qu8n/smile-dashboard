@@ -1,7 +1,7 @@
 import AutoSizer from "react-virtualized-auto-sizer";
 import { Button, Container, Modal } from "react-bootstrap";
 import { Dispatch, SetStateAction, useCallback, useMemo, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { DownloadModal } from "./DownloadModal";
 import { buildTsvString } from "../utils/stringBuilders";
 import { AgGridReact } from "ag-grid-react";
@@ -27,7 +27,7 @@ import { PatientIdsTriplet } from "../pages/patients/PatientsPage";
 import { ErrorMessage, LoadingSpinner, Toolbar } from "../shared/tableElements";
 import { AgGridReact as AgGridReactType } from "ag-grid-react/lib/agGridReact";
 import { BreadCrumb } from "../shared/components/BreadCrumb";
-import { PageHeader } from "../shared/components/PageHeader";
+import { Title } from "../shared/components/Title";
 
 interface IRecordsListProps {
   colDefs: ColDef[];
@@ -52,7 +52,6 @@ interface IRecordsListProps {
   showDownloadModal: boolean;
   setShowDownloadModal: Dispatch<SetStateAction<boolean>>;
   handleDownload: () => void;
-  samplesQueryParam: string | undefined | any; // TODO
   prepareSamplesDataForAgGrid?: (samples: Sample[]) => any[];
   samplesColDefs: ColDef[];
   samplesParentWhereVariables: SampleWhere;
@@ -83,7 +82,6 @@ export default function RecordsList({
   showDownloadModal,
   setShowDownloadModal,
   handleDownload,
-  samplesQueryParam,
   prepareSamplesDataForAgGrid = prepareSampleMetadataForAgGrid,
   samplesColDefs,
   samplesParentWhereVariables,
@@ -102,6 +100,7 @@ export default function RecordsList({
 
   const grid = useRef<AgGridReactType>(null);
   const navigate = useNavigate();
+  const params = useParams();
 
   // note that we aren't using initial fetch
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -192,7 +191,7 @@ export default function RecordsList({
   return (
     <Container fluid>
       <BreadCrumb currPageTitle={dataName} />
-      <PageHeader title={dataName} />
+      <Title text={dataName} />
 
       {showDownloadModal && (
         <DownloadModal
@@ -262,7 +261,7 @@ export default function RecordsList({
         </Modal>
       )}
 
-      {samplesQueryParam && (
+      {Object.keys(params).length !== 0 && (
         <AutoSizer>
           {({ height, width }) => (
             <Modal show={true} dialogClassName="modal-90w" onHide={handleClose}>
@@ -272,10 +271,10 @@ export default function RecordsList({
                   <SamplesList
                     columnDefs={samplesColDefs}
                     prepareDataForAgGrid={prepareSamplesDataForAgGrid}
+                    parentDataName={dataName}
                     parentWhereVariables={samplesParentWhereVariables}
                     refetchWhereVariables={samplesRefetchWhereVariables}
                     setUnsavedChanges={setUnsavedChanges}
-                    exportFileName={`Samples of ${samplesQueryParam}.tsv`}
                     sampleKeyForUpdate={sampleKeyForUpdate}
                     userEmail={userEmail}
                     setUserEmail={setUserEmail}

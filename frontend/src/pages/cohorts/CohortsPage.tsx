@@ -140,7 +140,6 @@ export default function CohortsPage({
 
   const dataName = "cohorts";
   const sampleQueryParamFieldName = "cohortId";
-  const sampleQueryParamHeaderName = "Cohort ID";
   const sampleQueryParamValue = params[sampleQueryParamFieldName];
   const sampleKeyForUpdate = "hasTempoTempos";
   const defaultSort = [{ initialCohortDeliveryDate: SortDirection.Desc }];
@@ -170,10 +169,6 @@ export default function CohortsPage({
       setShowDownloadModal={setShowDownloadModal}
       handleDownload={() => setShowDownloadModal(true)}
       samplesColDefs={CohortSampleDetailsColumns}
-      samplesQueryParam={
-        sampleQueryParamValue &&
-        `${sampleQueryParamHeaderName} ${sampleQueryParamValue}`
-      }
       prepareSamplesDataForAgGrid={prepareSampleCohortDataForAgGrid}
       samplesParentWhereVariables={
         {

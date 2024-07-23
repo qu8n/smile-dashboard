@@ -67,7 +67,6 @@ export default function RequestsPage() {
 
   const dataName = "requests";
   const sampleQueryParamFieldName = "igoRequestId";
-  const sampleQueryParamHeaderName = "IGO Request ID";
   const sampleQueryParamValue = params[sampleQueryParamFieldName];
   const defaultSort = [{ importDate: SortDirection.Desc }];
 
@@ -87,10 +86,6 @@ export default function RequestsPage() {
       setShowDownloadModal={setShowDownloadModal}
       handleDownload={() => setShowDownloadModal(true)}
       samplesColDefs={SampleMetadataDetailsColumns}
-      samplesQueryParam={
-        sampleQueryParamValue &&
-        `${sampleQueryParamHeaderName} ${sampleQueryParamValue}`
-      }
       prepareSamplesDataForAgGrid={prepareSampleMetadataForAgGrid}
       samplesParentWhereVariables={
         {

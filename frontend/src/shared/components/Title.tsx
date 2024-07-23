@@ -1,11 +1,11 @@
 import { Col, Row } from "react-bootstrap";
 import { buildSentenceCaseString } from "../../utils/stringBuilders";
 
-export function PageHeader({ title }: { title: string }) {
+export function Title({ text }: { text: string }) {
   return (
     <Row className="pagetitle">
       <Col>
-        <h1>{buildSentenceCaseString(title)}</h1>
+        <h1>{buildSentenceCaseString(text)}</h1>
       </Col>
     </Row>
   );
