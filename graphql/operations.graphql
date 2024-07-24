@@ -162,6 +162,8 @@ fragment SampleMetadataParts on SampleMetadata {
   investigatorSampleId
   libraries
   oncotreeCode
+  cancerType
+  cancerTypeDetailed
   preservation
   primaryId
   qcReports

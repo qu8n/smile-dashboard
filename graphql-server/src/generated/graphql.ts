@@ -7523,6 +7523,46 @@ export type SampleHasMetadataSampleMetadataNodeAggregationWhereInput = {
   baitSet_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
   baitSet_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
   baitSet_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  cancerTypeDetailed_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  cancerTypeDetailed_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  cancerTypeDetailed_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  cancerTypeDetailed_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  cancerTypeDetailed_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  cancerTypeDetailed_EQUAL?: InputMaybe<Scalars["String"]>;
+  cancerTypeDetailed_GT?: InputMaybe<Scalars["Int"]>;
+  cancerTypeDetailed_GTE?: InputMaybe<Scalars["Int"]>;
+  cancerTypeDetailed_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  cancerTypeDetailed_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  cancerTypeDetailed_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  cancerTypeDetailed_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  cancerTypeDetailed_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  cancerTypeDetailed_LT?: InputMaybe<Scalars["Int"]>;
+  cancerTypeDetailed_LTE?: InputMaybe<Scalars["Int"]>;
+  cancerTypeDetailed_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  cancerTypeDetailed_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  cancerTypeDetailed_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  cancerTypeDetailed_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  cancerTypeDetailed_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  cancerType_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  cancerType_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  cancerType_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  cancerType_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  cancerType_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  cancerType_EQUAL?: InputMaybe<Scalars["String"]>;
+  cancerType_GT?: InputMaybe<Scalars["Int"]>;
+  cancerType_GTE?: InputMaybe<Scalars["Int"]>;
+  cancerType_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  cancerType_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  cancerType_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  cancerType_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  cancerType_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  cancerType_LT?: InputMaybe<Scalars["Int"]>;
+  cancerType_LTE?: InputMaybe<Scalars["Int"]>;
+  cancerType_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  cancerType_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  cancerType_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  cancerType_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  cancerType_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
   cfDNA2dBarcode_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
   cfDNA2dBarcode_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
   cfDNA2dBarcode_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
@@ -8207,6 +8247,8 @@ export type SampleMetadata = {
   __typename?: "SampleMetadata";
   additionalProperties: Scalars["String"];
   baitSet?: Maybe<Scalars["String"]>;
+  cancerType?: Maybe<Scalars["String"]>;
+  cancerTypeDetailed?: Maybe<Scalars["String"]>;
   cfDNA2dBarcode?: Maybe<Scalars["String"]>;
   cmoInfoIgoId?: Maybe<Scalars["String"]>;
   cmoPatientId?: Maybe<Scalars["String"]>;
@@ -8282,6 +8324,8 @@ export type SampleMetadataAggregateSelection = {
   __typename?: "SampleMetadataAggregateSelection";
   additionalProperties: StringAggregateSelectionNonNullable;
   baitSet: StringAggregateSelectionNullable;
+  cancerType: StringAggregateSelectionNullable;
+  cancerTypeDetailed: StringAggregateSelectionNullable;
   cfDNA2dBarcode: StringAggregateSelectionNullable;
   cmoInfoIgoId: StringAggregateSelectionNullable;
   cmoPatientId: StringAggregateSelectionNullable;
@@ -8332,6 +8376,8 @@ export type SampleMetadataConnection = {
 export type SampleMetadataCreateInput = {
   additionalProperties: Scalars["String"];
   baitSet?: InputMaybe<Scalars["String"]>;
+  cancerType?: InputMaybe<Scalars["String"]>;
+  cancerTypeDetailed?: InputMaybe<Scalars["String"]>;
   cfDNA2dBarcode?: InputMaybe<Scalars["String"]>;
   cmoInfoIgoId?: InputMaybe<Scalars["String"]>;
   cmoPatientId?: InputMaybe<Scalars["String"]>;
@@ -8689,6 +8735,8 @@ export type SampleMetadataSamplesHasMetadataUpdateFieldInput = {
 export type SampleMetadataSort = {
   additionalProperties?: InputMaybe<SortDirection>;
   baitSet?: InputMaybe<SortDirection>;
+  cancerType?: InputMaybe<SortDirection>;
+  cancerTypeDetailed?: InputMaybe<SortDirection>;
   cfDNA2dBarcode?: InputMaybe<SortDirection>;
   cmoInfoIgoId?: InputMaybe<SortDirection>;
   cmoPatientId?: InputMaybe<SortDirection>;
@@ -8730,6 +8778,8 @@ export type SampleMetadataStatusHasStatusStatusesNodeAggregateSelection = {
 export type SampleMetadataUpdateInput = {
   additionalProperties?: InputMaybe<Scalars["String"]>;
   baitSet?: InputMaybe<Scalars["String"]>;
+  cancerType?: InputMaybe<Scalars["String"]>;
+  cancerTypeDetailed?: InputMaybe<Scalars["String"]>;
   cfDNA2dBarcode?: InputMaybe<Scalars["String"]>;
   cmoInfoIgoId?: InputMaybe<Scalars["String"]>;
   cmoPatientId?: InputMaybe<Scalars["String"]>;
@@ -8786,6 +8836,26 @@ export type SampleMetadataWhere = {
   baitSet_NOT_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
   baitSet_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
   baitSet_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  cancerType?: InputMaybe<Scalars["String"]>;
+  cancerTypeDetailed?: InputMaybe<Scalars["String"]>;
+  cancerTypeDetailed_CONTAINS?: InputMaybe<Scalars["String"]>;
+  cancerTypeDetailed_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  cancerTypeDetailed_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  cancerTypeDetailed_NOT?: InputMaybe<Scalars["String"]>;
+  cancerTypeDetailed_NOT_CONTAINS?: InputMaybe<Scalars["String"]>;
+  cancerTypeDetailed_NOT_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  cancerTypeDetailed_NOT_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  cancerTypeDetailed_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  cancerTypeDetailed_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  cancerType_CONTAINS?: InputMaybe<Scalars["String"]>;
+  cancerType_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  cancerType_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  cancerType_NOT?: InputMaybe<Scalars["String"]>;
+  cancerType_NOT_CONTAINS?: InputMaybe<Scalars["String"]>;
+  cancerType_NOT_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  cancerType_NOT_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  cancerType_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  cancerType_STARTS_WITH?: InputMaybe<Scalars["String"]>;
   cfDNA2dBarcode?: InputMaybe<Scalars["String"]>;
   cfDNA2dBarcode_CONTAINS?: InputMaybe<Scalars["String"]>;
   cfDNA2dBarcode_ENDS_WITH?: InputMaybe<Scalars["String"]>;
@@ -9999,6 +10069,8 @@ export type SampleSampleMetadataHasMetadataSampleMetadataNodeAggregateSelection 
     __typename?: "SampleSampleMetadataHasMetadataSampleMetadataNodeAggregateSelection";
     additionalProperties: StringAggregateSelectionNonNullable;
     baitSet: StringAggregateSelectionNullable;
+    cancerType: StringAggregateSelectionNullable;
+    cancerTypeDetailed: StringAggregateSelectionNullable;
     cfDNA2dBarcode: StringAggregateSelectionNullable;
     cmoInfoIgoId: StringAggregateSelectionNullable;
     cmoPatientId: StringAggregateSelectionNullable;
@@ -10586,6 +10658,46 @@ export type StatusSampleMetadataHasStatusNodeAggregationWhereInput = {
   baitSet_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
   baitSet_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
   baitSet_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  cancerTypeDetailed_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  cancerTypeDetailed_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  cancerTypeDetailed_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  cancerTypeDetailed_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  cancerTypeDetailed_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  cancerTypeDetailed_EQUAL?: InputMaybe<Scalars["String"]>;
+  cancerTypeDetailed_GT?: InputMaybe<Scalars["Int"]>;
+  cancerTypeDetailed_GTE?: InputMaybe<Scalars["Int"]>;
+  cancerTypeDetailed_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  cancerTypeDetailed_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  cancerTypeDetailed_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  cancerTypeDetailed_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  cancerTypeDetailed_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  cancerTypeDetailed_LT?: InputMaybe<Scalars["Int"]>;
+  cancerTypeDetailed_LTE?: InputMaybe<Scalars["Int"]>;
+  cancerTypeDetailed_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  cancerTypeDetailed_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  cancerTypeDetailed_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  cancerTypeDetailed_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  cancerTypeDetailed_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  cancerType_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  cancerType_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  cancerType_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  cancerType_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  cancerType_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  cancerType_EQUAL?: InputMaybe<Scalars["String"]>;
+  cancerType_GT?: InputMaybe<Scalars["Int"]>;
+  cancerType_GTE?: InputMaybe<Scalars["Int"]>;
+  cancerType_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  cancerType_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  cancerType_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  cancerType_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  cancerType_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  cancerType_LT?: InputMaybe<Scalars["Int"]>;
+  cancerType_LTE?: InputMaybe<Scalars["Int"]>;
+  cancerType_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  cancerType_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  cancerType_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  cancerType_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  cancerType_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
   cfDNA2dBarcode_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
   cfDNA2dBarcode_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
   cfDNA2dBarcode_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
@@ -11100,6 +11212,8 @@ export type StatusSampleMetadataSampleMetadataHasStatusNodeAggregateSelection =
     __typename?: "StatusSampleMetadataSampleMetadataHasStatusNodeAggregateSelection";
     additionalProperties: StringAggregateSelectionNonNullable;
     baitSet: StringAggregateSelectionNullable;
+    cancerType: StringAggregateSelectionNullable;
+    cancerTypeDetailed: StringAggregateSelectionNullable;
     cfDNA2dBarcode: StringAggregateSelectionNullable;
     cmoInfoIgoId: StringAggregateSelectionNullable;
     cmoPatientId: StringAggregateSelectionNullable;
@@ -12381,6 +12495,8 @@ export type FindSamplesByInputValueQuery = {
           investigatorSampleId?: string | null;
           libraries: string;
           oncotreeCode?: string | null;
+          cancerType?: string | null;
+          cancerTypeDetailed?: string | null;
           preservation?: string | null;
           primaryId: string;
           qcReports: string;
@@ -12537,6 +12653,8 @@ export type SampleMetadataPartsFragment = {
   investigatorSampleId?: string | null;
   libraries: string;
   oncotreeCode?: string | null;
+  cancerType?: string | null;
+  cancerTypeDetailed?: string | null;
   preservation?: string | null;
   primaryId: string;
   qcReports: string;
@@ -12593,6 +12711,8 @@ export type SamplesQuery = {
       investigatorSampleId?: string | null;
       libraries: string;
       oncotreeCode?: string | null;
+      cancerType?: string | null;
+      cancerTypeDetailed?: string | null;
       preservation?: string | null;
       primaryId: string;
       qcReports: string;
@@ -12652,6 +12772,8 @@ export type UpdateSamplesMutation = {
         investigatorSampleId?: string | null;
         libraries: string;
         oncotreeCode?: string | null;
+        cancerType?: string | null;
+        cancerTypeDetailed?: string | null;
         preservation?: string | null;
         primaryId: string;
         qcReports: string;
@@ -12788,6 +12910,8 @@ export const SampleMetadataPartsFragmentDoc = gql`
     investigatorSampleId
     libraries
     oncotreeCode
+    cancerType
+    cancerTypeDetailed
     preservation
     primaryId
     qcReports

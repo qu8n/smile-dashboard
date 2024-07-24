@@ -80,6 +80,11 @@ export async function buildNeo4jDbSchema() {
       status: String
       type: String
     }
+
+    extend type SampleMetadata {
+      cancerType: String
+      cancerTypeDetailed: String
+    }
   `;
 
   const ogm = new OGM({ typeDefs: extendedTypeDefs, driver });
@@ -389,6 +394,14 @@ function buildResolvers(
       },
       type: (parent: CohortsListQuery["cohorts"][number]) => {
         return getNestedValue(parent, "Cohort", "type");
+      },
+    },
+    SampleMetadata: {
+      cancerType: async (parent: SampleMetadata) => {
+        return null;
+      },
+      cancerTypeDetailed: async (parent: SampleMetadata) => {
+        return null;
       },
     },
   };
