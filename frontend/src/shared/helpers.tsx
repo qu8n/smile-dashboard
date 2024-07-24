@@ -335,6 +335,14 @@ export const SampleMetadataDetailsColumns: ColDef<SampleMetadataExtended>[] = [
     headerName: "Oncotree Code",
   },
   {
+    field: "cancerType",
+    headerName: "Cancer Type",
+  },
+  {
+    field: "cancerTypeDetailed",
+    headerName: "Cancer Type Detailed",
+  },
+  {
     field: "collectionYear",
     headerName: "Collection Year",
   },

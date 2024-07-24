@@ -398,10 +398,41 @@ function buildResolvers(
     },
     SampleMetadata: {
       cancerType: async (parent: SampleMetadata) => {
-        return null;
+        // TODO: incorporate error handling
+        // https://www.apollographql.com/docs/apollo-server/v3/data/errors
+        // TODO: add caching
+        if (parent.oncotreeCode) {
+          const response = await fetch(
+            `https://oncotree.mskcc.org/api/tumorTypes/search/code/${parent.oncotreeCode}?exactMatch=true`,
+            {
+              headers: {
+                Accept: "application/json",
+              },
+            }
+          );
+          if (response.ok) {
+            const data = await response.json();
+            return data[0]?.mainType;
+          }
+        }
+        return undefined;
       },
       cancerTypeDetailed: async (parent: SampleMetadata) => {
-        return null;
+        if (parent.oncotreeCode) {
+          const response = await fetch(
+            `https://oncotree.mskcc.org/api/tumorTypes/search/code/${parent.oncotreeCode}?exactMatch=true`,
+            {
+              headers: {
+                Accept: "application/json",
+              },
+            }
+          );
+          if (response.ok) {
+            const data = await response.json();
+            return data[0]?.name;
+          }
+        }
+        return undefined;
       },
     },
   };
