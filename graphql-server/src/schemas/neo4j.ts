@@ -81,9 +81,20 @@ export async function buildNeo4jDbSchema() {
       type: String
     }
 
+    enum CacheControlScope {
+      PUBLIC
+      PRIVATE
+    }
+
+    directive @cacheControl(
+      maxAge: Int
+      scope: CacheControlScope
+      inheritMaxAge: Boolean
+    ) on FIELD_DEFINITION | OBJECT | INTERFACE | UNION
+
     extend type SampleMetadata {
-      cancerType: String
-      cancerTypeDetailed: String
+      cancerType: String @cacheControl(maxAge: 86400) # 1 day
+      cancerTypeDetailed: String @cacheControl(maxAge: 86400)
     }
   `;
 
@@ -398,44 +409,47 @@ function buildResolvers(
     },
     SampleMetadata: {
       cancerType: async (parent: SampleMetadata) => {
-        // TODO: incorporate error handling
-        // https://www.apollographql.com/docs/apollo-server/v3/data/errors
-        // TODO: add caching
         if (parent.oncotreeCode) {
-          const response = await fetch(
-            `https://oncotree.mskcc.org/api/tumorTypes/search/code/${parent.oncotreeCode}?exactMatch=true`,
-            {
-              headers: {
-                Accept: "application/json",
-              },
-            }
-          );
-          if (response.ok) {
-            const data = await response.json();
-            return data[0]?.mainType;
-          }
+          const data = await fetchOncotreeData(parent);
+          return data?.mainType;
         }
-        return undefined;
+        return null;
       },
       cancerTypeDetailed: async (parent: SampleMetadata) => {
         if (parent.oncotreeCode) {
-          const response = await fetch(
-            `https://oncotree.mskcc.org/api/tumorTypes/search/code/${parent.oncotreeCode}?exactMatch=true`,
-            {
-              headers: {
-                Accept: "application/json",
-              },
-            }
-          );
-          if (response.ok) {
-            const data = await response.json();
-            return data[0]?.name;
-          }
+          const data = await fetchOncotreeData(parent);
+          return data?.name;
         }
-        return undefined;
+        return null;
       },
     },
   };
+}
+
+async function fetchOncotreeData(sampleMetadata: SampleMetadata) {
+  const { oncotreeCode, primaryId } = sampleMetadata;
+  try {
+    const response = await fetch(
+      `https://oncotree.mskcc.org/api/tumorTypes/search/code/${oncotreeCode}?exactMatch=true`,
+      {
+        headers: {
+          Accept: "application/json",
+        },
+      }
+    );
+    if (!response.ok) {
+      throw new Error(
+        `Error: Failed to fetch oncotreeCode ${oncotreeCode} from sample ${primaryId}`
+      );
+    }
+    const data = await response.json();
+    return data?.[0] ?? null;
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error(error.message);
+    }
+    return null;
+  }
 }
 
 function sortArrayByNestedField(
@@ -502,7 +516,7 @@ function getNestedValue(node: any, nodeLabel: string, fieldName: string) {
               .additionalProperties
           )["consent-parta"];
         } catch {
-          return undefined;
+          return null;
         }
       case "consentPartC":
         try {
@@ -511,7 +525,7 @@ function getNestedValue(node: any, nodeLabel: string, fieldName: string) {
               .additionalProperties
           )["consent-partc"];
         } catch {
-          return undefined;
+          return null;
         }
     }
   }
