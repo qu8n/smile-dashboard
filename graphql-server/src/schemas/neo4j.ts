@@ -27,6 +27,28 @@ const fetch = require("node-fetch");
 const request = require("request-promise-native");
 import { ApolloClient, ApolloQueryResult } from "apollo-client";
 import { gql } from "apollo-server";
+import NodeCache from "node-cache";
+
+const oncotreeCache = new NodeCache({ stdTTL: 86400 }); // 1 day
+
+type OncotreeTumorType = {
+  children: Record<string, unknown>;
+  code: string;
+  color: string;
+  externalReferences: Record<string, unknown>;
+  history: string[];
+  level: number;
+  mainType: string;
+  name: string;
+  parent: string;
+  precursors: string[];
+  revocations: string[];
+  tissue: string;
+};
+
+type CachedOncotreeData =
+  | Pick<OncotreeTumorType, "name" | "mainType">
+  | undefined;
 
 type SortOptions = { [key: string]: SortDirection }[];
 
@@ -408,17 +430,27 @@ function buildResolvers(
       },
     },
     SampleMetadata: {
-      cancerType: async (parent: SampleMetadata) => {
-        if (parent.oncotreeCode) {
-          const data = await fetchOncotreeData(parent);
-          return data?.mainType;
+      cancerType: async ({ oncotreeCode }: SampleMetadata) => {
+        if (oncotreeCode) {
+          let cachedData: CachedOncotreeData = oncotreeCache.get(oncotreeCode);
+          if (!cachedData) {
+            const data = await fetchOncotreeData();
+            setOncotreeCache(data);
+            cachedData = oncotreeCache.get(oncotreeCode);
+          }
+          return cachedData ? cachedData.mainType : "N/A";
         }
         return null;
       },
-      cancerTypeDetailed: async (parent: SampleMetadata) => {
-        if (parent.oncotreeCode) {
-          const data = await fetchOncotreeData(parent);
-          return data?.name;
+      cancerTypeDetailed: async ({ oncotreeCode }: SampleMetadata) => {
+        if (oncotreeCode) {
+          let cachedData: CachedOncotreeData = oncotreeCache.get(oncotreeCode);
+          if (!cachedData) {
+            const data = await fetchOncotreeData();
+            setOncotreeCache(data);
+            cachedData = oncotreeCache.get(oncotreeCode);
+          }
+          return cachedData ? cachedData.name : "N/A";
         }
         return null;
       },
@@ -426,30 +458,37 @@ function buildResolvers(
   };
 }
 
-async function fetchOncotreeData(sampleMetadata: SampleMetadata) {
-  const { oncotreeCode, primaryId } = sampleMetadata;
+async function fetchOncotreeData() {
   try {
-    const response = await fetch(
-      `https://oncotree.mskcc.org/api/tumorTypes/search/code/${oncotreeCode}?exactMatch=true`,
-      {
-        headers: {
-          Accept: "application/json",
-        },
-      }
-    );
+    const response = await fetch(`https://oncotree.mskcc.org/api/tumorTypes`, {
+      headers: {
+        Accept: "application/json",
+      },
+    });
     if (!response.ok) {
-      throw new Error(
-        `Error: Failed to fetch oncotreeCode ${oncotreeCode} from sample ${primaryId}`
-      );
+      throw new Error("Failed to fetch the Oncotree API");
     }
-    const data = await response.json();
-    return data?.[0] ?? null;
+    return await response.json();
   } catch (error) {
     if (error instanceof Error) {
-      console.error(error.message);
+      console.log(error.message);
     }
     return null;
   }
+}
+
+function setOncotreeCache(data: OncotreeTumorType[]) {
+  // Restructure data for node-cache to store multiple k-v pairs in one go
+  const parsedData = data.map((obj) => {
+    return {
+      key: obj.code,
+      val: {
+        name: obj.name,
+        mainType: obj.mainType,
+      },
+    };
+  });
+  oncotreeCache.mset(parsedData);
 }
 
 function sortArrayByNestedField(
