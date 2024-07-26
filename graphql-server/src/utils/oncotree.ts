@@ -1,4 +1,6 @@
+import fetch from "node-fetch";
 import NodeCache from "node-cache";
+import { driver } from "../schemas/neo4j";
 
 export type OncotreeTumorType = {
   children: Record<string, unknown>;
@@ -38,12 +40,12 @@ export async function fetchOncotreeData() {
   }
 }
 
-export function setOncotreeCache(
-  data: OncotreeTumorType[],
+export async function updateOncotreeCache(
+  oncotreeData: OncotreeTumorType[],
   oncotreeCache: NodeCache
 ) {
   // Restructure data for node-cache to store multiple k-v pairs in one go
-  const parsedData = data.map((obj) => {
+  const parsedData = oncotreeData.map((obj) => {
     return {
       key: obj.code,
       val: {
@@ -52,5 +54,45 @@ export function setOncotreeCache(
       } as CachedOncotreeData,
     };
   });
+
+  // Add to cache codes found in Neo4j but not in the Oncotree db.
+  // This helps us distinguish between new codes in SMILE vs. codes not found in Oncotree db,
+  // preventing unnecessary API calls
+  const existingCodes = await getOncotreeCodesFromNeo4j();
+  const fetchedCodes = new Set(parsedData.map((obj) => obj.key));
+  if (existingCodes) {
+    for (const existingCode of existingCodes) {
+      if (!fetchedCodes.has(existingCode)) {
+        parsedData.push({
+          key: existingCode,
+          val: {
+            name: "N/A",
+            mainType: "N/A",
+          } as CachedOncotreeData,
+        });
+      }
+    }
+  }
+
   oncotreeCache.mset(parsedData);
+}
+
+async function getOncotreeCodesFromNeo4j() {
+  const session = driver.session();
+  try {
+    const result = await session.writeTransaction((tx) =>
+      tx.run(`
+        MATCH (s:SampleMetadata) RETURN DISTINCT s.oncotreeCode AS oncotreeCode
+      `)
+    );
+    return new Set(
+      result.records.map((record) => record.get("oncotreeCode")).filter(Boolean)
+    );
+  } catch (error) {
+    if (error instanceof Error) {
+      console.log(error.message);
+    }
+  } finally {
+    await session.close();
+  }
 }

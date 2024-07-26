@@ -30,19 +30,19 @@ import { gql } from "apollo-server";
 import {
   CachedOncotreeData,
   fetchOncotreeData,
-  setOncotreeCache,
+  updateOncotreeCache,
 } from "../utils/oncotree";
 import { ApolloServerContext } from "../utils/servers";
 
 type SortOptions = { [key: string]: SortDirection }[];
 
-export async function buildNeo4jDbSchema() {
-  const driver = neo4j.driver(
-    props.neo4j_graphql_uri,
-    neo4j.auth.basic(props.neo4j_username, props.neo4j_password),
-    { disableLosslessIntegers: true } // maps Cypher Integer to JavaScript Number
-  );
+export const driver = neo4j.driver(
+  props.neo4j_graphql_uri,
+  neo4j.auth.basic(props.neo4j_username, props.neo4j_password),
+  { disableLosslessIntegers: true } // maps Cypher Integer to JavaScript Number
+);
 
+export async function buildNeo4jDbSchema() {
   const sessionFactory = () =>
     driver.session({ defaultAccessMode: neo4j.session.WRITE });
 
@@ -423,10 +423,10 @@ function buildResolvers(
           let cachedData: CachedOncotreeData = oncotreeCache.get(oncotreeCode);
           if (!cachedData) {
             const data = await fetchOncotreeData();
-            setOncotreeCache(data, oncotreeCache);
+            updateOncotreeCache(data, oncotreeCache);
             cachedData = oncotreeCache.get(oncotreeCode);
           }
-          return cachedData ? cachedData.mainType : "N/A";
+          return cachedData?.mainType;
         }
         return null;
       },
@@ -439,10 +439,10 @@ function buildResolvers(
           let cachedData: CachedOncotreeData = oncotreeCache.get(oncotreeCode);
           if (!cachedData) {
             const data = await fetchOncotreeData();
-            setOncotreeCache(data, oncotreeCache);
+            updateOncotreeCache(data, oncotreeCache);
             cachedData = oncotreeCache.get(oncotreeCode);
           }
-          return cachedData ? cachedData.name : "N/A";
+          return cachedData?.name;
         }
         return null;
       },

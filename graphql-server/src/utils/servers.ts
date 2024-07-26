@@ -2,7 +2,7 @@ import { Express } from "express";
 import fs from "fs";
 import https from "https";
 import { props } from "./constants";
-import { buildNeo4jDbSchema } from "../schemas/neo4j";
+import { buildNeo4jDbSchema, driver } from "../schemas/neo4j";
 import { mergeSchemas } from "@graphql-tools/schema";
 import { oracleDbSchema } from "../schemas/oracle";
 import { ApolloServer } from "apollo-server-express";
@@ -13,7 +13,7 @@ import {
 import { updateActiveUserSessions } from "./session";
 import { corsOptions } from "./constants";
 import NodeCache from "node-cache";
-import { fetchOncotreeData, setOncotreeCache } from "./oncotree";
+import { fetchOncotreeData, updateOncotreeCache } from "./oncotree";
 
 export function initializeHttpsServer(app: Express) {
   const httpsServer = https.createServer(
@@ -46,9 +46,7 @@ export async function initializeApolloServer(
 
   const oncotreeCache = new NodeCache({ stdTTL: 86400 }); // 1 day
   const data = await fetchOncotreeData();
-  if (data) {
-    setOncotreeCache(data, oncotreeCache);
-  }
+  updateOncotreeCache(data, oncotreeCache);
 
   const apolloServer = new ApolloServer<ApolloServerContext>({
     schema: mergedSchema,
