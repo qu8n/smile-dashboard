@@ -12,6 +12,8 @@ import {
 } from "apollo-server-core";
 import { updateActiveUserSessions } from "./session";
 import { corsOptions } from "./constants";
+import NodeCache from "node-cache";
+import { fetchOncotreeData, setOncotreeCache } from "./oncotree";
 
 export function initializeHttpsServer(app: Express) {
   const httpsServer = https.createServer(
@@ -25,17 +27,30 @@ export function initializeHttpsServer(app: Express) {
   return httpsServer;
 }
 
+export interface ApolloServerContext {
+  req: {
+    user: any;
+    isAuthenticated: boolean;
+  };
+  oncotreeCache: NodeCache;
+}
+
 export async function initializeApolloServer(
   httpsServer: https.Server,
   app: Express
 ) {
   const neo4jDbSchema = await buildNeo4jDbSchema();
-
   const mergedSchema = mergeSchemas({
     schemas: [neo4jDbSchema, oracleDbSchema],
   });
 
-  const apolloServer = new ApolloServer({
+  const oncotreeCache = new NodeCache({ stdTTL: 86400 }); // 1 day
+  const data = await fetchOncotreeData();
+  if (data) {
+    setOncotreeCache(data, oncotreeCache);
+  }
+
+  const apolloServer = new ApolloServer<ApolloServerContext>({
     schema: mergedSchema,
     context: async ({ req }: { req: any }) => {
       updateActiveUserSessions(req);
@@ -45,6 +60,7 @@ export async function initializeApolloServer(
           user: req.user,
           isAuthenticated: req.isAuthenticated,
         },
+        oncotreeCache: oncotreeCache,
       };
     },
     plugins: [
