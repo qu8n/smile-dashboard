@@ -22,7 +22,14 @@ export type CachedOncotreeData =
   | Pick<OncotreeTumorType, "name" | "mainType">
   | undefined;
 
-export async function fetchOncotreeData() {
+export async function fetchAndCacheOncotreeData(oncotreeCache: NodeCache) {
+  const data = await fetchOncotreeData();
+  if (data) {
+    await updateOncotreeCache(data, oncotreeCache);
+  }
+}
+
+async function fetchOncotreeData() {
   try {
     const response = await fetch(props.oncotree_api, {
       headers: {
@@ -45,7 +52,7 @@ export async function fetchOncotreeData() {
   }
 }
 
-export async function updateOncotreeCache(
+async function updateOncotreeCache(
   oncotreeData: OncotreeTumorType[],
   oncotreeCache: NodeCache
 ) {

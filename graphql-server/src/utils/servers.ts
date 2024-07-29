@@ -13,7 +13,7 @@ import {
 import { updateActiveUserSessions } from "./session";
 import { corsOptions } from "./constants";
 import NodeCache from "node-cache";
-import { fetchOncotreeData, updateOncotreeCache } from "./oncotree";
+import { fetchAndCacheOncotreeData } from "./oncotree";
 
 export function initializeHttpsServer(app: Express) {
   const httpsServer = https.createServer(
@@ -45,8 +45,7 @@ export async function initializeApolloServer(
   });
 
   const oncotreeCache = new NodeCache({ stdTTL: 86400 }); // 1 day
-  const data = await fetchOncotreeData();
-  await updateOncotreeCache(data, oncotreeCache);
+  await fetchAndCacheOncotreeData(oncotreeCache);
 
   const apolloServer = new ApolloServer<ApolloServerContext>({
     schema: mergedSchema,

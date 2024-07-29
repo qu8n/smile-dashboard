@@ -29,11 +29,9 @@ import { ApolloClient, ApolloQueryResult } from "apollo-client";
 import { gql } from "apollo-server";
 import {
   CachedOncotreeData,
-  fetchOncotreeData,
-  updateOncotreeCache,
+  fetchAndCacheOncotreeData,
 } from "../utils/oncotree";
 import { ApolloServerContext } from "../utils/servers";
-import NodeCache from "node-cache";
 
 type SortOptions = { [key: string]: SortDirection }[];
 
@@ -410,10 +408,11 @@ function buildResolvers(
         { oncotreeCache }: ApolloServerContext
       ) => {
         if (oncotreeCode) {
-          const cachedData = await getCachedOncotreeData(
-            oncotreeCode,
-            oncotreeCache
-          );
+          let cachedData = oncotreeCache.get<CachedOncotreeData>(oncotreeCode);
+          if (!cachedData) {
+            await fetchAndCacheOncotreeData(oncotreeCache);
+            cachedData = oncotreeCache.get(oncotreeCode);
+          }
           return cachedData?.mainType;
         }
         return null;
@@ -424,29 +423,17 @@ function buildResolvers(
         { oncotreeCache }: ApolloServerContext
       ) => {
         if (oncotreeCode) {
-          const cachedData = await getCachedOncotreeData(
-            oncotreeCode,
-            oncotreeCache
-          );
+          let cachedData = oncotreeCache.get<CachedOncotreeData>(oncotreeCode);
+          if (!cachedData) {
+            await fetchAndCacheOncotreeData(oncotreeCache);
+            cachedData = oncotreeCache.get(oncotreeCode);
+          }
           return cachedData?.name;
         }
         return null;
       },
     },
   };
-}
-
-async function getCachedOncotreeData(
-  oncotreeCode: string,
-  oncotreeCache: NodeCache
-) {
-  let cachedData: CachedOncotreeData = oncotreeCache.get(oncotreeCode);
-  if (!cachedData) {
-    const data = await fetchOncotreeData();
-    await updateOncotreeCache(data, oncotreeCache);
-    cachedData = oncotreeCache.get(oncotreeCode);
-  }
-  return cachedData;
 }
 
 function sortArrayByNestedField(
