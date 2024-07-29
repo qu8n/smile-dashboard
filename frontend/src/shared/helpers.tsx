@@ -216,6 +216,9 @@ function LoadingIcon() {
   );
 }
 
+const ONCOTREE_CODE_NA_TOOLTIP =
+  "This code might have been remapped (renamed) between different versions of the Oncotree API. For remapping details, visit the docs at https://oncotree.mskcc.org/";
+
 export const SampleMetadataDetailsColumns: ColDef<SampleMetadataExtended>[] = [
   {
     field: "primaryId",
@@ -337,10 +340,36 @@ export const SampleMetadataDetailsColumns: ColDef<SampleMetadataExtended>[] = [
   {
     field: "cancerType",
     headerName: "Cancer Type",
+    cellRenderer: (params: ICellRendererParams) => (
+      <>
+        {params.value}{" "}
+        {params.value === "N/A" && (
+          <span dangerouslySetInnerHTML={{ __html: toolTipIcon }} />
+        )}
+      </>
+    ),
+    tooltipValueGetter: (params: ITooltipParams) => {
+      if (params.value === "N/A") {
+        return ONCOTREE_CODE_NA_TOOLTIP;
+      }
+    },
   },
   {
     field: "cancerTypeDetailed",
     headerName: "Cancer Type Detailed",
+    cellRenderer: (params: ICellRendererParams) => (
+      <>
+        {params.value}{" "}
+        {params.value === "N/A" && (
+          <span dangerouslySetInnerHTML={{ __html: toolTipIcon }} />
+        )}
+      </>
+    ),
+    tooltipValueGetter: (params: ITooltipParams) => {
+      if (params.value === "N/A") {
+        return ONCOTREE_CODE_NA_TOOLTIP;
+      }
+    },
   },
   {
     field: "collectionYear",

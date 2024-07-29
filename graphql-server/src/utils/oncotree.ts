@@ -3,6 +3,9 @@ import NodeCache from "node-cache";
 import { driver } from "../schemas/neo4j";
 import { props } from "./constants";
 
+/**
+ * Source: https://oncotree.mskcc.org/#/home?tab=api
+ */
 export type OncotreeTumorType = {
   children: Record<string, unknown>;
   code: string;
