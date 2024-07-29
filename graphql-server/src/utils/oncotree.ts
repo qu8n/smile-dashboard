@@ -1,6 +1,7 @@
 import fetch from "node-fetch";
 import NodeCache from "node-cache";
 import { driver } from "../schemas/neo4j";
+import { props } from "./constants";
 
 export type OncotreeTumorType = {
   children: Record<string, unknown>;
@@ -23,18 +24,22 @@ export type CachedOncotreeData =
 
 export async function fetchOncotreeData() {
   try {
-    const response = await fetch(`https://oncotree.mskcc.org/api/tumorTypes`, {
+    const response = await fetch(props.oncotree_api, {
       headers: {
         Accept: "application/json",
       },
     });
     if (!response.ok) {
-      throw new Error("Failed to fetch the Oncotree API");
+      throw new Error(
+        `Failed to fetch the Oncotree API: ${response.statusText}`
+      );
     }
     return await response.json();
   } catch (error) {
     if (error instanceof Error) {
-      console.log(error.message);
+      console.error(`Error: ${error.message}`);
+    } else {
+      console.error("Unknown error occurred while fetching Oncotree data");
     }
     return null;
   }
@@ -44,7 +49,7 @@ export async function updateOncotreeCache(
   oncotreeData: OncotreeTumorType[],
   oncotreeCache: NodeCache
 ) {
-  // Restructure data for node-cache to store multiple k-v pairs in one go
+  // Restructure data for node-cache to store multiple k-v pairs in one go with mset()
   const parsedData = oncotreeData.map((obj) => {
     return {
       key: obj.code,
@@ -55,9 +60,8 @@ export async function updateOncotreeCache(
     };
   });
 
-  // Add to cache codes found in Neo4j but not in the Oncotree db.
-  // This helps us distinguish between new codes in SMILE vs. codes not found in Oncotree db,
-  // preventing unnecessary API calls
+  // Cache codes found in Neo4j but not from Oncotree API (likely due to codes to being renamed).
+  // Otherwise, we'll continously fetch the Oncotree API for non-existent codes without stopping
   const existingCodes = await getOncotreeCodesFromNeo4j();
   const fetchedCodes = new Set(parsedData.map((obj) => obj.key));
   if (existingCodes) {

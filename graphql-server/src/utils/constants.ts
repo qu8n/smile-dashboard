@@ -36,6 +36,8 @@ export const props = {
 
   web_key_pem: properties.get("web.web_key_pem"),
   web_cert_pem: properties.get("web.web_cert_pem"),
+
+  oncotree_api: properties.get("oncotree.oncotree_api"),
 };
 
 export const EXPRESS_SERVER_ORIGIN =
