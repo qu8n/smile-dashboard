@@ -33,6 +33,7 @@ import {
   updateOncotreeCache,
 } from "../utils/oncotree";
 import { ApolloServerContext } from "../utils/servers";
+import NodeCache from "node-cache";
 
 type SortOptions = { [key: string]: SortDirection }[];
 
@@ -87,20 +88,9 @@ export async function buildNeo4jDbSchema() {
       type: String
     }
 
-    enum CacheControlScope {
-      PUBLIC
-      PRIVATE
-    }
-
-    directive @cacheControl(
-      maxAge: Int
-      scope: CacheControlScope
-      inheritMaxAge: Boolean
-    ) on FIELD_DEFINITION | OBJECT | INTERFACE | UNION
-
     extend type SampleMetadata {
-      cancerType: String @cacheControl(maxAge: 86400) # 1 day
-      cancerTypeDetailed: String @cacheControl(maxAge: 86400)
+      cancerType: String
+      cancerTypeDetailed: String
     }
   `;
 
@@ -420,12 +410,10 @@ function buildResolvers(
         { oncotreeCache }: ApolloServerContext
       ) => {
         if (oncotreeCode) {
-          let cachedData: CachedOncotreeData = oncotreeCache.get(oncotreeCode);
-          if (!cachedData) {
-            const data = await fetchOncotreeData();
-            updateOncotreeCache(data, oncotreeCache);
-            cachedData = oncotreeCache.get(oncotreeCode);
-          }
+          const cachedData = await getCachedOncotreeData(
+            oncotreeCode,
+            oncotreeCache
+          );
           return cachedData?.mainType;
         }
         return null;
@@ -436,18 +424,29 @@ function buildResolvers(
         { oncotreeCache }: ApolloServerContext
       ) => {
         if (oncotreeCode) {
-          let cachedData: CachedOncotreeData = oncotreeCache.get(oncotreeCode);
-          if (!cachedData) {
-            const data = await fetchOncotreeData();
-            updateOncotreeCache(data, oncotreeCache);
-            cachedData = oncotreeCache.get(oncotreeCode);
-          }
+          const cachedData = await getCachedOncotreeData(
+            oncotreeCode,
+            oncotreeCache
+          );
           return cachedData?.name;
         }
         return null;
       },
     },
   };
+}
+
+async function getCachedOncotreeData(
+  oncotreeCode: string,
+  oncotreeCache: NodeCache
+) {
+  let cachedData: CachedOncotreeData = oncotreeCache.get(oncotreeCode);
+  if (!cachedData) {
+    const data = await fetchOncotreeData();
+    await updateOncotreeCache(data, oncotreeCache);
+    cachedData = oncotreeCache.get(oncotreeCode);
+  }
+  return cachedData;
 }
 
 function sortArrayByNestedField(

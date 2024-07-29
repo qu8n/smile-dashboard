@@ -46,7 +46,7 @@ export async function initializeApolloServer(
 
   const oncotreeCache = new NodeCache({ stdTTL: 86400 }); // 1 day
   const data = await fetchOncotreeData();
-  updateOncotreeCache(data, oncotreeCache);
+  await updateOncotreeCache(data, oncotreeCache);
 
   const apolloServer = new ApolloServer<ApolloServerContext>({
     schema: mergedSchema,
