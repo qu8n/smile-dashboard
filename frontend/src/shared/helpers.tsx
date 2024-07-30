@@ -217,7 +217,7 @@ function LoadingIcon() {
 }
 
 const ONCOTREE_CODE_NA_TOOLTIP =
-  "This code might have been remapped (renamed) between different versions of the Oncotree API. For remapping details, visit the docs at https://oncotree.mskcc.org/";
+  "This code might have been remapped (renamed) between different versions of the Oncotree API. For remapping details, visit the docs at https://oncotree.mskcc.org/#/home?tab=mapping";
 
 export const SampleMetadataDetailsColumns: ColDef<SampleMetadataExtended>[] = [
   {
