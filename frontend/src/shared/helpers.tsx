@@ -15,6 +15,7 @@ import {
   Sample,
   SampleMetadata,
   SampleMetadataWhere,
+  SamplesListQuery,
   SampleWhere,
   SortDirection,
   TempoWhere,
@@ -1024,7 +1025,9 @@ export function cohortSampleFilterWhereVariables(
   ];
 }
 
-export function prepareSampleMetadataForAgGrid(samples: Sample[]) {
+export function prepareSampleMetadataForAgGrid(
+  samples: SamplesListQuery["samples"]
+) {
   return samples.map((s) => {
     return {
       ...s.hasMetadataSampleMetadata[0],
@@ -1033,7 +1036,9 @@ export function prepareSampleMetadataForAgGrid(samples: Sample[]) {
   });
 }
 
-export function prepareSampleCohortDataForAgGrid(samples: Sample[]) {
+export function prepareSampleCohortDataForAgGrid(
+  samples: SamplesListQuery["samples"]
+) {
   return samples.map((s) => {
     const sampleMetadata = s.hasMetadataSampleMetadata[0];
     const tempoData = extractTempoFromSample(s);
@@ -1050,7 +1055,9 @@ export function prepareSampleCohortDataForAgGrid(samples: Sample[]) {
   });
 }
 
-export function prepareCombinedSampleDataForAgGrid(samples: Sample[]) {
+export function prepareCombinedSampleDataForAgGrid(
+  samples: SamplesListQuery["samples"]
+) {
   return samples.map((s) => {
     const sampleMetadata = s.hasMetadataSampleMetadata[0];
     const tempoData = extractTempoFromSample(s);
@@ -1063,10 +1070,10 @@ export function prepareCombinedSampleDataForAgGrid(samples: Sample[]) {
   });
 }
 
-function extractTempoFromSample(s: Sample) {
-  const cohorts = s.cohortsHasCohortSampleConnection?.edges;
+function extractTempoFromSample(s: SamplesListQuery["samples"][number]) {
+  const cohorts = s.cohortsHasCohortSample;
   const cohortDates = cohorts?.flatMap((c) => {
-    return c.node.hasCohortCompleteCohortCompletes.map((cc) => {
+    return c.hasCohortCompleteCohortCompletes.map((cc) => {
       return cc.date;
     });
   });
@@ -1124,11 +1131,11 @@ export function isValidCostCenter(costCenter: string): boolean {
 
 export function getSamplePopupParamId(
   parentWhereVariables: SampleWhere,
-  samples: Sample[],
+  samples: SamplesListQuery["samples"],
   paramId: string
 ) {
   if (parentWhereVariables.OR?.[0].patientsHasSampleConnection_SOME) {
-    const patient = samples[0].patientsHasSampleConnection?.edges?.[0]?.node;
+    const patient = samples[0].patientsHasSample?.[0];
 
     const cmoPatientId = patient.patientAliasesIsAlias.find(
       (patientAlias) => patientAlias.namespace === "cmoId"

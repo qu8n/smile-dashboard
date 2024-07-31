@@ -45,73 +45,60 @@ query PatientsList($options: PatientOptions, $where: PatientWhere) {
   }
 }
 
-query FindSamplesByInputValue(
+query SamplesList(
   $where: SampleWhere
-  $first: Int
+  $options: SampleOptions
   $sampleMetadataOptions: SampleMetadataOptions
   $bamCompletesOptions: BamCompleteOptions
   $mafCompletesOptions: MafCompleteOptions
   $qcCompletesOptions: QcCompleteOptions
 ) {
-  samplesConnection(where: $where, first: $first) {
-    edges {
-      node {
-        ...SampleParts
-        hasMetadataSampleMetadata(options: $sampleMetadataOptions) {
-          ...SampleMetadataParts
-          hasStatusStatuses {
-            validationReport
-            validationStatus
-          }
-        }
-        requestsHasSampleConnection {
-          edges {
-            node {
-              ...RequestParts
-            }
-          }
-        }
-        patientsHasSampleConnection {
-          edges {
-            node {
-              smilePatientId
-              cmoPatientId
-              dmpPatientId
-              patientAliasesIsAlias {
-                namespace
-                value
-              }
-            }
-          }
-        }
-        cohortsHasCohortSampleConnection {
-          edges {
-            node {
-              cohortId
-              hasCohortCompleteCohortCompletes {
-                date
-              }
-            }
-          }
-        }
-        hasTempoTempos {
-          ...TempoParts
-          hasEventBamCompletes(options: $bamCompletesOptions) {
-            date
-            status
-          }
-          hasEventMafCompletes(options: $mafCompletesOptions) {
-            date
-            normalPrimaryId
-            status
-          }
-          hasEventQcCompletes(options: $qcCompletesOptions) {
-            date
-            reason
-            result
-            status
-          }
-        }
+  samplesConnection(where: $where) {
+    totalCount
+  }
+  samples(where: $where, options: $options) {
+    ...SampleParts
+    hasMetadataSampleMetadata(options: $sampleMetadataOptions) {
+      ...SampleMetadataParts
+      hasStatusStatuses {
+        validationReport
+        validationStatus
+      }
+    }
+    requestsHasSample {
+      ...RequestParts
+    }
+    patientsHasSample {
+      smilePatientId
+      cmoPatientId
+      dmpPatientId
+      patientAliasesIsAlias {
+        namespace
+        value
+      }
+    }
+    cohortsHasCohortSample {
+      cohortId
+      hasCohortCompleteCohortCompletes {
+        date
+      }
+    }
+    hasTempoTempos {
+      ...TempoParts
+      hasEventBamCompletes(options: $bamCompletesOptions) {
+        date
+        status
+      }
+      hasEventMafCompletes(options: $mafCompletesOptions) {
+        date
+        normalPrimaryId
+        status
+      }
+      hasEventQcCompletes(options: $qcCompletesOptions) {
+        date
+        reason
+        result
+        status
       }
     }
   }

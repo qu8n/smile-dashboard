@@ -2,7 +2,8 @@ import {
   SortDirection,
   Sample,
   SampleWhere,
-  useFindSamplesByInputValueQuery,
+  useSamplesListQuery,
+  SamplesListQuery,
 } from "../generated/graphql";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { Button, Col, Container } from "react-bootstrap";
@@ -36,15 +37,19 @@ import { useParams } from "react-router-dom";
 import { DataName } from "../shared/types";
 
 const POLLING_INTERVAL = 2000;
-const max_rows = 500;
-const defaultAlertContent =
+const MAX_ROWS = 500;
+const ROW_LIMIT_ALERT_CONTENT =
   "You've reached the maximum number of samples that can be displayed. Please refine your search to see more samples.";
-const costCenterAlertContent =
+const COST_CENTER_ALERT_CONTENT =
   "Please update your Cost Center/Fund Number input as #####/##### (5 digits, a forward slash, then 5 digits). For example: 12345/12345.";
+const TEMPO_EVENT_OPTIONS = {
+  sort: [{ date: SortDirection.Desc }],
+  limit: 1,
+};
 
 interface ISampleListProps {
   columnDefs: ColDef[];
-  prepareDataForAgGrid: (samples: Sample[]) => any[];
+  prepareDataForAgGrid: (samples: SamplesListQuery["samples"]) => any[];
   setUnsavedChanges?: (unsavedChanges: boolean) => void;
   parentDataName?: DataName;
   parentWhereVariables?: SampleWhere;
@@ -68,33 +73,19 @@ export default function SamplesList({
   customToolbarUI,
 }: ISampleListProps) {
   const { loading, error, data, startPolling, stopPolling, refetch } =
-    useFindSamplesByInputValueQuery({
+    useSamplesListQuery({
       variables: {
-        ...(parentWhereVariables
-          ? {
-              where: {
-                ...parentWhereVariables,
-              },
-            }
-          : {
-              first: max_rows,
-            }),
+        where: parentWhereVariables || {},
+        options: {
+          limit: MAX_ROWS,
+        },
         sampleMetadataOptions: {
           sort: [{ importDate: SortDirection.Desc }],
           limit: 1,
         },
-        bamCompletesOptions: {
-          sort: [{ date: SortDirection.Desc }],
-          limit: 1,
-        },
-        mafCompletesOptions: {
-          sort: [{ date: SortDirection.Desc }],
-          limit: 1,
-        },
-        qcCompletesOptions: {
-          sort: [{ date: SortDirection.Desc }],
-          limit: 1,
-        },
+        bamCompletesOptions: TEMPO_EVENT_OPTIONS,
+        mafCompletesOptions: TEMPO_EVENT_OPTIONS,
+        qcCompletesOptions: TEMPO_EVENT_OPTIONS,
       },
       pollInterval: POLLING_INTERVAL,
     });
@@ -106,7 +97,7 @@ export default function SamplesList({
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [changes, setChanges] = useState<SampleChange[]>([]);
   const [editMode, setEditMode] = useState(true);
-  const [alertContent, setAlertContent] = useState(defaultAlertContent);
+  const [alertContent, setAlertContent] = useState(ROW_LIMIT_ALERT_CONTENT);
   const [rowCount, setRowCount] = useState(0);
 
   const gridRef = useRef<AgGridReactType>(null);
@@ -126,10 +117,10 @@ export default function SamplesList({
   }, [parsedSearchVals]);
 
   useEffect(() => {
-    setRowCount(data?.samplesConnection.edges.length || 0);
+    setRowCount(data?.samplesConnection.totalCount || 0);
   }, [data]);
 
-  const samples = data?.samplesConnection?.edges.map((e) => e.node) as Sample[];
+  const samples = data?.samples;
 
   const popupParamId = useMemo(() => {
     if (parentWhereVariables && samples && params) {
@@ -157,7 +148,7 @@ export default function SamplesList({
       const allRowsHaveValidCostCenter = changes.every(
         (c) => c.fieldName !== "costCenter" || isValidCostCenter(c.newValue)
       );
-      if (allRowsHaveValidCostCenter) setAlertContent(defaultAlertContent);
+      if (allRowsHaveValidCostCenter) setAlertContent(ROW_LIMIT_ALERT_CONTENT);
     }
 
     // prevent registering a change if no actual changes are made
@@ -234,7 +225,7 @@ export default function SamplesList({
     // validate Cost Center inputs
     if (fieldName === "costCenter") {
       if (!isValidCostCenter(newValue)) {
-        setAlertContent(costCenterAlertContent);
+        setAlertContent(COST_CENTER_ALERT_CONTENT);
         setShowAlertModal(true);
       } else {
         resetAlertIfCostCentersAreAllValid(changes);
@@ -278,7 +269,7 @@ export default function SamplesList({
         <DownloadModal
           loader={() => {
             return Promise.resolve(
-              buildTsvString(prepareDataForAgGrid(samples), columnDefs)
+              buildTsvString(prepareDataForAgGrid(samples!), columnDefs)
             );
           }}
           onComplete={() => {
@@ -297,7 +288,7 @@ export default function SamplesList({
       {showUpdateModal && (
         <UpdateModal
           changes={changes}
-          samples={samples}
+          samples={samples!}
           onSuccess={handleDiscardChanges}
           onHide={() => setShowUpdateModal(false)}
           onOpen={() => stopPolling()}
@@ -323,11 +314,7 @@ export default function SamplesList({
           setUserSearchVal("");
           setParsedSearchVals([]);
         }}
-        matchingResultsCount={
-          rowCount === max_rows
-            ? `${max_rows}+ matching samples`
-            : `${rowCount} matching samples`
-        }
+        matchingResultsCount={`${rowCount.toLocaleString()} matching samples`}
         handleDownload={() => setShowDownloadModal(true)}
         customUILeft={customToolbarUI}
         customUIRight={
@@ -343,7 +330,7 @@ export default function SamplesList({
                 </Button>{" "}
                 <Button
                   className={"btn btn-success"}
-                  disabled={alertContent === costCenterAlertContent}
+                  disabled={alertContent === COST_CENTER_ALERT_CONTENT}
                   onClick={() => {
                     setShowUpdateModal(true);
                   }}
@@ -389,7 +376,7 @@ export default function SamplesList({
                 },
               }}
               columnDefs={columnDefs}
-              rowData={prepareDataForAgGrid(samples)}
+              rowData={prepareDataForAgGrid(samples!)}
               onCellEditRequest={onCellValueChanged}
               readOnlyEdit={true}
               defaultColDef={defaultColDef}
@@ -407,7 +394,7 @@ export default function SamplesList({
               tooltipShowDelay={0}
               tooltipHideDelay={60000}
               onBodyScrollEnd={(params) => {
-                if (params.api.getLastDisplayedRow() + 1 === max_rows) {
+                if (params.api.getLastDisplayedRow() + 1 === MAX_ROWS) {
                   setShowAlertModal(true);
                 }
               }}

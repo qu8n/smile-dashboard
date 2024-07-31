@@ -18,6 +18,7 @@ import {
   SampleUpdateInput,
   SampleWhere,
   SamplesDocument,
+  SamplesListQuery,
   SortDirection,
   Tempo,
   UpdateSamplesMutationResponse,
@@ -521,7 +522,8 @@ function getNestedValue(node: any, nodeLabel: string, fieldName: string) {
       case "smileSampleIds":
         return node.hasCohortSampleSamples?.map((s: Sample) => s.smileSampleId);
       case "billed":
-        const samples: Sample[] = node.hasCohortSampleSamples;
+        const samples: SamplesListQuery["samples"] =
+          node.hasCohortSampleSamples;
         const allSamplesBilled =
           samples?.length > 0 &&
           samples.every((sample) => sample.hasTempoTempos?.[0]?.billed);

@@ -12456,153 +12456,130 @@ export type PatientsListQuery = {
   }>;
 };
 
-export type FindSamplesByInputValueQueryVariables = Exact<{
+export type SamplesListQueryVariables = Exact<{
   where?: InputMaybe<SampleWhere>;
-  first?: InputMaybe<Scalars["Int"]>;
+  options?: InputMaybe<SampleOptions>;
   sampleMetadataOptions?: InputMaybe<SampleMetadataOptions>;
   bamCompletesOptions?: InputMaybe<BamCompleteOptions>;
   mafCompletesOptions?: InputMaybe<MafCompleteOptions>;
   qcCompletesOptions?: InputMaybe<QcCompleteOptions>;
 }>;
 
-export type FindSamplesByInputValueQuery = {
+export type SamplesListQuery = {
   __typename?: "Query";
-  samplesConnection: {
-    __typename?: "SamplesConnection";
-    edges: Array<{
-      __typename?: "SampleEdge";
-      node: {
-        __typename?: "Sample";
-        datasource: string;
-        revisable: boolean;
-        sampleCategory: string;
-        sampleClass: string;
-        smileSampleId: string;
-        hasMetadataSampleMetadata: Array<{
-          __typename?: "SampleMetadata";
-          additionalProperties: string;
-          baitSet?: string | null;
-          cfDNA2dBarcode?: string | null;
-          cmoInfoIgoId?: string | null;
-          cmoPatientId?: string | null;
-          cmoSampleIdFields: string;
-          cmoSampleName?: string | null;
-          collectionYear: string;
-          genePanel: string;
-          igoComplete?: boolean | null;
-          igoRequestId?: string | null;
-          importDate: string;
-          investigatorSampleId?: string | null;
-          libraries: string;
-          oncotreeCode?: string | null;
-          cancerType?: string | null;
-          cancerTypeDetailed?: string | null;
-          preservation?: string | null;
-          primaryId: string;
-          qcReports: string;
-          sampleClass: string;
-          sampleName?: string | null;
-          sampleOrigin?: string | null;
-          sampleType: string;
-          sex: string;
-          species: string;
-          tissueLocation?: string | null;
-          tubeId?: string | null;
-          tumorOrNormal: string;
-          hasStatusStatuses: Array<{
-            __typename?: "Status";
-            validationReport: string;
-            validationStatus: boolean;
-          }>;
-        }>;
-        requestsHasSampleConnection: {
-          __typename?: "SampleRequestsHasSampleConnection";
-          edges: Array<{
-            __typename?: "SampleRequestsHasSampleRelationship";
-            node: {
-              __typename?: "Request";
-              igoRequestId: string;
-              igoProjectId: string;
-              genePanel: string;
-              dataAnalystName: string;
-              dataAnalystEmail: string;
-              dataAccessEmails: string;
-              bicAnalysis: boolean;
-              investigatorEmail: string;
-              investigatorName: string;
-              isCmoRequest: boolean;
-              labHeadEmail: string;
-              labHeadName: string;
-              libraryType?: string | null;
-              otherContactEmails: string;
-              piEmail: string;
-              projectManagerName: string;
-              qcAccessEmails: string;
-              smileRequestId: string;
-            };
-          }>;
-        };
-        patientsHasSampleConnection: {
-          __typename?: "SamplePatientsHasSampleConnection";
-          edges: Array<{
-            __typename?: "SamplePatientsHasSampleRelationship";
-            node: {
-              __typename?: "Patient";
-              smilePatientId: string;
-              cmoPatientId?: string | null;
-              dmpPatientId?: string | null;
-              patientAliasesIsAlias: Array<{
-                __typename?: "PatientAlias";
-                namespace: string;
-                value: string;
-              }>;
-            };
-          }>;
-        };
-        cohortsHasCohortSampleConnection: {
-          __typename?: "SampleCohortsHasCohortSampleConnection";
-          edges: Array<{
-            __typename?: "SampleCohortsHasCohortSampleRelationship";
-            node: {
-              __typename?: "Cohort";
-              cohortId: string;
-              hasCohortCompleteCohortCompletes: Array<{
-                __typename?: "CohortComplete";
-                date: string;
-              }>;
-            };
-          }>;
-        };
-        hasTempoTempos: Array<{
-          __typename?: "Tempo";
-          smileTempoId: string;
-          billed?: boolean | null;
-          billedBy?: string | null;
-          costCenter?: string | null;
-          custodianInformation?: string | null;
-          accessLevel?: string | null;
-          hasEventBamCompletes: Array<{
-            __typename?: "BamComplete";
-            date: string;
-            status: string;
-          }>;
-          hasEventMafCompletes: Array<{
-            __typename?: "MafComplete";
-            date: string;
-            normalPrimaryId: string;
-            status: string;
-          }>;
-          hasEventQcCompletes: Array<{
-            __typename?: "QcComplete";
-            date: string;
-            reason: string;
-            result: string;
-            status: string;
-          }>;
-        }>;
-      };
+  samplesConnection: { __typename?: "SamplesConnection"; totalCount: number };
+  samples: Array<{
+    __typename?: "Sample";
+    datasource: string;
+    revisable: boolean;
+    sampleCategory: string;
+    sampleClass: string;
+    smileSampleId: string;
+    hasMetadataSampleMetadata: Array<{
+      __typename?: "SampleMetadata";
+      additionalProperties: string;
+      baitSet?: string | null;
+      cfDNA2dBarcode?: string | null;
+      cmoInfoIgoId?: string | null;
+      cmoPatientId?: string | null;
+      cmoSampleIdFields: string;
+      cmoSampleName?: string | null;
+      collectionYear: string;
+      genePanel: string;
+      igoComplete?: boolean | null;
+      igoRequestId?: string | null;
+      importDate: string;
+      investigatorSampleId?: string | null;
+      libraries: string;
+      oncotreeCode?: string | null;
+      cancerType?: string | null;
+      cancerTypeDetailed?: string | null;
+      preservation?: string | null;
+      primaryId: string;
+      qcReports: string;
+      sampleClass: string;
+      sampleName?: string | null;
+      sampleOrigin?: string | null;
+      sampleType: string;
+      sex: string;
+      species: string;
+      tissueLocation?: string | null;
+      tubeId?: string | null;
+      tumorOrNormal: string;
+      hasStatusStatuses: Array<{
+        __typename?: "Status";
+        validationReport: string;
+        validationStatus: boolean;
+      }>;
     }>;
-  };
+    requestsHasSample: Array<{
+      __typename?: "Request";
+      igoRequestId: string;
+      igoProjectId: string;
+      genePanel: string;
+      dataAnalystName: string;
+      dataAnalystEmail: string;
+      dataAccessEmails: string;
+      bicAnalysis: boolean;
+      investigatorEmail: string;
+      investigatorName: string;
+      isCmoRequest: boolean;
+      labHeadEmail: string;
+      labHeadName: string;
+      libraryType?: string | null;
+      otherContactEmails: string;
+      piEmail: string;
+      projectManagerName: string;
+      qcAccessEmails: string;
+      smileRequestId: string;
+    }>;
+    patientsHasSample: Array<{
+      __typename?: "Patient";
+      smilePatientId: string;
+      cmoPatientId?: string | null;
+      dmpPatientId?: string | null;
+      patientAliasesIsAlias: Array<{
+        __typename?: "PatientAlias";
+        namespace: string;
+        value: string;
+      }>;
+    }>;
+    cohortsHasCohortSample: Array<{
+      __typename?: "Cohort";
+      cohortId: string;
+      hasCohortCompleteCohortCompletes: Array<{
+        __typename?: "CohortComplete";
+        date: string;
+      }>;
+    }>;
+    hasTempoTempos: Array<{
+      __typename?: "Tempo";
+      smileTempoId: string;
+      billed?: boolean | null;
+      billedBy?: string | null;
+      costCenter?: string | null;
+      custodianInformation?: string | null;
+      accessLevel?: string | null;
+      hasEventBamCompletes: Array<{
+        __typename?: "BamComplete";
+        date: string;
+        status: string;
+      }>;
+      hasEventMafCompletes: Array<{
+        __typename?: "MafComplete";
+        date: string;
+        normalPrimaryId: string;
+        status: string;
+      }>;
+      hasEventQcCompletes: Array<{
+        __typename?: "QcComplete";
+        date: string;
+        reason: string;
+        result: string;
+        status: string;
+      }>;
+    }>;
+  }>;
 };
 
 export type RequestPartsFragment = {
@@ -12994,74 +12971,61 @@ export type PatientsListQueryResult = Apollo.QueryResult<
   PatientsListQuery,
   PatientsListQueryVariables
 >;
-export const FindSamplesByInputValueDocument = gql`
-  query FindSamplesByInputValue(
+export const SamplesListDocument = gql`
+  query SamplesList(
     $where: SampleWhere
-    $first: Int
+    $options: SampleOptions
     $sampleMetadataOptions: SampleMetadataOptions
     $bamCompletesOptions: BamCompleteOptions
     $mafCompletesOptions: MafCompleteOptions
     $qcCompletesOptions: QcCompleteOptions
   ) {
-    samplesConnection(where: $where, first: $first) {
-      edges {
-        node {
-          ...SampleParts
-          hasMetadataSampleMetadata(options: $sampleMetadataOptions) {
-            ...SampleMetadataParts
-            hasStatusStatuses {
-              validationReport
-              validationStatus
-            }
-          }
-          requestsHasSampleConnection {
-            edges {
-              node {
-                ...RequestParts
-              }
-            }
-          }
-          patientsHasSampleConnection {
-            edges {
-              node {
-                smilePatientId
-                cmoPatientId
-                dmpPatientId
-                patientAliasesIsAlias {
-                  namespace
-                  value
-                }
-              }
-            }
-          }
-          cohortsHasCohortSampleConnection {
-            edges {
-              node {
-                cohortId
-                hasCohortCompleteCohortCompletes {
-                  date
-                }
-              }
-            }
-          }
-          hasTempoTempos {
-            ...TempoParts
-            hasEventBamCompletes(options: $bamCompletesOptions) {
-              date
-              status
-            }
-            hasEventMafCompletes(options: $mafCompletesOptions) {
-              date
-              normalPrimaryId
-              status
-            }
-            hasEventQcCompletes(options: $qcCompletesOptions) {
-              date
-              reason
-              result
-              status
-            }
-          }
+    samplesConnection(where: $where) {
+      totalCount
+    }
+    samples(where: $where, options: $options) {
+      ...SampleParts
+      hasMetadataSampleMetadata(options: $sampleMetadataOptions) {
+        ...SampleMetadataParts
+        hasStatusStatuses {
+          validationReport
+          validationStatus
+        }
+      }
+      requestsHasSample {
+        ...RequestParts
+      }
+      patientsHasSample {
+        smilePatientId
+        cmoPatientId
+        dmpPatientId
+        patientAliasesIsAlias {
+          namespace
+          value
+        }
+      }
+      cohortsHasCohortSample {
+        cohortId
+        hasCohortCompleteCohortCompletes {
+          date
+        }
+      }
+      hasTempoTempos {
+        ...TempoParts
+        hasEventBamCompletes(options: $bamCompletesOptions) {
+          date
+          status
+        }
+        hasEventMafCompletes(options: $mafCompletesOptions) {
+          date
+          normalPrimaryId
+          status
+        }
+        hasEventQcCompletes(options: $qcCompletesOptions) {
+          date
+          reason
+          result
+          status
         }
       }
     }
@@ -13071,9 +13035,9 @@ export const FindSamplesByInputValueDocument = gql`
   ${RequestPartsFragmentDoc}
   ${TempoPartsFragmentDoc}
 `;
-export type FindSamplesByInputValueQueryResult = Apollo.QueryResult<
-  FindSamplesByInputValueQuery,
-  FindSamplesByInputValueQueryVariables
+export type SamplesListQueryResult = Apollo.QueryResult<
+  SamplesListQuery,
+  SamplesListQueryVariables
 >;
 export const SamplesDocument = gql`
   query Samples(
