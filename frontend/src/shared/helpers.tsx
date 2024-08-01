@@ -12,7 +12,6 @@ import { Button } from "react-bootstrap";
 import "ag-grid-enterprise";
 import {
   CohortsListQuery,
-  Sample,
   SampleMetadata,
   SampleMetadataWhere,
   SamplesListQuery,

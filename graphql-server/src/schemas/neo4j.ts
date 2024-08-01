@@ -33,6 +33,14 @@ import {
   fetchAndCacheOncotreeData,
 } from "../utils/oncotree";
 import { ApolloServerContext } from "../utils/servers";
+import {
+  flattenedCohortFields,
+  flattenedPatientFields,
+  flattenedRequestFields,
+  generateFieldResolvers,
+  getNestedValue,
+  sortArrayByNestedField,
+} from "../utils/flattening";
 
 type SortOptions = { [key: string]: SortDirection }[];
 
@@ -233,7 +241,7 @@ function buildResolvers(
           const sortField = Object.keys(sortOptions[0])[0];
           const sortOrder = Object.values(sortOptions[0])[0];
 
-          if (["importDate", "totalSampleCount"].includes(sortField)) {
+          if (flattenedRequestFields.includes(sortField)) {
             sortArrayByNestedField(requests, "Request", sortField, sortOrder);
           }
         }
@@ -274,16 +282,7 @@ function buildResolvers(
           const sortField = Object.keys(sortOptions[0])[0];
           const sortOrder = Object.values(sortOptions[0])[0];
 
-          if (
-            [
-              "cmoPatientId",
-              "dmpPatientId",
-              "totalSampleCount",
-              "cmoSampleIds",
-              "consentPartA",
-              "consentPartC",
-            ].includes(sortField)
-          ) {
+          if (flattenedPatientFields.includes(sortField)) {
             sortArrayByNestedField(patients, "Patient", sortField, sortOrder);
           }
         }
@@ -435,6 +434,7 @@ function buildResolvers(
           const sortField = Object.keys(sortOptions[0])[0];
           const sortOrder = Object.values(sortOptions[0])[0];
 
+          // We don't check for other flattened fields here because the Cohorts AG Grid opts out of the Server-Side Row Model. We only need to sort by initialCohortDeliveryDate for the initial load
           if (sortField === "initialCohortDeliveryDate") {
             sortArrayByNestedField(
               cohorts,
@@ -448,68 +448,18 @@ function buildResolvers(
         return cohorts;
       },
     },
-    Request: {
-      importDate: (parent: RequestsListQuery["requests"][number]) => {
-        return getNestedValue(parent, "Request", "importDate");
-      },
-      totalSampleCount: (parent: RequestsListQuery["requests"][number]) => {
-        return getNestedValue(parent, "Request", "totalSampleCount");
-      },
-    },
-    Patient: {
-      cmoPatientId: (parent: PatientsListQuery["patients"][number]) => {
-        return getNestedValue(parent, "Patient", "cmoPatientId");
-      },
-      dmpPatientId: (parent: PatientsListQuery["patients"][number]) => {
-        return getNestedValue(parent, "Patient", "dmpPatientId");
-      },
-      totalSampleCount: (parent: PatientsListQuery["patients"][number]) => {
-        return getNestedValue(parent, "Patient", "totalSampleCount");
-      },
-      cmoSampleIds: (parent: PatientsListQuery["patients"][number]) => {
-        return getNestedValue(parent, "Patient", "cmoSampleIds");
-      },
-      consentPartA: (parent: PatientsListQuery["patients"][number]) => {
-        return getNestedValue(parent, "Patient", "consentPartA");
-      },
-      consentPartC: (parent: PatientsListQuery["patients"][number]) => {
-        return getNestedValue(parent, "Patient", "consentPartC");
-      },
-    },
-    Cohort: {
-      totalSampleCount: (parent: CohortsListQuery["cohorts"][number]) => {
-        return getNestedValue(parent, "Cohort", "totalSampleCount");
-      },
-      smileSampleIds: (parent: CohortsListQuery["cohorts"][number]) => {
-        return getNestedValue(parent, "Cohort", "smileSampleIds");
-      },
-      billed: (parent: CohortsListQuery["cohorts"][number]) => {
-        return getNestedValue(parent, "Cohort", "billed");
-      },
-      initialCohortDeliveryDate: (
-        parent: CohortsListQuery["cohorts"][number]
-      ) => {
-        return getNestedValue(parent, "Cohort", "initialCohortDeliveryDate");
-      },
-      endUsers: (parent: CohortsListQuery["cohorts"][number]) => {
-        return getNestedValue(parent, "Cohort", "endUsers");
-      },
-      pmUsers: (parent: CohortsListQuery["cohorts"][number]) => {
-        return getNestedValue(parent, "Cohort", "pmUsers");
-      },
-      projectTitle: (parent: CohortsListQuery["cohorts"][number]) => {
-        return getNestedValue(parent, "Cohort", "projectTitle");
-      },
-      projectSubtitle: (parent: CohortsListQuery["cohorts"][number]) => {
-        return getNestedValue(parent, "Cohort", "projectSubtitle");
-      },
-      status: (parent: CohortsListQuery["cohorts"][number]) => {
-        return getNestedValue(parent, "Cohort", "status");
-      },
-      type: (parent: CohortsListQuery["cohorts"][number]) => {
-        return getNestedValue(parent, "Cohort", "type");
-      },
-    },
+    Request: generateFieldResolvers<RequestsListQuery["requests"][number]>(
+      flattenedRequestFields,
+      "Request"
+    ),
+    Patient: generateFieldResolvers<PatientsListQuery["patients"][number]>(
+      flattenedPatientFields,
+      "Patient"
+    ),
+    Cohort: generateFieldResolvers<CohortsListQuery["cohorts"][number]>(
+      flattenedCohortFields,
+      "Cohort"
+    ),
     SampleMetadata: {
       cancerType: async (
         { oncotreeCode }: SampleMetadata,
@@ -543,115 +493,6 @@ function buildResolvers(
       },
     },
   };
-}
-
-function sortArrayByNestedField(
-  arr: any[],
-  nodeLabel: string,
-  fieldName: string,
-  sortOrder: SortDirection
-) {
-  arr.sort((objA, objB) => {
-    let a = getNestedValue(objA, nodeLabel, fieldName);
-    let b = getNestedValue(objB, nodeLabel, fieldName);
-
-    if (a === null || a === undefined) return 1;
-    if (b === null || b === undefined) return -1;
-
-    if (Array.isArray(a)) a = a.join(", ");
-    if (Array.isArray(b)) b = b.join(", ");
-
-    if (typeof a === "number" && typeof b === "number") {
-      return sortOrder === "ASC" ? a - b : b - a;
-    } else if (typeof a === "string" && typeof b === "string") {
-      return sortOrder === "ASC"
-        ? a.localeCompare(b, "en", { sensitivity: "base" })
-        : b.localeCompare(a, "en", { sensitivity: "base" });
-    } else {
-      return 0;
-    }
-  });
-}
-
-function getNestedValue(node: any, nodeLabel: string, fieldName: string) {
-  if (nodeLabel === "Request") {
-    switch (fieldName) {
-      case "importDate":
-        return node.hasMetadataRequestMetadata[0]?.importDate;
-      case "totalSampleCount":
-        return node.hasSampleSamplesConnection?.totalCount;
-    }
-  }
-
-  if (nodeLabel === "Patient") {
-    switch (fieldName) {
-      case "cmoPatientId":
-        return node.patientAliasesIsAlias?.find(
-          (patientAlias: PatientAlias) => patientAlias.namespace === "cmoId"
-        )?.value;
-      case "dmpPatientId":
-        return node.patientAliasesIsAlias?.find(
-          (patientAlias: PatientAlias) => patientAlias.namespace === "dmpId"
-        )?.value;
-      case "totalSampleCount":
-        return node.hasSampleSamplesConnection?.totalCount;
-      case "cmoSampleIds":
-        return node.hasSampleSamples
-          ?.map((s: Sample) => {
-            const sampleMetadata = s.hasMetadataSampleMetadata[0];
-            return sampleMetadata?.cmoSampleName || sampleMetadata?.primaryId;
-          })
-          ?.join(", ");
-      case "consentPartA":
-        try {
-          return JSON.parse(
-            node.hasSampleSamples[0].hasMetadataSampleMetadata[0]
-              .additionalProperties
-          )["consent-parta"];
-        } catch {
-          return null;
-        }
-      case "consentPartC":
-        try {
-          return JSON.parse(
-            node.hasSampleSamples[0].hasMetadataSampleMetadata[0]
-              .additionalProperties
-          )["consent-partc"];
-        } catch {
-          return null;
-        }
-    }
-  }
-
-  if (nodeLabel === "Cohort") {
-    switch (fieldName) {
-      case "totalSampleCount":
-        return node.hasCohortSampleSamplesConnection?.totalCount;
-      case "smileSampleIds":
-        return node.hasCohortSampleSamples?.map((s: Sample) => s.smileSampleId);
-      case "billed":
-        const samples: SamplesListQuery["samples"] =
-          node.hasCohortSampleSamples;
-        const allSamplesBilled =
-          samples?.length > 0 &&
-          samples.every((sample) => sample.hasTempoTempos?.[0]?.billed);
-        return allSamplesBilled ? "Yes" : "No";
-      case "initialCohortDeliveryDate":
-        return node.hasCohortCompleteCohortCompletes?.slice(-1)[0]?.date;
-      case "endUsers":
-        return node.hasCohortCompleteCohortCompletes?.[0]?.endUsers;
-      case "pmUsers":
-        return node.hasCohortCompleteCohortCompletes?.[0]?.pmUsers;
-      case "projectTitle":
-        return node.hasCohortCompleteCohortCompletes?.[0]?.projectTitle;
-      case "projectSubtitle":
-        return node.hasCohortCompleteCohortCompletes?.[0]?.projectSubtitle;
-      case "status":
-        return node.hasCohortCompleteCohortCompletes?.[0]?.status;
-      case "type":
-        return node.hasCohortCompleteCohortCompletes?.[0]?.type;
-    }
-  }
 }
 
 async function publishNatsMessageForSampleMetadataUpdates(
