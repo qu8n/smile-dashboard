@@ -293,6 +293,114 @@ function buildResolvers(
         }
         return patients.slice(args.options.offset, args.options.limit + 1);
       },
+      async samples(_source: undefined, args: any) {
+        const samples = await ogm.model("Sample").find({
+          where: args.where,
+          options: args.options,
+          selectionSet: `{
+            datasource
+            revisable
+            sampleCategory
+            sampleClass
+            smileSampleId
+            hasMetadataSampleMetadata {
+              additionalProperties
+              baitSet
+              cfDNA2dBarcode
+              cmoInfoIgoId
+              cmoPatientId
+              cmoSampleIdFields
+              cmoSampleName
+              collectionYear
+              genePanel
+              igoComplete
+              igoRequestId
+              importDate
+              investigatorSampleId
+              libraries
+              oncotreeCode
+              cancerType
+              cancerTypeDetailed
+              preservation
+              primaryId
+              qcReports
+              sampleClass
+              sampleName
+              sampleOrigin
+              sampleType
+              sex
+              species
+              tissueLocation
+              tubeId
+              tumorOrNormal
+              hasStatusStatuses {
+                validationReport
+                validationStatus
+              }
+            }
+            requestsHasSample {
+              igoRequestId
+              igoProjectId
+              genePanel
+              dataAnalystName
+              dataAnalystEmail
+              dataAccessEmails
+              bicAnalysis
+              investigatorEmail
+              investigatorName
+              isCmoRequest
+              labHeadEmail
+              labHeadName
+              libraryType
+              otherContactEmails
+              piEmail
+              projectManagerName
+              qcAccessEmails
+              smileRequestId
+            }
+            patientsHasSample {
+              smilePatientId
+              cmoPatientId
+              dmpPatientId
+              patientAliasesIsAlias {
+                namespace
+                value
+              }
+            }
+            cohortsHasCohortSample {
+              cohortId
+              hasCohortCompleteCohortCompletes {
+                date
+              }
+            }
+            hasTempoTempos {
+              smileTempoId
+              billed
+              billedBy
+              costCenter
+              custodianInformation
+              accessLevel
+              hasEventBamCompletes {
+                date
+                status
+              }
+              hasEventMafCompletes {
+                date
+                normalPrimaryId
+                status
+              }
+              hasEventQcCompletes {
+                date
+                reason
+                result
+                status
+              }
+            }
+          }`,
+        });
+
+        return samples;
+      },
       async cohorts(_source: undefined, args: any) {
         const cohorts = await ogm.model("Cohort").find({
           where: args.where,
