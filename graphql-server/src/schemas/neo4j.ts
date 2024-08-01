@@ -7,10 +7,8 @@ import { InMemoryCache, NormalizedCacheObject } from "apollo-cache-inmemory";
 import { props } from "../utils/constants";
 import {
   CohortsListQuery,
-  PatientAlias,
   PatientsListQuery,
   RequestsListQuery,
-  Sample,
   SampleHasMetadataSampleMetadataUpdateFieldInput,
   SampleHasTempoTemposUpdateFieldInput,
   SampleMetadata,
@@ -18,7 +16,6 @@ import {
   SampleUpdateInput,
   SampleWhere,
   SamplesDocument,
-  SamplesListQuery,
   SortDirection,
   Tempo,
   UpdateSamplesMutationResponse,
@@ -38,7 +35,6 @@ import {
   flattenedPatientFields,
   flattenedRequestFields,
   generateFieldResolvers,
-  getNestedValue,
   sortArrayByNestedField,
 } from "../utils/flattening";
 
@@ -448,18 +444,9 @@ function buildResolvers(
         return cohorts;
       },
     },
-    Request: generateFieldResolvers<RequestsListQuery["requests"][number]>(
-      flattenedRequestFields,
-      "Request"
-    ),
-    Patient: generateFieldResolvers<PatientsListQuery["patients"][number]>(
-      flattenedPatientFields,
-      "Patient"
-    ),
-    Cohort: generateFieldResolvers<CohortsListQuery["cohorts"][number]>(
-      flattenedCohortFields,
-      "Cohort"
-    ),
+    Request: generateFieldResolvers(flattenedRequestFields, "Request"),
+    Patient: generateFieldResolvers(flattenedPatientFields, "Patient"),
+    Cohort: generateFieldResolvers(flattenedCohortFields, "Cohort"),
     SampleMetadata: {
       cancerType: async (
         { oncotreeCode }: SampleMetadata,

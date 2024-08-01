@@ -1,7 +1,7 @@
 import {
-  PatientAlias,
-  Sample,
-  SamplesListQuery,
+  CohortsListQuery,
+  PatientsListQuery,
+  RequestsListQuery,
   SortDirection,
 } from "../generated/graphql";
 
@@ -29,47 +29,90 @@ export const flattenedCohortFields = [
   "type",
 ];
 
-export function generateFieldResolvers<ParentType>(
+export const flattenedSampleFields = [
+  // TODO: Get it working for SampleMetadata first
+  "additionalProperties",
+  "baitSet",
+  "cfDNA2dBarcode",
+  "cmoInfoIgoId",
+  "cmoPatientId",
+  "cmoSampleIdFields",
+  "cmoSampleName",
+  "collectionYear",
+  "genePanel",
+  "igoComplete",
+  "igoRequestId",
+  "importDate",
+  "investigatorSampleId",
+  "libraries",
+  "oncotreeCode",
+  "cancerType",
+  "cancerTypeDetailed",
+  "preservation",
+  "primaryId",
+  "qcReports",
+  "sampleClass",
+  "sampleName",
+  "sampleOrigin",
+  "sampleType",
+  "sex",
+  "species",
+  "tissueLocation",
+  "tubeId",
+  "tumorOrNormal",
+];
+
+export function generateFieldResolvers(
   flattenedFields: string[],
-  nodeLabel: string
+  nodeLabel: keyof typeof nestedValueGetters
 ) {
   return flattenedFields.reduce((resolvers, fieldName) => {
-    resolvers[fieldName] = (parent: ParentType) => {
-      return getNestedValue(parent, nodeLabel, fieldName);
+    resolvers[fieldName] = (parent: any) => {
+      return nestedValueGetters[nodeLabel](parent, fieldName);
     };
     return resolvers;
-  }, {} as Record<string, (parent: ParentType) => any>);
+  }, {} as Record<string, (parent: any) => any>);
 }
 
-export function getNestedValue(
-  parent: any,
-  nodeLabel: string,
-  fieldName: string
-) {
-  if (nodeLabel === "Request") {
+type NestedValueGetters = {
+  Request: (
+    parent: RequestsListQuery["requests"][number],
+    fieldName: string
+  ) => any;
+  Patient: (
+    parent: PatientsListQuery["patients"][number],
+    fieldName: string
+  ) => any;
+  Cohort: (
+    parent: CohortsListQuery["cohorts"][number],
+    fieldName: string
+  ) => any;
+};
+
+const nestedValueGetters: NestedValueGetters = {
+  Request: (parent, fieldName) => {
     switch (fieldName) {
       case "importDate":
         return parent.hasMetadataRequestMetadata[0]?.importDate;
       case "totalSampleCount":
         return parent.hasSampleSamplesConnection?.totalCount;
     }
-  }
-
-  if (nodeLabel === "Patient") {
+  },
+  Patient: (parent, fieldName) => {
     switch (fieldName) {
       case "cmoPatientId":
         return parent.patientAliasesIsAlias?.find(
-          (patientAlias: PatientAlias) => patientAlias.namespace === "cmoId"
+          (patientAlias) => patientAlias.namespace === "cmoId"
         )?.value;
       case "dmpPatientId":
         return parent.patientAliasesIsAlias?.find(
-          (patientAlias: PatientAlias) => patientAlias.namespace === "dmpId"
+          (patientAlias) => patientAlias.namespace === "dmpId"
         )?.value;
       case "totalSampleCount":
         return parent.hasSampleSamplesConnection?.totalCount;
       case "cmoSampleIds":
         return parent.hasSampleSamples
-          ?.map((s: Sample) => {
+          ?.map((s) => {
             const sampleMetadata = s.hasMetadataSampleMetadata[0];
             return sampleMetadata?.cmoSampleName || sampleMetadata?.primaryId;
           })
@@ -93,19 +136,15 @@ export function getNestedValue(
           return null;
         }
     }
-  }
-
-  if (nodeLabel === "Cohort") {
+  },
+  Cohort: (parent, fieldName) => {
     switch (fieldName) {
       case "totalSampleCount":
         return parent.hasCohortSampleSamplesConnection?.totalCount;
       case "smileSampleIds":
-        return parent.hasCohortSampleSamples?.map(
-          (s: Sample) => s.smileSampleId
-        );
+        return parent.hasCohortSampleSamples?.map((s) => s.smileSampleId);
       case "billed":
-        const samples: SamplesListQuery["samples"] =
-          parent.hasCohortSampleSamples;
+        const samples = parent.hasCohortSampleSamples;
         const allSamplesBilled =
           samples?.length > 0 &&
           samples.every((sample) => sample.hasTempoTempos?.[0]?.billed);
@@ -125,18 +164,18 @@ export function getNestedValue(
       case "type":
         return parent.hasCohortCompleteCohortCompletes?.[0]?.type;
     }
-  }
-}
+  },
+};
 
 export function sortArrayByNestedField(
   arr: any[],
-  nodeLabel: string,
+  nodeLabel: keyof typeof nestedValueGetters,
   fieldName: string,
   sortOrder: SortDirection
 ) {
   arr.sort((objA, objB) => {
-    let a = getNestedValue(objA, nodeLabel, fieldName);
-    let b = getNestedValue(objB, nodeLabel, fieldName);
+    let a = nestedValueGetters[nodeLabel](objA, fieldName);
+    let b = nestedValueGetters[nodeLabel](objB, fieldName);
 
     if (a === null || a === undefined) return 1;
     if (b === null || b === undefined) return -1;
