@@ -683,7 +683,6 @@ export const CohortSampleDetailsColumns: ColDef[] = [
   {
     field: "embargoDate",
     headerName: "Embargo Date",
-    editable: false,
   },
   {
     field: "billed",
@@ -1018,24 +1017,24 @@ export function cohortSampleFilterWhereVariables(
   ];
 }
 
-export function prepareSampleCohortDataForAgGrid(
-  samples: SamplesListQuery["samples"]
-) {
-  return samples.map((s) => {
-    const sampleMetadata = s.hasMetadataSampleMetadata[0];
-    const tempoData = extractTempoFromSample(s);
+// export function prepareSampleCohortDataForAgGrid(
+//   samples: SamplesListQuery["samples"]
+// ) {
+//   return samples.map((s) => {
+//     const sampleMetadata = s.hasMetadataSampleMetadata[0];
+//     const tempoData = extractTempoFromSample(s);
 
-    return {
-      primaryId: sampleMetadata.primaryId,
-      cmoSampleName: sampleMetadata.cmoSampleName,
-      hasStatusStatuses: sampleMetadata.hasStatusStatuses,
-      genePanel: sampleMetadata.genePanel,
-      baitSet: sampleMetadata.baitSet,
-      revisable: s.revisable,
-      ...tempoData,
-    };
-  });
-}
+//     return {
+//       primaryId: sampleMetadata.primaryId,
+//       cmoSampleName: sampleMetadata.cmoSampleName,
+//       hasStatusStatuses: sampleMetadata.hasStatusStatuses,
+//       genePanel: sampleMetadata.genePanel,
+//       baitSet: sampleMetadata.baitSet,
+//       revisable: s.revisable,
+//       ...tempoData,
+//     };
+//   });
+// }
 
 export function prepareCombinedSampleDataForAgGrid(
   samples: SamplesListQuery["samples"]

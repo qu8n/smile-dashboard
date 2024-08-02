@@ -77,6 +77,7 @@ export async function buildNeo4jDbSchema() {
     }
 
     extend type Sample {
+      # SampleMetadata
       additionalProperties: String
       baitSet: String
       cfDNA2dBarcode: String
@@ -92,8 +93,6 @@ export async function buildNeo4jDbSchema() {
       investigatorSampleId: String
       libraries: String
       oncotreeCode: String
-      cancerType: String
-      cancerTypeDetailed: String
       preservation: String
       primaryId: String
       qcReports: String
@@ -106,8 +105,31 @@ export async function buildNeo4jDbSchema() {
       tissueLocation: String
       tubeId: String
       tumorOrNormal: String
+      # SampleMetadata - Status
       validationReport: String
       validationStatus: Boolean
+      # SampleMetadata - Custom (Oncotree)
+      cancerType: String
+      cancerTypeDetailed: String
+      # Tempo
+      smileTempoId: String
+      billed: Boolean
+      costCenter: String
+      billedBy: String
+      custodianInformation: String
+      accessLevel: String
+      # Tempo - Custom
+      initialPipelineRunDate: String
+      embargoDate: String
+      bamCompleteDate: String
+      bamCompleteStatus: String
+      mafCompleteDate: String
+      mafCompleteNormalPrimaryId: String
+      mafCompleteStatus: String
+      qcCompleteDate: String
+      qcCompleteResult: String
+      qcCompleteReason: String
+      qcCompleteStatus: String
     }
 
     extend type Cohort {

@@ -3,12 +3,9 @@ import { AgGridReact } from "ag-grid-react";
 import { SamplesListQuery } from "../../generated/graphql";
 
 export const StatusTooltip = (props: ITooltipParams) => {
-  console.log("HELLO");
   let { primaryId, validationReport, validationStatus } =
     props.api.getDisplayedRowAtIndex(props.rowIndex!)!
       .data as SamplesListQuery["samples"][number];
-
-  console.log(primaryId, validationReport, validationStatus);
 
   const columnDefs = [
     {

@@ -248,6 +248,8 @@ export default function SamplesList({
     }, 0);
   };
 
+  console.log("samples", samples);
+
   return (
     <>
       <Container fluid>
@@ -370,9 +372,13 @@ export default function SamplesList({
                   return params.data?.revisable === false;
                 },
                 "validation-error": function (params) {
+                  // console.log("validationStatus", params.data?.validationStatus);
+                  // console.log("revisable", params.data?.revisable);
+                  console.log("params.data", params.data);
                   return (
                     params.data?.revisable === true &&
-                    !params.data?.validationStatus
+                    (params.data?.validationStatus === false ||
+                      params.data?.validationStatus === undefined)
                   );
                 },
               }}

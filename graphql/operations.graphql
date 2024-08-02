@@ -74,8 +74,6 @@ query SamplesList(
     investigatorSampleId
     libraries
     oncotreeCode
-    cancerType
-    cancerTypeDetailed
     preservation
     primaryId
     qcReports
@@ -88,8 +86,30 @@ query SamplesList(
     tissueLocation
     tubeId
     tumorOrNormal
+    # SampleMetadata - Status
     validationReport
     validationStatus
+    # SampleMetadata - Custom (Oncotree)
+    cancerType
+    cancerTypeDetailed
+    # Tempo
+    billed
+    costCenter
+    billedBy
+    custodianInformation
+    accessLevel
+    # Tempo - Custom
+    initialPipelineRunDate
+    embargoDate
+    bamCompleteDate
+    bamCompleteStatus
+    mafCompleteDate
+    mafCompleteNormalPrimaryId
+    mafCompleteStatus
+    qcCompleteDate
+    qcCompleteResult
+    qcCompleteReason
+    qcCompleteStatus
     hasMetadataSampleMetadata(options: $sampleMetadataOptions) {
       ...SampleMetadataParts
       hasStatusStatuses {

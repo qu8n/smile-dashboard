@@ -10,7 +10,6 @@ import {
   CohortSampleDetailsColumns,
   CohortsListColumns,
   cohortSampleFilterWhereVariables,
-  prepareSampleCohortDataForAgGrid,
   handleSearch,
   prepareCohortDataForAgGrid,
 } from "../../shared/helpers";
@@ -169,7 +168,6 @@ export default function CohortsPage({
       setShowDownloadModal={setShowDownloadModal}
       handleDownload={() => setShowDownloadModal(true)}
       samplesColDefs={CohortSampleDetailsColumns}
-      prepareSamplesDataForAgGrid={prepareSampleCohortDataForAgGrid}
       samplesParentWhereVariables={
         {
           cohortsHasCohortSampleConnection_SOME: {

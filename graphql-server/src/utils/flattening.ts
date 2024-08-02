@@ -64,10 +64,43 @@ const flattenedSampleMetadataFields: SampleMetadataKey[] = [
   "tumorOrNormal",
 ];
 
-export const flattenedSampleFields = [
-  ...flattenedSampleMetadataFields,
+type SampleMetadataStatusKey =
+  keyof SamplesListQuery["samples"][number]["hasMetadataSampleMetadata"][number]["hasStatusStatuses"][number];
+const flattenedSampleMetadataStatusFields: SampleMetadataStatusKey[] = [
   "validationReport",
   "validationStatus",
+];
+
+type TempoKey =
+  keyof SamplesListQuery["samples"][number]["hasTempoTempos"][number];
+const flattenedTempoFields: TempoKey[] = [
+  "smileTempoId",
+  "billed",
+  "costCenter",
+  "billedBy",
+  "custodianInformation",
+  "accessLevel",
+];
+
+const flattenedTempoCustomFields = [
+  "initialPipelineRunDate",
+  "embargoDate",
+  "bamCompleteDate",
+  "bamCompleteStatus",
+  "mafCompleteDate",
+  "mafCompleteNormalPrimaryId",
+  "mafCompleteStatus",
+  "qcCompleteDate",
+  "qcCompleteResult",
+  "qcCompleteReason",
+  "qcCompleteStatus",
+];
+
+export const flattenedSampleFields = [
+  ...flattenedSampleMetadataFields,
+  ...flattenedSampleMetadataStatusFields,
+  ...flattenedTempoFields,
+  ...flattenedTempoCustomFields,
 ];
 
 export function generateFieldResolvers(
@@ -149,13 +182,54 @@ const nestedValueGetters: NestedValueGetters = {
         fieldName as SampleMetadataKey
       ];
     }
-    switch (fieldName) {
-      case "validationReport":
-        return parent.hasMetadataSampleMetadata?.[0]?.hasStatusStatuses?.[0]
-          ?.validationReport;
-      case "validationStatus":
-        return parent.hasMetadataSampleMetadata?.[0]?.hasStatusStatuses?.[0]
-          ?.validationStatus;
+    if (flattenedSampleMetadataStatusFields.includes(fieldName)) {
+      return parent.hasMetadataSampleMetadata?.[0]?.hasStatusStatuses?.[0]?.[
+        fieldName as SampleMetadataStatusKey
+      ];
+    }
+    if (flattenedTempoFields.includes(fieldName)) {
+      return parent.hasTempoTempos?.[0]?.[fieldName as TempoKey];
+    }
+    if (flattenedTempoCustomFields.includes(fieldName)) {
+      const cohortDates = parent.cohortsHasCohortSample?.flatMap((c) => {
+        return c.hasCohortCompleteCohortCompletes.map((cc) => {
+          return cc.date;
+        });
+      });
+      const initialPipelineRunDate = cohortDates?.sort()[0];
+      const tempo = parent.hasTempoTempos?.[0];
+      const bamComplete = tempo?.hasEventBamCompletes?.[0];
+      const mafComplete = tempo?.hasEventMafCompletes?.[0];
+      const qcComplete = tempo?.hasEventQcCompletes?.[0];
+      switch (fieldName) {
+        case "initialPipelineRunDate":
+          return initialPipelineRunDate;
+        case "embargoDate":
+          if (initialPipelineRunDate) {
+            const embargoDate = new Date(initialPipelineRunDate);
+            embargoDate.setMonth(embargoDate.getMonth() + 18);
+            return embargoDate.toISOString();
+          }
+          return null;
+        case "bamCompleteDate":
+          return bamComplete?.date;
+        case "bamCompleteStatus":
+          return bamComplete?.status;
+        case "mafCompleteDate":
+          return mafComplete?.date;
+        case "mafCompleteNormalPrimaryId":
+          return mafComplete?.normalPrimaryId;
+        case "mafCompleteStatus":
+          return mafComplete?.status;
+        case "qcCompleteDate":
+          return qcComplete?.date;
+        case "qcCompleteResult":
+          return qcComplete?.result;
+        case "qcCompleteReason":
+          return qcComplete?.reason;
+        case "qcCompleteStatus":
+          return qcComplete?.status;
+      }
     }
   },
   Cohort: (parent, fieldName) => {
