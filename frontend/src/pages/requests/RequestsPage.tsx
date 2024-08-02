@@ -8,7 +8,6 @@ import { useState } from "react";
 import {
   RequestsListColumns,
   SampleMetadataDetailsColumns,
-  prepareSampleMetadataForAgGrid,
   handleSearch,
   sampleFilterWhereVariables,
 } from "../../shared/helpers";
@@ -86,7 +85,6 @@ export default function RequestsPage() {
       setShowDownloadModal={setShowDownloadModal}
       handleDownload={() => setShowDownloadModal(true)}
       samplesColDefs={SampleMetadataDetailsColumns}
-      prepareSamplesDataForAgGrid={prepareSampleMetadataForAgGrid}
       samplesParentWhereVariables={
         {
           hasMetadataSampleMetadata_SOME: {

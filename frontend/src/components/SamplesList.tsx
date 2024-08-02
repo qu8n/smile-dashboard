@@ -14,7 +14,6 @@ import { AlertModal } from "./AlertModal";
 import { buildTsvString } from "../utils/stringBuilders";
 import {
   SampleChange,
-  SampleMetadataExtended,
   defaultColDef,
   getSamplePopupParamId,
   handleSearch,
@@ -49,7 +48,7 @@ const TEMPO_EVENT_OPTIONS = {
 
 interface ISampleListProps {
   columnDefs: ColDef[];
-  prepareDataForAgGrid: (samples: SamplesListQuery["samples"]) => any[];
+  prepareDataForAgGrid?: (samples: SamplesListQuery["samples"]) => any[];
   setUnsavedChanges?: (unsavedChanges: boolean) => void;
   parentDataName?: DataName;
   parentWhereVariables?: SampleWhere;
@@ -269,7 +268,12 @@ export default function SamplesList({
         <DownloadModal
           loader={() => {
             return Promise.resolve(
-              buildTsvString(prepareDataForAgGrid(samples!), columnDefs)
+              buildTsvString(
+                prepareDataForAgGrid
+                  ? prepareDataForAgGrid(samples!)
+                  : samples!,
+                columnDefs
+              )
             );
           }}
           onComplete={() => {
@@ -354,7 +358,7 @@ export default function SamplesList({
             }`}
             style={{ width: width }}
           >
-            <AgGridReact<SampleMetadataExtended>
+            <AgGridReact
               getRowId={(d) => {
                 return d.data.primaryId;
               }}
@@ -366,17 +370,16 @@ export default function SamplesList({
                   return params.data?.revisable === false;
                 },
                 "validation-error": function (params) {
-                  const validationStatus =
-                    params.data?.hasStatusStatuses[0]?.validationStatus;
                   return (
                     params.data?.revisable === true &&
-                    (validationStatus === false ||
-                      validationStatus === undefined)
+                    !params.data?.validationStatus
                   );
                 },
               }}
               columnDefs={columnDefs}
-              rowData={prepareDataForAgGrid(samples!)}
+              rowData={
+                prepareDataForAgGrid ? prepareDataForAgGrid(samples!) : samples!
+              }
               onCellEditRequest={onCellValueChanged}
               readOnlyEdit={true}
               defaultColDef={defaultColDef}

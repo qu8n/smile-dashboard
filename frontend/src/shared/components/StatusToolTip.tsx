@@ -1,8 +1,14 @@
 import { ITooltipParams } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
+import { SamplesListQuery } from "../../generated/graphql";
 
 export const StatusTooltip = (props: ITooltipParams) => {
-  const data = props.api.getDisplayedRowAtIndex(props.rowIndex!)!.data;
+  console.log("HELLO");
+  let { primaryId, validationReport, validationStatus } =
+    props.api.getDisplayedRowAtIndex(props.rowIndex!)!
+      .data as SamplesListQuery["samples"][number];
+
+  console.log(primaryId, validationReport, validationStatus);
 
   const columnDefs = [
     {
@@ -19,12 +25,9 @@ export const StatusTooltip = (props: ITooltipParams) => {
     },
   ];
 
-  let validationStatus;
   let validationReportList;
 
-  if (data.hasStatusStatuses[0]) {
-    validationStatus = data.hasStatusStatuses[0].validationStatus;
-    const validationReport = data.hasStatusStatuses[0].validationReport;
+  if (validationReport !== null && validationReport !== undefined) {
     let validationReportMap = new Map();
 
     try {
@@ -63,7 +66,7 @@ export const StatusTooltip = (props: ITooltipParams) => {
   if (!validationStatus) {
     return (
       <div className="tooltip-styles">
-        <p>Error report for {`${data?.primaryId}`}</p>
+        <p>Error report for {`${primaryId}`}</p>
         <div className="ag-theme-alpine" style={{ height: 300, width: 550 }}>
           <AgGridReact
             rowData={validationReportList}

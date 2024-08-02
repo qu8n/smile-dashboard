@@ -6,9 +6,6 @@ import { createHttpLink } from "apollo-link-http";
 import { InMemoryCache, NormalizedCacheObject } from "apollo-cache-inmemory";
 import { props } from "../utils/constants";
 import {
-  CohortsListQuery,
-  PatientsListQuery,
-  RequestsListQuery,
   SampleHasMetadataSampleMetadataUpdateFieldInput,
   SampleHasTempoTemposUpdateFieldInput,
   SampleMetadata,
@@ -34,6 +31,7 @@ import {
   flattenedCohortFields,
   flattenedPatientFields,
   flattenedRequestFields,
+  flattenedSampleFields,
   generateFieldResolvers,
   sortArrayByNestedField,
 } from "../utils/flattening";
@@ -76,6 +74,40 @@ export async function buildNeo4jDbSchema() {
       cmoSampleIds: String
       consentPartA: String
       consentPartC: String
+    }
+
+    extend type Sample {
+      additionalProperties: String
+      baitSet: String
+      cfDNA2dBarcode: String
+      cmoInfoIgoId: String
+      cmoPatientId: String
+      cmoSampleIdFields: String
+      cmoSampleName: String
+      collectionYear: String
+      genePanel: String
+      igoComplete: Boolean
+      igoRequestId: String
+      importDate: String
+      investigatorSampleId: String
+      libraries: String
+      oncotreeCode: String
+      cancerType: String
+      cancerTypeDetailed: String
+      preservation: String
+      primaryId: String
+      qcReports: String
+      sampleClass: String
+      sampleName: String
+      sampleOrigin: String
+      sampleType: String
+      sex: String
+      species: String
+      tissueLocation: String
+      tubeId: String
+      tumorOrNormal: String
+      validationReport: String
+      validationStatus: Boolean
     }
 
     extend type Cohort {
@@ -447,6 +479,7 @@ function buildResolvers(
     Request: generateFieldResolvers(flattenedRequestFields, "Request"),
     Patient: generateFieldResolvers(flattenedPatientFields, "Patient"),
     Cohort: generateFieldResolvers(flattenedCohortFields, "Cohort"),
+    Sample: generateFieldResolvers(flattenedSampleFields, "Sample"),
     SampleMetadata: {
       cancerType: async (
         { oncotreeCode }: SampleMetadata,

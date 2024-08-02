@@ -24,10 +24,7 @@ import {
   SampleWhere,
   SortDirection,
 } from "../generated/graphql";
-import {
-  defaultColDef,
-  prepareSampleMetadataForAgGrid,
-} from "../shared/helpers";
+import { defaultColDef } from "../shared/helpers";
 import { PatientIdsTriplet } from "../pages/patients/PatientsPage";
 import { ErrorMessage, LoadingSpinner, Toolbar } from "../shared/tableElements";
 import { AgGridReact as AgGridReactType } from "ag-grid-react/lib/agGridReact";
@@ -87,7 +84,7 @@ export default function RecordsList({
   showDownloadModal,
   setShowDownloadModal,
   handleDownload,
-  prepareSamplesDataForAgGrid = prepareSampleMetadataForAgGrid,
+  prepareSamplesDataForAgGrid,
   samplesColDefs,
   samplesParentWhereVariables,
   samplesRefetchWhereVariables,

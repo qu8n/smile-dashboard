@@ -104,7 +104,7 @@ async function getOncotreeCodesFromNeo4j() {
     );
   } catch (error) {
     if (error instanceof Error) {
-      console.log(error.message);
+      console.error(error.message);
     }
   } finally {
     await session.close();

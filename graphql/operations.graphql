@@ -58,6 +58,38 @@ query SamplesList(
   }
   samples(where: $where, options: $options) {
     ...SampleParts
+    # SampleMetadata
+    additionalProperties
+    baitSet
+    cfDNA2dBarcode
+    cmoInfoIgoId
+    cmoPatientId
+    cmoSampleIdFields
+    cmoSampleName
+    collectionYear
+    genePanel
+    igoComplete
+    igoRequestId
+    importDate
+    investigatorSampleId
+    libraries
+    oncotreeCode
+    cancerType
+    cancerTypeDetailed
+    preservation
+    primaryId
+    qcReports
+    sampleClass
+    sampleName
+    sampleOrigin
+    sampleType
+    sex
+    species
+    tissueLocation
+    tubeId
+    tumorOrNormal
+    validationReport
+    validationStatus
     hasMetadataSampleMetadata(options: $sampleMetadataOptions) {
       ...SampleMetadataParts
       hasStatusStatuses {

@@ -12,7 +12,6 @@ import { Button } from "react-bootstrap";
 import "ag-grid-enterprise";
 import {
   CohortsListQuery,
-  SampleMetadata,
   SampleMetadataWhere,
   SamplesListQuery,
   SampleWhere,
@@ -26,10 +25,6 @@ import { parseUserSearchVal } from "../utils/parseSearchQueries";
 import { Dispatch, SetStateAction } from "react";
 import moment from "moment";
 import _ from "lodash";
-
-export interface SampleMetadataExtended extends SampleMetadata {
-  revisable: boolean;
-}
 
 export type SampleChange = {
   primaryId: string;
@@ -219,7 +214,7 @@ function LoadingIcon() {
 const ONCOTREE_CODE_NA_TOOLTIP =
   "This code might have been remapped (renamed) between different versions of the Oncotree API. For remapping details, visit the docs at https://oncotree.mskcc.org/#/home?tab=mapping";
 
-export const SampleMetadataDetailsColumns: ColDef<SampleMetadataExtended>[] = [
+export const SampleMetadataDetailsColumns: ColDef[] = [
   {
     field: "primaryId",
     headerName: "Primary ID",
@@ -229,11 +224,7 @@ export const SampleMetadataDetailsColumns: ColDef<SampleMetadataExtended>[] = [
     headerName: "Status",
     cellRenderer: (params: ICellRendererParams) => {
       if (params.data?.revisable) {
-        return params.data?.hasStatusStatuses[0]?.validationStatus ? (
-          <CheckIcon />
-        ) : (
-          <WarningIcon />
-        );
+        return params.data?.validationStatus ? <CheckIcon /> : <WarningIcon />;
       } else {
         return <LoadingIcon />;
       }
@@ -241,9 +232,14 @@ export const SampleMetadataDetailsColumns: ColDef<SampleMetadataExtended>[] = [
     cellRendererParams: {
       colDef: {
         tooltipComponent: StatusTooltip,
-        tooltipValueGetter: (params: ITooltipParams) =>
-          params.data.hasStatusStatuses[0]?.validationReport ??
-          params.data.hasStatusStatuses,
+        tooltipValueGetter: (params: ITooltipParams) => {
+          return (
+            params.data?.[0]?.validationReport && {
+              validationReport: params.data?.[0]?.validationReport,
+              validationStatus: params.data?.[0]?.validationStatus,
+            }
+          );
+        },
       },
     },
   },
@@ -480,9 +476,7 @@ function setupEditableSampleFields(samplesColDefs: ColDef[]) {
           return changedValue.newValue;
         } else {
           if (params?.colDef?.field! in params.data!) {
-            return params.data?.[
-              params.colDef?.field! as keyof SampleMetadataExtended
-            ];
+            return params.data?.[params.colDef?.field!];
           } else {
             return "N/A";
           }
@@ -1022,17 +1016,6 @@ export function cohortSampleFilterWhereVariables(
       },
     },
   ];
-}
-
-export function prepareSampleMetadataForAgGrid(
-  samples: SamplesListQuery["samples"]
-) {
-  return samples.map((s) => {
-    return {
-      ...s.hasMetadataSampleMetadata[0],
-      revisable: s.revisable,
-    };
-  });
 }
 
 export function prepareSampleCohortDataForAgGrid(

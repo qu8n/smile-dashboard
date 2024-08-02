@@ -2,6 +2,7 @@ import {
   CohortsListQuery,
   PatientsListQuery,
   RequestsListQuery,
+  SamplesListQuery,
   SortDirection,
 } from "../generated/graphql";
 
@@ -29,8 +30,9 @@ export const flattenedCohortFields = [
   "type",
 ];
 
-export const flattenedSampleFields = [
-  // TODO: Get it working for SampleMetadata first
+type SampleMetadataKey =
+  keyof SamplesListQuery["samples"][number]["hasMetadataSampleMetadata"][number];
+const flattenedSampleMetadataFields: SampleMetadataKey[] = [
   "additionalProperties",
   "baitSet",
   "cfDNA2dBarcode",
@@ -62,6 +64,12 @@ export const flattenedSampleFields = [
   "tumorOrNormal",
 ];
 
+export const flattenedSampleFields = [
+  ...flattenedSampleMetadataFields,
+  "validationReport",
+  "validationStatus",
+];
+
 export function generateFieldResolvers(
   flattenedFields: string[],
   nodeLabel: keyof typeof nestedValueGetters
@@ -77,16 +85,14 @@ export function generateFieldResolvers(
 type NestedValueGetters = {
   Request: (
     parent: RequestsListQuery["requests"][number],
-    fieldName: string
+    fieldName: any
   ) => any;
   Patient: (
     parent: PatientsListQuery["patients"][number],
-    fieldName: string
-  ) => any;
-  Cohort: (
-    parent: CohortsListQuery["cohorts"][number],
-    fieldName: string
-  ) => any;
+    fieldName: any
+  ) => string | number | boolean | null;
+  Sample: (parent: SamplesListQuery["samples"][number], fieldName: any) => any;
+  Cohort: (parent: CohortsListQuery["cohorts"][number], fieldName: any) => any;
 };
 
 const nestedValueGetters: NestedValueGetters = {
@@ -135,6 +141,21 @@ const nestedValueGetters: NestedValueGetters = {
         } catch {
           return null;
         }
+    }
+  },
+  Sample: (parent, fieldName) => {
+    if (flattenedSampleMetadataFields.includes(fieldName)) {
+      return parent.hasMetadataSampleMetadata?.[0]?.[
+        fieldName as SampleMetadataKey
+      ];
+    }
+    switch (fieldName) {
+      case "validationReport":
+        return parent.hasMetadataSampleMetadata?.[0]?.hasStatusStatuses?.[0]
+          ?.validationReport;
+      case "validationStatus":
+        return parent.hasMetadataSampleMetadata?.[0]?.hasStatusStatuses?.[0]
+          ?.validationStatus;
     }
   },
   Cohort: (parent, fieldName) => {
