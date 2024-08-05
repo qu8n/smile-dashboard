@@ -1,13 +1,5 @@
 # SMILE Dashboard
 
-Contents:
-- [Run locally](#run-locally)
-- [Running with docker-compose](#running-with-docker-compose)
-
-# Getting Started with Create React App
-
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-
 ## Run locally
 
 This section describes how to run the dashboard backend and frontend locally without docker.
@@ -29,13 +21,9 @@ If running into build issues, try purging existing contents from all `/node_modu
 rm -rf ./node_modules frontend/node_modules graphql-server/node_modules
 ```
 
-### Add SSL Certificate
-
-Download `smile-dashboard-web-cert.pem` and `smile-dashboard-web-key.pem` from [here](https://github.mskcc.org/cmo/smile-configuration/tree/master/resources/smile-dashboard).
-
-Create a new directory named `.cert` at the root of the project and place the downloaded files in it.
-
 ### Download the Oracle Instant Client
+
+> **Note:** Skip this step if you are using a MacBook machine with an M1 chip. This client is currently not supported on M1 machines.
 
 The Oracle Instant Client allows us to connect to an Oracle database (CRDB) for MRN-CMO-DMP data.
 
@@ -66,12 +54,13 @@ If successful, the graphql client should be available at `https://localhost:4000
 
 ### Dashboard App
 
-Set an environment variable `${REACT_APP_GRAPHQL_CLIENT_URI}` that points to the graphql client the webapp should be using. The app will default to `https://localhost:4000/graphql` if this is unset.
+Set the following environment variables to point the web app to the React frontend and the Express backend, respectively.
 
 Example:
 
 ```
-export REACT_APP_GRAPHQL_CLIENT_URI=https://localhost:4000/graphql
+export REACT_APP_REACT_SERVER_ORIGIN=https://localhost:3006
+export REACT_APP_EXPRESS_SERVER_ORIGIN=https://localhost:4000
 ```
 
 To run the frontend:
@@ -164,7 +153,6 @@ services:
     depends_on:
       graphql-client:
         condition: service_healthy
-
 ```
 
 Command:
@@ -172,3 +160,77 @@ Command:
 ```
 docker-compose up -d
 ```
+
+## Custom Schema
+
+The SMILE dashboard displays data in a table format, but the underlying data is stored in a graph database (Neo4j). When querying via GraphQL, the result is an object-like structure with nested objects that represents the relationships between nodes in the graph.
+
+For example, below is a query that retrieves data from `nodeA` and its child node `nodeB`. `field1` is a field of `nodeA`, and `field2` and `field3` are field of `nodeB`.
+
+```gql
+{
+  nodeA {
+    field1
+    hasChildNodeB {
+      field2
+      field3
+    }
+  }
+}
+```
+
+To ease the processing of transforming and processing nested graph data into a table format, we "flatten" the data schema so that nested fields are also represented as top-level fields in the queried result.
+
+For example, the above query would be transformed into the following:
+
+<table>
+<tr>
+<th> Before </th>
+<th> After </th>
+</tr>
+<tr>
+<td>
+
+```gql
+{
+  nodeA {
+    field1
+    hasChildNodeB {
+      field2
+      field3
+    }
+  }
+}
+
+
+```
+
+</td>
+<td>
+
+```gql
+{
+  nodeA {
+    field1        
+    field2        
+    field3        
+    hasChildNodeB {
+      field2
+      field3
+    } 
+  }
+}
+```
+
+</td>
+</tr>
+</table>
+
+Note that `field2` and `field3` are now top-level fields in the queried result, but they are not "true" fields of `nodeA` in the database. For clarity on which fields are "flattened", refer to `graphql-server/src/utils/flattening.ts`. Specifically, the `nestedValueGetters` object contains the fields that are flattened for each node type and how these "flattened" fields are accessed/resolved.
+
+### How to flatten a new field
+1. Add the new field to the corresponding query in `operations.graphql`.
+2. Add the new field to the extended schema to the `extendedTypeDefs` configurations in `graphql-server/src/neo4j.ts`.
+3. Add the new field to the corresponding flattened field array in `graphql-server/src/utils/flattening.ts`.
+4. Write logic to access/resolve the field in the `nestedValueGetters` object in `graphql-server/src/utils/flattening.ts`.
+5. Generate the typescript types by running `yarn run codegen`.
