@@ -5,6 +5,8 @@ import {
   SamplesListQuery,
   SortDirection,
 } from "../generated/graphql";
+import { CachedOncotreeData, fetchAndCacheOncotreeData } from "./oncotree";
+import { ApolloServerContext } from "./servers";
 
 export const flattenedRequestFields = ["importDate", "totalSampleCount"];
 
@@ -48,8 +50,6 @@ const flattenedSampleMetadataFields: SampleMetadataKey[] = [
   "investigatorSampleId",
   "libraries",
   "oncotreeCode",
-  "cancerType",
-  "cancerTypeDetailed",
   "preservation",
   "primaryId",
   "qcReports",
@@ -96,11 +96,14 @@ const flattenedTempoCustomFields = [
   "qcCompleteStatus",
 ];
 
+const flattenedOncotreeFields = ["cancerType", "cancerTypeDetailed"];
+
 export const flattenedSampleFields = [
   ...flattenedSampleMetadataFields,
   ...flattenedSampleMetadataStatusFields,
   ...flattenedTempoFields,
   ...flattenedTempoCustomFields,
+  ...flattenedOncotreeFields,
 ];
 
 export function generateFieldResolvers(
@@ -108,28 +111,38 @@ export function generateFieldResolvers(
   nodeLabel: keyof typeof nestedValueGetters
 ) {
   return flattenedFields.reduce((resolvers, fieldName) => {
-    resolvers[fieldName] = (parent: any) => {
-      return nestedValueGetters[nodeLabel](parent, fieldName);
+    resolvers[fieldName] = (parent, _args, context, _info) => {
+      return nestedValueGetters[nodeLabel](parent, fieldName, context);
     };
     return resolvers;
-  }, {} as Record<string, (parent: any) => any>);
+  }, {} as Record<string, (parent: any, _args: any, context: ApolloServerContext, _info: any) => any>);
 }
 
 type NestedValueGetters = {
   Request: (
     parent: RequestsListQuery["requests"][number],
-    fieldName: any
+    fieldName: any,
+    context?: ApolloServerContext
   ) => any;
   Patient: (
     parent: PatientsListQuery["patients"][number],
-    fieldName: any
+    fieldName: any,
+    context?: ApolloServerContext
   ) => string | number | boolean | null;
-  Sample: (parent: SamplesListQuery["samples"][number], fieldName: any) => any;
-  Cohort: (parent: CohortsListQuery["cohorts"][number], fieldName: any) => any;
+  Sample: (
+    parent: SamplesListQuery["samples"][number],
+    fieldName: any,
+    context?: ApolloServerContext
+  ) => any;
+  Cohort: (
+    parent: CohortsListQuery["cohorts"][number],
+    fieldName: any,
+    context?: ApolloServerContext
+  ) => any;
 };
 
 const nestedValueGetters: NestedValueGetters = {
-  Request: (parent, fieldName) => {
+  Request: (parent, fieldName, _context) => {
     switch (fieldName) {
       case "importDate":
         return parent.hasMetadataRequestMetadata[0]?.importDate;
@@ -137,7 +150,7 @@ const nestedValueGetters: NestedValueGetters = {
         return parent.hasSampleSamplesConnection?.totalCount;
     }
   },
-  Patient: (parent, fieldName) => {
+  Patient: (parent, fieldName, _context) => {
     switch (fieldName) {
       case "cmoPatientId":
         return parent.patientAliasesIsAlias?.find(
@@ -176,7 +189,7 @@ const nestedValueGetters: NestedValueGetters = {
         }
     }
   },
-  Sample: (parent, fieldName) => {
+  Sample: async (parent, fieldName, context) => {
     if (flattenedSampleMetadataFields.includes(fieldName)) {
       return parent.hasMetadataSampleMetadata?.[0]?.[
         fieldName as SampleMetadataKey
@@ -231,8 +244,24 @@ const nestedValueGetters: NestedValueGetters = {
           return qcComplete?.status;
       }
     }
+    if (flattenedOncotreeFields.includes(fieldName)) {
+      const { oncotreeCode } = parent.hasMetadataSampleMetadata?.[0];
+      const { oncotreeCache } = context || {};
+      if (!oncotreeCode) return null;
+      let cachedData = oncotreeCache?.get<CachedOncotreeData>(oncotreeCode);
+      if (!cachedData && oncotreeCache) {
+        await fetchAndCacheOncotreeData(oncotreeCache);
+        cachedData = oncotreeCache.get(oncotreeCode);
+      }
+      switch (fieldName) {
+        case "cancerType":
+          return cachedData?.mainType;
+        case "cancerTypeDetailed":
+          return cachedData?.name;
+      }
+    }
   },
-  Cohort: (parent, fieldName) => {
+  Cohort: (parent, fieldName, _context) => {
     switch (fieldName) {
       case "totalSampleCount":
         return parent.hasCohortSampleSamplesConnection?.totalCount;
@@ -266,11 +295,12 @@ export function sortArrayByNestedField(
   arr: any[],
   nodeLabel: keyof typeof nestedValueGetters,
   fieldName: string,
-  sortOrder: SortDirection
+  sortOrder: SortDirection,
+  context?: ApolloServerContext
 ) {
   arr.sort((objA, objB) => {
-    let a = nestedValueGetters[nodeLabel](objA, fieldName);
-    let b = nestedValueGetters[nodeLabel](objB, fieldName);
+    let a = nestedValueGetters[nodeLabel](objA, fieldName, context);
+    let b = nestedValueGetters[nodeLabel](objB, fieldName, context);
 
     if (a === null || a === undefined) return 1;
     if (b === null || b === undefined) return -1;

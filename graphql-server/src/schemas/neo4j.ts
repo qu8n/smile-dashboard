@@ -23,11 +23,6 @@ const request = require("request-promise-native");
 import { ApolloClient, ApolloQueryResult } from "apollo-client";
 import { gql } from "apollo-server";
 import {
-  CachedOncotreeData,
-  fetchAndCacheOncotreeData,
-} from "../utils/oncotree";
-import { ApolloServerContext } from "../utils/servers";
-import {
   flattenedCohortFields,
   flattenedPatientFields,
   flattenedRequestFields,
@@ -105,10 +100,10 @@ export async function buildNeo4jDbSchema() {
       tissueLocation: String
       tubeId: String
       tumorOrNormal: String
-      # SampleMetadata - Status
+      # SampleMetadata Status
       validationReport: String
       validationStatus: Boolean
-      # SampleMetadata - Custom (Oncotree)
+      # Oncotree
       cancerType: String
       cancerTypeDetailed: String
       # Tempo
@@ -118,7 +113,7 @@ export async function buildNeo4jDbSchema() {
       billedBy: String
       custodianInformation: String
       accessLevel: String
-      # Tempo - Custom
+      # Tempo Custom
       initialPipelineRunDate: String
       embargoDate: String
       bamCompleteDate: String
@@ -143,11 +138,6 @@ export async function buildNeo4jDbSchema() {
       projectSubtitle: String
       status: String
       type: String
-    }
-
-    extend type SampleMetadata {
-      cancerType: String
-      cancerTypeDetailed: String
     }
   `;
 
@@ -368,8 +358,6 @@ function buildResolvers(
               investigatorSampleId
               libraries
               oncotreeCode
-              cancerType
-              cancerTypeDetailed
               preservation
               primaryId
               qcReports
@@ -502,38 +490,6 @@ function buildResolvers(
     Patient: generateFieldResolvers(flattenedPatientFields, "Patient"),
     Cohort: generateFieldResolvers(flattenedCohortFields, "Cohort"),
     Sample: generateFieldResolvers(flattenedSampleFields, "Sample"),
-    SampleMetadata: {
-      cancerType: async (
-        { oncotreeCode }: SampleMetadata,
-        _: any,
-        { oncotreeCache }: ApolloServerContext
-      ) => {
-        if (oncotreeCode) {
-          let cachedData = oncotreeCache.get<CachedOncotreeData>(oncotreeCode);
-          if (!cachedData) {
-            await fetchAndCacheOncotreeData(oncotreeCache);
-            cachedData = oncotreeCache.get(oncotreeCode);
-          }
-          return cachedData?.mainType;
-        }
-        return null;
-      },
-      cancerTypeDetailed: async (
-        { oncotreeCode }: SampleMetadata,
-        _: any,
-        { oncotreeCache }: ApolloServerContext
-      ) => {
-        if (oncotreeCode) {
-          let cachedData = oncotreeCache.get<CachedOncotreeData>(oncotreeCode);
-          if (!cachedData) {
-            await fetchAndCacheOncotreeData(oncotreeCache);
-            cachedData = oncotreeCache.get(oncotreeCode);
-          }
-          return cachedData?.name;
-        }
-        return null;
-      },
-    },
   };
 }
 

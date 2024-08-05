@@ -86,10 +86,10 @@ query SamplesList(
     tissueLocation
     tubeId
     tumorOrNormal
-    # SampleMetadata - Status
+    # SampleMetadata Status
     validationReport
     validationStatus
-    # SampleMetadata - Custom (Oncotree)
+    # Oncotree
     cancerType
     cancerTypeDetailed
     # Tempo
@@ -98,7 +98,7 @@ query SamplesList(
     billedBy
     custodianInformation
     accessLevel
-    # Tempo - Custom
+    # Tempo Custom
     initialPipelineRunDate
     embargoDate
     bamCompleteDate
@@ -201,8 +201,6 @@ fragment SampleMetadataParts on SampleMetadata {
   investigatorSampleId
   libraries
   oncotreeCode
-  cancerType
-  cancerTypeDetailed
   preservation
   primaryId
   qcReports

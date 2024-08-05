@@ -3,7 +3,6 @@ import {
   ReadOnlyCohortSampleDetailsColumns,
   cohortSampleFilterWhereVariables,
   combinedSampleDetailsColumns,
-  prepareCombinedSampleDataForAgGrid,
   sampleFilterWhereVariables,
 } from "../../shared/helpers";
 import { SampleWhere } from "../../generated/graphql";
@@ -18,7 +17,6 @@ export default function SamplesPage() {
   return (
     <SamplesList
       columnDefs={columnDefs}
-      prepareDataForAgGrid={prepareCombinedSampleDataForAgGrid}
       refetchWhereVariables={(parsedSearchVals) => {
         return {
           OR: cohortSampleFilterWhereVariables(parsedSearchVals).concat({
