@@ -248,8 +248,6 @@ export default function SamplesList({
     }, 0);
   };
 
-  console.log("samples", samples);
-
   return (
     <>
       <Container fluid>

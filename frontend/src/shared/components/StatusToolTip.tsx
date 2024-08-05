@@ -4,8 +4,7 @@ import { SamplesListQuery } from "../../generated/graphql";
 
 export const StatusTooltip = (props: ITooltipParams) => {
   let { primaryId, validationReport, validationStatus } =
-    props.api.getDisplayedRowAtIndex(props.rowIndex!)!
-      .data as SamplesListQuery["samples"][number];
+    props.data as SamplesListQuery["samples"][number];
 
   const columnDefs = [
     {

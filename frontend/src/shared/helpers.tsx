@@ -229,19 +229,10 @@ export const SampleMetadataDetailsColumns: ColDef[] = [
         return <LoadingIcon />;
       }
     },
-    cellRendererParams: {
-      colDef: {
-        tooltipComponent: StatusTooltip,
-        tooltipValueGetter: (params: ITooltipParams) => {
-          return (
-            params.data?.[0]?.validationReport && {
-              validationReport: params.data?.[0]?.validationReport,
-              validationStatus: params.data?.[0]?.validationStatus,
-            }
-          );
-        },
-      },
-    },
+    tooltipComponent: StatusTooltip,
+    // This prop is required for tooltip to appear even though we're not using it
+    // (We're overriding this prop with the custom tooltip component)
+    tooltipField: "validationReport",
   },
   {
     field: "cmoSampleName",
