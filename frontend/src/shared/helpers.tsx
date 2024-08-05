@@ -624,13 +624,7 @@ export const CohortsListColumns: ColDef[] = [
       minValidYear: 2016,
       maxValidYear: new Date().getFullYear(),
     },
-    valueFormatter: (params) => params.value && formatDate(params.value),
-  },
-  {
-    field: "completeDate",
-    headerName: "Complete Date",
-    sortable: false,
-    hide: true,
+    valueFormatter: (params) => formatDate(params.value) ?? "",
   },
   {
     field: "endUsers",
@@ -670,10 +664,12 @@ export const CohortSampleDetailsColumns: ColDef[] = [
   {
     field: "initialPipelineRunDate",
     headerName: "Initial Pipeline Run Date",
+    valueFormatter: (params) => formatDate(params.value) ?? "",
   },
   {
     field: "embargoDate",
     headerName: "Embargo Date",
+    valueFormatter: (params) => formatDate(params.value) ?? "",
   },
   {
     field: "billed",
@@ -730,6 +726,7 @@ export const CohortSampleDetailsColumns: ColDef[] = [
   {
     field: "bamCompleteDate",
     headerName: "Latest BAM Complete Date",
+    valueFormatter: (params) => formatDate(params.value) ?? "",
   },
   {
     field: "bamCompleteStatus",
@@ -738,6 +735,7 @@ export const CohortSampleDetailsColumns: ColDef[] = [
   {
     field: "mafCompleteDate",
     headerName: "Latest MAF Complete Date",
+    valueFormatter: (params) => formatDate(params.value) ?? "",
   },
   {
     field: "mafCompleteNormalPrimaryId",
@@ -750,6 +748,7 @@ export const CohortSampleDetailsColumns: ColDef[] = [
   {
     field: "qcCompleteDate",
     headerName: "Latest QC Complete Date",
+    valueFormatter: (params) => formatDate(params.value) ?? "",
   },
   {
     field: "qcCompleteResult",
