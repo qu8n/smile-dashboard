@@ -684,7 +684,16 @@ export const CohortSampleDetailsColumns: ColDef[] = [
     cellEditorParams: {
       values: [true, false],
     },
-    valueFormatter: (params) => (params.value === true ? "Yes" : "No"),
+    valueFormatter: (params) => {
+      switch (params.value) {
+        case true:
+          return "Yes";
+        case false:
+          return "No";
+        default:
+          return "";
+      }
+    },
     filter: true,
     filterParams: {
       valueFormatter: (params: ValueFormatterParams) =>
