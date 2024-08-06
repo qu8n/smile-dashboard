@@ -1045,18 +1045,9 @@ export function getSamplePopupParamId(
   paramId: string
 ) {
   if (parentWhereVariables.OR?.[0].patientsHasSampleConnection_SOME) {
-    const patient = samples[0].patientsHasSample?.[0];
-
-    const cmoPatientId = patient.patientAliasesIsAlias.find(
-      (patientAlias) => patientAlias.namespace === "cmoId"
-    )?.value;
+    const { cmoPatientId, dmpPatientId } = samples[0].patientsHasSample?.[0];
     if (cmoPatientId) return cmoPatientId;
-
-    const dmpPatientId = patient.patientAliasesIsAlias.find(
-      (patientAlias) => patientAlias.namespace === "dmpId"
-    )?.value;
-    if (dmpPatientId) return dmpPatientId;
+    return dmpPatientId;
   }
-
   return paramId;
 }

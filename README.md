@@ -163,7 +163,7 @@ docker-compose up -d
 
 ## Custom Schema
 
-The SMILE dashboard displays data in a table format, but the underlying data is stored in a graph database (Neo4j). When querying via GraphQL, the result is an object-like structure with nested objects that represents the relationships between nodes in the graph.
+The SMILE dashboard displays data in a tabular format, but the underlying data is stored in a graph database (Neo4j). When querying with GraphQL, the result is an object-like structure with nested objects that represents the relationships between nodes in the graph.
 
 For example, below is a query that retrieves data from `nodeA` and its child node `nodeB`. `field1` is a field of `nodeA`, and `field2` and `field3` are field of `nodeB`.
 
@@ -179,9 +179,9 @@ For example, below is a query that retrieves data from `nodeA` and its child nod
 }
 ```
 
-To ease the processing of transforming and processing nested graph data into a table format, we "flatten" the data schema so that nested fields are also represented as top-level fields in the queried result.
+To simplify the process of transforming and processing nested graph data into a table format, we "flatten" the data schema via GraphQL custom resolvers so that nested fields (`field2` and `field3` in this example) are also represented as top-level fields in the queried result.
 
-For example, the above query would be transformed into the following:
+The above query is transformed into the following:
 
 <table>
 <tr>
@@ -226,7 +226,11 @@ For example, the above query would be transformed into the following:
 </tr>
 </table>
 
-Note that `field2` and `field3` are now top-level fields in the queried result, but they are not "true" fields of `nodeA` in the database. For clarity on which fields are "flattened", refer to `graphql-server/src/utils/flattening.ts`. Specifically, the `nestedValueGetters` object contains the fields that are flattened for each node type and how these "flattened" fields are accessed/resolved.
+### Notes
+
+`field2` and `field3` are now top-level fields in the queried result, but they are not "true" fields of `nodeA` in the database. For clarity on which fields are flattened, refer to `graphql-server/src/utils/flattening.ts`. Specifically, the `nestedValueGetters` object contains the fields that are flattened for each node type and how these flattened fields are accessed/resolved.
+
+We can't remove the nested fields from the query because they are needed to resolve the flattened fields. When this query is called, GraphQL will automatically resolve the nested fields first, then use our custom resolvers to resolve the flattened fields.
 
 ### How to flatten a new field
 1. Add the new field to the corresponding query in `operations.graphql`.

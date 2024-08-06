@@ -120,6 +120,7 @@ export default function SamplesList({
   }, [data]);
 
   const samples = data?.samples;
+  console.log(samples);
 
   const popupParamId = useMemo(() => {
     if (parentWhereVariables && samples && params) {

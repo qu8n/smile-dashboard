@@ -57,7 +57,7 @@ export function UpdateModal({
 
     const updatedSamples = _.cloneDeep(samples);
     updatedSamples?.forEach((s) => {
-      const primaryId = s.hasMetadataSampleMetadata[0].primaryId;
+      const primaryId = s.primaryId as string;
       if (primaryId in changesByPrimaryId) {
         s.revisable = false;
 
