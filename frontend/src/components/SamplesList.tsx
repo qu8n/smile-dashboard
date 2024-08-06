@@ -3,7 +3,6 @@ import {
   Sample,
   SampleWhere,
   useSamplesListQuery,
-  SamplesListQuery,
 } from "../generated/graphql";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { Button, Col, Container } from "react-bootstrap";
@@ -48,7 +47,6 @@ const TEMPO_EVENT_OPTIONS = {
 
 interface ISampleListProps {
   columnDefs: ColDef[];
-  prepareDataForAgGrid?: (samples: SamplesListQuery["samples"]) => any[];
   setUnsavedChanges?: (unsavedChanges: boolean) => void;
   parentDataName?: DataName;
   parentWhereVariables?: SampleWhere;
@@ -61,7 +59,6 @@ interface ISampleListProps {
 
 export default function SamplesList({
   columnDefs,
-  prepareDataForAgGrid,
   parentDataName,
   parentWhereVariables,
   refetchWhereVariables,
@@ -120,7 +117,6 @@ export default function SamplesList({
   }, [data]);
 
   const samples = data?.samples;
-  console.log(samples);
 
   const popupParamId = useMemo(() => {
     if (parentWhereVariables && samples && params) {
@@ -268,14 +264,7 @@ export default function SamplesList({
       {showDownloadModal && (
         <DownloadModal
           loader={() => {
-            return Promise.resolve(
-              buildTsvString(
-                prepareDataForAgGrid
-                  ? prepareDataForAgGrid(samples!)
-                  : samples!,
-                columnDefs
-              )
-            );
+            return Promise.resolve(buildTsvString(samples!, columnDefs));
           }}
           onComplete={() => {
             setShowDownloadModal(false);
@@ -379,9 +368,7 @@ export default function SamplesList({
                 },
               }}
               columnDefs={columnDefs}
-              rowData={
-                prepareDataForAgGrid ? prepareDataForAgGrid(samples!) : samples!
-              }
+              rowData={samples!}
               onCellEditRequest={onCellValueChanged}
               readOnlyEdit={true}
               defaultColDef={defaultColDef}
