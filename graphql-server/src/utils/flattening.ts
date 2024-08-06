@@ -104,6 +104,7 @@ export const flattenedSampleFields = [
   ...flattenedTempoFields,
   ...flattenedTempoCustomFields,
   ...flattenedOncotreeFields,
+  "recipe",
 ];
 
 export function generateFieldResolvers(
@@ -259,6 +260,17 @@ const nestedValueGetters: NestedValueGetters = {
         case "cancerTypeDetailed":
           return cachedData?.name;
       }
+    }
+    switch (fieldName) {
+      case "recipe":
+        const cmoSampleIds =
+          parent.hasMetadataSampleMetadata?.[0]?.cmoSampleIdFields;
+        try {
+          const cmoSampleIdsObj = JSON.parse(cmoSampleIds);
+          return cmoSampleIdsObj["recipe"];
+        } catch {
+          return null;
+        }
     }
   },
   Cohort: (parent, fieldName, _context) => {

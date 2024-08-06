@@ -72,7 +72,7 @@ export async function buildNeo4jDbSchema() {
     }
 
     extend type Sample {
-      # SampleMetadata
+      # Flattened fields: SampleMetadata
       additionalProperties: String
       baitSet: String
       cfDNA2dBarcode: String
@@ -100,20 +100,20 @@ export async function buildNeo4jDbSchema() {
       tissueLocation: String
       tubeId: String
       tumorOrNormal: String
-      # SampleMetadata Status
+      # Flattened fields: SampleMetadata Status
       validationReport: String
       validationStatus: Boolean
-      # Oncotree
+      # Flattened fields: Oncotree
       cancerType: String
       cancerTypeDetailed: String
-      # Tempo
+      # Flattened fields: Tempo
       smileTempoId: String
       billed: Boolean
       costCenter: String
       billedBy: String
       custodianInformation: String
       accessLevel: String
-      # Tempo Custom
+      # Flattened fields: Tempo events
       initialPipelineRunDate: String
       embargoDate: String
       bamCompleteDate: String
@@ -125,6 +125,8 @@ export async function buildNeo4jDbSchema() {
       qcCompleteResult: String
       qcCompleteReason: String
       qcCompleteStatus: String
+      # Other
+      recipe: String
     }
 
     extend type Cohort {

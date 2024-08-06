@@ -2027,6 +2027,26 @@ export type CohortHasCohortSampleSamplesNodeAggregationWhereInput = {
   qcReports_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
   qcReports_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
   qcReports_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  recipe_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  recipe_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  recipe_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  recipe_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  recipe_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  recipe_EQUAL?: InputMaybe<Scalars["String"]>;
+  recipe_GT?: InputMaybe<Scalars["Int"]>;
+  recipe_GTE?: InputMaybe<Scalars["Int"]>;
+  recipe_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  recipe_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  recipe_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  recipe_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  recipe_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  recipe_LT?: InputMaybe<Scalars["Int"]>;
+  recipe_LTE?: InputMaybe<Scalars["Int"]>;
+  recipe_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  recipe_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  recipe_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  recipe_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  recipe_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
   sampleCategory_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
   sampleCategory_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
   sampleCategory_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
@@ -2369,6 +2389,7 @@ export type CohortSampleHasCohortSampleSamplesNodeAggregateSelection = {
   qcCompleteResult: StringAggregateSelectionNullable;
   qcCompleteStatus: StringAggregateSelectionNullable;
   qcReports: StringAggregateSelectionNullable;
+  recipe: StringAggregateSelectionNullable;
   sampleCategory: StringAggregateSelectionNonNullable;
   sampleClass: StringAggregateSelectionNonNullable;
   sampleName: StringAggregateSelectionNullable;
@@ -4600,6 +4621,26 @@ export type PatientHasSampleSamplesNodeAggregationWhereInput = {
   qcReports_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
   qcReports_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
   qcReports_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  recipe_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  recipe_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  recipe_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  recipe_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  recipe_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  recipe_EQUAL?: InputMaybe<Scalars["String"]>;
+  recipe_GT?: InputMaybe<Scalars["Int"]>;
+  recipe_GTE?: InputMaybe<Scalars["Int"]>;
+  recipe_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  recipe_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  recipe_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  recipe_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  recipe_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  recipe_LT?: InputMaybe<Scalars["Int"]>;
+  recipe_LTE?: InputMaybe<Scalars["Int"]>;
+  recipe_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  recipe_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  recipe_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  recipe_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  recipe_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
   sampleCategory_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
   sampleCategory_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
   sampleCategory_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
@@ -5078,6 +5119,7 @@ export type PatientSampleHasSampleSamplesNodeAggregateSelection = {
   qcCompleteResult: StringAggregateSelectionNullable;
   qcCompleteStatus: StringAggregateSelectionNullable;
   qcReports: StringAggregateSelectionNullable;
+  recipe: StringAggregateSelectionNullable;
   sampleCategory: StringAggregateSelectionNonNullable;
   sampleClass: StringAggregateSelectionNonNullable;
   sampleName: StringAggregateSelectionNullable;
@@ -7646,6 +7688,26 @@ export type RequestHasSampleSamplesNodeAggregationWhereInput = {
   qcReports_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
   qcReports_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
   qcReports_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  recipe_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  recipe_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  recipe_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  recipe_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  recipe_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  recipe_EQUAL?: InputMaybe<Scalars["String"]>;
+  recipe_GT?: InputMaybe<Scalars["Int"]>;
+  recipe_GTE?: InputMaybe<Scalars["Int"]>;
+  recipe_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  recipe_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  recipe_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  recipe_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  recipe_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  recipe_LT?: InputMaybe<Scalars["Int"]>;
+  recipe_LTE?: InputMaybe<Scalars["Int"]>;
+  recipe_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  recipe_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  recipe_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  recipe_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  recipe_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
   sampleCategory_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
   sampleCategory_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
   sampleCategory_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
@@ -9005,6 +9067,7 @@ export type RequestSampleHasSampleSamplesNodeAggregateSelection = {
   qcCompleteResult: StringAggregateSelectionNullable;
   qcCompleteStatus: StringAggregateSelectionNullable;
   qcReports: StringAggregateSelectionNullable;
+  recipe: StringAggregateSelectionNullable;
   sampleCategory: StringAggregateSelectionNonNullable;
   sampleClass: StringAggregateSelectionNonNullable;
   sampleName: StringAggregateSelectionNullable;
@@ -9403,6 +9466,7 @@ export type Sample = {
   qcCompleteResult?: Maybe<Scalars["String"]>;
   qcCompleteStatus?: Maybe<Scalars["String"]>;
   qcReports?: Maybe<Scalars["String"]>;
+  recipe?: Maybe<Scalars["String"]>;
   requestsHasSample: Array<Request>;
   requestsHasSampleAggregate?: Maybe<SampleRequestRequestsHasSampleAggregationSelection>;
   requestsHasSampleConnection: SampleRequestsHasSampleConnection;
@@ -9578,6 +9642,7 @@ export type SampleAggregateSelection = {
   qcCompleteResult: StringAggregateSelectionNullable;
   qcCompleteStatus: StringAggregateSelectionNullable;
   qcReports: StringAggregateSelectionNullable;
+  recipe: StringAggregateSelectionNullable;
   sampleCategory: StringAggregateSelectionNonNullable;
   sampleClass: StringAggregateSelectionNonNullable;
   sampleName: StringAggregateSelectionNullable;
@@ -10416,6 +10481,26 @@ export type SampleAliasIsAliasSamplesNodeAggregationWhereInput = {
   qcReports_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
   qcReports_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
   qcReports_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  recipe_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  recipe_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  recipe_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  recipe_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  recipe_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  recipe_EQUAL?: InputMaybe<Scalars["String"]>;
+  recipe_GT?: InputMaybe<Scalars["Int"]>;
+  recipe_GTE?: InputMaybe<Scalars["Int"]>;
+  recipe_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  recipe_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  recipe_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  recipe_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  recipe_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  recipe_LT?: InputMaybe<Scalars["Int"]>;
+  recipe_LTE?: InputMaybe<Scalars["Int"]>;
+  recipe_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  recipe_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  recipe_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  recipe_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  recipe_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
   sampleCategory_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
   sampleCategory_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
   sampleCategory_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
@@ -10751,6 +10836,7 @@ export type SampleAliasSampleIsAliasSamplesNodeAggregateSelection = {
   qcCompleteResult: StringAggregateSelectionNullable;
   qcCompleteStatus: StringAggregateSelectionNullable;
   qcReports: StringAggregateSelectionNullable;
+  recipe: StringAggregateSelectionNullable;
   sampleCategory: StringAggregateSelectionNonNullable;
   sampleClass: StringAggregateSelectionNonNullable;
   sampleName: StringAggregateSelectionNullable;
@@ -11194,6 +11280,7 @@ export type SampleCreateInput = {
   qcCompleteResult?: InputMaybe<Scalars["String"]>;
   qcCompleteStatus?: InputMaybe<Scalars["String"]>;
   qcReports?: InputMaybe<Scalars["String"]>;
+  recipe?: InputMaybe<Scalars["String"]>;
   requestsHasSample?: InputMaybe<SampleRequestsHasSampleFieldInput>;
   revisable: Scalars["Boolean"];
   sampleAliasesIsAlias?: InputMaybe<SampleSampleAliasesIsAliasFieldInput>;
@@ -12381,6 +12468,7 @@ export type SampleMetadataSampleSamplesHasMetadataNodeAggregateSelection = {
   qcCompleteResult: StringAggregateSelectionNullable;
   qcCompleteStatus: StringAggregateSelectionNullable;
   qcReports: StringAggregateSelectionNullable;
+  recipe: StringAggregateSelectionNullable;
   sampleCategory: StringAggregateSelectionNonNullable;
   sampleClass: StringAggregateSelectionNonNullable;
   sampleName: StringAggregateSelectionNullable;
@@ -13158,6 +13246,26 @@ export type SampleMetadataSamplesHasMetadataNodeAggregationWhereInput = {
   qcReports_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
   qcReports_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
   qcReports_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  recipe_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  recipe_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  recipe_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  recipe_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  recipe_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  recipe_EQUAL?: InputMaybe<Scalars["String"]>;
+  recipe_GT?: InputMaybe<Scalars["Int"]>;
+  recipe_GTE?: InputMaybe<Scalars["Int"]>;
+  recipe_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  recipe_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  recipe_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  recipe_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  recipe_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  recipe_LT?: InputMaybe<Scalars["Int"]>;
+  recipe_LTE?: InputMaybe<Scalars["Int"]>;
+  recipe_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  recipe_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  recipe_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  recipe_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  recipe_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
   sampleCategory_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
   sampleCategory_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
   sampleCategory_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
@@ -14822,6 +14930,7 @@ export type SampleSort = {
   qcCompleteResult?: InputMaybe<SortDirection>;
   qcCompleteStatus?: InputMaybe<SortDirection>;
   qcReports?: InputMaybe<SortDirection>;
+  recipe?: InputMaybe<SortDirection>;
   revisable?: InputMaybe<SortDirection>;
   sampleCategory?: InputMaybe<SortDirection>;
   sampleClass?: InputMaybe<SortDirection>;
@@ -14902,6 +15011,7 @@ export type SampleUpdateInput = {
   qcCompleteResult?: InputMaybe<Scalars["String"]>;
   qcCompleteStatus?: InputMaybe<Scalars["String"]>;
   qcReports?: InputMaybe<Scalars["String"]>;
+  recipe?: InputMaybe<Scalars["String"]>;
   requestsHasSample?: InputMaybe<
     Array<SampleRequestsHasSampleUpdateFieldInput>
   >;
@@ -15346,6 +15456,16 @@ export type SampleWhere = {
   qcReports_NOT_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
   qcReports_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
   qcReports_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  recipe?: InputMaybe<Scalars["String"]>;
+  recipe_CONTAINS?: InputMaybe<Scalars["String"]>;
+  recipe_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  recipe_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  recipe_NOT?: InputMaybe<Scalars["String"]>;
+  recipe_NOT_CONTAINS?: InputMaybe<Scalars["String"]>;
+  recipe_NOT_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  recipe_NOT_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  recipe_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  recipe_STARTS_WITH?: InputMaybe<Scalars["String"]>;
   requestsHasSampleAggregate?: InputMaybe<SampleRequestsHasSampleAggregateInput>;
   requestsHasSampleConnection_ALL?: InputMaybe<SampleRequestsHasSampleConnectionWhere>;
   requestsHasSampleConnection_NONE?: InputMaybe<SampleRequestsHasSampleConnectionWhere>;
@@ -17198,6 +17318,7 @@ export type TempoSampleSamplesHasTempoNodeAggregateSelection = {
   qcCompleteResult: StringAggregateSelectionNullable;
   qcCompleteStatus: StringAggregateSelectionNullable;
   qcReports: StringAggregateSelectionNullable;
+  recipe: StringAggregateSelectionNullable;
   sampleCategory: StringAggregateSelectionNonNullable;
   sampleClass: StringAggregateSelectionNonNullable;
   sampleName: StringAggregateSelectionNullable;
@@ -17969,6 +18090,26 @@ export type TempoSamplesHasTempoNodeAggregationWhereInput = {
   qcReports_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
   qcReports_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
   qcReports_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  recipe_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  recipe_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  recipe_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  recipe_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  recipe_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  recipe_EQUAL?: InputMaybe<Scalars["String"]>;
+  recipe_GT?: InputMaybe<Scalars["Int"]>;
+  recipe_GTE?: InputMaybe<Scalars["Int"]>;
+  recipe_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  recipe_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  recipe_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  recipe_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  recipe_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  recipe_LT?: InputMaybe<Scalars["Int"]>;
+  recipe_LTE?: InputMaybe<Scalars["Int"]>;
+  recipe_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  recipe_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  recipe_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  recipe_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  recipe_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
   sampleCategory_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
   sampleCategory_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
   sampleCategory_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
@@ -18637,6 +18778,7 @@ export type SamplesListQuery = {
     qcCompleteResult?: string | null;
     qcCompleteReason?: string | null;
     qcCompleteStatus?: string | null;
+    recipe?: string | null;
     datasource: string;
     revisable: boolean;
     sampleCategory: string;
@@ -19188,6 +19330,7 @@ export const SamplesListDocument = gql`
       qcCompleteResult
       qcCompleteReason
       qcCompleteStatus
+      recipe
       hasMetadataSampleMetadata(options: $sampleMetadataOptions) {
         ...SampleMetadataParts
         hasStatusStatuses {

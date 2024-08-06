@@ -404,6 +404,10 @@ export const SampleMetadataDetailsColumns: ColDef[] = [
     field: "sex",
     headerName: "Sex",
   },
+  {
+    field: "recipe",
+    headerName: "Recipe",
+  },
 ];
 
 function createCustomHeader(icons: string) {

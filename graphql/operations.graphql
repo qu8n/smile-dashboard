@@ -58,7 +58,7 @@ query SamplesList(
   }
   samples(where: $where, options: $options) {
     ...SampleParts
-    # SampleMetadata
+    # Flattened fields: SampleMetadata
     additionalProperties
     baitSet
     cfDNA2dBarcode
@@ -86,19 +86,19 @@ query SamplesList(
     tissueLocation
     tubeId
     tumorOrNormal
-    # SampleMetadata Status
+    # Flattened fields: SampleMetadata Status
     validationReport
     validationStatus
-    # Oncotree
+    # Flattened fields: Oncotree
     cancerType
     cancerTypeDetailed
-    # Tempo
+    # Flattened fields: Tempo
     billed
     costCenter
     billedBy
     custodianInformation
     accessLevel
-    # Tempo Custom
+    # Flattened fields: Tempo events
     initialPipelineRunDate
     embargoDate
     bamCompleteDate
@@ -110,6 +110,8 @@ query SamplesList(
     qcCompleteResult
     qcCompleteReason
     qcCompleteStatus
+    # Flattened fields: Other
+    recipe
     hasMetadataSampleMetadata(options: $sampleMetadataOptions) {
       ...SampleMetadataParts
       hasStatusStatuses {

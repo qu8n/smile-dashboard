@@ -230,7 +230,7 @@ Note that `field2` and `field3` are now top-level fields in the queried result, 
 
 ### How to flatten a new field
 1. Add the new field to the corresponding query in `operations.graphql`.
-2. Add the new field to the extended schema to the `extendedTypeDefs` configurations in `graphql-server/src/neo4j.ts`.
+2. Add the new field to the extended schema in the `extendedTypeDefs` configurations in `graphql-server/src/neo4j.ts`.
 3. Add the new field to the corresponding flattened field array in `graphql-server/src/utils/flattening.ts`.
 4. Write logic to access/resolve the field in the `nestedValueGetters` object in `graphql-server/src/utils/flattening.ts`.
 5. Generate the typescript types by running `yarn run codegen`.
