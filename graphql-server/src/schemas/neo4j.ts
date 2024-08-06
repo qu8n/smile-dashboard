@@ -127,6 +127,7 @@ export async function buildNeo4jDbSchema() {
       qcCompleteStatus: String
       # Other
       recipe: String
+      dmpPatientId: String
     }
 
     extend type Cohort {
@@ -307,6 +308,7 @@ function buildResolvers(
                 primaryId
                 cmoSampleName
                 additionalProperties
+                cmoPatientId
               }
             }
             hasSampleSamplesConnection {
@@ -399,8 +401,6 @@ function buildResolvers(
             }
             patientsHasSample {
               smilePatientId
-              cmoPatientId
-              dmpPatientId
               patientAliasesIsAlias {
                 namespace
                 value

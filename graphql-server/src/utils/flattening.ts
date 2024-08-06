@@ -105,6 +105,7 @@ export const flattenedSampleFields = [
   ...flattenedTempoCustomFields,
   ...flattenedOncotreeFields,
   "recipe",
+  "dmpPatientId",
 ];
 
 export function generateFieldResolvers(
@@ -154,9 +155,8 @@ const nestedValueGetters: NestedValueGetters = {
   Patient: (parent, fieldName, _context) => {
     switch (fieldName) {
       case "cmoPatientId":
-        return parent.patientAliasesIsAlias?.find(
-          (patientAlias) => patientAlias.namespace === "cmoId"
-        )?.value;
+        return parent.hasSampleSamples?.[0]?.hasMetadataSampleMetadata?.[0]
+          ?.cmoPatientId;
       case "dmpPatientId":
         return parent.patientAliasesIsAlias?.find(
           (patientAlias) => patientAlias.namespace === "dmpId"
@@ -271,6 +271,10 @@ const nestedValueGetters: NestedValueGetters = {
         } catch {
           return null;
         }
+      case "dmpPatientId":
+        return parent.patientsHasSample?.[0]?.patientAliasesIsAlias?.find(
+          (patientAlias) => patientAlias.namespace === "dmpId"
+        )?.value;
     }
   },
   Cohort: (parent, fieldName, _context) => {

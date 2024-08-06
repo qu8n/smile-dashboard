@@ -1045,7 +1045,7 @@ export function getSamplePopupParamId(
   paramId: string
 ) {
   if (parentWhereVariables.OR?.[0].patientsHasSampleConnection_SOME) {
-    const { cmoPatientId, dmpPatientId } = samples[0].patientsHasSample?.[0];
+    const { cmoPatientId, dmpPatientId } = samples[0];
     if (cmoPatientId) return cmoPatientId;
     return dmpPatientId;
   }

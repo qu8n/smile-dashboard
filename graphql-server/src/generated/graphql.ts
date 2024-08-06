@@ -1667,6 +1667,26 @@ export type CohortHasCohortSampleSamplesNodeAggregationWhereInput = {
   datasource_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
   datasource_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
   datasource_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  dmpPatientId_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  dmpPatientId_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  dmpPatientId_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  dmpPatientId_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  dmpPatientId_EQUAL?: InputMaybe<Scalars["String"]>;
+  dmpPatientId_GT?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_GTE?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_LT?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_LTE?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
   embargoDate_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
   embargoDate_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
   embargoDate_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
@@ -2371,6 +2391,7 @@ export type CohortSampleHasCohortSampleSamplesNodeAggregateSelection = {
   costCenter: StringAggregateSelectionNullable;
   custodianInformation: StringAggregateSelectionNullable;
   datasource: StringAggregateSelectionNonNullable;
+  dmpPatientId: StringAggregateSelectionNullable;
   embargoDate: StringAggregateSelectionNullable;
   genePanel: StringAggregateSelectionNullable;
   igoRequestId: StringAggregateSelectionNullable;
@@ -4261,6 +4282,26 @@ export type PatientHasSampleSamplesNodeAggregationWhereInput = {
   datasource_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
   datasource_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
   datasource_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  dmpPatientId_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  dmpPatientId_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  dmpPatientId_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  dmpPatientId_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  dmpPatientId_EQUAL?: InputMaybe<Scalars["String"]>;
+  dmpPatientId_GT?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_GTE?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_LT?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_LTE?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
   embargoDate_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
   embargoDate_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
   embargoDate_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
@@ -5101,6 +5142,7 @@ export type PatientSampleHasSampleSamplesNodeAggregateSelection = {
   costCenter: StringAggregateSelectionNullable;
   custodianInformation: StringAggregateSelectionNullable;
   datasource: StringAggregateSelectionNonNullable;
+  dmpPatientId: StringAggregateSelectionNullable;
   embargoDate: StringAggregateSelectionNullable;
   genePanel: StringAggregateSelectionNullable;
   igoRequestId: StringAggregateSelectionNullable;
@@ -7328,6 +7370,26 @@ export type RequestHasSampleSamplesNodeAggregationWhereInput = {
   datasource_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
   datasource_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
   datasource_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  dmpPatientId_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  dmpPatientId_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  dmpPatientId_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  dmpPatientId_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  dmpPatientId_EQUAL?: InputMaybe<Scalars["String"]>;
+  dmpPatientId_GT?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_GTE?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_LT?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_LTE?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
   embargoDate_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
   embargoDate_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
   embargoDate_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
@@ -9049,6 +9111,7 @@ export type RequestSampleHasSampleSamplesNodeAggregateSelection = {
   costCenter: StringAggregateSelectionNullable;
   custodianInformation: StringAggregateSelectionNullable;
   datasource: StringAggregateSelectionNonNullable;
+  dmpPatientId: StringAggregateSelectionNullable;
   embargoDate: StringAggregateSelectionNullable;
   genePanel: StringAggregateSelectionNullable;
   igoRequestId: StringAggregateSelectionNullable;
@@ -9438,6 +9501,7 @@ export type Sample = {
   costCenter?: Maybe<Scalars["String"]>;
   custodianInformation?: Maybe<Scalars["String"]>;
   datasource: Scalars["String"];
+  dmpPatientId?: Maybe<Scalars["String"]>;
   embargoDate?: Maybe<Scalars["String"]>;
   genePanel?: Maybe<Scalars["String"]>;
   hasMetadataSampleMetadata: Array<SampleMetadata>;
@@ -9624,6 +9688,7 @@ export type SampleAggregateSelection = {
   count: Scalars["Int"];
   custodianInformation: StringAggregateSelectionNullable;
   datasource: StringAggregateSelectionNonNullable;
+  dmpPatientId: StringAggregateSelectionNullable;
   embargoDate: StringAggregateSelectionNullable;
   genePanel: StringAggregateSelectionNullable;
   igoRequestId: StringAggregateSelectionNullable;
@@ -10121,6 +10186,26 @@ export type SampleAliasIsAliasSamplesNodeAggregationWhereInput = {
   datasource_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
   datasource_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
   datasource_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  dmpPatientId_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  dmpPatientId_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  dmpPatientId_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  dmpPatientId_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  dmpPatientId_EQUAL?: InputMaybe<Scalars["String"]>;
+  dmpPatientId_GT?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_GTE?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_LT?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_LTE?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
   embargoDate_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
   embargoDate_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
   embargoDate_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
@@ -10818,6 +10903,7 @@ export type SampleAliasSampleIsAliasSamplesNodeAggregateSelection = {
   costCenter: StringAggregateSelectionNullable;
   custodianInformation: StringAggregateSelectionNullable;
   datasource: StringAggregateSelectionNonNullable;
+  dmpPatientId: StringAggregateSelectionNullable;
   embargoDate: StringAggregateSelectionNullable;
   genePanel: StringAggregateSelectionNullable;
   igoRequestId: StringAggregateSelectionNullable;
@@ -11258,6 +11344,7 @@ export type SampleCreateInput = {
   costCenter?: InputMaybe<Scalars["String"]>;
   custodianInformation?: InputMaybe<Scalars["String"]>;
   datasource: Scalars["String"];
+  dmpPatientId?: InputMaybe<Scalars["String"]>;
   embargoDate?: InputMaybe<Scalars["String"]>;
   genePanel?: InputMaybe<Scalars["String"]>;
   hasMetadataSampleMetadata?: InputMaybe<SampleHasMetadataSampleMetadataFieldInput>;
@@ -12450,6 +12537,7 @@ export type SampleMetadataSampleSamplesHasMetadataNodeAggregateSelection = {
   costCenter: StringAggregateSelectionNullable;
   custodianInformation: StringAggregateSelectionNullable;
   datasource: StringAggregateSelectionNonNullable;
+  dmpPatientId: StringAggregateSelectionNullable;
   embargoDate: StringAggregateSelectionNullable;
   genePanel: StringAggregateSelectionNullable;
   igoRequestId: StringAggregateSelectionNullable;
@@ -12886,6 +12974,26 @@ export type SampleMetadataSamplesHasMetadataNodeAggregationWhereInput = {
   datasource_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
   datasource_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
   datasource_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  dmpPatientId_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  dmpPatientId_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  dmpPatientId_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  dmpPatientId_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  dmpPatientId_EQUAL?: InputMaybe<Scalars["String"]>;
+  dmpPatientId_GT?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_GTE?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_LT?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_LTE?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
   embargoDate_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
   embargoDate_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
   embargoDate_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
@@ -14911,6 +15019,7 @@ export type SampleSort = {
   costCenter?: InputMaybe<SortDirection>;
   custodianInformation?: InputMaybe<SortDirection>;
   datasource?: InputMaybe<SortDirection>;
+  dmpPatientId?: InputMaybe<SortDirection>;
   embargoDate?: InputMaybe<SortDirection>;
   genePanel?: InputMaybe<SortDirection>;
   igoComplete?: InputMaybe<SortDirection>;
@@ -14985,6 +15094,7 @@ export type SampleUpdateInput = {
   costCenter?: InputMaybe<Scalars["String"]>;
   custodianInformation?: InputMaybe<Scalars["String"]>;
   datasource?: InputMaybe<Scalars["String"]>;
+  dmpPatientId?: InputMaybe<Scalars["String"]>;
   embargoDate?: InputMaybe<Scalars["String"]>;
   genePanel?: InputMaybe<Scalars["String"]>;
   hasMetadataSampleMetadata?: InputMaybe<
@@ -15227,6 +15337,16 @@ export type SampleWhere = {
   datasource_NOT_IN?: InputMaybe<Array<Scalars["String"]>>;
   datasource_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
   datasource_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  dmpPatientId?: InputMaybe<Scalars["String"]>;
+  dmpPatientId_CONTAINS?: InputMaybe<Scalars["String"]>;
+  dmpPatientId_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  dmpPatientId_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  dmpPatientId_NOT?: InputMaybe<Scalars["String"]>;
+  dmpPatientId_NOT_CONTAINS?: InputMaybe<Scalars["String"]>;
+  dmpPatientId_NOT_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  dmpPatientId_NOT_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  dmpPatientId_NOT_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  dmpPatientId_STARTS_WITH?: InputMaybe<Scalars["String"]>;
   embargoDate?: InputMaybe<Scalars["String"]>;
   embargoDate_CONTAINS?: InputMaybe<Scalars["String"]>;
   embargoDate_ENDS_WITH?: InputMaybe<Scalars["String"]>;
@@ -17300,6 +17420,7 @@ export type TempoSampleSamplesHasTempoNodeAggregateSelection = {
   costCenter: StringAggregateSelectionNullable;
   custodianInformation: StringAggregateSelectionNullable;
   datasource: StringAggregateSelectionNonNullable;
+  dmpPatientId: StringAggregateSelectionNullable;
   embargoDate: StringAggregateSelectionNullable;
   genePanel: StringAggregateSelectionNullable;
   igoRequestId: StringAggregateSelectionNullable;
@@ -17730,6 +17851,26 @@ export type TempoSamplesHasTempoNodeAggregationWhereInput = {
   datasource_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
   datasource_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
   datasource_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
+  dmpPatientId_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
+  dmpPatientId_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
+  dmpPatientId_AVERAGE_LT?: InputMaybe<Scalars["Float"]>;
+  dmpPatientId_AVERAGE_LTE?: InputMaybe<Scalars["Float"]>;
+  dmpPatientId_EQUAL?: InputMaybe<Scalars["String"]>;
+  dmpPatientId_GT?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_GTE?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_LONGEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_LONGEST_GT?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_LONGEST_GTE?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_LONGEST_LT?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_LONGEST_LTE?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_LT?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_LTE?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_SHORTEST_EQUAL?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_SHORTEST_GT?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_SHORTEST_GTE?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_SHORTEST_LT?: InputMaybe<Scalars["Int"]>;
+  dmpPatientId_SHORTEST_LTE?: InputMaybe<Scalars["Int"]>;
   embargoDate_AVERAGE_EQUAL?: InputMaybe<Scalars["Float"]>;
   embargoDate_AVERAGE_GT?: InputMaybe<Scalars["Float"]>;
   embargoDate_AVERAGE_GTE?: InputMaybe<Scalars["Float"]>;
@@ -18703,6 +18844,7 @@ export type PatientsListQuery = {
         primaryId: string;
         cmoSampleName?: string | null;
         additionalProperties: string;
+        cmoPatientId?: string | null;
       }>;
     }>;
     hasSampleSamplesConnection: {
@@ -18779,6 +18921,7 @@ export type SamplesListQuery = {
     qcCompleteReason?: string | null;
     qcCompleteStatus?: string | null;
     recipe?: string | null;
+    dmpPatientId?: string | null;
     datasource: string;
     revisable: boolean;
     sampleCategory: string;
@@ -18842,8 +18985,6 @@ export type SamplesListQuery = {
     patientsHasSample: Array<{
       __typename?: "Patient";
       smilePatientId: string;
-      cmoPatientId?: string | null;
-      dmpPatientId?: string | null;
       patientAliasesIsAlias: Array<{
         __typename?: "PatientAlias";
         namespace: string;
@@ -19253,6 +19394,7 @@ export const PatientsListDocument = gql`
           primaryId
           cmoSampleName
           additionalProperties
+          cmoPatientId
         }
       }
       hasSampleSamplesConnection {
@@ -19331,6 +19473,7 @@ export const SamplesListDocument = gql`
       qcCompleteReason
       qcCompleteStatus
       recipe
+      dmpPatientId
       hasMetadataSampleMetadata(options: $sampleMetadataOptions) {
         ...SampleMetadataParts
         hasStatusStatuses {
@@ -19343,8 +19486,6 @@ export const SamplesListDocument = gql`
       }
       patientsHasSample {
         smilePatientId
-        cmoPatientId
-        dmpPatientId
         patientAliasesIsAlias {
           namespace
           value
