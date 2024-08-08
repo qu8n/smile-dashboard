@@ -18,12 +18,16 @@ export default function SamplesPage() {
     <SamplesList
       columnDefs={columnDefs}
       refetchWhereVariables={(parsedSearchVals) => {
+        const cohortSampleFilters = cohortSampleFilterWhereVariables(
+          parsedSearchVals
+        ).filter((filter) => filter.hasTempoTempos_SOME);
+        const sampleMetadataFilters = {
+          hasMetadataSampleMetadata_SOME: {
+            OR: sampleFilterWhereVariables(parsedSearchVals),
+          },
+        };
         return {
-          OR: cohortSampleFilterWhereVariables(parsedSearchVals).concat({
-            hasMetadataSampleMetadata_SOME: {
-              OR: sampleFilterWhereVariables(parsedSearchVals),
-            },
-          }),
+          OR: cohortSampleFilters.concat(sampleMetadataFilters),
         } as SampleWhere;
       }}
       customToolbarUI={
