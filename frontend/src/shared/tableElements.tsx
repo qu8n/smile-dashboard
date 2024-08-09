@@ -74,9 +74,11 @@ export function Toolbar({
 
       <Col md="auto" style={{ marginLeft: -15 }}>
         <InfoToolTip>
-          After inputting your search query, click on "Search" or press "Enter"
-          to get your results. To bulk search, input a list of values separated
-          by spaces or commas (e.g. "value1 value2 value3")
+          Click on "Search" or press "Enter" to start searching. To bulk search,
+          input a list of values separated by spaces or commas (example:{" "}
+          <code>value1 value2 value3</code>). To include multiple words in a
+          single search term, enclose them in single or double quotes (example:{" "}
+          <code>"Bone Cancer"</code>).
         </InfoToolTip>
       </Col>
 
