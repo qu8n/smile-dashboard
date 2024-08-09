@@ -122,47 +122,39 @@ export function includeCancerTypeFieldsInSearch(
   where: SampleWhere,
   oncotreeCache: NodeCache
 ) {
-  const customWhere = where;
+  const customWhere = { ...where };
 
-  const sampleMetadataFilters = customWhere?.OR?.find(
-    (filter) => filter.hasMetadataSampleMetadata_SOME
-  )?.hasMetadataSampleMetadata_SOME?.OR;
+  const sampleMetadataFilters =
+    customWhere?.hasMetadataSampleMetadata_SOME?.OR ||
+    customWhere?.OR?.find((filter) => filter.hasMetadataSampleMetadata_SOME)
+      ?.hasMetadataSampleMetadata_SOME?.OR;
 
-  if (sampleMetadataFilters && sampleMetadataFilters?.length > 0) {
+  if (sampleMetadataFilters?.length) {
     const searchInput = Object.values(sampleMetadataFilters[0])[0] as
       | string
       | string[];
+    const searchValues = Array.isArray(searchInput)
+      ? searchInput
+      : [searchInput];
 
-    function addOncotreeCode(code: string) {
-      const filter = customWhere?.OR?.find(
-        (filter) => filter.hasMetadataSampleMetadata_SOME
-      );
-      if (filter?.hasMetadataSampleMetadata_SOME?.OR) {
-        filter.hasMetadataSampleMetadata_SOME.OR.push({
-          oncotreeCode_IN: [code],
-        });
-      }
-    }
+    const addOncotreeCode = (code: string) => {
+      sampleMetadataFilters?.push({ oncotreeCode_IN: [code] });
+    };
 
-    const oncotreeCodes = oncotreeCache.keys();
-    for (const code of oncotreeCodes) {
+    oncotreeCache.keys().forEach((code) => {
       const { name, mainType } = (oncotreeCache.get(
         code
       ) as CachedOncotreeData)!;
-      const searchValues =
-        typeof searchInput === "string" ? [searchInput] : searchInput;
-
-      for (const val of searchValues) {
-        const lowercaseVal = val.toLowerCase();
-        if (
-          name?.toLowerCase().includes(lowercaseVal) ||
-          mainType?.toLowerCase().includes(lowercaseVal)
-        ) {
-          addOncotreeCode(code);
-          break;
-        }
+      if (
+        searchValues.some(
+          (val) =>
+            name?.toLowerCase().includes(val.toLowerCase()) ||
+            mainType?.toLowerCase().includes(val.toLowerCase())
+        )
+      ) {
+        addOncotreeCode(code);
       }
-    }
+    });
   }
 
   return customWhere as GraphQLWhereArg;
