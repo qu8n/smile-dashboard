@@ -2,6 +2,8 @@ import fetch from "node-fetch";
 import NodeCache from "node-cache";
 import { driver } from "../schemas/neo4j";
 import { props } from "./constants";
+import { SampleWhere } from "../generated/graphql";
+import { GraphQLWhereArg } from "@neo4j/graphql";
 
 /**
  * Source: https://oncotree.mskcc.org/#/home?tab=api
@@ -109,4 +111,59 @@ async function getOncotreeCodesFromNeo4j() {
   } finally {
     await session.close();
   }
+}
+
+/**
+ * Include cancer type fields in the search query indirectly by searching the Oncotree cache
+ * for matching cancerType or cancerTypeDetailed values. If a match is found, add the corresponding
+ * Oncotree code to the original search query.
+ */
+export function includeCancerTypeFieldsInSearch(
+  where: SampleWhere,
+  oncotreeCache: NodeCache
+) {
+  const customWhere = where;
+
+  const sampleMetadataFilters = customWhere?.OR?.find(
+    (filter) => filter.hasMetadataSampleMetadata_SOME
+  )?.hasMetadataSampleMetadata_SOME?.OR;
+
+  if (sampleMetadataFilters && sampleMetadataFilters?.length > 0) {
+    const searchInput = Object.values(sampleMetadataFilters[0])[0] as
+      | string
+      | string[];
+
+    function addOncotreeCode(code: string) {
+      const filter = customWhere?.OR?.find(
+        (filter) => filter.hasMetadataSampleMetadata_SOME
+      );
+      if (filter?.hasMetadataSampleMetadata_SOME?.OR) {
+        filter.hasMetadataSampleMetadata_SOME.OR.push({
+          oncotreeCode_IN: [code],
+        });
+      }
+    }
+
+    const oncotreeCodes = oncotreeCache.keys();
+    for (const code of oncotreeCodes) {
+      const { name, mainType } = (oncotreeCache.get(
+        code
+      ) as CachedOncotreeData)!;
+      const searchValues =
+        typeof searchInput === "string" ? [searchInput] : searchInput;
+
+      for (const val of searchValues) {
+        const lowercaseVal = val.toLowerCase();
+        if (
+          name?.toLowerCase().includes(lowercaseVal) ||
+          mainType?.toLowerCase().includes(lowercaseVal)
+        ) {
+          addOncotreeCode(code);
+          break;
+        }
+      }
+    }
+  }
+
+  return customWhere as GraphQLWhereArg;
 }

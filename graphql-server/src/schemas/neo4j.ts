@@ -31,7 +31,10 @@ import {
   sortArrayByNestedField,
 } from "../utils/flattening";
 import { ApolloServerContext } from "../utils/servers";
-import { CachedOncotreeData } from "../utils/oncotree";
+import {
+  CachedOncotreeData,
+  includeCancerTypeFieldsInSearch,
+} from "../utils/oncotree";
 
 type SortOptions = { [key: string]: SortDirection }[];
 
@@ -343,42 +346,10 @@ function buildResolvers(
         args: any,
         { oncotreeCache }: ApolloServerContext
       ) {
-        let customWhere = args.where;
-
-        const sampleMetadataFilters = (customWhere?.OR as SampleWhere[])?.find(
-          (filter) => filter.hasMetadataSampleMetadata_SOME?.OR
-        )?.hasMetadataSampleMetadata_SOME?.OR;
-
-        if (sampleMetadataFilters && sampleMetadataFilters?.length > 0) {
-          const searchInput = Object.values(sampleMetadataFilters[0])[0];
-
-          const oncotreeCodes = oncotreeCache.keys();
-          for (const code of oncotreeCodes) {
-            const oncotreeData = oncotreeCache.get(code) as CachedOncotreeData;
-            const { name, mainType } = oncotreeData!;
-
-            if (typeof searchInput === "string") {
-              if (name?.toLowerCase().includes(searchInput.toLowerCase())) {
-                customWhere.OR.find(
-                  (filter: SampleWhere) =>
-                    filter.hasMetadataSampleMetadata_SOME?.OR
-                ).hasMetadataSampleMetadata_SOME.OR.push({
-                  oncotreeCode_IN: code,
-                });
-                break;
-              }
-              if (mainType?.toLowerCase().includes(searchInput.toLowerCase())) {
-                customWhere.OR.find(
-                  (filter: SampleWhere) =>
-                    filter.hasMetadataSampleMetadata_SOME?.OR
-                ).hasMetadataSampleMetadata_SOME.OR.push({
-                  oncotreeCode_IN: code,
-                });
-                break;
-              }
-            }
-          }
-        }
+        let customWhere = includeCancerTypeFieldsInSearch(
+          args.where,
+          oncotreeCache
+        );
 
         const samples = await ogm.model("Sample").find({
           where: customWhere,
