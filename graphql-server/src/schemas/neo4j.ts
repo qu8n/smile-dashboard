@@ -35,6 +35,7 @@ import {
   CachedOncotreeData,
   includeCancerTypeFieldsInSearch,
 } from "../utils/oncotree";
+import { querySamplesList } from "../utils/ogm";
 
 type SortOptions = { [key: string]: SortDirection }[];
 
@@ -350,109 +351,21 @@ function buildResolvers(
           args.where,
           oncotreeCache
         );
-
-        const samples = await ogm.model("Sample").find({
-          where: customWhere,
-          options: args.options,
-          selectionSet: `{
-            datasource
-            revisable
-            sampleCategory
-            sampleClass
-            smileSampleId
-            hasMetadataSampleMetadata {
-              additionalProperties
-              baitSet
-              cfDNA2dBarcode
-              cmoInfoIgoId
-              cmoPatientId
-              cmoSampleIdFields
-              cmoSampleName
-              collectionYear
-              genePanel
-              igoComplete
-              igoRequestId
-              importDate
-              investigatorSampleId
-              libraries
-              oncotreeCode
-              preservation
-              primaryId
-              qcReports
-              sampleClass
-              sampleName
-              sampleOrigin
-              sampleType
-              sex
-              species
-              tissueLocation
-              tubeId
-              tumorOrNormal
-              hasStatusStatuses {
-                validationReport
-                validationStatus
-              }
-            }
-            requestsHasSample {
-              igoRequestId
-              igoProjectId
-              genePanel
-              dataAnalystName
-              dataAnalystEmail
-              dataAccessEmails
-              bicAnalysis
-              investigatorEmail
-              investigatorName
-              isCmoRequest
-              labHeadEmail
-              labHeadName
-              libraryType
-              otherContactEmails
-              piEmail
-              projectManagerName
-              qcAccessEmails
-              smileRequestId
-            }
-            patientsHasSample {
-              smilePatientId
-              patientAliasesIsAlias {
-                namespace
-                value
-              }
-            }
-            cohortsHasCohortSample {
-              cohortId
-              hasCohortCompleteCohortCompletes {
-                date
-              }
-            }
-            hasTempoTempos {
-              smileTempoId
-              billed
-              billedBy
-              costCenter
-              custodianInformation
-              accessLevel
-              hasEventBamCompletes {
-                date
-                status
-              }
-              hasEventMafCompletes {
-                date
-                normalPrimaryId
-                status
-              }
-              hasEventQcCompletes {
-                date
-                reason
-                result
-                status
-              }
-            }
-          }`,
-        });
-
-        return samples;
+        return await querySamplesList(ogm, customWhere, args.options);
+      },
+      async samplesConnection(
+        _source: undefined,
+        args: any,
+        { oncotreeCache }: ApolloServerContext
+      ) {
+        let customWhere = includeCancerTypeFieldsInSearch(
+          args.where,
+          oncotreeCache
+        );
+        const samples = await querySamplesList(ogm, customWhere, args.options);
+        return {
+          totalCount: samples.length,
+        };
       },
       async cohorts(_source: undefined, args: any) {
         const cohorts = await ogm.model("Cohort").find({
