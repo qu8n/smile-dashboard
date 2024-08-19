@@ -177,8 +177,7 @@ function buildResolvers(
         { where, update }: { where: SampleWhere; update: SampleUpdateInput }
       ) {
         // Grab data passed in from the frontend
-        const primaryId =
-          where.hasMetadataSampleMetadataConnection_SOME!.node!.primaryId!;
+        const primaryId = where.hasMetadataSampleMetadata_SOME!.primaryId!;
 
         const sampleKeyForUpdate = Object.keys(
           update

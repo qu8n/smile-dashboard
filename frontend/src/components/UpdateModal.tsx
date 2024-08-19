@@ -10,6 +10,8 @@ import { ChangesByPrimaryId, SampleChange } from "../shared/helpers";
 import {
   Sample,
   SamplesListQuery,
+  SampleUpdateInput,
+  SampleWhere,
   useUpdateSamplesMutation,
 } from "../generated/graphql";
 import _ from "lodash";
@@ -74,12 +76,10 @@ export function UpdateModal({
       updateSamplesMutation({
         variables: {
           where: {
-            hasMetadataSampleMetadataConnection_SOME: {
-              node: {
-                primaryId: primaryId,
-              },
+            hasMetadataSampleMetadata_SOME: {
+              primaryId: primaryId,
             },
-          },
+          } as SampleWhere,
           update: {
             [sampleKeyForUpdate]: [
               {
@@ -88,7 +88,7 @@ export function UpdateModal({
                 },
               },
             ],
-          },
+          } as SampleUpdateInput,
         },
         optimisticResponse: {
           updateSamples: {

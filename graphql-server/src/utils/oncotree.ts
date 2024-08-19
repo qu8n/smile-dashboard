@@ -2,7 +2,7 @@ import fetch from "node-fetch";
 import NodeCache from "node-cache";
 import { driver } from "../schemas/neo4j";
 import { props } from "./constants";
-import { SampleWhere } from "../generated/graphql";
+import { SampleMetadataWhere, SampleWhere } from "../generated/graphql";
 import { GraphQLWhereArg } from "@neo4j/graphql";
 
 /**
@@ -113,25 +113,29 @@ async function getOncotreeCodesFromNeo4j() {
   }
 }
 
-/**
- * Include cancer type fields in the search query indirectly by searching the Oncotree cache
- * for matching cancerType or cancerTypeDetailed values. If a match is found, add the corresponding
- * Oncotree code to the original search query.
- */
 export function includeCancerTypeFieldsInSearch(
   where: SampleWhere,
   oncotreeCache: NodeCache
 ) {
   const customWhere = { ...where };
 
+  // Extract the list of SampleMetadata filters from the search query. For example:
+  // [
+  //    { "cmoSampleName_CONTAINS": "01234_A_1" },
+  //    { "importDate_CONTAINS": "01234_A_1" },
+  //    { "investigatorSampleId_CONTAINS": "01234_A_1" },
+  //    ...
+  // ]
   const sampleMetadataFilters =
-    // Request Samples view
+    // Request Samples view handler
     customWhere?.hasMetadataSampleMetadata_SOME?.OR ||
-    // Other views
+    // Other views handler
     customWhere?.OR?.find((filter) => filter.hasMetadataSampleMetadata_SOME)
       ?.hasMetadataSampleMetadata_SOME?.OR;
 
   if (sampleMetadataFilters?.length) {
+    // Extract the user query: searchValues equal ["someValue"] for a single-value search
+    // and ["val1", "val2", "val3", ...] for a bulk search
     const searchInput = Object.values(sampleMetadataFilters[0])[0] as
       | string
       | string[];
@@ -139,10 +143,8 @@ export function includeCancerTypeFieldsInSearch(
       ? searchInput
       : [searchInput];
 
-    const addOncotreeCode = (code: string) => {
-      sampleMetadataFilters?.push({ oncotreeCode_IN: [code] });
-    };
-
+    // Search through the oncotreeCache for matching cancerType or cancerTypeDetailed values.
+    // If there is a match, add the corresponding Oncotree code to the original search query
     oncotreeCache.keys().forEach((code) => {
       const { name, mainType } = (oncotreeCache.get(
         code
@@ -154,7 +156,7 @@ export function includeCancerTypeFieldsInSearch(
             mainType?.toLowerCase().includes(val?.toLowerCase())
         )
       ) {
-        addOncotreeCode(code);
+        sampleMetadataFilters?.push({ oncotreeCode_IN: [code] });
       }
     });
   }
