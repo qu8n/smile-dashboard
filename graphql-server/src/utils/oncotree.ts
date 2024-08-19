@@ -125,7 +125,9 @@ export function includeCancerTypeFieldsInSearch(
   const customWhere = { ...where };
 
   const sampleMetadataFilters =
+    // Request Samples view
     customWhere?.hasMetadataSampleMetadata_SOME?.OR ||
+    // Other views
     customWhere?.OR?.find((filter) => filter.hasMetadataSampleMetadata_SOME)
       ?.hasMetadataSampleMetadata_SOME?.OR;
 
@@ -148,8 +150,8 @@ export function includeCancerTypeFieldsInSearch(
       if (
         searchValues.some(
           (val) =>
-            name?.toLowerCase().includes(val.toLowerCase()) ||
-            mainType?.toLowerCase().includes(val.toLowerCase())
+            name?.toLowerCase().includes(val?.toLowerCase()) ||
+            mainType?.toLowerCase().includes(val?.toLowerCase())
         )
       ) {
         addOncotreeCode(code);
