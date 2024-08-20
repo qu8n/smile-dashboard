@@ -157,6 +157,7 @@ export default function SamplesList({
       setChanges(updatedChanges);
       if (updatedChanges.length === 0) setUnsavedChanges?.(false);
       resetAlertIfCostCentersAreAllValid(updatedChanges);
+      gridRef.current?.api?.refreshCells({ rowNodes: [rowNode] });
       return;
     }
 
@@ -229,6 +230,7 @@ export default function SamplesList({
     }
 
     setUnsavedChanges?.(true);
+    gridRef.current?.api?.refreshCells({ rowNodes: [rowNode] });
   }
 
   const handleDiscardChanges = () => {
