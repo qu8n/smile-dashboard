@@ -5,11 +5,21 @@ import {
   combinedSampleDetailsColumns,
   sampleFilterWhereVariables,
 } from "../../shared/helpers";
-import { SampleWhere } from "../../generated/graphql";
 import { useState } from "react";
 import { Button } from "react-bootstrap";
 import _ from "lodash";
 import { InfoToolTip } from "../../shared/components/InfoToolTip";
+
+const WES_SAMPLE_FILTERS = [
+  "Agilent_51MB",
+  "Agilent_v4_51MB_Human",
+  "CustomCapture",
+  "IDT_Exome_v1_FP",
+  "IDT_Exome_v1_FP_Viral_Probes",
+  "IDT_Exome_V1_IMPACT468",
+  "WES_Human",
+  "WholeExomeSequencing",
+];
 
 export default function SamplesPage() {
   const [columnDefs, setColumnDefs] = useState(combinedSampleDetailsColumns);
@@ -28,14 +38,19 @@ export default function SamplesPage() {
         };
         return {
           OR: cohortSampleFilters.concat(sampleMetadataFilters),
-        } as SampleWhere;
+          ...(_.isEqual(columnDefs, ReadOnlyCohortSampleDetailsColumns) && {
+            hasMetadataSampleMetadata_SOME: {
+              OR: sampleFilterWhereVariables(WES_SAMPLE_FILTERS),
+            },
+          }),
+        };
       }}
       customToolbarUI={
         <>
           <InfoToolTip>
-            These tabs change the fields displayed in the table below. "View
-            All" shows all fields, including both SampleMetadata and Tempo
-            fields.
+            These tabs change the data displayed in the table. "View all
+            samples" shows all data and columns, including those of
+            SampleMetadata and WES samples.
           </InfoToolTip>{" "}
           <Button
             onClick={() => {
@@ -45,7 +60,7 @@ export default function SamplesPage() {
             variant="outline-secondary"
             active={_.isEqual(columnDefs, combinedSampleDetailsColumns)}
           >
-            View all columns
+            View all samples
           </Button>{" "}
           <Button
             onClick={() => {
@@ -55,7 +70,7 @@ export default function SamplesPage() {
             variant="outline-secondary"
             active={_.isEqual(columnDefs, ReadOnlyCohortSampleDetailsColumns)}
           >
-            View TEMPO columns
+            View WES samples
           </Button>
         </>
       }

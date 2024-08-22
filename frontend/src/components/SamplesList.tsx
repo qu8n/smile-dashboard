@@ -109,8 +109,7 @@ export default function SamplesList({
     refetchSearchVal().then(() => {
       gridRef.current?.api?.hideOverlay();
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [parsedSearchVals]);
+  }, [parsedSearchVals, columnDefs, refetchWhereVariables, refetch]);
 
   useEffect(() => {
     setRowCount(data?.samplesConnection.totalCount || 0);
