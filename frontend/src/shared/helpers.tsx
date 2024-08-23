@@ -774,6 +774,18 @@ export const CohortSampleDetailsColumns: ColDef[] = [
     field: "baitSet",
     headerName: "Bait Set",
   },
+  {
+    field: "oncotreeCode",
+    headerName: "Oncotree Code",
+  },
+  {
+    field: "cancerType",
+    headerName: "Cancer Type",
+  },
+  {
+    field: "cancerTypeDetailed",
+    headerName: "Cancer Type Detailed",
+  },
 ];
 
 export const ReadOnlyCohortSampleDetailsColumns = _.cloneDeep(
