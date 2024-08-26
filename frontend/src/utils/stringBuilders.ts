@@ -25,7 +25,7 @@ export function buildTsvString(rows: any[], colDefs: ColDef[]) {
         return " ";
       })
     )
-    .map((value) => value.join("\t"));
+    .map((value) => value.join("\t").replace(/(\r\n|\n|\r)/gm, ""));
 
   return [colHeadersAsTsvRow, ...rowsAsTsvRows].join("\n");
 }
