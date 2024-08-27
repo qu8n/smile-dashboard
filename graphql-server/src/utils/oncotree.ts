@@ -127,11 +127,11 @@ export function includeCancerTypeFieldsInSearch(
   //    ...
   // ]
   const sampleMetadataFilters =
-    // Request Samples view handler
-    customWhere?.hasMetadataSampleMetadata_SOME?.OR ||
     // Other views handler
     customWhere?.OR?.find((filter) => filter.hasMetadataSampleMetadata_SOME)
-      ?.hasMetadataSampleMetadata_SOME?.OR;
+      ?.hasMetadataSampleMetadata_SOME?.OR ||
+    // Request Samples view handler
+    customWhere?.hasMetadataSampleMetadata_SOME?.OR;
 
   if (sampleMetadataFilters?.length) {
     // Extract the user query: searchValues equal ["someValue"] for a single-value search
