@@ -1,4 +1,4 @@
-import { REACT_SERVER_ORIGIN } from "../../utils/constants";
+import { REACT_APP_REACT_SERVER_ORIGIN } from "../../utils/constants";
 const passport = require("passport");
 
 /**
@@ -8,7 +8,7 @@ const passport = require("passport");
  */
 export function callbackRoute(req: any, res: any, next: any) {
   passport.authenticate("oidc", {
-    successRedirect: `${REACT_SERVER_ORIGIN}/auth/login-success`,
+    successRedirect: `${REACT_APP_REACT_SERVER_ORIGIN}/auth/login-success`,
     failureRedirect: "/",
   })(req, res, next);
 }

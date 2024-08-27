@@ -40,17 +40,17 @@ export const props = {
   oncotree_api: properties.get("oncotree.oncotree_api"),
 };
 
-export const EXPRESS_SERVER_ORIGIN =
-  process.env.EXPRESS_SERVER_ORIGIN === undefined
+export const REACT_APP_EXPRESS_SERVER_ORIGIN =
+  process.env.REACT_APP_EXPRESS_SERVER_ORIGIN === undefined
     ? "https://localhost:4000"
-    : process.env.EXPRESS_SERVER_ORIGIN;
+    : process.env.REACT_APP_EXPRESS_SERVER_ORIGIN;
 
-export const REACT_SERVER_ORIGIN =
-  process.env.REACT_SERVER_ORIGIN === undefined
+export const REACT_APP_REACT_SERVER_ORIGIN =
+  process.env.REACT_APP_REACT_SERVER_ORIGIN === undefined
     ? "https://localhost:3006"
-    : process.env.REACT_SERVER_ORIGIN;
+    : process.env.REACT_APP_REACT_SERVER_ORIGIN;
 
 export const corsOptions = {
-  origin: REACT_SERVER_ORIGIN,
+  origin: REACT_APP_REACT_SERVER_ORIGIN,
   credentials: true,
 };

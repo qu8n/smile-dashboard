@@ -1,6 +1,6 @@
 import { Issuer } from "openid-client";
 import { props } from "../utils/constants";
-import { EXPRESS_SERVER_ORIGIN } from "./constants";
+import { REACT_APP_EXPRESS_SERVER_ORIGIN } from "./constants";
 import { logOutRoute } from "../routes/auth/logout";
 
 export async function getKeycloakClient() {
@@ -9,7 +9,7 @@ export async function getKeycloakClient() {
   return new keycloakIssuer.Client({
     client_id: props.keycloak_client_id,
     client_secret: props.keycloak_client_secret,
-    redirect_uris: [`${EXPRESS_SERVER_ORIGIN}/auth/callback`],
+    redirect_uris: [`${REACT_APP_EXPRESS_SERVER_ORIGIN}/auth/callback`],
     response_types: ["code"],
   });
 }

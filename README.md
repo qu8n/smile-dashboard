@@ -41,7 +41,7 @@ By default, `node-oracledb` runs in [Thin mode (vs. Thick mode)](https://node-or
 
 The backend for the dashboard is under `./graphql-server`.
 
-Set up your [./graphql-server/dist/env/application.properties.EXAMPLE](./graphql-server/dist/env/application.properties.EXAMPLE) with all of the application properties needed for running the dashboard backend.
+Set up your [./graphql-server/src/env/application.properties.EXAMPLE](./graphql-server/src/env/application.properties.EXAMPLE) with all of the application properties needed for running the dashboard backend.
 
 Build and launch the node app from the project root directory with:
 
@@ -119,6 +119,11 @@ services:
     restart: unless-stopped
     environment:
       - SMILE_CONFIG_HOME=${SMILE_CONFIG_HOME}
+      - NODE_TLS_REJECT_UNAUTHORIZED=${NODE_TLS_REJECT_UNAUTHORIZED}
+      - LD_LIBRARY_PATH=${LD_LIBRARY_PATH}
+      - REACT_SERVER_ORIGIN=${REACT_SERVER_ORIGIN}
+      - EXPRESS_SERVER_ORIGIN=${EXPRESS_SERVER_ORIGIN}
+      - SMILE_DATA_HOME=${SMILE_DATA_HOME}
     volumes:
       - type: bind
         source: ${SMILE_CONFIG_HOME}/resources/smile-dashboard
@@ -126,26 +131,41 @@ services:
       - type: bind
         source: ${SMILE_CONFIG_HOME}/nats
         target: /server/nats
+      - type: bind
+        source: ${SMILE_DATA_HOME}/logs/smile-dashboard
+        target: ${SMILE_DATA_HOME}/logs/smile-dashboard
+      - type: bind
+        source: ${LD_LIBRARY_PATH}
+        target: ${LD_LIBRARY_PATH}
     external_links:
       - nats-jetstream
+    links:
       - neo4j
     depends_on:
       neo4j:
         condition: service_healthy
+      keycloak:
+        condition: service_started
     ports:
       - 4000:4000
     healthcheck:
-        test: ["CMD", "curl", "-s", "https://localhost:4000"]
-        interval: 30s
-        timeout: 10s
-        retries: 5
+      test: ["CMD-SHELL", "wget --no-check-certificate --no-verbose --spider https://localhost:4000 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
   smile-dashboard:
     container_name: smile-dashboard
     image: cmometadb/smile-dashboard:[build version]
     restart: unless-stopped
     environment:
-      - REACT_APP_GRAPHQL_CLIENT_URI=${REACT_APP_GRAPHQL_CLIENT_URI}
+      - SMILE_CONFIG_HOME=${SMILE_CONFIG_HOME}
+      - REACT_APP_EXPRESS_SERVER_ORIGIN=${REACT_APP_EXPRESS_SERVER_ORIGIN}
+      - REACT_APP_REACT_SERVER_ORIGIN=${REACT_APP_REACT_SERVER_ORIGIN}
+    volumes:
+      - type: bind
+        source: ${SMILE_CONFIG_HOME}/resources/smile-dashboard
+        target: ${SMILE_CONFIG_HOME}/resources/smile-dashboard
     links:
       - graphql-client
     ports:

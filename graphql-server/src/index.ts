@@ -1,5 +1,5 @@
 import express, { Express } from "express";
-import { EXPRESS_SERVER_ORIGIN } from "./utils/constants";
+import { REACT_APP_EXPRESS_SERVER_ORIGIN } from "./utils/constants";
 import { initializeApolloServer, initializeHttpsServer } from "./utils/servers";
 import { configureApp } from "./middlewares/configureApp";
 import { configureSession } from "./middlewares/configureSession";
@@ -22,7 +22,7 @@ async function main() {
   );
 
   console.log(
-    `🚀 Server ready at ${EXPRESS_SERVER_ORIGIN}${apolloServer.graphqlPath}`
+    `🚀 Server ready at ${REACT_APP_EXPRESS_SERVER_ORIGIN}${apolloServer.graphqlPath}`
   );
 }
 
