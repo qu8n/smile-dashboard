@@ -2,7 +2,11 @@ import fetch from "node-fetch";
 import NodeCache from "node-cache";
 import { driver } from "../schemas/neo4j";
 import { props } from "./constants";
-import { SampleMetadataWhere, SampleWhere } from "../generated/graphql";
+import {
+  InputMaybe,
+  SampleMetadataWhere,
+  SampleWhere,
+} from "../generated/graphql";
 import { GraphQLWhereArg } from "@neo4j/graphql";
 
 /**
@@ -114,7 +118,7 @@ async function getOncotreeCodesFromNeo4j() {
 }
 
 export function includeCancerTypeFieldsInSearch(
-  where: SampleWhere,
+  where: InputMaybe<SampleWhere>,
   oncotreeCache: NodeCache
 ) {
   const customWhere = { ...where };

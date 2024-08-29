@@ -2,7 +2,7 @@ import { OGM } from "@neo4j/graphql-ogm";
 import { includeCancerTypeFieldsInSearch } from "./oncotree";
 import { querySamplesList } from "./ogm";
 import DataLoader from "dataloader";
-import { SamplesListQuery, SampleWhere } from "../generated/graphql";
+import { SamplesListQuery } from "../generated/graphql";
 import NodeCache from "node-cache";
 
 type SamplesQueryResult = {
@@ -20,9 +20,16 @@ type SamplesQueryResult = {
  * via the `samplesConnection` child query.
  */
 export function createSamplesLoader(ogm: OGM, oncotreeCache: NodeCache) {
-  return new DataLoader<SampleWhere, SamplesQueryResult>(async (keys) => {
-    const customWhere = includeCancerTypeFieldsInSearch(keys[0], oncotreeCache);
-    const result = await querySamplesList(ogm, customWhere);
+  return new DataLoader<any, SamplesQueryResult>(async (keys) => {
+    // Both the args passed into samplesLoader.load() of the `samples` and
+    // `samplesConnection` are batched together in the `keys` array, and
+    // only one of them contains the `options` field
+    const args = keys.find((key) => key?.options);
+    const customWhere = includeCancerTypeFieldsInSearch(
+      args?.where,
+      oncotreeCache
+    );
+    const result = await querySamplesList(ogm, customWhere, args?.options);
     return keys.map(() => result);
   });
 }

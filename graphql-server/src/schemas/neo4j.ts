@@ -31,8 +31,6 @@ import {
   sortArrayByNestedField,
 } from "../utils/flattening";
 import { ApolloServerContext } from "../utils/servers";
-import { includeCancerTypeFieldsInSearch } from "../utils/oncotree";
-import { querySamplesList } from "../utils/ogm";
 
 type SortOptions = { [key: string]: SortDirection }[];
 
@@ -353,18 +351,18 @@ function buildResolvers(
       },
       async samples(
         _source: undefined,
-        { where }: any,
+        args: any,
         { samplesLoader }: ApolloServerContext
       ) {
-        const result = await samplesLoader.load(where);
+        const result = await samplesLoader.load(args);
         return result.data;
       },
       async samplesConnection(
         _source: undefined,
-        { where }: any,
+        args: any,
         { samplesLoader }: ApolloServerContext
       ) {
-        const result = await samplesLoader.load(where);
+        const result = await samplesLoader.load(args);
         return {
           totalCount: result.totalCount,
         };

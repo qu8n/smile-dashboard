@@ -35,10 +35,13 @@ import { useParams } from "react-router-dom";
 import { DataName } from "../shared/types";
 
 const POLLING_INTERVAL = 2000;
-const MAX_ROWS = 500;
-const ROW_LIMIT_ALERT_CONTENT =
+const MAX_ROWS_TABLE = 500;
+const MAX_ROWS_EXPORT = 5000;
+const MAX_ROWS_SCROLLED_ALERT =
   "You've reached the maximum number of samples that can be displayed. Please refine your search to see more samples.";
-const COST_CENTER_ALERT_CONTENT =
+const MAX_ROWS_EXPORT_EXCEED_ALERT =
+  "You can only download up to 5,000 rows of data at a time. Please refine your search and try again. If you need the full dataset, contact the SMILE team.";
+const COST_CENTER_VALIDATION_ALERT =
   "Please update your Cost Center/Fund Number input as #####/##### (5 digits, a forward slash, then 5 digits). For example: 12345/12345.";
 const TEMPO_EVENT_OPTIONS = {
   sort: [{ date: SortDirection.Desc }],
@@ -72,6 +75,9 @@ export default function SamplesList({
     useSamplesListQuery({
       variables: {
         where: parentWhereVariables || {},
+        options: {
+          limit: MAX_ROWS_TABLE,
+        },
         sampleMetadataOptions: {
           sort: [{ importDate: SortDirection.Desc }],
           limit: 1,
@@ -90,26 +96,23 @@ export default function SamplesList({
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [changes, setChanges] = useState<SampleChange[]>([]);
   const [editMode, setEditMode] = useState(true);
-  const [alertContent, setAlertContent] = useState(ROW_LIMIT_ALERT_CONTENT);
-  const [rowCount, setRowCount] = useState(0);
+  const [alertContent, setAlertContent] = useState(MAX_ROWS_SCROLLED_ALERT);
+  const [sampleCount, setSampleCount] = useState(0);
 
   const gridRef = useRef<AgGridReactType>(null);
   const params = useParams();
 
   useEffect(() => {
     gridRef.current?.api?.showLoadingOverlay();
-    async function refetchSearchVal() {
-      await refetch({
-        where: refetchWhereVariables(parsedSearchVals),
-      });
-    }
-    refetchSearchVal().then(() => {
+    refetch({
+      where: refetchWhereVariables(parsedSearchVals),
+    }).then(() => {
       gridRef.current?.api?.hideOverlay();
     });
   }, [parsedSearchVals, columnDefs, refetchWhereVariables, refetch]);
 
   useEffect(() => {
-    setRowCount(data?.samplesConnection.totalCount || 0);
+    setSampleCount(data?.samplesConnection.totalCount || 0);
   }, [data]);
 
   const samples = data?.samples;
@@ -140,7 +143,7 @@ export default function SamplesList({
       const allRowsHaveValidCostCenter = changes.every(
         (c) => c.fieldName !== "costCenter" || isValidCostCenter(c.newValue)
       );
-      if (allRowsHaveValidCostCenter) setAlertContent(ROW_LIMIT_ALERT_CONTENT);
+      if (allRowsHaveValidCostCenter) setAlertContent(MAX_ROWS_SCROLLED_ALERT);
     }
 
     // prevent registering a change if no actual changes are made
@@ -218,7 +221,7 @@ export default function SamplesList({
     // validate Cost Center inputs
     if (fieldName === "costCenter") {
       if (!isValidCostCenter(newValue)) {
-        setAlertContent(COST_CENTER_ALERT_CONTENT);
+        setAlertContent(COST_CENTER_VALIDATION_ALERT);
         setShowAlertModal(true);
       } else {
         resetAlertIfCostCentersAreAllValid(changes);
@@ -262,10 +265,25 @@ export default function SamplesList({
       {showDownloadModal && (
         <DownloadModal
           loader={() => {
-            return Promise.resolve(buildTsvString(samples!, columnDefs));
+            return sampleCount <= MAX_ROWS_TABLE
+              ? Promise.resolve(buildTsvString(samples!, columnDefs))
+              : refetch({
+                  options: {
+                    limit: MAX_ROWS_EXPORT,
+                  },
+                }).then((result) =>
+                  buildTsvString(result.data.samples, columnDefs)
+                );
           }}
           onComplete={() => {
             setShowDownloadModal(false);
+            // Reset the limit back to the default value of MAX_ROWS_TABLE.
+            // Otherwise, polling will use the most recent value MAX_ROWS_EXPORT
+            refetch({
+              options: {
+                limit: MAX_ROWS_TABLE,
+              },
+            });
           }}
           exportFileName={[
             parentDataName?.slice(0, -1),
@@ -306,8 +324,16 @@ export default function SamplesList({
           setUserSearchVal("");
           setParsedSearchVals([]);
         }}
-        matchingResultsCount={`${rowCount.toLocaleString()} matching samples`}
-        handleDownload={() => setShowDownloadModal(true)}
+        matchingResultsCount={`${sampleCount.toLocaleString()} matching samples`}
+        handleDownload={() => {
+          if (sampleCount > MAX_ROWS_EXPORT) {
+            setAlertContent(MAX_ROWS_EXPORT_EXCEED_ALERT);
+            setShowAlertModal(true);
+            return;
+          } else {
+            setShowDownloadModal(true);
+          }
+        }}
         customUILeft={customToolbarUI}
         customUIRight={
           changes.length > 0 ? (
@@ -322,7 +348,7 @@ export default function SamplesList({
                 </Button>{" "}
                 <Button
                   className={"btn btn-success"}
-                  disabled={alertContent === COST_CENTER_ALERT_CONTENT}
+                  disabled={alertContent === COST_CENTER_VALIDATION_ALERT}
                   onClick={() => {
                     setShowUpdateModal(true);
                   }}
@@ -384,12 +410,12 @@ export default function SamplesList({
               tooltipShowDelay={0}
               tooltipHideDelay={60000}
               onBodyScrollEnd={(params) => {
-                if (params.api.getLastDisplayedRow() + 1 === MAX_ROWS) {
+                if (params.api.getLastDisplayedRow() + 1 === MAX_ROWS_TABLE) {
                   setShowAlertModal(true);
                 }
               }}
               onFilterChanged={(params) => {
-                setRowCount(params.api.getDisplayedRowCount());
+                setSampleCount(params.api.getDisplayedRowCount());
               }}
             />
           </div>
