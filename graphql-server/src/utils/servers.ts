@@ -14,6 +14,7 @@ import { updateActiveUserSessions } from "./session";
 import { corsOptions } from "./constants";
 import NodeCache from "node-cache";
 import { fetchAndCacheOncotreeData } from "./oncotree";
+import { createSamplesLoader } from "./dataloader";
 
 export function initializeHttpsServer(app: Express) {
   const httpsServer = https.createServer(
@@ -33,13 +34,14 @@ export interface ApolloServerContext {
     isAuthenticated: boolean;
   };
   oncotreeCache: NodeCache;
+  samplesLoader: ReturnType<typeof createSamplesLoader>;
 }
 
 export async function initializeApolloServer(
   httpsServer: https.Server,
   app: Express
 ) {
-  const neo4jDbSchema = await buildNeo4jDbSchema();
+  const { neo4jDbSchema, ogm } = await buildNeo4jDbSchema();
   const mergedSchema = mergeSchemas({
     schemas: [neo4jDbSchema, oracleDbSchema],
   });
@@ -58,6 +60,7 @@ export async function initializeApolloServer(
           isAuthenticated: req.isAuthenticated,
         },
         oncotreeCache: oncotreeCache,
+        samplesLoader: createSamplesLoader(ogm, oncotreeCache),
       };
     },
     plugins: [

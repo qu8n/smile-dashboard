@@ -307,16 +307,24 @@ const nestedValueGetters: NestedValueGetters = {
   },
 };
 
-export function sortArrayByNestedField(
+export async function sortArrayByNestedField(
   arr: any[],
   nodeLabel: keyof typeof nestedValueGetters,
   fieldName: string,
   sortOrder: SortDirection,
   context?: ApolloServerContext
 ) {
+  // Although the parts of nestedValueGetters that we use are all synchronous,
+  // it's still an async function and could return a promise
+  const resolvedValues = await Promise.all(
+    arr.map((obj) => nestedValueGetters[nodeLabel](obj, fieldName, context))
+  );
+
   arr.sort((objA, objB) => {
-    let a = nestedValueGetters[nodeLabel](objA, fieldName, context);
-    let b = nestedValueGetters[nodeLabel](objB, fieldName, context);
+    const indexA = arr.indexOf(objA);
+    const indexB = arr.indexOf(objB);
+    let a = resolvedValues[indexA];
+    let b = resolvedValues[indexB];
 
     if (a === null || a === undefined) return 1;
     if (b === null || b === undefined) return -1;

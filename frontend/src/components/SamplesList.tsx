@@ -72,9 +72,6 @@ export default function SamplesList({
     useSamplesListQuery({
       variables: {
         where: parentWhereVariables || {},
-        options: {
-          limit: MAX_ROWS,
-        },
         sampleMetadataOptions: {
           sort: [{ importDate: SortDirection.Desc }],
           limit: 1,

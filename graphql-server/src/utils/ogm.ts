@@ -1,13 +1,12 @@
-import { GraphQLOptionsArg, GraphQLWhereArg, OGM } from "@neo4j/graphql-ogm";
+import { GraphQLWhereArg, OGM } from "@neo4j/graphql-ogm";
+import { sortArrayByNestedField } from "./flattening";
+import { SortDirection } from "../generated/graphql";
 
-export async function querySamplesList(
-  ogm: OGM,
-  where: GraphQLWhereArg,
-  options: GraphQLOptionsArg
-) {
-  return await ogm.model("Sample").find({
+const MAX_ROWS = 500;
+
+export async function querySamplesList(ogm: OGM, where: GraphQLWhereArg) {
+  const samples = await ogm.model("Sample").find({
     where: where,
-    options: options,
     selectionSet: `{
       datasource
       revisable
@@ -105,4 +104,16 @@ export async function querySamplesList(
       }
     }`,
   });
+
+  await sortArrayByNestedField(
+    samples,
+    "Sample",
+    "importDate",
+    SortDirection.Desc
+  );
+
+  return {
+    totalCount: samples.length,
+    data: samples.slice(0, MAX_ROWS),
+  };
 }

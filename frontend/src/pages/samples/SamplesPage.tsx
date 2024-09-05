@@ -24,27 +24,29 @@ const WES_SAMPLE_FILTERS = [
 export default function SamplesPage() {
   const [columnDefs, setColumnDefs] = useState(combinedSampleDetailsColumns);
 
+  const refetchWhereVariables = (parsedSearchVals: string[]) => {
+    const cohortSampleFilters = cohortSampleFilterWhereVariables(
+      parsedSearchVals
+    ).filter((filter) => filter.hasTempoTempos_SOME);
+    const sampleMetadataFilters = {
+      hasMetadataSampleMetadata_SOME: {
+        OR: sampleFilterWhereVariables(parsedSearchVals),
+      },
+    };
+    return {
+      OR: cohortSampleFilters.concat(sampleMetadataFilters),
+      ...(_.isEqual(columnDefs, ReadOnlyCohortSampleDetailsColumns) && {
+        hasMetadataSampleMetadata_SOME: {
+          OR: sampleFilterWhereVariables(WES_SAMPLE_FILTERS),
+        },
+      }),
+    };
+  };
+
   return (
     <SamplesList
       columnDefs={columnDefs}
-      refetchWhereVariables={(parsedSearchVals) => {
-        const cohortSampleFilters = cohortSampleFilterWhereVariables(
-          parsedSearchVals
-        ).filter((filter) => filter.hasTempoTempos_SOME);
-        const sampleMetadataFilters = {
-          hasMetadataSampleMetadata_SOME: {
-            OR: sampleFilterWhereVariables(parsedSearchVals),
-          },
-        };
-        return {
-          OR: cohortSampleFilters.concat(sampleMetadataFilters),
-          ...(_.isEqual(columnDefs, ReadOnlyCohortSampleDetailsColumns) && {
-            hasMetadataSampleMetadata_SOME: {
-              OR: sampleFilterWhereVariables(WES_SAMPLE_FILTERS),
-            },
-          }),
-        };
-      }}
+      refetchWhereVariables={refetchWhereVariables}
       customToolbarUI={
         <>
           <InfoToolTip>

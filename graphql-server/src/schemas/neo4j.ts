@@ -31,10 +31,7 @@ import {
   sortArrayByNestedField,
 } from "../utils/flattening";
 import { ApolloServerContext } from "../utils/servers";
-import {
-  CachedOncotreeData,
-  includeCancerTypeFieldsInSearch,
-} from "../utils/oncotree";
+import { includeCancerTypeFieldsInSearch } from "../utils/oncotree";
 import { querySamplesList } from "../utils/ogm";
 
 type SortOptions = { [key: string]: SortDirection }[];
@@ -163,7 +160,10 @@ export async function buildNeo4jDbSchema() {
   await ogm.init();
   const neo4jDbSchema = await neoSchema.getSchema();
 
-  return neo4jDbSchema;
+  return {
+    neo4jDbSchema,
+    ogm,
+  };
 }
 
 function buildResolvers(
@@ -290,7 +290,12 @@ function buildResolvers(
           const sortOrder = Object.values(sortOptions[0])[0];
 
           if (flattenedRequestFields.includes(sortField)) {
-            sortArrayByNestedField(requests, "Request", sortField, sortOrder);
+            await sortArrayByNestedField(
+              requests,
+              "Request",
+              sortField,
+              sortOrder
+            );
           }
         }
 
@@ -332,7 +337,12 @@ function buildResolvers(
           const sortOrder = Object.values(sortOptions[0])[0];
 
           if (flattenedPatientFields.includes(sortField)) {
-            sortArrayByNestedField(patients, "Patient", sortField, sortOrder);
+            await sortArrayByNestedField(
+              patients,
+              "Patient",
+              sortField,
+              sortOrder
+            );
           }
         }
 
@@ -343,27 +353,20 @@ function buildResolvers(
       },
       async samples(
         _source: undefined,
-        args: any,
-        { oncotreeCache }: ApolloServerContext
+        { where }: any,
+        { samplesLoader }: ApolloServerContext
       ) {
-        let customWhere = includeCancerTypeFieldsInSearch(
-          args.where,
-          oncotreeCache
-        );
-        return await querySamplesList(ogm, customWhere, args.options);
+        const result = await samplesLoader.load(where);
+        return result.data;
       },
       async samplesConnection(
         _source: undefined,
-        args: any,
-        { oncotreeCache }: ApolloServerContext
+        { where }: any,
+        { samplesLoader }: ApolloServerContext
       ) {
-        let customWhere = includeCancerTypeFieldsInSearch(
-          args.where,
-          oncotreeCache
-        );
-        const samples = await querySamplesList(ogm, customWhere, args.options);
+        const result = await samplesLoader.load(where);
         return {
-          totalCount: samples.length,
+          totalCount: result.totalCount,
         };
       },
       async cohorts(_source: undefined, args: any) {
@@ -402,7 +405,7 @@ function buildResolvers(
 
           // We don't check for other flattened fields here because the Cohorts AG Grid opts out of the Server-Side Row Model. We only need to sort by initialCohortDeliveryDate for the initial load
           if (sortField === "initialCohortDeliveryDate") {
-            sortArrayByNestedField(
+            await sortArrayByNestedField(
               cohorts,
               "Cohort",
               "initialCohortDeliveryDate",
