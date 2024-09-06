@@ -155,8 +155,9 @@ const nestedValueGetters: NestedValueGetters = {
   Patient: (parent, fieldName, _context) => {
     switch (fieldName) {
       case "cmoPatientId":
-        return parent.hasSampleSamples?.[0]?.hasMetadataSampleMetadata?.[0]
-          ?.cmoPatientId;
+        return parent.patientAliasesIsAlias?.find(
+          (patientAlias) => patientAlias.namespace === "cmoId"
+        )?.value;
       case "dmpPatientId":
         return parent.patientAliasesIsAlias?.find(
           (patientAlias) => patientAlias.namespace === "dmpId"
