@@ -173,19 +173,25 @@ const nestedValueGetters: NestedValueGetters = {
           ?.join(", ");
       case "consentPartA":
         try {
-          return JSON.parse(
-            parent.hasSampleSamples[0].hasMetadataSampleMetadata[0]
-              .additionalProperties
-          )["consent-parta"];
+          return parent.hasSampleSamples
+            .map((s) => {
+              return JSON.parse(
+                s.hasMetadataSampleMetadata[0].additionalProperties
+              )["consent-parta"];
+            })
+            .find((value) => value !== undefined);
         } catch {
           return null;
         }
       case "consentPartC":
         try {
-          return JSON.parse(
-            parent.hasSampleSamples[0].hasMetadataSampleMetadata[0]
-              .additionalProperties
-          )["consent-partc"];
+          return parent.hasSampleSamples
+            .map((s) => {
+              return JSON.parse(
+                s.hasMetadataSampleMetadata[0].additionalProperties
+              )["consent-partc"];
+            })
+            .find((value) => value !== undefined);
         } catch {
           return null;
         }
