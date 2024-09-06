@@ -40,7 +40,7 @@ const MAX_ROWS_EXPORT = 5000;
 const MAX_ROWS_SCROLLED_ALERT =
   "You've reached the maximum number of samples that can be displayed. Please refine your search to see more samples.";
 const MAX_ROWS_EXPORT_EXCEED_ALERT =
-  "You can only download up to 5,000 rows of data at a time. Please refine your search and try again. If you need the full dataset, contact the SMILE team.";
+  "You can only download up to 5,000 rows of data at a time. Please refine your search and try again. If you need the full dataset, contact the SMILE team at cmosmile@mskcc.org";
 const COST_CENTER_VALIDATION_ALERT =
   "Please update your Cost Center/Fund Number input as #####/##### (5 digits, a forward slash, then 5 digits). For example: 12345/12345.";
 const TEMPO_EVENT_OPTIONS = {
