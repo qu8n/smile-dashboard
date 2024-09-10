@@ -224,7 +224,11 @@ export const SampleMetadataDetailsColumns: ColDef[] = [
     headerName: "Status",
     cellRenderer: (params: ICellRendererParams) => {
       if (params.data?.revisable) {
-        return params.data?.validationStatus ? <CheckIcon /> : <WarningIcon />;
+        return params.data?.validationStatus === false ? (
+          <WarningIcon />
+        ) : (
+          <CheckIcon />
+        );
       } else {
         return <LoadingIcon />;
       }
