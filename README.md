@@ -4,8 +4,11 @@
 
 This section describes how to run the dashboard backend and frontend locally without docker.
 
-Make sure you have installed the node version and yarn version specified in
-[package.json](https://github.com/mskcc/smile-dashboard/blob/master/package.json).
+### Pre-requisites
+
+Make sure you have installed the following:
+- Node.js: 16.10.0
+- Yarn: 1.22.22
 
 > **Tip:** We recommend that you use [nvm: Node Version Manager](https://github.com/nvm-sh/nvm) and [yvm: Yarn Version Manager](https://yvm.js.org/docs/overview) to switch between versions more easily.
 
@@ -23,15 +26,15 @@ rm -rf ./node_modules frontend/node_modules graphql-server/node_modules
 
 ### Download the Oracle Instant Client
 
-> **Note:** Skip this step if you are using a MacBook machine with an M1 chip. This client is currently not supported on M1 machines.
+> **Note:** Skip this step if you are using a MacBook machine with an M1 chip or newer. Visit [this link](https://www.oracle.com/database/technologies/instant-client/downloads.html) for the latest supported systems.
 
-The Oracle Instant Client allows us to connect to an Oracle database (CRDB) for MRN-CMO-DMP data.
+The Oracle Instant Client allows us to connect to an Oracle database (CRDB) for MRN-CMO-DMP data. This enables the searching of PHI data on the Patients page of the dashboard.
 
 Download the Oracle Instant Client from [here](https://www.oracle.com/database/technologies/instant-client/downloads.html). 
 
 Select the version corresponding to your operating system and download the latest version's `Basic Package` zip file.
 
-Unzip and copy the entire directory to `/graphql-server/opt/oracle`.
+Unzip and copy the entire directory to `/graphql-server/opt/oracle` or your preferred location.
 
 #### Why can't we just use the Nodejs' `oracledb` package?
 
@@ -42,6 +45,19 @@ By default, `node-oracledb` runs in [Thin mode (vs. Thick mode)](https://node-or
 The backend for the dashboard is under `./graphql-server`.
 
 Set up your [./graphql-server/src/env/application.properties.EXAMPLE](./graphql-server/src/env/application.properties.EXAMPLE) with all of the application properties needed for running the dashboard backend.
+
+Add the following variable to your environment:
+```
+export NODE_TLS_REJECT_UNAUTHORIZED=0
+export SMILE_CONFIG_HOME=[path to the dashboard configuration directory]
+export SMILE_DATA_HOME=[path to the dashboard data directory]
+
+# Skip if you skipped the Oracle Instant Client step
+export LD_LIBRARY_PATH=[path to the Oracle Instant Client directory]
+
+# Skip if you're not deploying the dashboard backend with Docker
+export NODE_OPTIONS="--max-old-space-size=8192"
+```
 
 Build and launch the node app from the project root directory with:
 
@@ -98,7 +114,6 @@ Requirements:
 - `${SMILE_CONFIG_HOME}`: path to the dashboard configuration directory
 - `${SMILE_CONFIG_HOME}/resources/smile-dashboard`: path to application.properties and SSL cert files for the dashboard backend
 - `${SMILE_CONFIG_HOME}/nats`: path to NATS config, must contain rootCA.pem
-- `$REACT_APP_GRAPHQL_CLIENT_URI`: points to the apollo-graphql client url
 
 See [./server/env/application.properties.EXAMPLE](./server/env/application.properties.EXAMPLE) for all of the application properties needed for running the dashboard.
 
@@ -121,9 +136,10 @@ services:
       - SMILE_CONFIG_HOME=${SMILE_CONFIG_HOME}
       - NODE_TLS_REJECT_UNAUTHORIZED=${NODE_TLS_REJECT_UNAUTHORIZED}
       - LD_LIBRARY_PATH=${LD_LIBRARY_PATH}
-      - REACT_SERVER_ORIGIN=${REACT_SERVER_ORIGIN}
-      - EXPRESS_SERVER_ORIGIN=${EXPRESS_SERVER_ORIGIN}
+      - REACT_APP_REACT_SERVER_ORIGIN=${REACT_APP_REACT_SERVER_ORIGIN}
+      - REACT_APP_EXPRESS_SERVER_ORIGIN=${REACT_APP_EXPRESS_SERVER_ORIGIN}
       - SMILE_DATA_HOME=${SMILE_DATA_HOME}
+      - NODE_OPTIONS="--max-old-space-size=8192"
     volumes:
       - type: bind
         source: ${SMILE_CONFIG_HOME}/resources/smile-dashboard
