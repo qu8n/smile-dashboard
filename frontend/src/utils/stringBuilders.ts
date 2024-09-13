@@ -2,7 +2,7 @@ import { ColDef } from "ag-grid-community";
 
 export function buildTsvString(rows: any[], colDefs: ColDef[]) {
   const colDefsToExport = colDefs.filter(
-    (colDef) => colDef.headerName !== "View Samples"
+    (colDef) => colDef.headerName !== "View Samples" && colDef.hide !== true
   );
 
   const colHeadersAsTsvRow = colDefsToExport
