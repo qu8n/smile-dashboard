@@ -93,7 +93,7 @@ export default function RecordsList({
   const [rowCount, setRowCount] = useState<number>(0);
   const [uniqueSampleCount, setUniqueSampleCount] = useState<number>(0);
 
-  const grid = useRef<AgGridReactType>(null);
+  const gridRef = useRef<AgGridReactType>(null);
   const navigate = useNavigate();
   const params = useParams();
 
@@ -114,7 +114,7 @@ export default function RecordsList({
   const totalCountNodeName = `${dataName}Connection`;
 
   const getSortModel = useCallback(() => {
-    const sortModel = grid.current?.columnApi
+    const sortModel = gridRef.current?.columnApi
       ?.getColumnState()
       .filter(({ sort }) => sort)
       .map(({ colId, sort }) => ({
@@ -211,7 +211,11 @@ export default function RecordsList({
               agGridData = prepareDataForAgGrid(data, filterModel, sortModel);
             }
 
-            return buildTsvString(agGridData[dataName], colDefs);
+            return buildTsvString(
+              agGridData[dataName],
+              colDefs,
+              gridRef.current?.columnApi?.getAllGridColumns()
+            );
           }}
           onComplete={() => setShowDownloadModal(false)}
           exportFileName={`${dataName}.tsv`}
@@ -309,7 +313,7 @@ export default function RecordsList({
             style={{ width: width }}
           >
             <AgGridReact
-              ref={grid}
+              ref={gridRef}
               rowModelType={"serverSide"}
               columnDefs={colDefs}
               serverSideDatasource={datasource}

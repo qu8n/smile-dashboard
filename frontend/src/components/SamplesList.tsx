@@ -266,7 +266,13 @@ export default function SamplesList({
         <DownloadModal
           loader={() => {
             return sampleCount <= MAX_ROWS_TABLE
-              ? Promise.resolve(buildTsvString(samples!, columnDefs))
+              ? Promise.resolve(
+                  buildTsvString(
+                    samples!,
+                    columnDefs,
+                    gridRef.current?.columnApi?.getAllGridColumns()
+                  )
+                )
               : refetch({
                   options: {
                     limit: MAX_ROWS_EXPORT,

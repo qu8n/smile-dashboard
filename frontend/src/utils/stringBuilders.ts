@@ -1,8 +1,16 @@
-import { ColDef } from "ag-grid-community";
+import { ColDef, Column } from "ag-grid-community";
 
-export function buildTsvString(rows: any[], colDefs: ColDef[]) {
+export function buildTsvString(
+  rows: any[],
+  colDefs: ColDef[],
+  cols?: Column[]
+) {
+  const fieldsHiddenByUser =
+    cols?.filter((col) => !col.isVisible()).map((col) => col.getColId()) ?? [];
+
   const colDefsToExport = colDefs.filter(
-    (colDef) => colDef.headerName !== "View Samples" && colDef.hide !== true
+    ({ field, hide }) =>
+      field && hide !== true && !fieldsHiddenByUser.includes(field)
   );
 
   const colHeadersAsTsvRow = colDefsToExport
