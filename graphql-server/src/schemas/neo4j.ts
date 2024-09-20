@@ -26,16 +26,11 @@ import {
   flattenedCohortFields,
   flattenedPatientFields,
   flattenedRequestFields,
-  flattenedSampleFields,
   generateFieldResolvers,
   sortArrayByNestedField,
 } from "../utils/flattening";
 import { ApolloServerContext } from "../utils/servers";
-import {
-  CachedOncotreeData,
-  fetchAndCacheOncotreeData,
-} from "../utils/oncotree";
-import { SamplesListQuery } from "../generated/graphql";
+import { CachedOncotreeData } from "../utils/oncotree";
 
 type SortOptions = { [key: string]: SortDirection }[];
 
@@ -193,14 +188,24 @@ export async function buildNeo4jDbSchema() {
     }
   `;
 
-  const ogm = new OGM({ typeDefs: extendedTypeDefs, driver });
+  const features = {
+    filters: {
+      String: {
+        MATCHES: true,
+        ID: {
+          MATCHES: true,
+        },
+      },
+    },
+  };
+
+  const ogm = new OGM({ typeDefs: extendedTypeDefs, driver, features });
   const neoSchema = new Neo4jGraphQL({
     typeDefs: extendedTypeDefs,
     driver,
-    config: {
-      skipValidateTypeDefs: true,
-    },
+    validate: false,
     resolvers: buildResolvers(ogm, client),
+    features,
   });
 
   await ogm.init();
