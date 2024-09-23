@@ -32,6 +32,7 @@ import {
 import { ApolloServerContext } from "../utils/servers";
 import { CachedOncotreeData } from "../utils/oncotree";
 import { querySamplesList } from "../utils/ogm";
+import NodeCache from "node-cache";
 
 type SortOptions = { [key: string]: SortDirection }[];
 
@@ -287,7 +288,7 @@ export async function buildNeo4jDbSchema() {
 
 // TODO THIS IS THE ONE GETTING CALLED
 export const runQuery = {
-  async sampleDashboardQuery(searchVals: string[]) {
+  async sampleDashboardQuery(searchVals: string[], oncotreeCache: NodeCache) {
     //}, { oncotreeCache }: ApolloServerContext) {
     var startTime = performance.now();
     const session = driver.session();
@@ -431,8 +432,17 @@ export const runQuery = {
                 )
               ).toISOString()
             : null,
-          cancerType: null,
-          cancerTypeDetailed: null,
+
+          cancerType: (
+            oncotreeCache.get(
+              recordObject.oncotreeCode ?? ""
+            ) as CachedOncotreeData
+          )?.mainType,
+          cancerTypeDetailed: (
+            oncotreeCache.get(
+              recordObject.oncotreeCode ?? ""
+            ) as CachedOncotreeData
+          )?.name,
 
           // cohortsHasCohortSample: [],
           // hasMetadataSampleMetadata: [],
@@ -966,7 +976,7 @@ function buildResolvers(
 
         console.log("customSearchVals", customSearchVals);
 
-        return await querySamplesList(customSearchVals);
+        return await querySamplesList(customSearchVals, oncotreeCache);
       },
       // async samplesConnection(
       //   _source: undefined,

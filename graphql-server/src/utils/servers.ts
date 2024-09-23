@@ -46,8 +46,9 @@ export async function initializeApolloServer(
     schemas: [neo4jDbSchema, oracleDbSchema],
   });
 
-  const oncotreeCache = new NodeCache({ stdTTL: 86400 }); // 1 day
+  const oncotreeCache = new NodeCache({ stdTTL: 86400, deleteOnExpire: false }); // 1 day
   await fetchAndCacheOncotreeData(oncotreeCache);
+  oncotreeCache.on("expired", fetchAndCacheOncotreeData);
 
   const apolloServer = new ApolloServer<ApolloServerContext>({
     schema: mergedSchema,
