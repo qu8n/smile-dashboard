@@ -55,8 +55,6 @@ export async function buildNeo4jDbSchema() {
   });
 
   const typeDefs = await toGraphQLTypeDefs(sessionFactory, false);
-  console.log("MEW: type defs:");
-  console.log(typeDefs);
   const extendedTypeDefs = gql`
     ${typeDefs}
 
@@ -228,77 +226,160 @@ export const runQuery = {
         `
         // all Samples have at least one SampleMetadata (SampleMetadata is required)
         MATCH (s:Sample)-[:HAS_METADATA]->(sm:SampleMetadata)
+
         // now get the most recent import date for each Sample from the SampleMetadata (we still have all the SampleMetadata for each Sample)
-        WITH s, collect(sm) AS allSampleMetadata, max(sm.importDate) AS mostRecentImportDate
+        WITH s, collect(sm) AS allSampleMetadata, max(sm.importDate) AS latestImportDate
+
         // now only keep one of the SampleMetadata that has the most recent importDate (if there is more than one we take the first)
-        WITH s, [sm IN allSampleMetadata WHERE sm.importDate = mostRecentImportDate][0] AS mostRecentMetadata
+        WITH s, [sm IN allSampleMetadata WHERE sm.importDate = latestImportDate][0] AS latestSm
         
         // if the most recent SampleMetadata for a Sample has a Status attached to it
-        OPTIONAL MATCH (mostRecentMetadata)-[:HAS_STATUS]->(st:Status)
-        WITH s, mostRecentMetadata, st AS mostRecentStatus
+        OPTIONAL MATCH (latestSm)-[:HAS_STATUS]->(st:Status)
+        WITH s, latestSm, st AS latestSt
         
         // if the Sample belongs to any Cohorts, get them - the Cohort will have a CohortComplete so get that too
         OPTIONAL MATCH (s:Sample)<-[:HAS_COHORT_SAMPLE]-(c:Cohort)-[:HAS_COHORT_COMPLETE]->(cc:CohortComplete)
+
         // we then collect all the CohortCompletes for each Sample and get the most recent CohortComplete.date
-        WITH s, mostRecentMetadata, mostRecentStatus, collect(cc) AS allCohortComplete, min(cc.date) AS earliestCCDate
+        WITH s, latestSm, latestSt, collect(cc) AS allCohortComplete, min(cc.date) AS oldestCCDate
+
         // now only keep one of the CohortCompletes that has the most recent CohortComplete date (if there is more than one take the first)
-        WITH s, mostRecentMetadata, mostRecentStatus, [cc IN allCohortComplete WHERE cc.date = earliestCCDate][0] AS earliestCC
+        WITH s, latestSm, latestSt, [cc IN allCohortComplete WHERE cc.date = oldestCCDate][0] AS oldestCC
         
         // if the Sample has Tempos get them
         OPTIONAL MATCH (s:Sample)-[:HAS_TEMPO]->(t:Tempo)
+
         // now get the most recent date for each Sample from the Tempos (we still have all the Tempos for each Sample)
-        WITH s, mostRecentMetadata, mostRecentStatus, earliestCC, collect(t) AS allTempos, max(t.date) AS mostRecentTempoDate
+        WITH s, latestSm, latestSt, oldestCC, collect(t) AS allTempos, max(t.date) AS latestTDate
+
         // now only keep one of the Tempos that has the most recent date (if there is more than one we take the first)
-        WITH s, mostRecentMetadata, mostRecentStatus, earliestCC, [t IN allTempos WHERE t.date = mostRecentTempoDate][0] AS mostRecentTempo
+        WITH s, latestSm, latestSt, oldestCC, [t IN allTempos WHERE t.date = latestTDate][0] AS latestT
 
         // if the Tempo has any BamCompletes, get them
-        OPTIONAL MATCH (mostRecentTempo)-[:HAS_EVENT]->(bc:BamComplete)
+        OPTIONAL MATCH (latestT)-[:HAS_EVENT]->(bc:BamComplete)
+
         // now get the most recent date for each BamComplete (we still have all the BamCompletes for each Tempo)
-        WITH s, mostRecentMetadata, mostRecentStatus, earliestCC, mostRecentTempo, collect(bc) AS allBamCompletes, max(bc.date) AS mostRecentBamCompleteDate
+        WITH s, latestSm, latestSt, oldestCC, latestT, collect(bc) AS allBamCompletes, max(bc.date) AS latestBCDate
+
         // now only keep one of the BamCompletes that has the most recent date (if there is more than one we take the first)
-        WITH s, mostRecentMetadata, mostRecentStatus, earliestCC, mostRecentTempo, [bc IN allBamCompletes WHERE bc.date = mostRecentBamCompleteDate][0] AS mostRecentBamComplete
+        WITH s, latestSm, latestSt, oldestCC, latestT, [bc IN allBamCompletes WHERE bc.date = latestBCDate][0] AS latestBC
 
         // if the Tempo has any MafCompletes, get them
-        OPTIONAL MATCH (mostRecentTempo)-[:HAS_EVENT]->(mc:MafComplete)
+        OPTIONAL MATCH (latestT)-[:HAS_EVENT]->(mc:MafComplete)
+
         // now get the most recent date for each MafComplete (we still have all the MafCompletes for each Tempo)
-        WITH s, mostRecentMetadata, mostRecentStatus, earliestCC, mostRecentTempo, mostRecentBamComplete, collect(mc) AS allMafCompletes, max(mc.date) AS mostRecentMafCompleteDate
+        WITH s, latestSm, latestSt, oldestCC, latestT, latestBC, collect(mc) AS allMafCompletes, max(mc.date) AS latestMCDate
+
         // now only keep one of the MafCompletes that has the most recent date (if there is more than one we take the first)
-        WITH s, mostRecentMetadata, mostRecentStatus, earliestCC, mostRecentTempo, mostRecentBamComplete, [mc IN allMafCompletes WHERE mc.date = mostRecentMafCompleteDate][0] AS mostRecentMafComplete
+        WITH s, latestSm, latestSt, oldestCC, latestT, latestBC, [mc IN allMafCompletes WHERE mc.date = latestMCDate][0] AS latestMC
 
         // if the Tempo has any QcCompletes, get them
-        OPTIONAL MATCH (mostRecentTempo)-[:HAS_EVENT]->(qc:QcComplete)
+        OPTIONAL MATCH (latestT)-[:HAS_EVENT]->(qc:QcComplete)
+
         // now get the most recent date for each QcComplete (we still have all the QcCompletes for each Tempo)
-        WITH s, mostRecentMetadata, mostRecentStatus, earliestCC, mostRecentTempo, mostRecentBamComplete, mostRecentMafComplete, collect(qc) AS allQcCompletes, max(qc.date) AS mostRecentQcCompleteDate
+        WITH s, latestSm, latestSt, oldestCC, latestT, latestBC, latestMC, collect(qc) AS allQcCompletes, max(qc.date) AS latestQCDate
+
         // now only keep one of the QcCompletes that has the most recent date (if there is more than one we take the first)
-        WITH s, mostRecentMetadata, mostRecentStatus, earliestCC, mostRecentTempo, mostRecentBamComplete, mostRecentMafComplete, [qc IN allQcCompletes WHERE qc.date = mostRecentQcCompleteDate][0] AS mostRecentQcComplete
+        WITH s, latestSm, latestSt, oldestCC, latestT, latestBC, latestMC, [qc IN allQcCompletes WHERE qc.date = latestQCDate][0] AS latestQC
 
         // return whatever we need (TODO would it be faster if we only return the fields we need?  should we be filtering those from the start of the query?)
-        RETURN s AS sample,
-              mostRecentMetadata,
-              mostRecentStatus,
-              earliestCC,
-              mostRecentTempo,
-              mostRecentBamComplete,
-              mostRecentMafComplete,
-              mostRecentQcComplete
-        ORDER BY mostRecentMetadata.importDate DESC
+        WITH s AS sample,
+              latestSm,
+              latestSt,
+              oldestCC,
+              latestT,
+              latestBC,
+              latestMC,
+              latestQC
+        RETURN
+          sample, // TEMP TO SATISFY RETURN TYPE OF SAMPLE UNTIL WE CREATE A CUSTOM TYPE
+          sample.revisable AS revisable,
+
+          latestSm.primaryId AS primaryId,
+          latestSm.cmoSampleName AS cmoSampleName,
+          latestSm.importDate AS importDate,
+          latestSm.cmoPatientId AS cmoPatientId,
+          latestSm.investigatorSampleId AS investigatorSampleId,
+          latestSm.sampleType AS sampleType,
+          latestSm.species AS species,
+          latestSm.genePanel AS genePanel,
+          latestSm.baitSet AS baitSet,
+          latestSm.preservation AS preservation,
+          latestSm.tumorOrNormal AS tumorOrNormal,
+          latestSm.sampleClass AS sampleClass,
+          latestSm.oncotreeCode AS oncotreeCode,
+          latestSm.collectionYear AS collectionYear,
+          latestSm.sampleOrigin AS sampleOrigin,
+          latestSm.tissueLocation AS tissueLocation,
+          latestSm.sex AS sex,
+          latestSm.recipe AS recipe,
+
+          oldestCC.date AS initialPipelineRunDate, // MISSING embargo date
+
+          latestT.smileTempoId AS smileTempoId,
+          latestT.billed AS billed,
+          latestT.costCenter AS costCenter,
+          latestT.billedBy AS billedBy,
+          latestT.custodianInformation AS custodianInformation,
+          latestT.accessLevel AS accessLevel,
+
+          latestBC.date AS bamCompleteDate,
+          latestBC.status AS bamCompleteStatus,
+
+          latestMC.date AS mafCompleteDate,
+          latestMC.normalPrimaryId AS mafCompleteNormalPrimaryId,
+          latestMC.status AS mafCompleteStatus,
+
+          latestQC.date AS qcCompleteDate,
+          latestQC.result AS qcCompleteResult,
+          latestQC.reason AS qcCompleteReason,
+          latestQC.status AS qcCompleteStatus
+
+        ORDER BY importDate DESC
         LIMIT 500
         `
       ); // NOTE above the LIMIT clause, use SKIP 0 to skip the first 0 samples, SKIP 10 to skip the first 10, etc.
 
       // Process the results
       const sampleDashboardRows = result.records.map((record) => {
-        // TODO still add indexes
+        const recordObject = record.toObject();
         const sample = record.get("sample");
-        const mostRecentMetadata = record.get("mostRecentMetadata");
-        const mostRecentStatus = record.get("mostRecentStatus"); // can be null
-        const earliestCC = record.get("earliestCC"); // can be null
-        const mostRecentTempo = record.get("mostRecentTempo"); // can be null
-        const mostRecentBamComplete = record.get("mostRecentBamComplete"); // can be null
-        const mostRecentMafComplete = record.get("mostRecentMafComplete"); // can be null
-        const mostRecentQcComplete = record.get("mostRecentQcComplete"); // can be null
+        return {
+          ...recordObject,
 
-        const oncotreeCode = mostRecentMetadata.properties.oncotreeCode;
+          // TEMP TO SATISFY RETURN TYPE OF SAMPLE UNTIL WE CREATE A CUSTOM TYPE
+          datasource: sample.properties.datasource,
+          revisable: sample.properties.revisable,
+          sampleCategory: sample.properties.sampleCategory,
+          smileSampleId: sample.properties.smileSampleId,
+
+          embargoDate: recordObject.initialPipelineRunDate
+            ? new Date(
+                new Date(recordObject.initialPipelineRunDate).setMonth(
+                  new Date(recordObject.initialPipelineRunDate).getMonth() + 18
+                )
+              ).toISOString()
+            : null,
+          cancerType: null,
+          cancerTypeDetailed: null,
+          cohortsHasCohortSample: [],
+          hasMetadataSampleMetadata: [],
+          hasTempoTempos: [],
+          patientsHasSample: [],
+          requestsHasSample: [],
+          sampleAliasesIsAlias: [],
+        };
+        // TODO still add indexes
+        // const sample = record.get("sample");
+        // const latestSm = record.get("latestSm");
+        // const latestSt = record.get("latestSt"); // can be null
+        // const oldestCC = record.get("oldestCC"); // can be null
+        // const latestT = record.get("latestT"); // can be null
+        // const latestBC = record.get("latestBC"); // can be null
+        // const latestMC = record.get("latestMC"); // can be null
+        // const latestQC = record.get("latestQC"); // can be null
+
+        // const oncotreeCode = latestSm.properties.oncotreeCode;
         let cancerType: string;
         let cancerTypeDetailed: string;
 
@@ -315,99 +396,95 @@ export const runQuery = {
         //   }
         // }
 
-        console.log("MEW: sampleClass: " + sample.properties.sampleClass);
-        const toReturn = {
-          primaryId: mostRecentMetadata.properties.primaryId,
-          datasource: sample.properties.datasource, // TODO not required for dashboard, but is required if returning a "Sample"
-          revisable: sample.properties.revisable, // TODO not required for dashboard, but is required if returning a "Sample"
-          sampleCategory: sample.properties.sampleCategory, // TODO not required for dashboard, but is required if returning a "Sample"
-          smileSampleId: sample.properties.smileSampleId, // TODO not required for dashboard, but is required if returning a "Sample"
-          validationStatus: mostRecentStatus
-            ? mostRecentStatus.properties.validationStatus
-            : null,
-          cmoSampleName: mostRecentMetadata.properties.cmoSampleName,
-          importDate: mostRecentMetadata.properties.importDate,
-          cmoPatientId: mostRecentMetadata.properties.cmoPatientId,
-          investigatorSampleId:
-            mostRecentMetadata.properties.investigatorSampleId,
-          sampleType: mostRecentMetadata.properties.sampleType,
-          species: mostRecentMetadata.properties.species,
-          genePanel: mostRecentMetadata.properties.genePanel,
-          baitSet: mostRecentMetadata.properties.baitSet,
-          preservation: mostRecentMetadata.properties.preservation,
-          tumorOrNormal: mostRecentMetadata.properties.tumorOrNormal,
-          sampleClass: sample.properties.sampleClass,
-          oncotreeCode: mostRecentMetadata.properties.oncotreeCode,
-          collectionYear: mostRecentMetadata.properties.collectionYear,
-          sampleOrigin: mostRecentMetadata.properties.sampleOrigin,
-          tissueLocation: mostRecentMetadata.properties.tissueLocation,
-          sex: mostRecentMetadata.properties.sex,
-          recipe: mostRecentMetadata.properties.cmoSampleIdFields.recipe,
-          initialPipelineRunDate: earliestCC
-            ? earliestCC.properties.date
-            : null,
-          embargoDate: earliestCC
-            ? new Date(
-                new Date(earliestCC.properties.date).setMonth(
-                  new Date(earliestCC.properties.date).getMonth() + 18
-                )
-              ).toISOString()
-            : null,
-          billed: mostRecentTempo ? mostRecentTempo.properties.billed : null,
-          costCenter: mostRecentTempo
-            ? mostRecentTempo.properties.costCenter
-            : null,
-          billedBy: mostRecentTempo // editedBy
-            ? mostRecentTempo.properties.billedBy
-            : null,
-          custodianInformation: mostRecentTempo
-            ? mostRecentTempo.properties.custodianInformation
-            : null,
-          accessLevel: mostRecentTempo
-            ? mostRecentTempo.properties.accessLevel
-            : null,
-          bamCompleteDate: mostRecentBamComplete
-            ? mostRecentBamComplete.properties.date
-            : null,
-          bamCompleteStatus: mostRecentBamComplete
-            ? mostRecentBamComplete.properties.status
-            : null,
-          mafCompleteDate: mostRecentMafComplete
-            ? mostRecentMafComplete.properties.date
-            : null,
-          mafCompleteNormalPrimaryId: mostRecentMafComplete
-            ? mostRecentMafComplete.properties.normalPrimaryId
-            : null,
-          mafCompleteStatus: mostRecentMafComplete
-            ? mostRecentMafComplete.properties.status
-            : null,
-          qcCompleteDate: mostRecentQcComplete
-            ? mostRecentQcComplete.properties.date
-            : null,
-          qcCompleteResult: mostRecentQcComplete
-            ? mostRecentQcComplete.properties.result
-            : null,
-          qcCompleteReason: mostRecentQcComplete
-            ? mostRecentQcComplete.properties.reason
-            : null,
-          qcCompleteStatus: mostRecentQcComplete
-            ? mostRecentQcComplete.properties.status
-            : null,
-          cohortsHasCohortSample: [],
-          hasMetadataSampleMetadata: [],
-          hasTempoTempos: [],
-          patientsHasSample: [],
-          requestsHasSample: [],
-          sampleAliasesIsAlias: [],
-        };
-        console.log("MEW: toReturn: ");
-        console.log(toReturn);
-        return toReturn;
+        // const toReturn = {
+        //   primaryId: latestSm.properties.primaryId,
+        //   datasource: sample.properties.datasource, // TODO not required for dashboard, but is required if returning a "Sample"
+        //   revisable: sample.properties.revisable, // TODO not required for dashboard, but is required if returning a "Sample"
+        //   sampleCategory: sample.properties.sampleCategory, // TODO not required for dashboard, but is required if returning a "Sample"
+        //   smileSampleId: sample.properties.smileSampleId, // TODO not required for dashboard, but is required if returning a "Sample"
+        //   validationStatus: latestSt
+        //     ? latestSt.properties.validationStatus
+        //     : null,
+        //   cmoSampleName: latestSm.properties.cmoSampleName,
+        //   importDate: latestSm.properties.importDate,
+        //   cmoPatientId: latestSm.properties.cmoPatientId,
+        //   investigatorSampleId:
+        //     latestSm.properties.investigatorSampleId,
+        //   sampleType: latestSm.properties.sampleType,
+        //   species: latestSm.properties.species,
+        //   genePanel: latestSm.properties.genePanel,
+        //   baitSet: latestSm.properties.baitSet,
+        //   preservation: latestSm.properties.preservation,
+        //   tumorOrNormal: latestSm.properties.tumorOrNormal,
+        //   sampleClass: sample.properties.sampleClass,
+        //   oncotreeCode: latestSm.properties.oncotreeCode,
+        //   collectionYear: latestSm.properties.collectionYear,
+        //   sampleOrigin: latestSm.properties.sampleOrigin,
+        //   tissueLocation: latestSm.properties.tissueLocation,
+        //   sex: latestSm.properties.sex,
+        //   recipe: latestSm.properties.cmoSampleIdFields.recipe,
+        //   initialPipelineRunDate: oldestCC
+        //     ? oldestCC.properties.date
+        //     : null,
+        //   embargoDate: oldestCC
+        //     ? new Date(
+        //         new Date(oldestCC.properties.date).setMonth(
+        //           new Date(oldestCC.properties.date).getMonth() + 18
+        //         )
+        //       ).toISOString()
+        //     : null,
+        //   billed: latestT ? latestT.properties.billed : null,
+        //   costCenter: latestT
+        //     ? latestT.properties.costCenter
+        //     : null,
+        //   billedBy: latestT // editedBy
+        //     ? latestT.properties.billedBy
+        //     : null,
+        //   custodianInformation: latestT
+        //     ? latestT.properties.custodianInformation
+        //     : null,
+        //   accessLevel: latestT
+        //     ? latestT.properties.accessLevel
+        //     : null,
+        //   bamCompleteDate: latestBC
+        //     ? latestBC.properties.date
+        //     : null,
+        //   bamCompleteStatus: latestBC
+        //     ? latestBC.properties.status
+        //     : null,
+        //   mafCompleteDate: latestMC
+        //     ? latestMC.properties.date
+        //     : null,
+        //   mafCompleteNormalPrimaryId: latestMC
+        //     ? latestMC.properties.normalPrimaryId
+        //     : null,
+        //   mafCompleteStatus: latestMC
+        //     ? latestMC.properties.status
+        //     : null,
+        //   qcCompleteDate: latestQC
+        //     ? latestQC.properties.date
+        //     : null,
+        //   qcCompleteResult: latestQC
+        //     ? latestQC.properties.result
+        //     : null,
+        //   qcCompleteReason: latestQC
+        //     ? latestQC.properties.reason
+        //     : null,
+        //   qcCompleteStatus: latestQC
+        //     ? latestQC.properties.status
+        //     : null,
+        //   cohortsHasCohortSample: [],
+        //   hasMetadataSampleMetadata: [],
+        //   hasTempoTempos: [],
+        //   patientsHasSample: [],
+        //   requestsHasSample: [],
+        //   sampleAliasesIsAlias: [],
+        // };
+        // return toReturn;
       });
 
       var endTime = performance.now();
       console.log(`NEW query took ${(endTime - startTime) / 1000} seconds`);
-      console.log(sampleDashboardRows[0]);
 
       return sampleDashboardRows;
     } catch (error) {
@@ -521,59 +598,59 @@ function buildResolvers(
             // all Samples have at least one SampleMetadata (SampleMetadata is required)
             MATCH (s:Sample)-[:HAS_METADATA]->(sm:SampleMetadata)
             // now get the most recent import date for each Sample from the SampleMetadata (we still have all the SampleMetadata for each Sample)
-            WITH s, collect(sm) AS allSampleMetadata, max(sm.importDate) AS mostRecentImportDate
+            WITH s, collect(sm) AS allSampleMetadata, max(sm.importDate) AS latestImportDate
             // now only keep one of the SampleMetadata that has the most recent importDate (if there is more than one we take the first)
-            WITH s, [sm IN allSampleMetadata WHERE sm.importDate = mostRecentImportDate][0] AS mostRecentMetadata
+            WITH s, [sm IN allSampleMetadata WHERE sm.importDate = latestImportDate][0] AS latestSm
             
             // if the most recent SampleMetadata for a Sample has a Status attached to it
-            OPTIONAL MATCH (mostRecentMetadata)-[:HAS_STATUS]->(st:Status)
-            WITH s, mostRecentMetadata, st AS mostRecentStatus
+            OPTIONAL MATCH (latestSm)-[:HAS_STATUS]->(st:Status)
+            WITH s, latestSm, st AS latestSt
             
             // if the Sample belongs to any Cohorts, get them - the Cohort will have a CohortComplete so get that too
             OPTIONAL MATCH (s:Sample)<-[:HAS_COHORT_SAMPLE]-(c:Cohort)-[:HAS_COHORT_COMPLETE]->(cc:CohortComplete)
             // we then collect all the CohortCompletes for each Sample and get the most recent CohortComplete.date
-            WITH s, mostRecentMetadata, mostRecentStatus, collect(cc) AS allCohortComplete, min(cc.date) AS earliestCCDate
+            WITH s, latestSm, latestSt, collect(cc) AS allCohortComplete, min(cc.date) AS oldestCCDate
             // now only keep one of the CohortCompletes that has the most recent CohortComplete date (if there is more than one take the first)
-            WITH s, mostRecentMetadata, mostRecentStatus, [cc IN allCohortComplete WHERE cc.date = earliestCCDate][0] AS earliestCC
+            WITH s, latestSm, latestSt, [cc IN allCohortComplete WHERE cc.date = oldestCCDate][0] AS oldestCC
             
             // if the Sample has Tempos get them
             OPTIONAL MATCH (s:Sample)-[:HAS_TEMPO]->(t:Tempo)
             // now get the most recent date for each Sample from the Tempos (we still have all the Tempos for each Sample)
-            WITH s, mostRecentMetadata, mostRecentStatus, earliestCC, collect(t) AS allTempos, max(t.date) AS mostRecentTempoDate
+            WITH s, latestSm, latestSt, oldestCC, collect(t) AS allTempos, max(t.date) AS latestTDate
             // now only keep one of the Tempos that has the most recent date (if there is more than one we take the first)
-            WITH s, mostRecentMetadata, mostRecentStatus, earliestCC, [t IN allTempos WHERE t.date = mostRecentTempoDate][0] AS mostRecentTempo
+            WITH s, latestSm, latestSt, oldestCC, [t IN allTempos WHERE t.date = latestTDate][0] AS latestT
 
             // if the Tempo has any BamCompletes, get them
-            OPTIONAL MATCH (mostRecentTempo)-[:HAS_EVENT]->(bc:BamComplete)
+            OPTIONAL MATCH (latestT)-[:HAS_EVENT]->(bc:BamComplete)
             // now get the most recent date for each BamComplete (we still have all the BamCompletes for each Tempo)
-            WITH s, mostRecentMetadata, mostRecentStatus, earliestCC, mostRecentTempo, collect(bc) AS allBamCompletes, max(bc.date) AS mostRecentBamCompleteDate
+            WITH s, latestSm, latestSt, oldestCC, latestT, collect(bc) AS allBamCompletes, max(bc.date) AS latestBCDate
             // now only keep one of the BamCompletes that has the most recent date (if there is more than one we take the first)
-            WITH s, mostRecentMetadata, mostRecentStatus, earliestCC, mostRecentTempo, [bc IN allBamCompletes WHERE bc.date = mostRecentBamCompleteDate][0] AS mostRecentBamComplete
+            WITH s, latestSm, latestSt, oldestCC, latestT, [bc IN allBamCompletes WHERE bc.date = latestBCDate][0] AS latestBC
 
             // if the Tempo has any MafCompletes, get them
-            OPTIONAL MATCH (mostRecentTempo)-[:HAS_EVENT]->(mc:MafComplete)
+            OPTIONAL MATCH (latestT)-[:HAS_EVENT]->(mc:MafComplete)
             // now get the most recent date for each MafComplete (we still have all the MafCompletes for each Tempo)
-            WITH s, mostRecentMetadata, mostRecentStatus, earliestCC, mostRecentTempo, mostRecentBamComplete, collect(mc) AS allMafCompletes, max(mc.date) AS mostRecentMafCompleteDate
+            WITH s, latestSm, latestSt, oldestCC, latestT, latestBC, collect(mc) AS allMafCompletes, max(mc.date) AS latestMCDate
             // now only keep one of the MafCompletes that has the most recent date (if there is more than one we take the first)
-            WITH s, mostRecentMetadata, mostRecentStatus, earliestCC, mostRecentTempo, mostRecentBamComplete, [mc IN allMafCompletes WHERE mc.date = mostRecentMafCompleteDate][0] AS mostRecentMafComplete
+            WITH s, latestSm, latestSt, oldestCC, latestT, latestBC, [mc IN allMafCompletes WHERE mc.date = latestMCDate][0] AS latestMC
 
             // if the Tempo has any QcCompletes, get them
-            OPTIONAL MATCH (mostRecentTempo)-[:HAS_EVENT]->(qc:QcComplete)
+            OPTIONAL MATCH (latestT)-[:HAS_EVENT]->(qc:QcComplete)
             // now get the most recent date for each QcComplete (we still have all the QcCompletes for each Tempo)
-            WITH s, mostRecentMetadata, mostRecentStatus, earliestCC, mostRecentTempo, mostRecentBamComplete, mostRecentMafComplete, collect(qc) AS allQcCompletes, max(qc.date) AS mostRecentQcCompleteDate
+            WITH s, latestSm, latestSt, oldestCC, latestT, latestBC, latestMC, collect(qc) AS allQcCompletes, max(qc.date) AS latestQCDate
             // now only keep one of the QcCompletes that has the most recent date (if there is more than one we take the first)
-            WITH s, mostRecentMetadata, mostRecentStatus, earliestCC, mostRecentTempo, mostRecentBamComplete, mostRecentMafComplete, [qc IN allQcCompletes WHERE qc.date = mostRecentQcCompleteDate][0] AS mostRecentQcComplete
+            WITH s, latestSm, latestSt, oldestCC, latestT, latestBC, latestMC, [qc IN allQcCompletes WHERE qc.date = latestQCDate][0] AS latestQC
 
             // return whatever we need (TODO would it be faster if we only return the fields we need?  should we be filtering those from the start of the query?)
             RETURN s AS sample,
-                  mostRecentMetadata,
-                  mostRecentStatus,
-                  earliestCC,
-                  mostRecentTempo,
-                  mostRecentBamComplete,
-                  mostRecentMafComplete,
-                  mostRecentQcComplete
-            ORDER BY mostRecentMetadata.importDate DESC
+                  latestSm,
+                  latestSt,
+                  oldestCC,
+                  latestT,
+                  latestBC,
+                  latestMC,
+                  latestQC
+            ORDER BY latestSm.importDate DESC
             LIMIT 500
             `
           ); // NOTE above the LIMIT clause, use SKIP 0 to skip the first 0 samples, SKIP 10 to skip the first 10, etc.
@@ -582,15 +659,15 @@ function buildResolvers(
           const sampleDashboardRows = result.records.map((record) => {
             // TODO still add indexes
             const sample = record.get("sample");
-            const mostRecentMetadata = record.get("mostRecentMetadata");
-            const mostRecentStatus = record.get("mostRecentStatus"); // can be null
-            const earliestCC = record.get("earliestCC"); // can be null
-            const mostRecentTempo = record.get("mostRecentTempo"); // can be null
-            const mostRecentBamComplete = record.get("mostRecentBamComplete"); // can be null
-            const mostRecentMafComplete = record.get("mostRecentMafComplete"); // can be null
-            const mostRecentQcComplete = record.get("mostRecentQcComplete"); // can be null
+            const latestSm = record.get("latestSm");
+            const latestSt = record.get("latestSt"); // can be null
+            const oldestCC = record.get("oldestCC"); // can be null
+            const latestT = record.get("latestT"); // can be null
+            const latestBC = record.get("latestBC"); // can be null
+            const latestMC = record.get("latestMC"); // can be null
+            const latestQC = record.get("latestQC"); // can be null
 
-            const oncotreeCode = mostRecentMetadata.properties.oncotreeCode;
+            const oncotreeCode = latestSm.properties.oncotreeCode;
             let cancerType: string;
             let cancerTypeDetailed: string;
 
@@ -607,95 +684,68 @@ function buildResolvers(
               }
             }
 
-            console.log("MEW: sampleClass: " + sample.properties.sampleClass);
             const toReturn = {
-              primaryId: mostRecentMetadata.properties.primaryId,
+              primaryId: latestSm.properties.primaryId,
               datasource: sample.properties.datasource, // TODO not required for dashboard, but is required if returning a "Sample"
               revisable: sample.properties.revisable, // TODO not required for dashboard, but is required if returning a "Sample"
               sampleCategory: sample.properties.sampleCategory, // TODO not required for dashboard, but is required if returning a "Sample"
               smileSampleId: sample.properties.smileSampleId, // TODO not required for dashboard, but is required if returning a "Sample"
-              validationStatus: mostRecentStatus
-                ? mostRecentStatus.properties.validationStatus
+              validationStatus: latestSt
+                ? latestSt.properties.validationStatus
                 : null,
-              cmoSampleName: mostRecentMetadata.properties.cmoSampleName,
-              importDate: mostRecentMetadata.properties.importDate,
-              cmoPatientId: mostRecentMetadata.properties.cmoPatientId,
-              investigatorSampleId:
-                mostRecentMetadata.properties.investigatorSampleId,
-              sampleType: mostRecentMetadata.properties.sampleType,
-              species: mostRecentMetadata.properties.species,
-              genePanel: mostRecentMetadata.properties.genePanel,
-              baitSet: mostRecentMetadata.properties.baitSet,
-              preservation: mostRecentMetadata.properties.preservation,
-              tumorOrNormal: mostRecentMetadata.properties.tumorOrNormal,
+              cmoSampleName: latestSm.properties.cmoSampleName,
+              importDate: latestSm.properties.importDate,
+              cmoPatientId: latestSm.properties.cmoPatientId,
+              investigatorSampleId: latestSm.properties.investigatorSampleId,
+              sampleType: latestSm.properties.sampleType,
+              species: latestSm.properties.species,
+              genePanel: latestSm.properties.genePanel,
+              baitSet: latestSm.properties.baitSet,
+              preservation: latestSm.properties.preservation,
+              tumorOrNormal: latestSm.properties.tumorOrNormal,
               sampleClass: sample.properties.sampleClass,
-              oncotreeCode: mostRecentMetadata.properties.oncotreeCode,
-              collectionYear: mostRecentMetadata.properties.collectionYear,
-              sampleOrigin: mostRecentMetadata.properties.sampleOrigin,
-              tissueLocation: mostRecentMetadata.properties.tissueLocation,
-              sex: mostRecentMetadata.properties.sex,
-              recipe: mostRecentMetadata.properties.cmoSampleIdFields.recipe,
-              initialPipelineRunDate: earliestCC
-                ? earliestCC.properties.date
+              oncotreeCode: latestSm.properties.oncotreeCode,
+              collectionYear: latestSm.properties.collectionYear,
+              sampleOrigin: latestSm.properties.sampleOrigin,
+              tissueLocation: latestSm.properties.tissueLocation,
+              sex: latestSm.properties.sex,
+              recipe: latestSm.properties.cmoSampleIdFields.recipe,
+              initialPipelineRunDate: oldestCC
+                ? oldestCC.properties.date
                 : null,
-              embargoDate: earliestCC
+              embargoDate: oldestCC
                 ? new Date(
-                    new Date(earliestCC.properties.date).setMonth(
-                      new Date(earliestCC.properties.date).getMonth() + 18
+                    new Date(oldestCC.properties.date).setMonth(
+                      new Date(oldestCC.properties.date).getMonth() + 18
                     )
                   ).toISOString()
                 : null,
-              billed: mostRecentTempo
-                ? mostRecentTempo.properties.billed
+              billed: latestT ? latestT.properties.billed : null,
+              costCenter: latestT ? latestT.properties.costCenter : null,
+              billedBy: latestT // editedBy
+                ? latestT.properties.billedBy
                 : null,
-              costCenter: mostRecentTempo
-                ? mostRecentTempo.properties.costCenter
+              custodianInformation: latestT
+                ? latestT.properties.custodianInformation
                 : null,
-              billedBy: mostRecentTempo // editedBy
-                ? mostRecentTempo.properties.billedBy
+              accessLevel: latestT ? latestT.properties.accessLevel : null,
+              bamCompleteDate: latestBC ? latestBC.properties.date : null,
+              bamCompleteStatus: latestBC ? latestBC.properties.status : null,
+              mafCompleteDate: latestMC ? latestMC.properties.date : null,
+              mafCompleteNormalPrimaryId: latestMC
+                ? latestMC.properties.normalPrimaryId
                 : null,
-              custodianInformation: mostRecentTempo
-                ? mostRecentTempo.properties.custodianInformation
-                : null,
-              accessLevel: mostRecentTempo
-                ? mostRecentTempo.properties.accessLevel
-                : null,
-              bamCompleteDate: mostRecentBamComplete
-                ? mostRecentBamComplete.properties.date
-                : null,
-              bamCompleteStatus: mostRecentBamComplete
-                ? mostRecentBamComplete.properties.status
-                : null,
-              mafCompleteDate: mostRecentMafComplete
-                ? mostRecentMafComplete.properties.date
-                : null,
-              mafCompleteNormalPrimaryId: mostRecentMafComplete
-                ? mostRecentMafComplete.properties.normalPrimaryId
-                : null,
-              mafCompleteStatus: mostRecentMafComplete
-                ? mostRecentMafComplete.properties.status
-                : null,
-              qcCompleteDate: mostRecentQcComplete
-                ? mostRecentQcComplete.properties.date
-                : null,
-              qcCompleteResult: mostRecentQcComplete
-                ? mostRecentQcComplete.properties.result
-                : null,
-              qcCompleteReason: mostRecentQcComplete
-                ? mostRecentQcComplete.properties.reason
-                : null,
-              qcCompleteStatus: mostRecentQcComplete
-                ? mostRecentQcComplete.properties.status
-                : null,
+              mafCompleteStatus: latestMC ? latestMC.properties.status : null,
+              qcCompleteDate: latestQC ? latestQC.properties.date : null,
+              qcCompleteResult: latestQC ? latestQC.properties.result : null,
+              qcCompleteReason: latestQC ? latestQC.properties.reason : null,
+              qcCompleteStatus: latestQC ? latestQC.properties.status : null,
             };
-            console.log("MEW: toReturn: ");
-            console.log(toReturn);
             return toReturn;
           });
 
           var endTime = performance.now();
           console.log(`NEW query took ${(endTime - startTime) / 1000} seconds`);
-          console.log(sampleDashboardRows[0]);
 
           return sampleDashboardRows;
         } catch (error) {
