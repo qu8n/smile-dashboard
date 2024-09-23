@@ -31,6 +31,7 @@ import {
 } from "../utils/flattening";
 import { ApolloServerContext } from "../utils/servers";
 import { CachedOncotreeData } from "../utils/oncotree";
+import { querySamplesList } from "../utils/ogm";
 
 type SortOptions = { [key: string]: SortDirection }[];
 
@@ -57,6 +58,75 @@ export async function buildNeo4jDbSchema() {
   const typeDefs = await toGraphQLTypeDefs(sessionFactory, false);
   const extendedTypeDefs = gql`
     ${typeDefs}
+
+    type Sample2 {
+      smileSampleId: String
+      revisable: Boolean
+      # Flattened fields: SampleMetadata
+      additionalProperties: String
+      baitSet: String
+      cfDNA2dBarcode: String
+      cmoInfoIgoId: String
+      cmoPatientId: String
+      cmoSampleIdFields: String
+      cmoSampleName: String
+      collectionYear: String
+      genePanel: String
+      igoComplete: Boolean
+      igoRequestId: String
+      importDate: String
+      investigatorSampleId: String
+      libraries: String
+      oncotreeCode: String
+      preservation: String
+      primaryId: String
+      qcReports: String
+      sampleClass: String
+      sampleName: String
+      sampleOrigin: String
+      sampleType: String
+      sex: String
+      species: String
+      tissueLocation: String
+      tubeId: String
+      tumorOrNormal: String
+      # Flattened fields: SampleMetadata Status
+      validationReport: String
+      validationStatus: String
+      # Flattened fields: Oncotree
+      cancerType: String
+      cancerTypeDetailed: String
+      # Flattened fields: Tempo
+      billed: Boolean
+      costCenter: String
+      billedBy: String
+      custodianInformation: String
+      accessLevel: String
+      # Flattened fields: Tempo events
+      initialPipelineRunDate: String
+      embargoDate: String
+      bamCompleteDate: String
+      bamCompleteStatus: String
+      mafCompleteDate: String
+      mafCompleteNormalPrimaryId: String
+      mafCompleteStatus: String
+      qcCompleteDate: String
+      qcCompleteResult: String
+      qcCompleteReason: String
+      qcCompleteStatus: String
+      # Other
+      recipe: String
+      dmpPatientId: String
+    }
+
+    type SampleConnection2 {
+      totalCount: Int
+    }
+
+    type Query {
+      samples2(searchVals: [String]): [Sample2]
+      samplesConnection2: SampleConnection2
+    }
 
     type SampleDashboardRow {
       primaryId: String!
@@ -217,7 +287,7 @@ export async function buildNeo4jDbSchema() {
 
 // TODO THIS IS THE ONE GETTING CALLED
 export const runQuery = {
-  async sampleDashboardQuery(_: any, args: any) {
+  async sampleDashboardQuery(searchVals: string[]) {
     //}, { oncotreeCache }: ApolloServerContext) {
     var startTime = performance.now();
     const session = driver.session();
@@ -293,12 +363,13 @@ export const runQuery = {
               latestQC
         RETURN
           sample, // TEMP TO SATISFY RETURN TYPE OF SAMPLE UNTIL WE CREATE A CUSTOM TYPE
+
           sample.revisable AS revisable,
 
           latestSm.primaryId AS primaryId,
           latestSm.cmoSampleName AS cmoSampleName,
           latestSm.importDate AS importDate,
-          latestSm.cmoPatientId AS cmoPatientId,
+          latestSm.cmoPatientId AS cmoPatientId, // MISSING dmpPatientId
           latestSm.investigatorSampleId AS investigatorSampleId,
           latestSm.sampleType AS sampleType,
           latestSm.species AS species,
@@ -312,9 +383,9 @@ export const runQuery = {
           latestSm.sampleOrigin AS sampleOrigin,
           latestSm.tissueLocation AS tissueLocation,
           latestSm.sex AS sex,
-          latestSm.recipe AS recipe,
+          latestSm.recipe AS recipe, // WRONG
 
-          oldestCC.date AS initialPipelineRunDate, // MISSING embargo date
+          oldestCC.date AS initialPipelineRunDate,
 
           latestT.smileTempoId AS smileTempoId,
           latestT.billed AS billed,
@@ -362,12 +433,13 @@ export const runQuery = {
             : null,
           cancerType: null,
           cancerTypeDetailed: null,
-          cohortsHasCohortSample: [],
-          hasMetadataSampleMetadata: [],
-          hasTempoTempos: [],
-          patientsHasSample: [],
-          requestsHasSample: [],
-          sampleAliasesIsAlias: [],
+
+          // cohortsHasCohortSample: [],
+          // hasMetadataSampleMetadata: [],
+          // hasTempoTempos: [],
+          // patientsHasSample: [],
+          // requestsHasSample: [],
+          // sampleAliasesIsAlias: [],
         };
         // TODO still add indexes
         // const sample = record.get("sample");
@@ -853,24 +925,59 @@ function buildResolvers(
         }
         return patients.slice(args.options.offset, args.options.limit + 1);
       },
-      async samples(
-        _source: undefined,
-        args: any,
-        { samplesLoader }: ApolloServerContext
-      ) {
-        const result = await samplesLoader.load(args);
-        return result.data;
-      },
-      async samplesConnection(
-        _source: undefined,
-        args: any,
-        { samplesLoader }: ApolloServerContext
-      ) {
-        const result = await samplesLoader.load(args);
+      // async samples(
+      //   _source: undefined,
+      //   args: any,
+      //   { samplesLoader }: ApolloServerContext
+      // ) {
+      //   const result = await samplesLoader.load(args);
+      //   return result.data;
+      // },
+      async samplesConnection2() {
         return {
-          totalCount: result.totalCount,
+          totalCount: 501, // PLACEHOLDER
         };
       },
+      async samples2(
+        _source: undefined,
+        { searchVals }: { searchVals: string[] },
+        { oncotreeCache }: ApolloServerContext
+      ) {
+        const customSearchVals = [...searchVals];
+
+        if (customSearchVals?.length) {
+          // Search through the oncotreeCache for matching cancerType or cancerTypeDetailed values.
+          // If there is a match, add the corresponding Oncotree code to the original search query
+          oncotreeCache.keys().forEach((code) => {
+            const { name, mainType } = (oncotreeCache.get(
+              code
+            ) as CachedOncotreeData)!;
+            if (
+              customSearchVals.some(
+                (val) =>
+                  name?.toLowerCase().includes(val?.toLowerCase()) ||
+                  mainType?.toLowerCase().includes(val?.toLowerCase())
+              )
+            ) {
+              customSearchVals.push(code);
+            }
+          });
+        }
+
+        console.log("customSearchVals", customSearchVals);
+
+        return await querySamplesList(customSearchVals);
+      },
+      // async samplesConnection(
+      //   _source: undefined,
+      //   args: any,
+      //   { samplesLoader }: ApolloServerContext
+      // ) {
+      //   const result = await samplesLoader.load(args);
+      //   return {
+      //     totalCount: result.totalCount,
+      //   };
+      // },
       async cohorts(_source: undefined, args: any) {
         const cohorts = await ogm.model("Cohort").find({
           where: args.where,

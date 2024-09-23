@@ -3,6 +3,7 @@ import {
   Sample,
   SampleWhere,
   useSamplesListQuery,
+  useSamplesList2Query,
 } from "../generated/graphql";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { Button, Col, Container } from "react-bootstrap";
@@ -71,24 +72,6 @@ export default function SamplesList({
   setUserEmail,
   customToolbarUI,
 }: ISampleListProps) {
-  const { loading, error, data, startPolling, stopPolling, refetch } =
-    useSamplesListQuery({
-      variables: {
-        where: parentWhereVariables || {},
-        options: {
-          limit: MAX_ROWS_TABLE,
-        },
-        sampleMetadataOptions: {
-          sort: [{ importDate: SortDirection.Desc }],
-          limit: 1,
-        },
-        bamCompletesOptions: TEMPO_EVENT_OPTIONS,
-        mafCompletesOptions: TEMPO_EVENT_OPTIONS,
-        qcCompletesOptions: TEMPO_EVENT_OPTIONS,
-      },
-      pollInterval: POLLING_INTERVAL,
-    });
-
   const [userSearchVal, setUserSearchVal] = useState<string>("");
   const [parsedSearchVals, setParsedSearchVals] = useState<string[]>([]);
   const [showDownloadModal, setShowDownloadModal] = useState(false);
@@ -102,20 +85,40 @@ export default function SamplesList({
   const gridRef = useRef<AgGridReactType>(null);
   const params = useParams();
 
+  const { loading, error, data, startPolling, stopPolling, refetch } =
+    useSamplesList2Query({
+      // useSamplesListQuery({
+      variables: {
+        searchVals: parsedSearchVals,
+        // options: {
+        //   limit: MAX_ROWS_TABLE,
+        // },
+        // sampleMetadataOptions: {
+        //   sort: [{ importDate: SortDirection.Desc }],
+        //   limit: 1,
+        // },
+        // bamCompletesOptions: TEMPO_EVENT_OPTIONS,
+        // mafCompletesOptions: TEMPO_EVENT_OPTIONS,
+        // qcCompletesOptions: TEMPO_EVENT_OPTIONS,
+      },
+      pollInterval: POLLING_INTERVAL,
+    });
+
   useEffect(() => {
     gridRef.current?.api?.showLoadingOverlay();
     refetch({
-      where: refetchWhereVariables(parsedSearchVals),
+      searchVals: parsedSearchVals,
     }).then(() => {
       gridRef.current?.api?.hideOverlay();
     });
   }, [parsedSearchVals, columnDefs, refetchWhereVariables, refetch]);
 
   useEffect(() => {
-    setSampleCount(data?.samplesConnection.totalCount || 0);
+    setSampleCount(data?.samplesConnection2?.totalCount || 0);
+    console.log("data", data);
   }, [data]);
 
-  const samples = data?.samples;
+  const samples = data?.samples2;
 
   const popupParamId = useMemo(() => {
     if (parentWhereVariables && samples && params) {
@@ -273,23 +276,15 @@ export default function SamplesList({
                     gridRef.current?.columnApi?.getAllGridColumns()
                   )
                 )
-              : refetch({
-                  options: {
-                    limit: MAX_ROWS_EXPORT,
-                  },
-                }).then((result) =>
-                  buildTsvString(result.data.samples, columnDefs)
+              : refetch().then((result) =>
+                  buildTsvString(result.data.samples2!, columnDefs)
                 );
           }}
           onComplete={() => {
             setShowDownloadModal(false);
             // Reset the limit back to the default value of MAX_ROWS_TABLE.
             // Otherwise, polling will use the most recent value MAX_ROWS_EXPORT
-            refetch({
-              options: {
-                limit: MAX_ROWS_TABLE,
-              },
-            });
+            refetch();
           }}
           exportFileName={[
             parentDataName?.slice(0, -1),
@@ -301,7 +296,7 @@ export default function SamplesList({
         />
       )}
 
-      {showUpdateModal && (
+      {/* {showUpdateModal && (
         <UpdateModal
           changes={changes}
           samples={samples!}
@@ -310,7 +305,7 @@ export default function SamplesList({
           onOpen={() => stopPolling()}
           sampleKeyForUpdate={sampleKeyForUpdate}
         />
-      )}
+      )} */}
 
       <AlertModal
         show={showAlertModal}

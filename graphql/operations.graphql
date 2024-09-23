@@ -46,6 +46,71 @@ query PatientsList($options: PatientOptions, $where: PatientWhere) {
   }
 }
 
+query SamplesList2($searchVals: [String]) {
+  samplesConnection2 {
+    totalCount
+  }
+  samples2(searchVals: $searchVals) {
+    smileSampleId
+    revisable
+    # Flattened fields: SampleMetadata
+    additionalProperties
+    baitSet
+    cfDNA2dBarcode
+    cmoInfoIgoId
+    cmoPatientId
+    cmoSampleIdFields
+    cmoSampleName
+    collectionYear
+    genePanel
+    igoComplete
+    igoRequestId
+    importDate
+    investigatorSampleId
+    libraries
+    oncotreeCode
+    preservation
+    primaryId
+    qcReports
+    sampleClass
+    sampleName
+    sampleOrigin
+    sampleType
+    sex
+    species
+    tissueLocation
+    tubeId
+    tumorOrNormal
+    # Flattened fields: SampleMetadata Status
+    validationReport
+    validationStatus
+    # Flattened fields: Oncotree
+    cancerType
+    cancerTypeDetailed
+    # Flattened fields: Tempo
+    billed
+    costCenter
+    billedBy
+    custodianInformation
+    accessLevel
+    # Flattened fields: Tempo events
+    initialPipelineRunDate
+    embargoDate
+    bamCompleteDate
+    bamCompleteStatus
+    mafCompleteDate
+    mafCompleteNormalPrimaryId
+    mafCompleteStatus
+    qcCompleteDate
+    qcCompleteResult
+    qcCompleteReason
+    qcCompleteStatus
+    # Flattened fields: Other
+    recipe
+    dmpPatientId
+  }
+}
+
 query SamplesList(
   $where: SampleWhere
   $options: SampleOptions

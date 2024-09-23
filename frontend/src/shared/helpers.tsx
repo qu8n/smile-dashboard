@@ -13,6 +13,7 @@ import "ag-grid-enterprise";
 import {
   CohortsListQuery,
   SampleMetadataWhere,
+  SamplesList2Query,
   SamplesListQuery,
   SampleWhere,
   SortDirection,
@@ -1058,11 +1059,11 @@ export function isValidCostCenter(costCenter: string): boolean {
 
 export function getSamplePopupParamId(
   parentWhereVariables: SampleWhere,
-  samples: SamplesListQuery["samples"],
+  samples: SamplesList2Query["samples2"],
   paramId: string
 ) {
   if (parentWhereVariables.OR?.[0].patientsHasSample_SOME) {
-    const { cmoPatientId, dmpPatientId } = samples[0] || {};
+    const { cmoPatientId, dmpPatientId } = samples?.[0] || {};
     if (cmoPatientId) return cmoPatientId;
     if (dmpPatientId) return dmpPatientId;
   }

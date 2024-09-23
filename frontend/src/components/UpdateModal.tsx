@@ -9,6 +9,7 @@ import "ag-grid-community/styles/ag-theme-alpine.css";
 import { ChangesByPrimaryId, SampleChange } from "../shared/helpers";
 import {
   Sample,
+  Sample2,
   SamplesListQuery,
   SampleUpdateInput,
   SampleWhere,
@@ -22,7 +23,7 @@ interface UpdateModalProps {
   onHide: () => void;
   samples: SamplesListQuery["samples"];
   onOpen?: () => void;
-  sampleKeyForUpdate: keyof Sample;
+  sampleKeyForUpdate: keyof Sample2;
 }
 
 export function UpdateModal({

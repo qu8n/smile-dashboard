@@ -20,17 +20,17 @@ type SamplesQueryResult = {
  * Without this, we would make two trips, one via the `samples` child query and one
  * via the `samplesConnection` child query.
  */
-export function createSamplesLoader(ogm: OGM, oncotreeCache: NodeCache) {
-  return new DataLoader<any, SamplesQueryResult>(async (keys) => {
-    // Both the args passed into samplesLoader.load() of the `samples` and
-    // `samplesConnection` are batched together in the `keys` array, and
-    // only one of them contains the `options` field
-    const args = keys.find((key) => key?.options);
-    const customWhere = includeCancerTypeFieldsInSearch(
-      args?.where,
-      oncotreeCache
-    );
-    const result = await querySamplesList(ogm, customWhere, args?.options);
-    return keys.map(() => result);
-  });
-}
+// export function createSamplesLoader(ogm: OGM, oncotreeCache: NodeCache) {
+//   return new DataLoader<any, SamplesQueryResult>(async (keys) => {
+//     // Both the args passed into samplesLoader.load() of the `samples` and
+//     // `samplesConnection` are batched together in the `keys` array, and
+//     // only one of them contains the `options` field
+//     const args = keys.find((key) => key?.options);
+//     const customWhere = includeCancerTypeFieldsInSearch(
+//       args?.where,
+//       oncotreeCache
+//     );
+//     const result = await querySamplesList(ogm, customWhere, args?.options);
+//     return keys.map(() => result);
+//   });
+// }
