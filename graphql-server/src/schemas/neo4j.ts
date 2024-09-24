@@ -289,21 +289,95 @@ export async function buildNeo4jDbSchema() {
 // TODO THIS IS THE ONE GETTING CALLED
 export const runQuery = {
   async sampleDashboardQuery(searchVals: string[], oncotreeCache: NodeCache) {
-    //}, { oncotreeCache }: ApolloServerContext) {
     var startTime = performance.now();
     const session = driver.session();
+
+    function createFilters(
+      variable: string,
+      fields: string[],
+      searchVals: string[]
+    ): string {
+      const regexPattern = `(?i).*(${searchVals.join("|")}).*`;
+      return fields
+        .map((field) => `${variable}.${field} =~ '${regexPattern}'`)
+        .join(" OR ");
+    }
+
+    const filtersConfig = [
+      {
+        variable: "sm",
+        fields: [
+          "additionalProperties",
+          "baitSet",
+          "cfDNA2dBarcode",
+          "cmoInfoIgoId",
+          "cmoPatientId",
+          "cmoSampleIdFields",
+          "cmoSampleName",
+          "collectionYear",
+          "genePanel",
+          "igoComplete",
+          "igoRequestId",
+          "importDate",
+          "investigatorSampleId",
+          "libraries",
+          "oncotreeCode",
+          "preservation",
+          "primaryId",
+          "qcReports",
+          "sampleClass",
+          "sampleName",
+          "sampleOrigin",
+          "sampleType",
+          "sex",
+          "species",
+          "tissueLocation",
+          "tubeId",
+          "tumorOrNormal",
+        ],
+      },
+      {
+        variable: "t",
+        fields: [
+          "costCenter",
+          "billedBy",
+          "custodianInformation",
+          "accessLevel",
+        ],
+      },
+      { variable: "bc", fields: ["date", "status"] },
+      { variable: "mc", fields: ["date", "normalPrimaryId", "status"] },
+      { variable: "qc", fields: ["date", "result", "reason", "status"] },
+    ];
+
+    const filters =
+      searchVals.length > 0
+        ? filtersConfig.map(
+            (config) =>
+              `WHERE ${createFilters(
+                config.variable,
+                config.fields,
+                searchVals
+              )}`
+          )
+        : ["", "", "", "", ""];
+
+    const [smFilters, tFilters, bcFilters, mcFilters, qcFilters] = filters;
+
     try {
       const result = await session.run(
         `
         // all Samples have at least one SampleMetadata (SampleMetadata is required)
         MATCH (s:Sample)-[:HAS_METADATA]->(sm:SampleMetadata)
 
+        ${smFilters}
+
         // now get the most recent import date for each Sample from the SampleMetadata (we still have all the SampleMetadata for each Sample)
         WITH s, collect(sm) AS allSampleMetadata, max(sm.importDate) AS latestImportDate
 
         // now only keep one of the SampleMetadata that has the most recent importDate (if there is more than one we take the first)
         WITH s, [sm IN allSampleMetadata WHERE sm.importDate = latestImportDate][0] AS latestSm
-        
+
         // if the most recent SampleMetadata for a Sample has a Status attached to it
         OPTIONAL MATCH (latestSm)-[:HAS_STATUS]->(st:Status)
         WITH s, latestSm, st AS latestSt
@@ -320,6 +394,8 @@ export const runQuery = {
         // if the Sample has Tempos get them
         OPTIONAL MATCH (s:Sample)-[:HAS_TEMPO]->(t:Tempo)
 
+        ${tFilters}
+
         // now get the most recent date for each Sample from the Tempos (we still have all the Tempos for each Sample)
         WITH s, latestSm, latestSt, oldestCC, collect(t) AS allTempos, max(t.date) AS latestTDate
 
@@ -328,6 +404,8 @@ export const runQuery = {
 
         // if the Tempo has any BamCompletes, get them
         OPTIONAL MATCH (latestT)-[:HAS_EVENT]->(bc:BamComplete)
+
+        ${bcFilters}
 
         // now get the most recent date for each BamComplete (we still have all the BamCompletes for each Tempo)
         WITH s, latestSm, latestSt, oldestCC, latestT, collect(bc) AS allBamCompletes, max(bc.date) AS latestBCDate
@@ -338,6 +416,8 @@ export const runQuery = {
         // if the Tempo has any MafCompletes, get them
         OPTIONAL MATCH (latestT)-[:HAS_EVENT]->(mc:MafComplete)
 
+        ${mcFilters}
+
         // now get the most recent date for each MafComplete (we still have all the MafCompletes for each Tempo)
         WITH s, latestSm, latestSt, oldestCC, latestT, latestBC, collect(mc) AS allMafCompletes, max(mc.date) AS latestMCDate
 
@@ -346,6 +426,8 @@ export const runQuery = {
 
         // if the Tempo has any QcCompletes, get them
         OPTIONAL MATCH (latestT)-[:HAS_EVENT]->(qc:QcComplete)
+
+        ${qcFilters}
 
         // now get the most recent date for each QcComplete (we still have all the QcCompletes for each Tempo)
         WITH s, latestSm, latestSt, oldestCC, latestT, latestBC, latestMC, collect(qc) AS allQcCompletes, max(qc.date) AS latestQCDate
