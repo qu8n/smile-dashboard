@@ -130,48 +130,6 @@ export async function buildNeo4jDbSchema() {
       samplesConnection2: SampleConnection2
     }
 
-    type SampleDashboardRow {
-      primaryId: String!
-      status: Boolean
-      cmoSampleName: String
-      lastUpdated: String
-      cmoPatientId: String
-      investigatorSampleId: String
-      sampleType: String!
-      species: String!
-      genePanel: String!
-      baitSet: String
-      preservation: String
-      tumorOrNormal: String!
-      sampleClass: String!
-      oncotreeCode: String
-      collectionYear: String!
-      sampleOrigin: String
-      tissueLocation: String
-      sex: String!
-      recipe: String
-      initialPipelineRunDate: String
-      embargoDate: String
-      billed: Boolean
-      costCenter: String
-      editedBy: String
-      custodianInformation: String
-      accessLevel: String
-      bamCompleteDate: String
-      bamCompleteStatus: String
-      mafCompleteDate: String
-      mafCompleteNormalPrimaryId: String
-      mafCompleteStatus: String
-      qcCompleteDate: String
-      qcCompleteResult: String
-      qcCompleteReason: String
-      qcCompleteStatus: String
-    }
-
-    type Query {
-      sampleDashboardQuery: [Sample]
-    }
-
     extend type Request {
       importDate: String
       totalSampleCount: Int
@@ -184,64 +142,6 @@ export async function buildNeo4jDbSchema() {
       cmoSampleIds: String
       consentPartA: String
       consentPartC: String
-    }
-
-    extend type Sample {
-      # Flattened fields: SampleMetadata
-      additionalProperties: String
-      baitSet: String
-      cfDNA2dBarcode: String
-      cmoInfoIgoId: String
-      cmoPatientId: String
-      cmoSampleIdFields: String
-      cmoSampleName: String
-      collectionYear: String
-      genePanel: String
-      igoComplete: Boolean
-      igoRequestId: String
-      importDate: String
-      investigatorSampleId: String
-      libraries: String
-      oncotreeCode: String
-      preservation: String
-      primaryId: String
-      qcReports: String
-      sampleName: String
-      sampleOrigin: String
-      sampleType: String
-      sex: String
-      species: String
-      tissueLocation: String
-      tubeId: String
-      tumorOrNormal: String
-      # Flattened fields: SampleMetadata Status
-      validationReport: String
-      validationStatus: Boolean
-      # Flattened fields: Oncotree
-      cancerType: String
-      cancerTypeDetailed: String
-      # Flattened fields: Tempo
-      smileTempoId: String
-      billed: Boolean
-      costCenter: String
-      billedBy: String
-      custodianInformation: String
-      accessLevel: String
-      # Flattened fields: Tempo events
-      initialPipelineRunDate: String
-      embargoDate: String
-      bamCompleteDate: String
-      bamCompleteStatus: String
-      mafCompleteDate: String
-      mafCompleteNormalPrimaryId: String
-      mafCompleteStatus: String
-      qcCompleteDate: String
-      qcCompleteResult: String
-      qcCompleteReason: String
-      qcCompleteStatus: String
-      # Other
-      recipe: String
-      dmpPatientId: String
     }
 
     extend type Cohort {
@@ -287,10 +187,13 @@ export async function buildNeo4jDbSchema() {
   };
 }
 
-// TODO THIS IS THE ONE GETTING CALLED
 export const runQuery = {
-  async sampleDashboardQuery(searchVals: string[], oncotreeCache: NodeCache) {
-    var startTime = performance.now();
+  async sampleDashboardQuery(
+    searchVals: string[],
+    oncotreeCache: NodeCache,
+    addlOncotreeCodes: string[]
+  ) {
+    const startTime = performance.now();
     const session = driver.session();
 
     function createFilters(
@@ -365,13 +268,18 @@ export const runQuery = {
 
     const [smFilters, tFilters, bcFilters, mcFilters, qcFilters] = filters;
 
+    const addlOncotreeCodeFilters =
+      addlOncotreeCodes.length > 0
+        ? ` OR ${createFilters("sm", ["oncotreeCode"], addlOncotreeCodes)}`
+        : "";
+
     try {
       const result = await session.run(
         `
         // all Samples have at least one SampleMetadata (SampleMetadata is required)
         MATCH (s:Sample)-[:HAS_METADATA]->(sm:SampleMetadata)
 
-        ${smFilters}
+        ${smFilters + addlOncotreeCodeFilters}
 
         // now get the most recent import date for each Sample from the SampleMetadata (we still have all the SampleMetadata for each Sample)
         WITH s, collect(sm) AS allSampleMetadata, max(sm.importDate) AS latestImportDate
@@ -512,7 +420,7 @@ export const runQuery = {
         };
       });
 
-      var endTime = performance.now();
+      const endTime = performance.now();
       console.log(`NEW query took ${(endTime - startTime) / 1000} seconds`);
 
       return sampleDashboardRows;
@@ -605,182 +513,7 @@ function buildResolvers(
         };
       },
     },
-
-    // async samples(
-    //   _source: undefined,
-    //   args: any,
-    //   { samplesLoader }: ApolloServerContext
-    // ) {
-
     Query: {
-      // THIS ONE CAN BE CALLED FROM THE BROWSER
-      async sampleDashboardQuery(
-        _: any,
-        args: any,
-        { oncotreeCache }: ApolloServerContext
-      ) {
-        var startTime = performance.now();
-        const session = driver.session();
-        try {
-          const result = await session.run(
-            `
-            // all Samples have at least one SampleMetadata (SampleMetadata is required)
-            MATCH (s:Sample)-[:HAS_METADATA]->(sm:SampleMetadata)
-            // now get the most recent import date for each Sample from the SampleMetadata (we still have all the SampleMetadata for each Sample)
-            WITH s, collect(sm) AS allSampleMetadata, max(sm.importDate) AS latestImportDate
-            // now only keep one of the SampleMetadata that has the most recent importDate (if there is more than one we take the first)
-            WITH s, [sm IN allSampleMetadata WHERE sm.importDate = latestImportDate][0] AS latestSm
-            
-            // if the most recent SampleMetadata for a Sample has a Status attached to it
-            OPTIONAL MATCH (latestSm)-[:HAS_STATUS]->(st:Status)
-            WITH s, latestSm, st AS latestSt
-            
-            // if the Sample belongs to any Cohorts, get them - the Cohort will have a CohortComplete so get that too
-            OPTIONAL MATCH (s:Sample)<-[:HAS_COHORT_SAMPLE]-(c:Cohort)-[:HAS_COHORT_COMPLETE]->(cc:CohortComplete)
-            // we then collect all the CohortCompletes for each Sample and get the most recent CohortComplete.date
-            WITH s, latestSm, latestSt, collect(cc) AS allCohortComplete, min(cc.date) AS oldestCCDate
-            // now only keep one of the CohortCompletes that has the most recent CohortComplete date (if there is more than one take the first)
-            WITH s, latestSm, latestSt, [cc IN allCohortComplete WHERE cc.date = oldestCCDate][0] AS oldestCC
-            
-            // if the Sample has Tempos get them
-            OPTIONAL MATCH (s:Sample)-[:HAS_TEMPO]->(t:Tempo)
-            // now get the most recent date for each Sample from the Tempos (we still have all the Tempos for each Sample)
-            WITH s, latestSm, latestSt, oldestCC, collect(t) AS allTempos, max(t.date) AS latestTDate
-            // now only keep one of the Tempos that has the most recent date (if there is more than one we take the first)
-            WITH s, latestSm, latestSt, oldestCC, [t IN allTempos WHERE t.date = latestTDate][0] AS latestT
-
-            // if the Tempo has any BamCompletes, get them
-            OPTIONAL MATCH (latestT)-[:HAS_EVENT]->(bc:BamComplete)
-            // now get the most recent date for each BamComplete (we still have all the BamCompletes for each Tempo)
-            WITH s, latestSm, latestSt, oldestCC, latestT, collect(bc) AS allBamCompletes, max(bc.date) AS latestBCDate
-            // now only keep one of the BamCompletes that has the most recent date (if there is more than one we take the first)
-            WITH s, latestSm, latestSt, oldestCC, latestT, [bc IN allBamCompletes WHERE bc.date = latestBCDate][0] AS latestBC
-
-            // if the Tempo has any MafCompletes, get them
-            OPTIONAL MATCH (latestT)-[:HAS_EVENT]->(mc:MafComplete)
-            // now get the most recent date for each MafComplete (we still have all the MafCompletes for each Tempo)
-            WITH s, latestSm, latestSt, oldestCC, latestT, latestBC, collect(mc) AS allMafCompletes, max(mc.date) AS latestMCDate
-            // now only keep one of the MafCompletes that has the most recent date (if there is more than one we take the first)
-            WITH s, latestSm, latestSt, oldestCC, latestT, latestBC, [mc IN allMafCompletes WHERE mc.date = latestMCDate][0] AS latestMC
-
-            // if the Tempo has any QcCompletes, get them
-            OPTIONAL MATCH (latestT)-[:HAS_EVENT]->(qc:QcComplete)
-            // now get the most recent date for each QcComplete (we still have all the QcCompletes for each Tempo)
-            WITH s, latestSm, latestSt, oldestCC, latestT, latestBC, latestMC, collect(qc) AS allQcCompletes, max(qc.date) AS latestQCDate
-            // now only keep one of the QcCompletes that has the most recent date (if there is more than one we take the first)
-            WITH s, latestSm, latestSt, oldestCC, latestT, latestBC, latestMC, [qc IN allQcCompletes WHERE qc.date = latestQCDate][0] AS latestQC
-
-            // return whatever we need (TODO would it be faster if we only return the fields we need?  should we be filtering those from the start of the query?)
-            RETURN s AS sample,
-                  latestSm,
-                  latestSt,
-                  oldestCC,
-                  latestT,
-                  latestBC,
-                  latestMC,
-                  latestQC
-            ORDER BY latestSm.importDate DESC
-            LIMIT 500
-            `
-          ); // NOTE above the LIMIT clause, use SKIP 0 to skip the first 0 samples, SKIP 10 to skip the first 10, etc.
-
-          // Process the results
-          const sampleDashboardRows = result.records.map((record) => {
-            // TODO still add indexes
-            const sample = record.get("sample");
-            const latestSm = record.get("latestSm");
-            const latestSt = record.get("latestSt"); // can be null
-            const oldestCC = record.get("oldestCC"); // can be null
-            const latestT = record.get("latestT"); // can be null
-            const latestBC = record.get("latestBC"); // can be null
-            const latestMC = record.get("latestMC"); // can be null
-            const latestQC = record.get("latestQC"); // can be null
-
-            const oncotreeCode = latestSm.properties.oncotreeCode;
-            let cancerType: string;
-            let cancerTypeDetailed: string;
-
-            if (oncotreeCode) {
-              let cachedData =
-                oncotreeCache?.get<CachedOncotreeData>(oncotreeCode);
-              // if (!cachedData && oncotreeCache) {
-              //   await fetchAndCacheOncotreeData(oncotreeCache);
-              //   cachedData = oncotreeCache.get(oncotreeCode);
-              // }
-              if (cachedData) {
-                cancerType = cachedData.mainType;
-                cancerTypeDetailed = cachedData.name;
-              }
-            }
-
-            const toReturn = {
-              primaryId: latestSm.properties.primaryId,
-              datasource: sample.properties.datasource, // TODO not required for dashboard, but is required if returning a "Sample"
-              revisable: sample.properties.revisable, // TODO not required for dashboard, but is required if returning a "Sample"
-              sampleCategory: sample.properties.sampleCategory, // TODO not required for dashboard, but is required if returning a "Sample"
-              smileSampleId: sample.properties.smileSampleId, // TODO not required for dashboard, but is required if returning a "Sample"
-              validationStatus: latestSt
-                ? latestSt.properties.validationStatus
-                : null,
-              cmoSampleName: latestSm.properties.cmoSampleName,
-              importDate: latestSm.properties.importDate,
-              cmoPatientId: latestSm.properties.cmoPatientId,
-              investigatorSampleId: latestSm.properties.investigatorSampleId,
-              sampleType: latestSm.properties.sampleType,
-              species: latestSm.properties.species,
-              genePanel: latestSm.properties.genePanel,
-              baitSet: latestSm.properties.baitSet,
-              preservation: latestSm.properties.preservation,
-              tumorOrNormal: latestSm.properties.tumorOrNormal,
-              sampleClass: sample.properties.sampleClass,
-              oncotreeCode: latestSm.properties.oncotreeCode,
-              collectionYear: latestSm.properties.collectionYear,
-              sampleOrigin: latestSm.properties.sampleOrigin,
-              tissueLocation: latestSm.properties.tissueLocation,
-              sex: latestSm.properties.sex,
-              recipe: latestSm.properties.cmoSampleIdFields.recipe,
-              initialPipelineRunDate: oldestCC
-                ? oldestCC.properties.date
-                : null,
-              embargoDate: oldestCC
-                ? new Date(
-                    new Date(oldestCC.properties.date).setMonth(
-                      new Date(oldestCC.properties.date).getMonth() + 18
-                    )
-                  ).toISOString()
-                : null,
-              billed: latestT ? latestT.properties.billed : null,
-              costCenter: latestT ? latestT.properties.costCenter : null,
-              billedBy: latestT // editedBy
-                ? latestT.properties.billedBy
-                : null,
-              custodianInformation: latestT
-                ? latestT.properties.custodianInformation
-                : null,
-              accessLevel: latestT ? latestT.properties.accessLevel : null,
-              bamCompleteDate: latestBC ? latestBC.properties.date : null,
-              bamCompleteStatus: latestBC ? latestBC.properties.status : null,
-              mafCompleteDate: latestMC ? latestMC.properties.date : null,
-              mafCompleteNormalPrimaryId: latestMC
-                ? latestMC.properties.normalPrimaryId
-                : null,
-              mafCompleteStatus: latestMC ? latestMC.properties.status : null,
-              qcCompleteDate: latestQC ? latestQC.properties.date : null,
-              qcCompleteResult: latestQC ? latestQC.properties.result : null,
-              qcCompleteReason: latestQC ? latestQC.properties.reason : null,
-              qcCompleteStatus: latestQC ? latestQC.properties.status : null,
-            };
-            return toReturn;
-          });
-
-          var endTime = performance.now();
-          console.log(`NEW query took ${(endTime - startTime) / 1000} seconds`);
-
-          return sampleDashboardRows;
-        } catch (error) {
-          console.error("Error running query:", error);
-        }
-      },
       async requests(_source: undefined, args: any) {
         const requests = await ogm.model("Request").find({
           where: args.where,
@@ -882,14 +615,6 @@ function buildResolvers(
         }
         return patients.slice(args.options.offset, args.options.limit + 1);
       },
-      // async samples(
-      //   _source: undefined,
-      //   args: any,
-      //   { samplesLoader }: ApolloServerContext
-      // ) {
-      //   const result = await samplesLoader.load(args);
-      //   return result.data;
-      // },
       async samplesConnection2() {
         return {
           totalCount: 501, // PLACEHOLDER
@@ -900,41 +625,29 @@ function buildResolvers(
         { searchVals }: { searchVals: string[] },
         { oncotreeCache }: ApolloServerContext
       ) {
-        const customSearchVals = [...searchVals];
-
-        if (customSearchVals?.length) {
-          // Search through the oncotreeCache for matching cancerType or cancerTypeDetailed values.
-          // If there is a match, add the corresponding Oncotree code to the original search query
+        let addlOncotreeCodes: Set<string> = new Set();
+        if (searchVals.length > 0) {
           oncotreeCache.keys().forEach((code) => {
             const { name, mainType } = (oncotreeCache.get(
               code
             ) as CachedOncotreeData)!;
-            if (
-              customSearchVals.some(
-                (val) =>
-                  name?.toLowerCase().includes(val?.toLowerCase()) ||
-                  mainType?.toLowerCase().includes(val?.toLowerCase())
-              )
-            ) {
-              customSearchVals.push(code);
-            }
+            searchVals.forEach((val) => {
+              if (
+                name?.toLowerCase().includes(val?.toLowerCase()) ||
+                mainType?.toLowerCase().includes(val?.toLowerCase())
+              ) {
+                addlOncotreeCodes.add(code);
+              }
+            });
           });
         }
 
-        console.log("customSearchVals", customSearchVals);
-
-        return await querySamplesList(customSearchVals, oncotreeCache);
+        return await querySamplesList(
+          searchVals,
+          oncotreeCache,
+          Array.from(addlOncotreeCodes)
+        );
       },
-      // async samplesConnection(
-      //   _source: undefined,
-      //   args: any,
-      //   { samplesLoader }: ApolloServerContext
-      // ) {
-      //   const result = await samplesLoader.load(args);
-      //   return {
-      //     totalCount: result.totalCount,
-      //   };
-      // },
       async cohorts(_source: undefined, args: any) {
         const cohorts = await ogm.model("Cohort").find({
           where: args.where,
@@ -986,7 +699,6 @@ function buildResolvers(
     Request: generateFieldResolvers(flattenedRequestFields, "Request"),
     Patient: generateFieldResolvers(flattenedPatientFields, "Patient"),
     Cohort: generateFieldResolvers(flattenedCohortFields, "Cohort"),
-    //Sample: generateFieldResolvers(flattenedSampleFields, "Sample"),
   };
 }
 
