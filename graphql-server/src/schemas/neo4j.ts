@@ -33,6 +33,7 @@ import { ApolloServerContext } from "../utils/servers";
 import { CachedOncotreeData } from "../utils/oncotree";
 import { querySamplesList } from "../utils/ogm";
 import NodeCache from "node-cache";
+import { parseJsonSafely } from "../utils/json";
 
 type SortOptions = { [key: string]: SortDirection }[];
 
@@ -445,8 +446,6 @@ export const runQuery = {
               latestMC,
               latestQC
         RETURN
-          sample, // TEMP TO SATISFY RETURN TYPE OF SAMPLE UNTIL WE CREATE A CUSTOM TYPE
-
           sample.revisable AS revisable,
 
           latestSm.primaryId AS primaryId,
@@ -466,7 +465,7 @@ export const runQuery = {
           latestSm.sampleOrigin AS sampleOrigin,
           latestSm.tissueLocation AS tissueLocation,
           latestSm.sex AS sex,
-          latestSm.recipe AS recipe, // WRONG
+          latestSm.cmoSampleIdFields AS cmoSampleIdFields,
 
           oldestCC.date AS initialPipelineRunDate,
 
@@ -492,21 +491,15 @@ export const runQuery = {
         ORDER BY importDate DESC
         LIMIT 500
         `
-      ); // NOTE above the LIMIT clause, use SKIP 0 to skip the first 0 samples, SKIP 10 to skip the first 10, etc.
-
-      // Process the results
+      );
       const sampleDashboardRows = result.records.map((record) => {
         const recordObject = record.toObject();
-        const sample = record.get("sample");
+        const otCache = oncotreeCache.get(
+          recordObject.oncotreeCode
+        ) as CachedOncotreeData;
         return {
           ...recordObject,
-
-          // TEMP TO SATISFY RETURN TYPE OF SAMPLE UNTIL WE CREATE A CUSTOM TYPE
-          datasource: sample.properties.datasource,
-          revisable: sample.properties.revisable,
-          sampleCategory: sample.properties.sampleCategory,
-          smileSampleId: sample.properties.smileSampleId,
-
+          recipe: parseJsonSafely(recordObject.cmoSampleIdFields)?.recipe,
           embargoDate: recordObject.initialPipelineRunDate
             ? new Date(
                 new Date(recordObject.initialPipelineRunDate).setMonth(
@@ -514,137 +507,9 @@ export const runQuery = {
                 )
               ).toISOString()
             : null,
-
-          cancerType: (
-            oncotreeCache.get(
-              recordObject.oncotreeCode ?? ""
-            ) as CachedOncotreeData
-          )?.mainType,
-          cancerTypeDetailed: (
-            oncotreeCache.get(
-              recordObject.oncotreeCode ?? ""
-            ) as CachedOncotreeData
-          )?.name,
-
-          // cohortsHasCohortSample: [],
-          // hasMetadataSampleMetadata: [],
-          // hasTempoTempos: [],
-          // patientsHasSample: [],
-          // requestsHasSample: [],
-          // sampleAliasesIsAlias: [],
+          cancerType: otCache?.mainType,
+          cancerTypeDetailed: otCache?.name,
         };
-        // TODO still add indexes
-        // const sample = record.get("sample");
-        // const latestSm = record.get("latestSm");
-        // const latestSt = record.get("latestSt"); // can be null
-        // const oldestCC = record.get("oldestCC"); // can be null
-        // const latestT = record.get("latestT"); // can be null
-        // const latestBC = record.get("latestBC"); // can be null
-        // const latestMC = record.get("latestMC"); // can be null
-        // const latestQC = record.get("latestQC"); // can be null
-
-        // const oncotreeCode = latestSm.properties.oncotreeCode;
-        let cancerType: string;
-        let cancerTypeDetailed: string;
-
-        // TODO deal with this
-        // if (oncotreeCode)  {
-        //   let cachedData = oncotreeCache?.get<CachedOncotreeData>(oncotreeCode);
-        //   // if (!cachedData && oncotreeCache) {
-        //   //   await fetchAndCacheOncotreeData(oncotreeCache);
-        //   //   cachedData = oncotreeCache.get(oncotreeCode);
-        //   // }
-        //   if (cachedData) {
-        //     cancerType = cachedData.mainType;
-        //     cancerTypeDetailed = cachedData.name;
-        //   }
-        // }
-
-        // const toReturn = {
-        //   primaryId: latestSm.properties.primaryId,
-        //   datasource: sample.properties.datasource, // TODO not required for dashboard, but is required if returning a "Sample"
-        //   revisable: sample.properties.revisable, // TODO not required for dashboard, but is required if returning a "Sample"
-        //   sampleCategory: sample.properties.sampleCategory, // TODO not required for dashboard, but is required if returning a "Sample"
-        //   smileSampleId: sample.properties.smileSampleId, // TODO not required for dashboard, but is required if returning a "Sample"
-        //   validationStatus: latestSt
-        //     ? latestSt.properties.validationStatus
-        //     : null,
-        //   cmoSampleName: latestSm.properties.cmoSampleName,
-        //   importDate: latestSm.properties.importDate,
-        //   cmoPatientId: latestSm.properties.cmoPatientId,
-        //   investigatorSampleId:
-        //     latestSm.properties.investigatorSampleId,
-        //   sampleType: latestSm.properties.sampleType,
-        //   species: latestSm.properties.species,
-        //   genePanel: latestSm.properties.genePanel,
-        //   baitSet: latestSm.properties.baitSet,
-        //   preservation: latestSm.properties.preservation,
-        //   tumorOrNormal: latestSm.properties.tumorOrNormal,
-        //   sampleClass: sample.properties.sampleClass,
-        //   oncotreeCode: latestSm.properties.oncotreeCode,
-        //   collectionYear: latestSm.properties.collectionYear,
-        //   sampleOrigin: latestSm.properties.sampleOrigin,
-        //   tissueLocation: latestSm.properties.tissueLocation,
-        //   sex: latestSm.properties.sex,
-        //   recipe: latestSm.properties.cmoSampleIdFields.recipe,
-        //   initialPipelineRunDate: oldestCC
-        //     ? oldestCC.properties.date
-        //     : null,
-        //   embargoDate: oldestCC
-        //     ? new Date(
-        //         new Date(oldestCC.properties.date).setMonth(
-        //           new Date(oldestCC.properties.date).getMonth() + 18
-        //         )
-        //       ).toISOString()
-        //     : null,
-        //   billed: latestT ? latestT.properties.billed : null,
-        //   costCenter: latestT
-        //     ? latestT.properties.costCenter
-        //     : null,
-        //   billedBy: latestT // editedBy
-        //     ? latestT.properties.billedBy
-        //     : null,
-        //   custodianInformation: latestT
-        //     ? latestT.properties.custodianInformation
-        //     : null,
-        //   accessLevel: latestT
-        //     ? latestT.properties.accessLevel
-        //     : null,
-        //   bamCompleteDate: latestBC
-        //     ? latestBC.properties.date
-        //     : null,
-        //   bamCompleteStatus: latestBC
-        //     ? latestBC.properties.status
-        //     : null,
-        //   mafCompleteDate: latestMC
-        //     ? latestMC.properties.date
-        //     : null,
-        //   mafCompleteNormalPrimaryId: latestMC
-        //     ? latestMC.properties.normalPrimaryId
-        //     : null,
-        //   mafCompleteStatus: latestMC
-        //     ? latestMC.properties.status
-        //     : null,
-        //   qcCompleteDate: latestQC
-        //     ? latestQC.properties.date
-        //     : null,
-        //   qcCompleteResult: latestQC
-        //     ? latestQC.properties.result
-        //     : null,
-        //   qcCompleteReason: latestQC
-        //     ? latestQC.properties.reason
-        //     : null,
-        //   qcCompleteStatus: latestQC
-        //     ? latestQC.properties.status
-        //     : null,
-        //   cohortsHasCohortSample: [],
-        //   hasMetadataSampleMetadata: [],
-        //   hasTempoTempos: [],
-        //   patientsHasSample: [],
-        //   requestsHasSample: [],
-        //   sampleAliasesIsAlias: [],
-        // };
-        // return toReturn;
       });
 
       var endTime = performance.now();
