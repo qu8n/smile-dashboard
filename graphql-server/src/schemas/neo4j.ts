@@ -494,9 +494,9 @@ export const runQuery = {
       );
       const sampleDashboardRows = result.records.map((record) => {
         const recordObject = record.toObject();
-        const otCache = oncotreeCache.get(
-          recordObject.oncotreeCode
-        ) as CachedOncotreeData;
+        const otCache = recordObject.oncotreeCode
+          ? (oncotreeCache.get(recordObject.oncotreeCode) as CachedOncotreeData)
+          : null;
         return {
           ...recordObject,
           recipe: parseJsonSafely(recordObject.cmoSampleIdFields)?.recipe,
