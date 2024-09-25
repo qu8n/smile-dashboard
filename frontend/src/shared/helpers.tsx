@@ -11,10 +11,9 @@ import {
 import { Button } from "react-bootstrap";
 import "ag-grid-enterprise";
 import {
+  DashboardSamplesQuery,
   CohortsListQuery,
   SampleMetadataWhere,
-  SamplesList2Query,
-  SamplesListQuery,
   SampleWhere,
   SortDirection,
   TempoWhere,
@@ -1059,7 +1058,7 @@ export function isValidCostCenter(costCenter: string): boolean {
 
 export function getSamplePopupParamId(
   parentWhereVariables: SampleWhere,
-  samples: SamplesList2Query["samples2"],
+  samples: DashboardSamplesQuery["dashboardSamples"],
   paramId: string
 ) {
   if (parentWhereVariables.OR?.[0].patientsHasSample_SOME) {

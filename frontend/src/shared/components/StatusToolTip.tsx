@@ -1,10 +1,8 @@
 import { ITooltipParams } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
-import { SamplesListQuery } from "../../generated/graphql";
 
 export const StatusTooltip = (props: ITooltipParams) => {
-  let { primaryId, validationReport, validationStatus } =
-    props.data as SamplesListQuery["samples"][number];
+  let { primaryId, validationReport, validationStatus } = props.data;
 
   const columnDefs = [
     {

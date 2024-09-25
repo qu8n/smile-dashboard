@@ -2,8 +2,7 @@ import {
   SortDirection,
   Sample,
   SampleWhere,
-  useSamplesListQuery,
-  useSamplesList2Query,
+  useDashboardSamplesQuery,
 } from "../generated/graphql";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { Button, Col, Container } from "react-bootstrap";
@@ -86,20 +85,9 @@ export default function SamplesList({
   const params = useParams();
 
   const { loading, error, data, startPolling, stopPolling, refetch } =
-    useSamplesList2Query({
-      // useSamplesListQuery({
+    useDashboardSamplesQuery({
       variables: {
         searchVals: parsedSearchVals,
-        // options: {
-        //   limit: MAX_ROWS_TABLE,
-        // },
-        // sampleMetadataOptions: {
-        //   sort: [{ importDate: SortDirection.Desc }],
-        //   limit: 1,
-        // },
-        // bamCompletesOptions: TEMPO_EVENT_OPTIONS,
-        // mafCompletesOptions: TEMPO_EVENT_OPTIONS,
-        // qcCompletesOptions: TEMPO_EVENT_OPTIONS,
       },
       pollInterval: POLLING_INTERVAL,
     });
@@ -114,11 +102,11 @@ export default function SamplesList({
   }, [parsedSearchVals, columnDefs, refetchWhereVariables, refetch]);
 
   useEffect(() => {
-    setSampleCount(data?.samplesConnection2?.totalCount || 0);
+    setSampleCount(data?.dashboardSampleCount?.totalCount || 0);
     console.log("data", data);
   }, [data]);
 
-  const samples = data?.samples2;
+  const samples = data?.dashboardSamples;
 
   console.log("samples", samples?.[0]?.recipe);
 
@@ -279,7 +267,7 @@ export default function SamplesList({
                   )
                 )
               : refetch().then((result) =>
-                  buildTsvString(result.data.samples2!, columnDefs)
+                  buildTsvString(result.data.dashboardSamples!, columnDefs)
                 );
           }}
           onComplete={() => {

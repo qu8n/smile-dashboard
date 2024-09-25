@@ -1,9 +1,9 @@
 import fetch from "node-fetch";
 import NodeCache from "node-cache";
-import { driver } from "../schemas/neo4j";
 import { props } from "./constants";
 import { InputMaybe, SampleWhere } from "../generated/graphql";
-import { GraphQLWhereArg } from "@neo4j/graphql/dist/types";
+import { GraphQLWhereArg } from "@neo4j/graphql";
+import { neo4jDriver } from "./servers";
 
 /**
  * Source: https://oncotree.mskcc.org/#/home?tab=api
@@ -94,7 +94,7 @@ async function updateOncotreeCache(
 }
 
 async function getOncotreeCodesFromNeo4j() {
-  const session = driver.session();
+  const session = neo4jDriver.session();
   try {
     const result = await session.writeTransaction((tx) =>
       tx.run(`

@@ -8,9 +8,8 @@ import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import { ChangesByPrimaryId, SampleChange } from "../shared/helpers";
 import {
-  Sample,
-  Sample2,
-  SamplesListQuery,
+  DashboardSample,
+  DashboardSamplesQuery,
   SampleUpdateInput,
   SampleWhere,
   useUpdateSamplesMutation,
@@ -21,9 +20,9 @@ interface UpdateModalProps {
   changes: SampleChange[];
   onSuccess: () => void;
   onHide: () => void;
-  samples: SamplesListQuery["samples"];
+  samples: DashboardSamplesQuery["dashboardSamples"];
   onOpen?: () => void;
-  sampleKeyForUpdate: keyof Sample2;
+  sampleKeyForUpdate: keyof DashboardSample;
 }
 
 export function UpdateModal({
@@ -59,7 +58,10 @@ export function UpdateModal({
     }
 
     const updatedSamples = _.cloneDeep(samples);
+
     updatedSamples?.forEach((s) => {
+      if (!s) return; // TODO: fix this
+
       const primaryId = s.primaryId as string;
       if (primaryId in changesByPrimaryId) {
         s.revisable = false;
@@ -93,7 +95,7 @@ export function UpdateModal({
         },
         optimisticResponse: {
           updateSamples: {
-            samples: updatedSamples,
+            samples: updatedSamples as any, // TODO: fix this
           },
         },
       });

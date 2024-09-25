@@ -2,7 +2,6 @@ import {
   CohortsListQuery,
   PatientsListQuery,
   RequestsListQuery,
-  SamplesListQuery,
   SortDirection,
 } from "../generated/graphql";
 import { CachedOncotreeData, fetchAndCacheOncotreeData } from "./oncotree";
@@ -32,82 +31,6 @@ export const flattenedCohortFields = [
   "type",
 ];
 
-type SampleMetadataKey =
-  keyof SamplesListQuery["samples"][number]["hasMetadataSampleMetadata"][number];
-const flattenedSampleMetadataFields: SampleMetadataKey[] = [
-  "additionalProperties",
-  "baitSet",
-  "cfDNA2dBarcode",
-  "cmoInfoIgoId",
-  "cmoPatientId",
-  "cmoSampleIdFields",
-  "cmoSampleName",
-  "collectionYear",
-  "genePanel",
-  "igoComplete",
-  "igoRequestId",
-  "importDate",
-  "investigatorSampleId",
-  "libraries",
-  "oncotreeCode",
-  "preservation",
-  "primaryId",
-  "qcReports",
-  "sampleClass",
-  "sampleName",
-  "sampleOrigin",
-  "sampleType",
-  "sex",
-  "species",
-  "tissueLocation",
-  "tubeId",
-  "tumorOrNormal",
-];
-
-type SampleMetadataStatusKey =
-  keyof SamplesListQuery["samples"][number]["hasMetadataSampleMetadata"][number]["hasStatusStatuses"][number];
-const flattenedSampleMetadataStatusFields: SampleMetadataStatusKey[] = [
-  "validationReport",
-  "validationStatus",
-];
-
-type TempoKey =
-  keyof SamplesListQuery["samples"][number]["hasTempoTempos"][number];
-const flattenedTempoFields: TempoKey[] = [
-  "smileTempoId",
-  "billed",
-  "costCenter",
-  "billedBy",
-  "custodianInformation",
-  "accessLevel",
-];
-
-const flattenedTempoCustomFields = [
-  "initialPipelineRunDate",
-  "embargoDate",
-  "bamCompleteDate",
-  "bamCompleteStatus",
-  "mafCompleteDate",
-  "mafCompleteNormalPrimaryId",
-  "mafCompleteStatus",
-  "qcCompleteDate",
-  "qcCompleteResult",
-  "qcCompleteReason",
-  "qcCompleteStatus",
-];
-
-const flattenedOncotreeFields = ["cancerType", "cancerTypeDetailed"];
-
-export const flattenedSampleFields = [
-  ...flattenedSampleMetadataFields,
-  ...flattenedSampleMetadataStatusFields,
-  ...flattenedTempoFields,
-  ...flattenedTempoCustomFields,
-  ...flattenedOncotreeFields,
-  "recipe",
-  "dmpPatientId",
-];
-
 export function generateFieldResolvers(
   flattenedFields: string[],
   nodeLabel: keyof typeof nestedValueGetters
@@ -131,11 +54,6 @@ type NestedValueGetters = {
     fieldName: any,
     context?: ApolloServerContext
   ) => string | number | boolean | null;
-  Sample: (
-    parent: SamplesListQuery["samples"][number],
-    fieldName: any,
-    context?: ApolloServerContext
-  ) => any;
   Cohort: (
     parent: CohortsListQuery["cohorts"][number],
     fieldName: any,
@@ -195,93 +113,6 @@ const nestedValueGetters: NestedValueGetters = {
         } catch {
           return null;
         }
-    }
-  },
-  Sample: async (parent, fieldName, context) => {
-    if (flattenedSampleMetadataFields.includes(fieldName)) {
-      return parent.hasMetadataSampleMetadata?.[0]?.[
-        fieldName as SampleMetadataKey
-      ];
-    }
-    if (flattenedSampleMetadataStatusFields.includes(fieldName)) {
-      return parent.hasMetadataSampleMetadata?.[0]?.hasStatusStatuses?.[0]?.[
-        fieldName as SampleMetadataStatusKey
-      ];
-    }
-    if (flattenedTempoFields.includes(fieldName)) {
-      return parent.hasTempoTempos?.[0]?.[fieldName as TempoKey];
-    }
-    if (flattenedTempoCustomFields.includes(fieldName)) {
-      const cohortDates = parent.cohortsHasCohortSample?.flatMap((c) => {
-        return c.hasCohortCompleteCohortCompletes.map((cc) => {
-          return cc.date;
-        });
-      });
-      const initialPipelineRunDate = cohortDates?.sort()[0];
-      const tempo = parent.hasTempoTempos?.[0];
-      const bamComplete = tempo?.hasEventBamCompletes?.[0];
-      const mafComplete = tempo?.hasEventMafCompletes?.[0];
-      const qcComplete = tempo?.hasEventQcCompletes?.[0];
-      switch (fieldName) {
-        case "initialPipelineRunDate":
-          return initialPipelineRunDate;
-        case "embargoDate":
-          if (initialPipelineRunDate) {
-            const embargoDate = new Date(initialPipelineRunDate);
-            embargoDate.setMonth(embargoDate.getMonth() + 18);
-            return embargoDate.toISOString();
-          }
-          return null;
-        case "bamCompleteDate":
-          return bamComplete?.date;
-        case "bamCompleteStatus":
-          return bamComplete?.status;
-        case "mafCompleteDate":
-          return mafComplete?.date;
-        case "mafCompleteNormalPrimaryId":
-          return mafComplete?.normalPrimaryId;
-        case "mafCompleteStatus":
-          return mafComplete?.status;
-        case "qcCompleteDate":
-          return qcComplete?.date;
-        case "qcCompleteResult":
-          return qcComplete?.result;
-        case "qcCompleteReason":
-          return qcComplete?.reason;
-        case "qcCompleteStatus":
-          return qcComplete?.status;
-      }
-    }
-    if (flattenedOncotreeFields.includes(fieldName)) {
-      const { oncotreeCode } = parent.hasMetadataSampleMetadata?.[0];
-      const { oncotreeCache } = context || {};
-      if (!oncotreeCode) return null;
-      let cachedData = oncotreeCache?.get<CachedOncotreeData>(oncotreeCode);
-      if (!cachedData && oncotreeCache) {
-        await fetchAndCacheOncotreeData(oncotreeCache);
-        cachedData = oncotreeCache.get(oncotreeCode);
-      }
-      switch (fieldName) {
-        case "cancerType":
-          return cachedData?.mainType;
-        case "cancerTypeDetailed":
-          return cachedData?.name;
-      }
-    }
-    switch (fieldName) {
-      case "recipe":
-        const cmoSampleIds =
-          parent.hasMetadataSampleMetadata?.[0]?.cmoSampleIdFields;
-        try {
-          const cmoSampleIdsObj = JSON.parse(cmoSampleIds);
-          return cmoSampleIdsObj["recipe"];
-        } catch {
-          return null;
-        }
-      case "dmpPatientId":
-        return parent.patientsHasSample?.[0]?.patientAliasesIsAlias?.find(
-          (patientAlias) => patientAlias.namespace === "dmpId"
-        )?.value;
     }
   },
   Cohort: (parent, fieldName, _context) => {

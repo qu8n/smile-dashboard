@@ -46,181 +46,78 @@ query PatientsList($options: PatientOptions, $where: PatientWhere) {
   }
 }
 
-query SamplesList2($searchVals: [String]) {
-  samplesConnection2 {
+query DashboardSamples($searchVals: [String]) {
+  dashboardSampleCount(searchVals: $searchVals) {
     totalCount
   }
-  samples2(searchVals: $searchVals) {
-    smileSampleId
-    revisable
-    # Flattened fields: SampleMetadata
-    additionalProperties
-    baitSet
-    cfDNA2dBarcode
-    cmoInfoIgoId
-    cmoPatientId
-    cmoSampleIdFields
-    cmoSampleName
-    collectionYear
-    genePanel
-    igoComplete
-    igoRequestId
-    importDate
-    investigatorSampleId
-    libraries
-    oncotreeCode
-    preservation
-    primaryId
-    qcReports
-    sampleClass
-    sampleName
-    sampleOrigin
-    sampleType
-    sex
-    species
-    tissueLocation
-    tubeId
-    tumorOrNormal
-    # Flattened fields: SampleMetadata Status
-    validationReport
-    validationStatus
-    # Flattened fields: Oncotree
-    cancerType
-    cancerTypeDetailed
-    # Flattened fields: Tempo
-    billed
-    costCenter
-    billedBy
-    custodianInformation
-    accessLevel
-    # Flattened fields: Tempo events
-    initialPipelineRunDate
-    embargoDate
-    bamCompleteDate
-    bamCompleteStatus
-    mafCompleteDate
-    mafCompleteNormalPrimaryId
-    mafCompleteStatus
-    qcCompleteDate
-    qcCompleteResult
-    qcCompleteReason
-    qcCompleteStatus
-    # Flattened fields: Other
-    recipe
-    dmpPatientId
+  dashboardSamples(searchVals: $searchVals) {
+    ...DashboardSampleParts
+    ...DashboardSampleMetadataParts
+    ...DashboardTempoParts
   }
 }
 
-query SamplesList(
-  $where: SampleWhere
-  $options: SampleOptions
-  $sampleMetadataOptions: SampleMetadataOptions
-  $bamCompletesOptions: BamCompleteOptions
-  $mafCompletesOptions: MafCompleteOptions
-  $qcCompletesOptions: QcCompleteOptions
-) {
-  samplesConnection(where: $where) {
-    totalCount
-  }
-  samples(where: $where, options: $options) {
-    ...SampleParts
-    # Flattened fields: SampleMetadata
-    additionalProperties
-    baitSet
-    cfDNA2dBarcode
-    cmoInfoIgoId
-    cmoPatientId
-    cmoSampleIdFields
-    cmoSampleName
-    collectionYear
-    genePanel
-    igoComplete
-    igoRequestId
-    importDate
-    investigatorSampleId
-    libraries
-    oncotreeCode
-    preservation
-    primaryId
-    qcReports
-    sampleClass
-    sampleName
-    sampleOrigin
-    sampleType
-    sex
-    species
-    tissueLocation
-    tubeId
-    tumorOrNormal
-    # Flattened fields: SampleMetadata Status
-    validationReport
-    validationStatus
-    # Flattened fields: Oncotree
-    cancerType
-    cancerTypeDetailed
-    # Flattened fields: Tempo
-    billed
-    costCenter
-    billedBy
-    custodianInformation
-    accessLevel
-    # Flattened fields: Tempo events
-    initialPipelineRunDate
-    embargoDate
-    bamCompleteDate
-    bamCompleteStatus
-    mafCompleteDate
-    mafCompleteNormalPrimaryId
-    mafCompleteStatus
-    qcCompleteDate
-    qcCompleteResult
-    qcCompleteReason
-    qcCompleteStatus
-    # Flattened fields: Other
-    recipe
-    dmpPatientId
-    hasMetadataSampleMetadata(options: $sampleMetadataOptions) {
-      ...SampleMetadataParts
-      hasStatusStatuses {
-        validationReport
-        validationStatus
-      }
-    }
-    requestsHasSample {
-      ...RequestParts
-    }
-    patientsHasSample {
-      smilePatientId
-      patientAliasesIsAlias {
-        namespace
-        value
-      }
-    }
-    cohortsHasCohortSample {
-      cohortId
-      hasCohortCompleteCohortCompletes {
-        date
-      }
-    }
-    hasTempoTempos {
-      ...TempoParts
-      hasEventBamCompletes(options: $bamCompletesOptions) {
-        date
-        status
-      }
-      hasEventMafCompletes(options: $mafCompletesOptions) {
-        date
-        normalPrimaryId
-        status
-      }
-      hasEventQcCompletes(options: $qcCompletesOptions) {
-        date
-        reason
-        result
-        status
-      }
-    }
-  }
+fragment DashboardSampleParts on DashboardSample {
+  # (s:Sample)
+  smileSampleId
+  revisable
+}
+
+fragment DashboardSampleMetadataParts on DashboardSample {
+  # (s:Sample)-[:HAS_METADATA]->(sm:SampleMetadata)
+  ## Root-level fields
+  primaryId
+  cmoSampleName
+  importDate
+  cmoPatientId
+  investigatorSampleId
+  sampleType
+  species
+  genePanel
+  baitSet
+  preservation
+  tumorOrNormal
+  sampleClass
+  oncotreeCode
+  collectionYear
+  sampleOrigin
+  tissueLocation
+  sex
+  ## Custom fields
+  recipe
+  dmpPatientId
+  ## (sm:SampleMetadata)-[:HAS_STATUS]->(s:Status)
+  validationReport
+  validationStatus
+
+  # Oncotree API
+  cancerType
+  cancerTypeDetailed
+}
+
+fragment DashboardTempoParts on DashboardSample {
+  # (s:Sample)-[:HAS_TEMPO]->(t:Tempo)
+  ## Root-level fields
+  billed
+  costCenter
+  billedBy
+  custodianInformation
+  accessLevel
+  ## Custom fields
+  initialPipelineRunDate
+  embargoDate
+  ## (t:Tempo)-[:HAS_EVENT]->(bc:BamComplete)
+  bamCompleteDate
+  bamCompleteStatus
+  ## (t:Tempo)-[:HAS_EVENT]->(mc:MafComplete)
+  mafCompleteDate
+  mafCompleteNormalPrimaryId
+  mafCompleteStatus
+  ## (t:Tempo)-[:HAS_EVENT]->(qc:QcComplete)
+  qcCompleteDate
+  qcCompleteResult
+  qcCompleteReason
+  qcCompleteStatus
 }
 
 fragment RequestParts on Request {

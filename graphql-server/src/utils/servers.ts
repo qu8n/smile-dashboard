@@ -2,7 +2,7 @@ import { Express } from "express";
 import fs from "fs";
 import https from "https";
 import { props } from "./constants";
-import { buildNeo4jDbSchema, driver } from "../schemas/neo4j";
+import { buildNeo4jDbSchema } from "../schemas/neo4j";
 import { mergeSchemas } from "@graphql-tools/schema";
 import { oracleDbSchema } from "../schemas/oracle";
 import { ApolloServer } from "apollo-server-express";
@@ -14,7 +14,8 @@ import { updateActiveUserSessions } from "./session";
 import { corsOptions } from "./constants";
 import NodeCache from "node-cache";
 import { fetchAndCacheOncotreeData } from "./oncotree";
-// import { createSamplesLoader } from "./dataloader";
+import { customSchema } from "../schemas/custom";
+import neo4j from "neo4j-driver";
 
 export function initializeHttpsServer(app: Express) {
   const httpsServer = https.createServer(
@@ -37,13 +38,19 @@ export interface ApolloServerContext {
   // samplesLoader: ReturnType<typeof createSamplesLoader>;
 }
 
+export const neo4jDriver = neo4j.driver(
+  props.neo4j_graphql_uri,
+  neo4j.auth.basic(props.neo4j_username, props.neo4j_password),
+  { disableLosslessIntegers: true } // maps Cypher Integer to JavaScript Number
+);
+
 export async function initializeApolloServer(
   httpsServer: https.Server,
   app: Express
 ) {
   const { neo4jDbSchema, ogm } = await buildNeo4jDbSchema();
   const mergedSchema = mergeSchemas({
-    schemas: [neo4jDbSchema, oracleDbSchema],
+    schemas: [neo4jDbSchema, oracleDbSchema, customSchema],
   });
 
   const oncotreeCache = new NodeCache({ stdTTL: 86400, deleteOnExpire: false }); // 1 day
