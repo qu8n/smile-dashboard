@@ -104,6 +104,14 @@ export default function RequestsPage() {
           },
         } as SampleWhere;
       }}
+      sampleContext={
+        sampleQueryParamValue
+          ? {
+              fieldName: sampleQueryParamFieldName,
+              values: [sampleQueryParamValue],
+            }
+          : undefined
+      }
     />
   );
 }

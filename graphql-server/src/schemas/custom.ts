@@ -151,11 +151,17 @@ async function queryDashboardSamples({
   function createFilters(
     variable: string,
     fields: string[],
-    searchVals: string[]
+    searchVals: string[],
+    useFuzzyMatch: boolean = true
   ): string {
-    const regexPattern = `(?i).*(${searchVals.join("|")}).*`;
+    const regexPattern = useFuzzyMatch
+      ? `(?i).*(${searchVals.join("|")}).*`
+      : `${searchVals.join("|")}`;
     return fields
-      .map((field) => `${variable}.${field} =~ '${regexPattern}'`)
+      .map(
+        (field) =>
+          `${variable}.${field} =${useFuzzyMatch ? "~" : ""} '${regexPattern}'`
+      )
       .join(" OR ");
   }
 
@@ -205,7 +211,7 @@ async function queryDashboardSamples({
     searchVals.length > 0
       ? filtersConfig.map(
           (config) =>
-            `WHERE ${createFilters(config.variable, config.fields, searchVals)}`
+            `${createFilters(config.variable, config.fields, searchVals)}`
         )
       : ["", "", "", "", ""];
 
@@ -216,14 +222,33 @@ async function queryDashboardSamples({
       ? ` OR ${createFilters("sm", ["oncotreeCode"], addlOncotreeCodes)}`
       : "";
 
+  const smOrFilters = smFilters
+    ? `${"(" + smFilters + addlOncotreeCodeFilters + ")"}`
+    : "";
+
   const wesFilters =
     sampleContext?.fieldName === "genePanel"
-      ? ` ${smFilters ? "AND" : "WHERE"} ${createFilters(
+      ? `${smFilters && " AND "}${createFilters(
           "sm",
           ["genePanel"],
           sampleContext.values
         )}`
       : "";
+
+  const requestFilters =
+    sampleContext?.fieldName === "igoRequestId"
+      ? `${smOrFilters && " AND "}${createFilters(
+          "sm",
+          ["igoRequestId"],
+          sampleContext.values,
+          false
+        )}`
+      : "";
+
+  let allSmFilters = "";
+  if (smOrFilters || wesFilters || requestFilters) {
+    allSmFilters = "WHERE " + smOrFilters + wesFilters + requestFilters;
+  }
 
   try {
     const result = await session.run(
@@ -231,7 +256,7 @@ async function queryDashboardSamples({
         // all Samples have at least one SampleMetadata (SampleMetadata is required)
         MATCH (s:Sample)-[:HAS_METADATA]->(sm:SampleMetadata)
 
-        ${smFilters + addlOncotreeCodeFilters + wesFilters}
+        ${allSmFilters}
 
         // now get the most recent import date for each Sample from the SampleMetadata (we still have all the SampleMetadata for each Sample)
         WITH s, collect(sm) AS allSampleMetadata, max(sm.importDate) AS latestImportDate
@@ -255,7 +280,7 @@ async function queryDashboardSamples({
         // if the Sample has Tempos get them
         OPTIONAL MATCH (s:Sample)-[:HAS_TEMPO]->(t:Tempo)
 
-        ${tFilters}
+        ${tFilters && `WHERE ${tFilters}`}
 
         // now get the most recent date for each Sample from the Tempos (we still have all the Tempos for each Sample)
         WITH s, latestSm, latestSt, oldestCC, collect(t) AS allTempos, max(t.date) AS latestTDate
@@ -266,7 +291,7 @@ async function queryDashboardSamples({
         // if the Tempo has any BamCompletes, get them
         OPTIONAL MATCH (latestT)-[:HAS_EVENT]->(bc:BamComplete)
 
-        ${bcFilters}
+        ${bcFilters && `WHERE ${bcFilters}`}
 
         // now get the most recent date for each BamComplete (we still have all the BamCompletes for each Tempo)
         WITH s, latestSm, latestSt, oldestCC, latestT, collect(bc) AS allBamCompletes, max(bc.date) AS latestBCDate
@@ -277,7 +302,7 @@ async function queryDashboardSamples({
         // if the Tempo has any MafCompletes, get them
         OPTIONAL MATCH (latestT)-[:HAS_EVENT]->(mc:MafComplete)
 
-        ${mcFilters}
+        ${mcFilters && `WHERE ${mcFilters}`}
 
         // now get the most recent date for each MafComplete (we still have all the MafCompletes for each Tempo)
         WITH s, latestSm, latestSt, oldestCC, latestT, latestBC, collect(mc) AS allMafCompletes, max(mc.date) AS latestMCDate
@@ -288,7 +313,7 @@ async function queryDashboardSamples({
         // if the Tempo has any QcCompletes, get them
         OPTIONAL MATCH (latestT)-[:HAS_EVENT]->(qc:QcComplete)
 
-        ${qcFilters}
+        ${qcFilters && `WHERE ${qcFilters}`}
 
         // now get the most recent date for each QcComplete (we still have all the QcCompletes for each Tempo)
         WITH s, latestSm, latestSt, oldestCC, latestT, latestBC, latestMC, collect(qc) AS allQcCompletes, max(qc.date) AS latestQCDate
