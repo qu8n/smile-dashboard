@@ -48,11 +48,17 @@ const TEMPO_EVENT_OPTIONS = {
   limit: 1,
 };
 
+export type SampleContext = {
+  fieldName: string;
+  values: string[];
+};
+
 interface ISampleListProps {
   columnDefs: ColDef[];
   setUnsavedChanges?: (unsavedChanges: boolean) => void;
   parentDataName?: DataName;
   parentWhereVariables?: SampleWhere;
+  sampleContext?: SampleContext;
   refetchWhereVariables: (parsedSearchVals: string[]) => SampleWhere;
   sampleKeyForUpdate?: keyof Sample;
   userEmail?: string | null;
@@ -64,6 +70,7 @@ export default function SamplesList({
   columnDefs,
   parentDataName,
   parentWhereVariables,
+  sampleContext,
   refetchWhereVariables,
   setUnsavedChanges,
   sampleKeyForUpdate = "hasMetadataSampleMetadata",
@@ -88,6 +95,7 @@ export default function SamplesList({
     useDashboardSamplesQuery({
       variables: {
         searchVals: parsedSearchVals,
+        sampleContext,
       },
       pollInterval: POLLING_INTERVAL,
     });
@@ -96,19 +104,23 @@ export default function SamplesList({
     gridRef.current?.api?.showLoadingOverlay();
     refetch({
       searchVals: parsedSearchVals,
+      sampleContext,
     }).then(() => {
       gridRef.current?.api?.hideOverlay();
     });
-  }, [parsedSearchVals, columnDefs, refetchWhereVariables, refetch]);
+  }, [
+    parsedSearchVals,
+    columnDefs,
+    sampleContext,
+    refetchWhereVariables,
+    refetch,
+  ]);
 
   useEffect(() => {
     setSampleCount(data?.dashboardSampleCount?.totalCount || 0);
-    console.log("data", data);
   }, [data]);
 
   const samples = data?.dashboardSamples;
-
-  console.log("samples", samples?.[0]?.recipe);
 
   const popupParamId = useMemo(() => {
     if (parentWhereVariables && samples && params) {

@@ -10,19 +10,25 @@ import { Button } from "react-bootstrap";
 import _ from "lodash";
 import { InfoToolTip } from "../../shared/components/InfoToolTip";
 
-const WES_SAMPLE_FILTERS = [
-  "Agilent_51MB",
-  "Agilent_v4_51MB_Human",
-  "CustomCapture",
-  "IDT_Exome_v1_FP",
-  "IDT_Exome_v1_FP_Viral_Probes",
-  "IDT_Exome_V1_IMPACT468",
-  "WES_Human",
-  "WholeExomeSequencing",
-];
+const WES_CONTEXT = {
+  fieldName: "genePanel",
+  values: [
+    "Agilent_51MB",
+    "Agilent_v4_51MB_Human",
+    "CustomCapture",
+    "IDT_Exome_v1_FP",
+    "IDT_Exome_V1_IMPACT468",
+    "WES_Human",
+    "WholeExomeSequencing",
+  ],
+};
 
 export default function SamplesPage() {
   const [columnDefs, setColumnDefs] = useState(combinedSampleDetailsColumns);
+
+  const sampleContext = _.isEqual(columnDefs, combinedSampleDetailsColumns)
+    ? undefined
+    : WES_CONTEXT;
 
   const refetchWhereVariables = (parsedSearchVals: string[]) => {
     const cohortSampleFilters = cohortSampleFilterWhereVariables(
@@ -37,7 +43,7 @@ export default function SamplesPage() {
       OR: cohortSampleFilters.concat(sampleMetadataFilters),
       ...(_.isEqual(columnDefs, ReadOnlyCohortSampleDetailsColumns) && {
         hasMetadataSampleMetadata_SOME: {
-          OR: sampleFilterWhereVariables(WES_SAMPLE_FILTERS),
+          OR: sampleFilterWhereVariables(WES_CONTEXT.values),
         },
       }),
     };
@@ -47,6 +53,7 @@ export default function SamplesPage() {
     <SamplesList
       columnDefs={columnDefs}
       refetchWhereVariables={refetchWhereVariables}
+      sampleContext={sampleContext}
       customToolbarUI={
         <>
           <InfoToolTip>

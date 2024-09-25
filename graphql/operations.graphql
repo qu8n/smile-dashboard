@@ -46,11 +46,11 @@ query PatientsList($options: PatientOptions, $where: PatientWhere) {
   }
 }
 
-query DashboardSamples($searchVals: [String]) {
-  dashboardSampleCount(searchVals: $searchVals) {
+query DashboardSamples($searchVals: [String], $sampleContext: SampleContext) {
+  dashboardSampleCount(searchVals: $searchVals, sampleContext: $sampleContext) {
     totalCount
   }
-  dashboardSamples(searchVals: $searchVals) {
+  dashboardSamples(searchVals: $searchVals, sampleContext: $sampleContext) {
     ...DashboardSampleParts
     ...DashboardSampleMetadataParts
     ...DashboardTempoParts

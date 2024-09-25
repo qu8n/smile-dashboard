@@ -4559,10 +4559,12 @@ export type QueryCohortsConnectionArgs = {
 };
 
 export type QueryDashboardSampleCountArgs = {
+  sampleContext?: InputMaybe<SampleContext>;
   searchVals?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
 };
 
 export type QueryDashboardSamplesArgs = {
+  sampleContext?: InputMaybe<SampleContext>;
   searchVals?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
 };
 
@@ -7424,6 +7426,11 @@ export type SampleConnectInput = {
 
 export type SampleConnectWhere = {
   node: SampleWhere;
+};
+
+export type SampleContext = {
+  fieldName?: InputMaybe<Scalars["String"]>;
+  values: Array<Scalars["String"]>;
 };
 
 export type SampleCreateInput = {
@@ -12408,6 +12415,7 @@ export type DashboardSamplesQueryVariables = Exact<{
   searchVals?: InputMaybe<
     Array<InputMaybe<Scalars["String"]>> | InputMaybe<Scalars["String"]>
   >;
+  sampleContext?: InputMaybe<SampleContext>;
 }>;
 
 export type DashboardSamplesQuery = {
@@ -13047,11 +13055,14 @@ export type PatientsListQueryResult = Apollo.QueryResult<
   PatientsListQueryVariables
 >;
 export const DashboardSamplesDocument = gql`
-  query DashboardSamples($searchVals: [String]) {
-    dashboardSampleCount(searchVals: $searchVals) {
+  query DashboardSamples($searchVals: [String], $sampleContext: SampleContext) {
+    dashboardSampleCount(
+      searchVals: $searchVals
+      sampleContext: $sampleContext
+    ) {
       totalCount
     }
-    dashboardSamples(searchVals: $searchVals) {
+    dashboardSamples(searchVals: $searchVals, sampleContext: $sampleContext) {
       ...DashboardSampleParts
       ...DashboardSampleMetadataParts
       ...DashboardTempoParts
@@ -13075,6 +13086,7 @@ export const DashboardSamplesDocument = gql`
  * const { data, loading, error } = useDashboardSamplesQuery({
  *   variables: {
  *      searchVals: // value for 'searchVals'
+ *      sampleContext: // value for 'sampleContext'
  *   },
  * });
  */

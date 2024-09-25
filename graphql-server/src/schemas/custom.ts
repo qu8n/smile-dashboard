@@ -3,6 +3,8 @@ import { ApolloServerContext, neo4jDriver } from "../utils/servers";
 import { CachedOncotreeData } from "../utils/oncotree";
 import NodeCache from "node-cache";
 import { parseJsonSafely } from "../utils/json";
+import { gql } from "apollo-server";
+import { SampleContext } from "../generated/graphql";
 
 const resolvers = {
   Query: {
@@ -13,7 +15,10 @@ const resolvers = {
     },
     async dashboardSamples(
       _source: undefined,
-      { searchVals }: { searchVals: string[] },
+      {
+        searchVals,
+        sampleContext,
+      }: { searchVals: string[]; sampleContext: SampleContext },
       { oncotreeCache }: ApolloServerContext
     ) {
       let addlOncotreeCodes: Set<string> = new Set();
@@ -33,16 +38,17 @@ const resolvers = {
         });
       }
 
-      return await queryDashboardSamples(
+      return await queryDashboardSamples({
         searchVals,
+        sampleContext,
         oncotreeCache,
-        Array.from(addlOncotreeCodes)
-      );
+        addlOncotreeCodes: Array.from(addlOncotreeCodes),
+      });
     },
   },
 };
 
-const typeDefs = `
+const typeDefs = gql`
   type DashboardSampleCount {
     totalCount: Int
   }
@@ -106,9 +112,20 @@ const typeDefs = `
     qcCompleteStatus: String
   }
 
+  input SampleContext {
+    fieldName: String
+    values: [String!]!
+  }
+
   type Query {
-    dashboardSampleCount(searchVals: [String]): DashboardSampleCount
-    dashboardSamples(searchVals: [String]): [DashboardSample]
+    dashboardSampleCount(
+      searchVals: [String]
+      sampleContext: SampleContext
+    ): DashboardSampleCount
+    dashboardSamples(
+      searchVals: [String]
+      sampleContext: SampleContext
+    ): [DashboardSample]
   }
 `;
 
@@ -117,11 +134,17 @@ export const customSchema = makeExecutableSchema({
   resolvers: resolvers,
 });
 
-async function queryDashboardSamples(
-  searchVals: string[],
-  oncotreeCache: NodeCache,
-  addlOncotreeCodes: string[]
-) {
+async function queryDashboardSamples({
+  searchVals,
+  sampleContext,
+  oncotreeCache,
+  addlOncotreeCodes,
+}: {
+  searchVals: string[];
+  sampleContext?: SampleContext;
+  oncotreeCache: NodeCache;
+  addlOncotreeCodes: string[];
+}) {
   const startTime = performance.now();
   const session = neo4jDriver.session();
 
@@ -193,13 +216,22 @@ async function queryDashboardSamples(
       ? ` OR ${createFilters("sm", ["oncotreeCode"], addlOncotreeCodes)}`
       : "";
 
+  const wesFilters =
+    sampleContext?.fieldName === "genePanel"
+      ? ` ${smFilters ? "AND" : "WHERE"} ${createFilters(
+          "sm",
+          ["genePanel"],
+          sampleContext.values
+        )}`
+      : "";
+
   try {
     const result = await session.run(
       `
         // all Samples have at least one SampleMetadata (SampleMetadata is required)
         MATCH (s:Sample)-[:HAS_METADATA]->(sm:SampleMetadata)
 
-        ${smFilters + addlOncotreeCodeFilters}
+        ${smFilters + addlOncotreeCodeFilters + wesFilters}
 
         // now get the most recent import date for each Sample from the SampleMetadata (we still have all the SampleMetadata for each Sample)
         WITH s, collect(sm) AS allSampleMetadata, max(sm.importDate) AS latestImportDate
