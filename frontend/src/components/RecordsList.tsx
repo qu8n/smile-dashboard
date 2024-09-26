@@ -18,7 +18,7 @@ import {
 } from "ag-grid-community";
 import { DataName, useHookLazyGeneric } from "../shared/types";
 import SamplesList, { SampleContext } from "./SamplesList";
-import { Sample, SampleWhere, SortDirection } from "../generated/graphql";
+import { Sample, SortDirection } from "../generated/graphql";
 import { defaultColDef } from "../shared/helpers";
 import { PatientIdsTriplet } from "../pages/patients/PatientsPage";
 import { ErrorMessage, LoadingSpinner, Toolbar } from "../shared/tableElements";
@@ -50,10 +50,6 @@ interface IRecordsListProps {
   setShowDownloadModal: Dispatch<SetStateAction<boolean>>;
   handleDownload: () => void;
   samplesColDefs: ColDef[];
-  samplesParentWhereVariables: SampleWhere;
-  samplesRefetchWhereVariables: (
-    samplesParsedSearchVals: string[]
-  ) => SampleWhere;
   sampleContext?: SampleContext;
   sampleKeyForUpdate?: keyof Sample;
   userEmail?: string | null;
@@ -80,8 +76,6 @@ export default function RecordsList({
   setShowDownloadModal,
   handleDownload,
   samplesColDefs,
-  samplesParentWhereVariables,
-  samplesRefetchWhereVariables,
   sampleContext,
   sampleKeyForUpdate,
   userEmail,
@@ -272,8 +266,6 @@ export default function RecordsList({
                   <SamplesList
                     columnDefs={samplesColDefs}
                     parentDataName={dataName}
-                    parentWhereVariables={samplesParentWhereVariables}
-                    refetchWhereVariables={samplesRefetchWhereVariables}
                     sampleContext={sampleContext}
                     setUnsavedChanges={setUnsavedChanges}
                     sampleKeyForUpdate={sampleKeyForUpdate}

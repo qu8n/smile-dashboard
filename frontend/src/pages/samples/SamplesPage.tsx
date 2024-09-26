@@ -1,16 +1,14 @@
 import SamplesList from "../../components/SamplesList";
 import {
   ReadOnlyCohortSampleDetailsColumns,
-  cohortSampleFilterWhereVariables,
   combinedSampleDetailsColumns,
-  sampleFilterWhereVariables,
 } from "../../shared/helpers";
 import { useState } from "react";
 import { Button } from "react-bootstrap";
 import _ from "lodash";
 import { InfoToolTip } from "../../shared/components/InfoToolTip";
 
-const WES_CONTEXT = {
+const WES_SAMPLE_CONTEXT = {
   fieldName: "genePanel",
   values: [
     "Agilent_51MB",
@@ -28,31 +26,11 @@ export default function SamplesPage() {
 
   const sampleContext = _.isEqual(columnDefs, combinedSampleDetailsColumns)
     ? undefined
-    : WES_CONTEXT;
-
-  const refetchWhereVariables = (parsedSearchVals: string[]) => {
-    const cohortSampleFilters = cohortSampleFilterWhereVariables(
-      parsedSearchVals
-    ).filter((filter) => filter.hasTempoTempos_SOME);
-    const sampleMetadataFilters = {
-      hasMetadataSampleMetadata_SOME: {
-        OR: sampleFilterWhereVariables(parsedSearchVals),
-      },
-    };
-    return {
-      OR: cohortSampleFilters.concat(sampleMetadataFilters),
-      ...(_.isEqual(columnDefs, ReadOnlyCohortSampleDetailsColumns) && {
-        hasMetadataSampleMetadata_SOME: {
-          OR: sampleFilterWhereVariables(WES_CONTEXT.values),
-        },
-      }),
-    };
-  };
+    : WES_SAMPLE_CONTEXT;
 
   return (
     <SamplesList
       columnDefs={columnDefs}
-      refetchWhereVariables={refetchWhereVariables}
       sampleContext={sampleContext}
       customToolbarUI={
         <>

@@ -202,7 +202,7 @@ async function queryDashboardSamples({
     latestQC.status AS qcCompleteStatus
 
   ORDER BY importDate DESC
-  LIMIT 501
+  LIMIT 500
   `;
 
   const session = neo4jDriver.session();

@@ -1,6 +1,5 @@
 import {
   RequestWhere,
-  SampleWhere,
   SortDirection,
   useRequestsListLazyQuery,
 } from "../../generated/graphql";
@@ -9,7 +8,6 @@ import {
   RequestsListColumns,
   SampleMetadataDetailsColumns,
   handleSearch,
-  sampleFilterWhereVariables,
 } from "../../shared/helpers";
 import RecordsList from "../../components/RecordsList";
 import { useParams } from "react-router-dom";
@@ -85,25 +83,6 @@ export default function RequestsPage() {
       setShowDownloadModal={setShowDownloadModal}
       handleDownload={() => setShowDownloadModal(true)}
       samplesColDefs={SampleMetadataDetailsColumns}
-      samplesParentWhereVariables={
-        {
-          hasMetadataSampleMetadata_SOME: {
-            [sampleQueryParamFieldName]: sampleQueryParamValue,
-          },
-        } as SampleWhere
-      }
-      samplesRefetchWhereVariables={(sampleParsedSearchVals) => {
-        return {
-          hasMetadataSampleMetadata_SOME: {
-            OR: sampleFilterWhereVariables(sampleParsedSearchVals),
-            ...(sampleQueryParamValue
-              ? {
-                  [sampleQueryParamFieldName]: sampleQueryParamValue,
-                }
-              : {}),
-          },
-        } as SampleWhere;
-      }}
       sampleContext={
         sampleQueryParamValue
           ? {

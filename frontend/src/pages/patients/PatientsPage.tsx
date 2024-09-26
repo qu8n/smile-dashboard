@@ -1,7 +1,6 @@
 import {
   PatientWhere,
   PatientsListQuery,
-  SampleWhere,
   useGetPatientIdsTripletsLazyQuery,
   usePatientsListLazyQuery,
 } from "../../generated/graphql";
@@ -16,7 +15,6 @@ import { parseUserSearchVal } from "../../utils/parseSearchQueries";
 import {
   PatientsListColumns,
   SampleMetadataDetailsColumns,
-  sampleFilterWhereVariables,
 } from "../../shared/helpers";
 import { getUserEmail } from "../../utils/getUserEmail";
 import { openLoginPopup } from "../../utils/openLoginPopup";
@@ -266,27 +264,6 @@ export default function PatientsPage({
           setShowDownloadModal(true);
         }}
         samplesColDefs={SampleMetadataDetailsColumns}
-        samplesParentWhereVariables={
-          {
-            OR: [
-              {
-                patientsHasSample_SOME: {
-                  smilePatientId: sampleQueryParamValue,
-                },
-              },
-            ],
-          } as SampleWhere
-        }
-        samplesRefetchWhereVariables={(sampleParsedSearchVals) => {
-          return {
-            patientsHasSample_SOME: {
-              [sampleQueryParamFieldName]: sampleQueryParamValue,
-            },
-            hasMetadataSampleMetadata_SOME: {
-              OR: sampleFilterWhereVariables(sampleParsedSearchVals),
-            },
-          } as SampleWhere;
-        }}
         sampleContext={
           sampleQueryParamValue
             ? {

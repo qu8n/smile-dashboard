@@ -1,7 +1,6 @@
 import {
   CohortCompleteOptions,
   CohortWhere,
-  SampleWhere,
   SortDirection,
   useCohortsListLazyQuery,
 } from "../../generated/graphql";
@@ -9,7 +8,6 @@ import { Dispatch, SetStateAction, useState } from "react";
 import {
   CohortSampleDetailsColumns,
   CohortsListColumns,
-  cohortSampleFilterWhereVariables,
   handleSearch,
   prepareCohortDataForAgGrid,
 } from "../../shared/helpers";
@@ -168,21 +166,6 @@ export default function CohortsPage({
       setShowDownloadModal={setShowDownloadModal}
       handleDownload={() => setShowDownloadModal(true)}
       samplesColDefs={CohortSampleDetailsColumns}
-      samplesParentWhereVariables={
-        {
-          cohortsHasCohortSample_SOME: {
-            [sampleQueryParamFieldName]: sampleQueryParamValue,
-          },
-        } as SampleWhere
-      }
-      samplesRefetchWhereVariables={(samplesParsedSearchVals) => {
-        return {
-          cohortsHasCohortSample_SOME: {
-            [sampleQueryParamFieldName]: sampleQueryParamValue,
-          },
-          OR: cohortSampleFilterWhereVariables(samplesParsedSearchVals),
-        } as SampleWhere;
-      }}
       sampleContext={
         sampleQueryParamValue
           ? {

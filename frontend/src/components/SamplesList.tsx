@@ -1,13 +1,9 @@
-import {
-  Sample,
-  SampleWhere,
-  useDashboardSamplesQuery,
-} from "../generated/graphql";
+import { Sample, useDashboardSamplesQuery } from "../generated/graphql";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { Button, Col, Container } from "react-bootstrap";
-import { Dispatch, SetStateAction, useEffect, useMemo, useRef } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef } from "react";
 import { DownloadModal } from "./DownloadModal";
-import { UpdateModal } from "./UpdateModal";
+// import { UpdateModal } from "./UpdateModal";
 import { AlertModal } from "./AlertModal";
 import { buildTsvString } from "../utils/stringBuilders";
 import {
@@ -42,18 +38,16 @@ const MAX_ROWS_EXPORT_EXCEED_ALERT =
 const COST_CENTER_VALIDATION_ALERT =
   "Please update your Cost Center/Fund Number input as #####/##### (5 digits, a forward slash, then 5 digits). For example: 12345/12345.";
 
-export type SampleContext = {
+export interface SampleContext {
   fieldName: string;
   values: string[];
-};
+}
 
 interface ISampleListProps {
   columnDefs: ColDef[];
   setUnsavedChanges?: (unsavedChanges: boolean) => void;
   parentDataName?: DataName;
-  parentWhereVariables?: SampleWhere;
   sampleContext?: SampleContext;
-  refetchWhereVariables: (parsedSearchVals: string[]) => SampleWhere;
   sampleKeyForUpdate?: keyof Sample;
   userEmail?: string | null;
   setUserEmail?: Dispatch<SetStateAction<string | null>>;
@@ -63,9 +57,7 @@ interface ISampleListProps {
 export default function SamplesList({
   columnDefs,
   parentDataName,
-  parentWhereVariables,
   sampleContext,
-  refetchWhereVariables,
   setUnsavedChanges,
   sampleKeyForUpdate = "hasMetadataSampleMetadata",
   userEmail,
@@ -84,6 +76,7 @@ export default function SamplesList({
 
   const gridRef = useRef<AgGridReactType>(null);
   const params = useParams();
+  const hasParams = Object.keys(params).length > 0;
 
   const { loading, error, data, startPolling, stopPolling, refetch } =
     useDashboardSamplesQuery({
@@ -102,13 +95,7 @@ export default function SamplesList({
     }).then(() => {
       gridRef.current?.api?.hideOverlay();
     });
-  }, [
-    parsedSearchVals,
-    columnDefs,
-    sampleContext,
-    refetchWhereVariables,
-    refetch,
-  ]);
+  }, [parsedSearchVals, columnDefs, sampleContext, refetch]);
 
   const samples = data?.dashboardSamples;
 
@@ -231,10 +218,10 @@ export default function SamplesList({
   return (
     <>
       <Container fluid>
-        {!parentWhereVariables && <BreadCrumb currPageTitle="samples" />}
+        {!hasParams && <BreadCrumb currPageTitle="samples" />}
         <Title
           text={
-            parentWhereVariables
+            hasParams
               ? `Viewing ${parentDataName?.slice(0, -1)} ${
                   Object.values(params)?.[0]
                 }'s samples`
@@ -345,9 +332,7 @@ export default function SamplesList({
         {({ width }) => (
           <div
             className={`ag-theme-alpine ${
-              parentWhereVariables
-                ? styles.popupTableHeight
-                : styles.tableHeight
+              hasParams ? styles.popupTableHeight : styles.tableHeight
             }`}
             style={{ width: width }}
           >
@@ -399,6 +384,8 @@ export default function SamplesList({
               onRowDataUpdated={() => {
                 setSampleCount(data?.dashboardSampleCount?.totalCount || 0);
               }}
+              onGridColumnsChanged={() => console.log("columns changed")}
+              suppressClickEdit={true} // temporarily disable cell editing
             />
           </div>
         )}
