@@ -284,10 +284,6 @@ export default function RecordsList({
         userSearchVal={userSearchVal}
         setUserSearchVal={setUserSearchVal}
         handleSearch={handleSearch}
-        clearUserSearchVal={() => {
-          setCustomSearchVals && setCustomSearchVals([]);
-          setParsedSearchVals([]);
-        }}
         matchingResultsCount={`${rowCount?.toLocaleString()} matching ${
           rowCount !== 1 ? dataName : dataName.slice(0, -1)
         }${

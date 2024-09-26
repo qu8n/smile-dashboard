@@ -26,8 +26,7 @@ interface IToolbarProps {
   dataName: DataName;
   userSearchVal: string;
   setUserSearchVal: Dispatch<SetStateAction<string>>;
-  handleSearch: () => void;
-  clearUserSearchVal: () => void;
+  handleSearch: (userSearchVal: string) => void;
   matchingResultsCount: string;
   handleDownload: () => void;
   customUILeft?: JSX.Element;
@@ -39,7 +38,6 @@ export function Toolbar({
   userSearchVal,
   setUserSearchVal,
   handleSearch,
-  clearUserSearchVal,
   matchingResultsCount,
   handleDownload,
   customUILeft,
@@ -59,13 +57,13 @@ export function Toolbar({
           value={userSearchVal}
           onKeyDown={(event) => {
             if (event.key === "Enter") {
-              handleSearch();
+              handleSearch(userSearchVal);
             }
           }}
           onInput={(event) => {
             const userSearchVal = event.currentTarget.value;
             if (userSearchVal === "") {
-              clearUserSearchVal();
+              handleSearch(userSearchVal);
             }
             setUserSearchVal(userSearchVal);
           }}
@@ -84,7 +82,7 @@ export function Toolbar({
 
       <Col md="auto" style={{ marginLeft: -15 }}>
         <Button
-          onClick={handleSearch}
+          onClick={() => handleSearch(userSearchVal)}
           className={"btn btn-secondary"}
           size={"sm"}
         >

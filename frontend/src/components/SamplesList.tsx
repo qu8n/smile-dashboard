@@ -90,7 +90,7 @@ export default function SamplesList({
 
   if (error) return <ErrorMessage error={error} />;
 
-  function handleSearch() {
+  function handleSearch(userSearchVal: string) {
     gridRef.current?.api?.showLoadingOverlay();
     refetch({
       searchVals: parseUserSearchVal(userSearchVal),
@@ -284,11 +284,7 @@ export default function SamplesList({
         dataName={"samples"}
         userSearchVal={userSearchVal}
         setUserSearchVal={setUserSearchVal}
-        handleSearch={handleSearch}
-        clearUserSearchVal={() => {
-          setUserSearchVal("");
-          handleSearch();
-        }}
+        handleSearch={(userSearchVal) => handleSearch(userSearchVal)}
         matchingResultsCount={`${
           sampleCount ? sampleCount.toLocaleString() : "Loading"
         } matching samples`}
@@ -385,7 +381,7 @@ export default function SamplesList({
               onRowDataUpdated={() => {
                 setSampleCount(data?.dashboardSampleCount?.totalCount || 0);
               }}
-              onGridColumnsChanged={() => handleSearch()}
+              onGridColumnsChanged={() => handleSearch(userSearchVal)}
               suppressClickEdit={true} // temporarily disable cell editing
             />
           </div>
