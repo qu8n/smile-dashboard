@@ -14,7 +14,6 @@ import { buildTsvString } from "../utils/stringBuilders";
 import {
   SampleChange,
   defaultColDef,
-  getSamplePopupParamId,
   handleSearch,
   isValidCostCenter,
 } from "../shared/helpers";
@@ -121,17 +120,6 @@ export default function SamplesList({
   }, [data]);
 
   const samples = data?.dashboardSamples;
-
-  const popupParamId = useMemo(() => {
-    if (parentWhereVariables && samples && params) {
-      return getSamplePopupParamId(
-        parentWhereVariables,
-        samples,
-        Object.values(params)?.[0]!
-      );
-    }
-    return undefined;
-  }, [parentWhereVariables, params, samples]);
 
   if (loading) return <LoadingSpinner />;
 
@@ -256,14 +244,9 @@ export default function SamplesList({
       <Container fluid>
         {!parentWhereVariables && <BreadCrumb currPageTitle="samples" />}
         <Title
-          text={
-            popupParamId
-              ? `Viewing ${parentDataName?.slice(
-                  0,
-                  -1
-                )} ${popupParamId}'s samples`
-              : "samples"
-          }
+          text={`Viewing ${parentDataName?.slice(0, -1)} ${
+            Object.values(params)?.[0]
+          }'s samples`}
         />
       </Container>
 
@@ -290,7 +273,7 @@ export default function SamplesList({
           }}
           exportFileName={[
             parentDataName?.slice(0, -1),
-            popupParamId,
+            Object.values(params)?.[0],
             "samples.tsv",
           ]
             .filter(Boolean)

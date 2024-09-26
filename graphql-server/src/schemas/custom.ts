@@ -245,6 +245,14 @@ async function queryDashboardSamples({
         )}`
       : "";
 
+  console.log("sampleContext", sampleContext);
+
+  const patientFilters =
+    sampleContext?.fieldName === "patientId"
+      ? `${createFilters("pa", ["value"], sampleContext.values, false)}`
+      : "";
+  console.log("patientFilters", patientFilters);
+
   let allSmFilters = "";
   if (smOrFilters || wesFilters || requestFilters) {
     allSmFilters = "WHERE " + smOrFilters + wesFilters + requestFilters;
@@ -267,6 +275,9 @@ async function queryDashboardSamples({
         // if the most recent SampleMetadata for a Sample has a Status attached to it
         OPTIONAL MATCH (latestSm)-[:HAS_STATUS]->(st:Status)
         WITH s, latestSm, st AS latestSt
+
+        MATCH (s)<-[:HAS_SAMPLE]-(p:Patient)<-[:IS_ALIAS]-(pa:PatientAlias)
+        ${patientFilters && `WHERE ${patientFilters}`}
         
         // if the Sample belongs to any Cohorts, get them - the Cohort will have a CohortComplete so get that too
         OPTIONAL MATCH (s:Sample)<-[:HAS_COHORT_SAMPLE]-(c:Cohort)-[:HAS_COHORT_COMPLETE]->(cc:CohortComplete)

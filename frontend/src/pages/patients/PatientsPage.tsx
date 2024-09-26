@@ -239,7 +239,7 @@ export default function PatientsPage({
   }, [phiEnabled, patientIdsTriplets, userEmail]);
 
   const dataName = "patients";
-  const sampleQueryParamFieldName = "smilePatientId";
+  const sampleQueryParamFieldName = "patientId";
   const sampleQueryParamValue = params[sampleQueryParamFieldName];
 
   return (
@@ -271,7 +271,7 @@ export default function PatientsPage({
             OR: [
               {
                 patientsHasSample_SOME: {
-                  [sampleQueryParamFieldName]: sampleQueryParamValue,
+                  smilePatientId: sampleQueryParamValue,
                 },
               },
             ],
@@ -287,6 +287,14 @@ export default function PatientsPage({
             },
           } as SampleWhere;
         }}
+        sampleContext={
+          sampleQueryParamValue
+            ? {
+                fieldName: sampleQueryParamFieldName,
+                values: [sampleQueryParamValue],
+              }
+            : undefined
+        }
         setCustomSearchVals={setPatientIdsTriplets}
         customToolbarUI={
           <>

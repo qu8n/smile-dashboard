@@ -151,9 +151,9 @@ export const PatientsListColumns: ColDef[] = [
           variant="outline-secondary"
           size="sm"
           onClick={() => {
-            params.context.navigateFunction(
-              `/patients/${params.data.smilePatientId}`
-            );
+            const patientId =
+              params.data.cmoPatientId || params.data.dmpPatientId;
+            params.context.navigateFunction(`/patients/${patientId}`);
           }}
         >
           View
@@ -1054,17 +1054,4 @@ export function isValidCostCenter(costCenter: string): boolean {
   if (costCenter.length !== 11) return false;
   const validCostCenter = new RegExp("^\\d{5}/\\d{5}$");
   return validCostCenter.test(costCenter);
-}
-
-export function getSamplePopupParamId(
-  parentWhereVariables: SampleWhere,
-  samples: DashboardSamplesQuery["dashboardSamples"],
-  paramId: string
-) {
-  if (parentWhereVariables.OR?.[0].patientsHasSample_SOME) {
-    const { cmoPatientId, dmpPatientId } = samples?.[0] || {};
-    if (cmoPatientId) return cmoPatientId;
-    if (dmpPatientId) return dmpPatientId;
-  }
-  return paramId;
 }
