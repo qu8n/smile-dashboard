@@ -85,7 +85,6 @@ fragment DashboardSampleMetadataParts on DashboardSample {
   sex
   ## Custom fields
   recipe
-  dmpPatientId
   ## (sm:SampleMetadata)-[:HAS_STATUS]->(s:Status)
   validationReport
   validationStatus

@@ -17386,18 +17386,6 @@
             "deprecationReason": null
           },
           {
-            "name": "dmpPatientId",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "embargoDate",
             "description": null,
             "args": [],
@@ -17732,6 +17720,18 @@
         "name": "DashboardSampleCount",
         "description": null,
         "fields": [
+          {
+            "name": "count",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "Int",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
           {
             "name": "totalCount",
             "description": null,

@@ -4,7 +4,6 @@ import {
   RequestsListQuery,
   SortDirection,
 } from "../generated/graphql";
-import { CachedOncotreeData, fetchAndCacheOncotreeData } from "./oncotree";
 import { ApolloServerContext } from "./servers";
 
 export const flattenedRequestFields = ["importDate", "totalSampleCount"];

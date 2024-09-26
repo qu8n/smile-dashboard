@@ -1,5 +1,4 @@
 import {
-  SortDirection,
   Sample,
   SampleWhere,
   useDashboardSamplesQuery,
@@ -24,7 +23,7 @@ import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import "ag-grid-enterprise";
 import { CellValueChangedEvent, ColDef } from "ag-grid-community";
-import { ErrorMessage, LoadingSpinner, Toolbar } from "../shared/tableElements";
+import { ErrorMessage, Toolbar } from "../shared/tableElements";
 import styles from "./records.module.scss";
 import { getUserEmail } from "../utils/getUserEmail";
 import { openLoginPopup } from "../utils/openLoginPopup";
@@ -39,13 +38,9 @@ const MAX_ROWS_EXPORT = 5000;
 const MAX_ROWS_SCROLLED_ALERT =
   "You've reached the maximum number of samples that can be displayed. Please refine your search to see more samples.";
 const MAX_ROWS_EXPORT_EXCEED_ALERT =
-  "You can only download up to 5,000 rows of data at a time. Please refine your search and try again. If you need the full dataset, contact the SMILE team at cmosmile@mskcc.org";
+  "You can only download up to 5,000 rows of data at a time. Please refine your search and try again. If you need the full dataset, contact the SMILE team at cmosmile@mskcc.org.";
 const COST_CENTER_VALIDATION_ALERT =
   "Please update your Cost Center/Fund Number input as #####/##### (5 digits, a forward slash, then 5 digits). For example: 12345/12345.";
-const TEMPO_EVENT_OPTIONS = {
-  sort: [{ date: SortDirection.Desc }],
-  limit: 1,
-};
 
 export type SampleContext = {
   fieldName: string;
@@ -115,13 +110,7 @@ export default function SamplesList({
     refetch,
   ]);
 
-  useEffect(() => {
-    setSampleCount(data?.dashboardSampleCount?.totalCount || 0);
-  }, [data]);
-
   const samples = data?.dashboardSamples;
-
-  if (loading) return <LoadingSpinner />;
 
   if (error) return <ErrorMessage error={error} />;
 
@@ -244,9 +233,13 @@ export default function SamplesList({
       <Container fluid>
         {!parentWhereVariables && <BreadCrumb currPageTitle="samples" />}
         <Title
-          text={`Viewing ${parentDataName?.slice(0, -1)} ${
-            Object.values(params)?.[0]
-          }'s samples`}
+          text={
+            parentWhereVariables
+              ? `Viewing ${parentDataName?.slice(0, -1)} ${
+                  Object.values(params)?.[0]
+                }'s samples`
+              : "Samples"
+          }
         />
       </Container>
 
@@ -402,6 +395,9 @@ export default function SamplesList({
               }}
               onFilterChanged={(params) => {
                 setSampleCount(params.api.getDisplayedRowCount());
+              }}
+              onRowDataUpdated={() => {
+                setSampleCount(data?.dashboardSampleCount?.totalCount || 0);
               }}
             />
           </div>

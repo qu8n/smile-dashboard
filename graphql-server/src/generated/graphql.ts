@@ -1754,7 +1754,6 @@ export type DashboardSample = {
   collectionYear?: Maybe<Scalars["String"]>;
   costCenter?: Maybe<Scalars["String"]>;
   custodianInformation?: Maybe<Scalars["String"]>;
-  dmpPatientId?: Maybe<Scalars["String"]>;
   embargoDate?: Maybe<Scalars["String"]>;
   genePanel?: Maybe<Scalars["String"]>;
   importDate?: Maybe<Scalars["String"]>;
@@ -1786,6 +1785,7 @@ export type DashboardSample = {
 
 export type DashboardSampleCount = {
   __typename?: "DashboardSampleCount";
+  count?: Maybe<Scalars["Int"]>;
   totalCount?: Maybe<Scalars["Int"]>;
 };
 
@@ -12445,7 +12445,6 @@ export type DashboardSamplesQuery = {
     tissueLocation?: string | null;
     sex?: string | null;
     recipe?: string | null;
-    dmpPatientId?: string | null;
     validationReport?: string | null;
     validationStatus?: string | null;
     cancerType?: string | null;
@@ -12495,7 +12494,6 @@ export type DashboardSampleMetadataPartsFragment = {
   tissueLocation?: string | null;
   sex?: string | null;
   recipe?: string | null;
-  dmpPatientId?: string | null;
   validationReport?: string | null;
   validationStatus?: string | null;
   cancerType?: string | null;
@@ -12799,7 +12797,6 @@ export const DashboardSampleMetadataPartsFragmentDoc = gql`
     tissueLocation
     sex
     recipe
-    dmpPatientId
     validationReport
     validationStatus
     cancerType
