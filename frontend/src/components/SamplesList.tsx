@@ -285,8 +285,13 @@ export default function SamplesList({
         userSearchVal={userSearchVal}
         setUserSearchVal={setUserSearchVal}
         handleSearch={handleSearch}
-        clearUserSearchVal={() => setUserSearchVal("")}
-        matchingResultsCount={`${sampleCount.toLocaleString()} matching samples`}
+        clearUserSearchVal={() => {
+          setUserSearchVal("");
+          handleSearch();
+        }}
+        matchingResultsCount={`${
+          sampleCount ? sampleCount.toLocaleString() : "Loading"
+        } matching samples`}
         handleDownload={() => {
           if (sampleCount > MAX_ROWS_EXPORT) {
             setAlertContent(MAX_ROWS_EXPORT_EXCEED_ALERT);
