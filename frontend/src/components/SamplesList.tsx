@@ -1,7 +1,7 @@
 import { Sample, useDashboardSamplesQuery } from "../generated/graphql";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { Button, Col, Container } from "react-bootstrap";
-import { Dispatch, SetStateAction, useEffect, useRef } from "react";
+import { Dispatch, SetStateAction, useRef } from "react";
 import { DownloadModal } from "./DownloadModal";
 // import { UpdateModal } from "./UpdateModal";
 import { AlertModal } from "./AlertModal";
@@ -9,7 +9,6 @@ import { buildTsvString } from "../utils/stringBuilders";
 import {
   SampleChange,
   defaultColDef,
-  handleSearch,
   isValidCostCenter,
 } from "../shared/helpers";
 import { AgGridReact } from "ag-grid-react";
@@ -27,6 +26,7 @@ import { Title } from "../shared/components/Title";
 import { BreadCrumb } from "../shared/components/BreadCrumb";
 import { useParams } from "react-router-dom";
 import { DataName } from "../shared/types";
+import { parseUserSearchVal } from "../utils/parseSearchQueries";
 
 const POLLING_INTERVAL = 2000;
 const MAX_ROWS_TABLE = 500;
@@ -65,7 +65,6 @@ export default function SamplesList({
   customToolbarUI,
 }: ISampleListProps) {
   const [userSearchVal, setUserSearchVal] = useState<string>("");
-  const [parsedSearchVals, setParsedSearchVals] = useState<string[]>([]);
   const [showDownloadModal, setShowDownloadModal] = useState(false);
   const [showAlertModal, setShowAlertModal] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
@@ -81,25 +80,25 @@ export default function SamplesList({
   const { loading, error, data, startPolling, stopPolling, refetch } =
     useDashboardSamplesQuery({
       variables: {
-        searchVals: parsedSearchVals,
+        searchVals: [],
         sampleContext,
       },
       pollInterval: POLLING_INTERVAL,
     });
 
-  useEffect(() => {
+  const samples = data?.dashboardSamples;
+
+  if (error) return <ErrorMessage error={error} />;
+
+  function handleSearch() {
     gridRef.current?.api?.showLoadingOverlay();
     refetch({
-      searchVals: parsedSearchVals,
+      searchVals: parseUserSearchVal(userSearchVal),
       sampleContext,
     }).then(() => {
       gridRef.current?.api?.hideOverlay();
     });
-  }, [parsedSearchVals, columnDefs, sampleContext, refetch]);
-
-  const samples = data?.dashboardSamples;
-
-  if (error) return <ErrorMessage error={error} />;
+  }
 
   async function onCellValueChanged(params: CellValueChangedEvent) {
     if (!editMode) return;
@@ -285,11 +284,8 @@ export default function SamplesList({
         dataName={"samples"}
         userSearchVal={userSearchVal}
         setUserSearchVal={setUserSearchVal}
-        handleSearch={() => handleSearch(userSearchVal, setParsedSearchVals)}
-        clearUserSearchVal={() => {
-          setUserSearchVal("");
-          setParsedSearchVals([]);
-        }}
+        handleSearch={handleSearch}
+        clearUserSearchVal={() => setUserSearchVal("")}
         matchingResultsCount={`${sampleCount.toLocaleString()} matching samples`}
         handleDownload={() => {
           if (sampleCount > MAX_ROWS_EXPORT) {
@@ -384,7 +380,7 @@ export default function SamplesList({
               onRowDataUpdated={() => {
                 setSampleCount(data?.dashboardSampleCount?.totalCount || 0);
               }}
-              onGridColumnsChanged={() => console.log("columns changed")}
+              onGridColumnsChanged={() => handleSearch()}
               suppressClickEdit={true} // temporarily disable cell editing
             />
           </div>
