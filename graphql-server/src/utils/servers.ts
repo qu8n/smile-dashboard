@@ -35,7 +35,6 @@ export interface ApolloServerContext {
     isAuthenticated: boolean;
   };
   oncotreeCache: NodeCache;
-  // samplesLoader: ReturnType<typeof createSamplesLoader>;
 }
 
 export const neo4jDriver = neo4j.driver(
@@ -53,7 +52,7 @@ export async function initializeApolloServer(
     schemas: [neo4jDbSchema, oracleDbSchema, customSchema],
   });
 
-  const oncotreeCache = new NodeCache({ stdTTL: 86400, deleteOnExpire: false }); // 1 day
+  const oncotreeCache = new NodeCache({ stdTTL: 86400 }); // 1 day
   await fetchAndCacheOncotreeData(oncotreeCache);
   oncotreeCache.on("expired", fetchAndCacheOncotreeData);
 
@@ -68,7 +67,6 @@ export async function initializeApolloServer(
           isAuthenticated: req.isAuthenticated,
         },
         oncotreeCache: oncotreeCache,
-        // samplesLoader: createSamplesLoader(ogm, oncotreeCache),
       };
     },
     plugins: [
