@@ -1,123 +1,36 @@
 import { GraphQLOptionsArg, GraphQLWhereArg, OGM } from "@neo4j/graphql-ogm";
-import { sortArrayByNestedField } from "./flattening";
-import { SortDirection } from "../generated/graphql";
+import { ApolloServerContext } from "./servers";
+//import { SamplesQueryResult } from "./dataloader";
+import { runQuery } from "../schemas/neo4j";
 
 const MAX_ROWS = 500;
 
 export async function querySamplesList(
   ogm: OGM,
   where: GraphQLWhereArg,
-  options: GraphQLOptionsArg
+  options: GraphQLOptionsArg //,
+  //ontext: ApolloServerContext
+  //): Promise<SamplesQueryResult> {
 ) {
-  const samples = await ogm.model("Sample").find({
-    where: where,
-    selectionSet: `{
-      datasource
-      revisable
-      sampleCategory
-      sampleClass
-      smileSampleId
-      hasMetadataSampleMetadata {
-        additionalProperties
-        baitSet
-        cfDNA2dBarcode
-        cmoInfoIgoId
-        cmoPatientId
-        cmoSampleIdFields
-        cmoSampleName
-        collectionYear
-        genePanel
-        igoComplete
-        igoRequestId
-        importDate
-        investigatorSampleId
-        libraries
-        oncotreeCode
-        preservation
-        primaryId
-        qcReports
-        sampleClass
-        sampleName
-        sampleOrigin
-        sampleType
-        sex
-        species
-        tissueLocation
-        tubeId
-        tumorOrNormal
-        hasStatusStatuses {
-          validationReport
-          validationStatus
-        }
-      }
-      requestsHasSample {
-        igoRequestId
-        igoProjectId
-        genePanel
-        dataAnalystName
-        dataAnalystEmail
-        dataAccessEmails
-        bicAnalysis
-        investigatorEmail
-        investigatorName
-        isCmoRequest
-        labHeadEmail
-        labHeadName
-        libraryType
-        otherContactEmails
-        piEmail
-        projectManagerName
-        qcAccessEmails
-        smileRequestId
-      }
-      patientsHasSample {
-        smilePatientId
-        patientAliasesIsAlias {
-          namespace
-          value
-        }
-      }
-      cohortsHasCohortSample {
-        cohortId
-        hasCohortCompleteCohortCompletes {
-          date
-        }
-      }
-      hasTempoTempos {
-        smileTempoId
-        billed
-        billedBy
-        costCenter
-        custodianInformation
-        accessLevel
-        hasEventBamCompletes {
-          date
-          status
-        }
-        hasEventMafCompletes {
-          date
-          normalPrimaryId
-          status
-        }
-        hasEventQcCompletes {
-          date
-          reason
-          result
-          status
-        }
-      }
-    }`,
-  });
+  var startTime = performance.now();
+  // TODO I think the where has the oncotree stuff
+  try {
+    // Call sampleDashboardQuery with appropriate arguments
+    const samples = await runQuery.sampleDashboardQuery(null, {
+      limit: options?.limit || MAX_ROWS,
+    }); //, context);
 
-  await sortArrayByNestedField(
-    samples,
-    "Sample",
-    "importDate",
-    SortDirection.Desc
-  );
+    var endTime = performance.now();
+    console.log(`Query took ${(endTime - startTime) / 1000} seconds`);
 
-  return {
-    totalCount: samples.length,
-    data: samples.slice(0, (options?.limit as number) || MAX_ROWS),
-  };
+    return {
+      totalCount: samples ? samples.length : 0,
+      data: samples
+        ? samples.slice(0, (options?.limit as number) || MAX_ROWS)
+        : [],
+    };
+  } catch (error) {
+    console.error("Error running query:", error);
+    throw new Error("Failed to fetch samples");
+  }
 }

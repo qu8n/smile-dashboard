@@ -7,7 +7,8 @@ import NodeCache from "node-cache";
 
 type SamplesQueryResult = {
   totalCount: number;
-  data: SamplesListQuery["samples"];
+  //data: SamplesListQuery["samples"];
+  data: any;
 };
 
 /**
