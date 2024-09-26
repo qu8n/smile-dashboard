@@ -251,7 +251,11 @@ async function queryDashboardSamples({
     sampleContext?.fieldName === "patientId"
       ? `${createFilters("pa", ["value"], sampleContext.values, false)}`
       : "";
-  console.log("patientFilters", patientFilters);
+
+  const cohortFilters =
+    sampleContext?.fieldName === "cohortId"
+      ? `${createFilters("c", ["cohortId"], sampleContext.values, false)}`
+      : "";
 
   let allSmFilters = "";
   if (smOrFilters || wesFilters || requestFilters) {
@@ -278,9 +282,13 @@ async function queryDashboardSamples({
 
         MATCH (s)<-[:HAS_SAMPLE]-(p:Patient)<-[:IS_ALIAS]-(pa:PatientAlias)
         ${patientFilters && `WHERE ${patientFilters}`}
-        
+
         // if the Sample belongs to any Cohorts, get them - the Cohort will have a CohortComplete so get that too
-        OPTIONAL MATCH (s:Sample)<-[:HAS_COHORT_SAMPLE]-(c:Cohort)-[:HAS_COHORT_COMPLETE]->(cc:CohortComplete)
+        ${
+          cohortFilters ? "" : "OPTIONAL "
+        }MATCH (s:Sample)<-[:HAS_COHORT_SAMPLE]-(c:Cohort)-[:HAS_COHORT_COMPLETE]->(cc:CohortComplete)
+
+        ${cohortFilters && `WHERE ${cohortFilters}`}
 
         // we then collect all the CohortCompletes for each Sample and get the most recent CohortComplete.date
         WITH s, latestSm, latestSt, collect(cc) AS allCohortComplete, min(cc.date) AS oldestCCDate

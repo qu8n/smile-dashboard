@@ -183,6 +183,14 @@ export default function CohortsPage({
           OR: cohortSampleFilterWhereVariables(samplesParsedSearchVals),
         } as SampleWhere;
       }}
+      sampleContext={
+        sampleQueryParamValue
+          ? {
+              fieldName: sampleQueryParamFieldName,
+              values: [sampleQueryParamValue],
+            }
+          : undefined
+      }
       sampleKeyForUpdate={sampleKeyForUpdate}
       userEmail={userEmail}
       setUserEmail={setUserEmail}
