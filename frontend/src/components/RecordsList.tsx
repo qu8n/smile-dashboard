@@ -21,7 +21,11 @@ import SamplesList, { SampleContext } from "./SamplesList";
 import { Sample, SortDirection } from "../generated/graphql";
 import { defaultColDef } from "../shared/helpers";
 import { PatientIdsTriplet } from "../pages/patients/PatientsPage";
-import { ErrorMessage, LoadingSpinner, Toolbar } from "../shared/tableElements";
+import {
+  ErrorMessage,
+  LoadingSpinner,
+  Toolbar,
+} from "../shared/tableElements-records";
 import { AgGridReact as AgGridReactType } from "ag-grid-react/lib/agGridReact";
 import { BreadCrumb } from "../shared/components/BreadCrumb";
 import { Title } from "../shared/components/Title";
@@ -284,6 +288,10 @@ export default function RecordsList({
         userSearchVal={userSearchVal}
         setUserSearchVal={setUserSearchVal}
         handleSearch={handleSearch}
+        clearUserSearchVal={() => {
+          setCustomSearchVals && setCustomSearchVals([]);
+          setParsedSearchVals([]);
+        }}
         matchingResultsCount={`${rowCount?.toLocaleString()} matching ${
           rowCount !== 1 ? dataName : dataName.slice(0, -1)
         }${
