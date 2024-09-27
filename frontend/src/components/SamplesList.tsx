@@ -28,7 +28,7 @@ import { useParams } from "react-router-dom";
 import { DataName } from "../shared/types";
 import { parseUserSearchVal } from "../utils/parseSearchQueries";
 
-const POLLING_INTERVAL = 2000;
+const POLLING_INTERVAL = 5000; // 5s
 const MAX_ROWS_TABLE = 500;
 const MAX_ROWS_EXPORT = 5000;
 const MAX_ROWS_SCROLLED_ALERT =

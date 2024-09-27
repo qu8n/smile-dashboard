@@ -663,6 +663,10 @@ export const WesSampleDetailsColumns: ColDef[] = [
     headerName: "CMO Sample Name",
   },
   {
+    field: "investigatorSampleId",
+    headerName: "Investigator Sample ID",
+  },
+  {
     field: "initialPipelineRunDate",
     headerName: "Initial Pipeline Run Date",
     valueFormatter: (params) => formatDate(params.value) ?? "",
@@ -782,10 +786,6 @@ export const WesSampleDetailsColumns: ColDef[] = [
   {
     field: "cancerTypeDetailed",
     headerName: "Cancer Type Detailed",
-  },
-  {
-    field: "investigatorSampleId",
-    headerName: "Investigator Sample ID",
   },
 ];
 
