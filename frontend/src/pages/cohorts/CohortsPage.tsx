@@ -6,7 +6,7 @@ import {
 } from "../../generated/graphql";
 import { Dispatch, SetStateAction, useState } from "react";
 import {
-  CohortSampleDetailsColumns,
+  WesSampleDetailsColumns,
   CohortsListColumns,
   handleSearch,
   prepareCohortDataForAgGrid,
@@ -165,7 +165,7 @@ export default function CohortsPage({
       showDownloadModal={showDownloadModal}
       setShowDownloadModal={setShowDownloadModal}
       handleDownload={() => setShowDownloadModal(true)}
-      samplesColDefs={CohortSampleDetailsColumns}
+      samplesColDefs={WesSampleDetailsColumns}
       sampleContext={
         sampleQueryParamValue
           ? {

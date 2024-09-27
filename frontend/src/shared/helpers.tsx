@@ -653,7 +653,7 @@ export const CohortsListColumns: ColDef[] = [
   },
 ];
 
-export const CohortSampleDetailsColumns: ColDef[] = [
+export const WesSampleDetailsColumns: ColDef[] = [
   {
     field: "primaryId",
     headerName: "Primary ID",
@@ -783,14 +783,18 @@ export const CohortSampleDetailsColumns: ColDef[] = [
     field: "cancerTypeDetailed",
     headerName: "Cancer Type Detailed",
   },
+  {
+    field: "investigatorSampleId",
+    headerName: "Investigator Sample ID",
+  },
 ];
 
 export const ReadOnlyCohortSampleDetailsColumns = _.cloneDeep(
-  CohortSampleDetailsColumns
+  WesSampleDetailsColumns
 );
 
 setupEditableSampleFields(SampleMetadataDetailsColumns);
-setupEditableSampleFields(CohortSampleDetailsColumns);
+setupEditableSampleFields(WesSampleDetailsColumns);
 
 export const combinedSampleDetailsColumns = _.uniqBy(
   [...SampleMetadataDetailsColumns, ...ReadOnlyCohortSampleDetailsColumns],
