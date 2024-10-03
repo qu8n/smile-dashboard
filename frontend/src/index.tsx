@@ -8,21 +8,14 @@ import App from "./App";
 import { REACT_APP_EXPRESS_SERVER_ORIGIN } from "./shared/constants";
 
 const cache = new InMemoryCache({
-  /* @ts-ignore */
   typePolicies: {
     Query: {
       fields: {
         requests: offsetLimitPagination(),
       },
     },
-    Sample: {
+    DashboardSample: {
       keyFields: ["smileSampleId"],
-    },
-    SampleMetadata: {
-      keyFields: ["primaryId"],
-    },
-    Tempo: {
-      keyFields: ["smileTempoId"],
     },
   },
 });

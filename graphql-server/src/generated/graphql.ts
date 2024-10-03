@@ -1764,7 +1764,7 @@ export type DashboardSample = {
   mafCompleteStatus?: Maybe<Scalars["String"]>;
   oncotreeCode?: Maybe<Scalars["String"]>;
   preservation?: Maybe<Scalars["String"]>;
-  primaryId?: Maybe<Scalars["String"]>;
+  primaryId: Scalars["String"];
   qcCompleteDate?: Maybe<Scalars["String"]>;
   qcCompleteReason?: Maybe<Scalars["String"]>;
   qcCompleteResult?: Maybe<Scalars["String"]>;
@@ -1775,18 +1775,61 @@ export type DashboardSample = {
   sampleOrigin?: Maybe<Scalars["String"]>;
   sampleType?: Maybe<Scalars["String"]>;
   sex?: Maybe<Scalars["String"]>;
-  smileSampleId?: Maybe<Scalars["String"]>;
+  smileSampleId: Scalars["String"];
   species?: Maybe<Scalars["String"]>;
   tissueLocation?: Maybe<Scalars["String"]>;
   tumorOrNormal?: Maybe<Scalars["String"]>;
   validationReport?: Maybe<Scalars["String"]>;
-  validationStatus?: Maybe<Scalars["String"]>;
+  validationStatus?: Maybe<Scalars["Boolean"]>;
 };
 
 export type DashboardSampleCount = {
   __typename?: "DashboardSampleCount";
-  count?: Maybe<Scalars["Int"]>;
   totalCount?: Maybe<Scalars["Int"]>;
+};
+
+export type DashboardSampleInput = {
+  accessLevel?: InputMaybe<Scalars["String"]>;
+  baitSet?: InputMaybe<Scalars["String"]>;
+  bamCompleteDate?: InputMaybe<Scalars["String"]>;
+  bamCompleteStatus?: InputMaybe<Scalars["String"]>;
+  billed?: InputMaybe<Scalars["Boolean"]>;
+  billedBy?: InputMaybe<Scalars["String"]>;
+  cancerType?: InputMaybe<Scalars["String"]>;
+  cancerTypeDetailed?: InputMaybe<Scalars["String"]>;
+  changedFieldNames: Array<Scalars["String"]>;
+  cmoPatientId?: InputMaybe<Scalars["String"]>;
+  cmoSampleName?: InputMaybe<Scalars["String"]>;
+  collectionYear?: InputMaybe<Scalars["String"]>;
+  costCenter?: InputMaybe<Scalars["String"]>;
+  custodianInformation?: InputMaybe<Scalars["String"]>;
+  embargoDate?: InputMaybe<Scalars["String"]>;
+  genePanel?: InputMaybe<Scalars["String"]>;
+  importDate?: InputMaybe<Scalars["String"]>;
+  initialPipelineRunDate?: InputMaybe<Scalars["String"]>;
+  investigatorSampleId?: InputMaybe<Scalars["String"]>;
+  mafCompleteDate?: InputMaybe<Scalars["String"]>;
+  mafCompleteNormalPrimaryId?: InputMaybe<Scalars["String"]>;
+  mafCompleteStatus?: InputMaybe<Scalars["String"]>;
+  oncotreeCode?: InputMaybe<Scalars["String"]>;
+  preservation?: InputMaybe<Scalars["String"]>;
+  primaryId: Scalars["String"];
+  qcCompleteDate?: InputMaybe<Scalars["String"]>;
+  qcCompleteReason?: InputMaybe<Scalars["String"]>;
+  qcCompleteResult?: InputMaybe<Scalars["String"]>;
+  qcCompleteStatus?: InputMaybe<Scalars["String"]>;
+  recipe?: InputMaybe<Scalars["String"]>;
+  revisable?: InputMaybe<Scalars["Boolean"]>;
+  sampleClass?: InputMaybe<Scalars["String"]>;
+  sampleOrigin?: InputMaybe<Scalars["String"]>;
+  sampleType?: InputMaybe<Scalars["String"]>;
+  sex?: InputMaybe<Scalars["String"]>;
+  smileSampleId: Scalars["String"];
+  species?: InputMaybe<Scalars["String"]>;
+  tissueLocation?: InputMaybe<Scalars["String"]>;
+  tumorOrNormal?: InputMaybe<Scalars["String"]>;
+  validationReport?: InputMaybe<Scalars["String"]>;
+  validationStatus?: InputMaybe<Scalars["Boolean"]>;
 };
 
 export type DeleteInfo = {
@@ -2181,6 +2224,7 @@ export type Mutation = {
   updateBamCompletes: UpdateBamCompletesMutationResponse;
   updateCohortCompletes: UpdateCohortCompletesMutationResponse;
   updateCohorts: UpdateCohortsMutationResponse;
+  updateDashboardSamples?: Maybe<Array<Maybe<DashboardSample>>>;
   updateMafCompletes: UpdateMafCompletesMutationResponse;
   updatePatientAliases: UpdatePatientAliasesMutationResponse;
   updatePatients: UpdatePatientsMutationResponse;
@@ -2355,6 +2399,10 @@ export type MutationUpdateCohortsArgs = {
   disconnect?: InputMaybe<CohortDisconnectInput>;
   update?: InputMaybe<CohortUpdateInput>;
   where?: InputMaybe<CohortWhere>;
+};
+
+export type MutationUpdateDashboardSamplesArgs = {
+  newDashboardSamples?: InputMaybe<Array<InputMaybe<DashboardSampleInput>>>;
 };
 
 export type MutationUpdateMafCompletesArgs = {
@@ -4468,8 +4516,8 @@ export type Query = {
   cohorts: Array<Cohort>;
   cohortsAggregate: CohortAggregateSelection;
   cohortsConnection: CohortsConnection;
-  dashboardSampleCount?: Maybe<DashboardSampleCount>;
-  dashboardSamples?: Maybe<Array<Maybe<DashboardSample>>>;
+  dashboardSampleCount: DashboardSampleCount;
+  dashboardSamples: Array<DashboardSample>;
   mafCompletes: Array<MafComplete>;
   mafCompletesAggregate: MafCompleteAggregateSelection;
   mafCompletesConnection: MafCompletesConnection;
@@ -4559,12 +4607,13 @@ export type QueryCohortsConnectionArgs = {
 
 export type QueryDashboardSampleCountArgs = {
   sampleContext?: InputMaybe<SampleContext>;
-  searchVals?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  searchVals?: InputMaybe<Array<Scalars["String"]>>;
 };
 
 export type QueryDashboardSamplesArgs = {
+  limit: Scalars["Int"];
   sampleContext?: InputMaybe<SampleContext>;
-  searchVals?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  searchVals?: InputMaybe<Array<Scalars["String"]>>;
 };
 
 export type QueryMafCompletesArgs = {
@@ -12411,23 +12460,22 @@ export type PatientsListQuery = {
 };
 
 export type DashboardSamplesQueryVariables = Exact<{
-  searchVals?: InputMaybe<
-    Array<InputMaybe<Scalars["String"]>> | InputMaybe<Scalars["String"]>
-  >;
+  searchVals?: InputMaybe<Array<Scalars["String"]> | Scalars["String"]>;
   sampleContext?: InputMaybe<SampleContext>;
+  limit: Scalars["Int"];
 }>;
 
 export type DashboardSamplesQuery = {
   __typename?: "Query";
-  dashboardSampleCount?: {
+  dashboardSampleCount: {
     __typename?: "DashboardSampleCount";
     totalCount?: number | null;
-  } | null;
-  dashboardSamples?: Array<{
+  };
+  dashboardSamples: Array<{
     __typename?: "DashboardSample";
-    smileSampleId?: string | null;
+    smileSampleId: string;
     revisable?: boolean | null;
-    primaryId?: string | null;
+    primaryId: string;
     cmoSampleName?: string | null;
     importDate?: string | null;
     cmoPatientId?: string | null;
@@ -12446,7 +12494,7 @@ export type DashboardSamplesQuery = {
     sex?: string | null;
     recipe?: string | null;
     validationReport?: string | null;
-    validationStatus?: string | null;
+    validationStatus?: boolean | null;
     cancerType?: string | null;
     cancerTypeDetailed?: string | null;
     billed?: boolean | null;
@@ -12465,18 +12513,18 @@ export type DashboardSamplesQuery = {
     qcCompleteResult?: string | null;
     qcCompleteReason?: string | null;
     qcCompleteStatus?: string | null;
-  } | null> | null;
+  }>;
 };
 
 export type DashboardSamplePartsFragment = {
   __typename?: "DashboardSample";
-  smileSampleId?: string | null;
+  smileSampleId: string;
   revisable?: boolean | null;
 };
 
 export type DashboardSampleMetadataPartsFragment = {
   __typename?: "DashboardSample";
-  primaryId?: string | null;
+  primaryId: string;
   cmoSampleName?: string | null;
   importDate?: string | null;
   cmoPatientId?: string | null;
@@ -12495,7 +12543,7 @@ export type DashboardSampleMetadataPartsFragment = {
   sex?: string | null;
   recipe?: string | null;
   validationReport?: string | null;
-  validationStatus?: string | null;
+  validationStatus?: boolean | null;
   cancerType?: string | null;
   cancerTypeDetailed?: string | null;
 };
@@ -12542,171 +12590,55 @@ export type RequestPartsFragment = {
   smileRequestId: string;
 };
 
-export type SamplePartsFragment = {
-  __typename?: "Sample";
-  datasource: string;
-  revisable: boolean;
-  sampleCategory: string;
-  sampleClass: string;
-  smileSampleId: string;
-};
-
-export type SampleMetadataPartsFragment = {
-  __typename?: "SampleMetadata";
-  additionalProperties: string;
-  baitSet?: string | null;
-  cfDNA2dBarcode?: string | null;
-  cmoInfoIgoId?: string | null;
-  cmoPatientId?: string | null;
-  cmoSampleIdFields: string;
-  cmoSampleName?: string | null;
-  collectionYear: string;
-  genePanel: string;
-  igoComplete?: boolean | null;
-  igoRequestId?: string | null;
-  importDate: string;
-  investigatorSampleId?: string | null;
-  libraries: string;
-  oncotreeCode?: string | null;
-  preservation?: string | null;
-  primaryId: string;
-  qcReports: string;
-  sampleClass: string;
-  sampleName?: string | null;
-  sampleOrigin?: string | null;
-  sampleType: string;
-  sex: string;
-  species: string;
-  tissueLocation?: string | null;
-  tubeId?: string | null;
-  tumorOrNormal: string;
-};
-
-export type TempoPartsFragment = {
-  __typename?: "Tempo";
-  smileTempoId: string;
-  billed?: boolean | null;
-  billedBy?: string | null;
-  costCenter?: string | null;
-  custodianInformation?: string | null;
-  accessLevel?: string | null;
-};
-
-export type SamplesQueryVariables = Exact<{
-  where?: InputMaybe<SampleWhere>;
-  hasMetadataSampleMetadataWhere2?: InputMaybe<SampleMetadataWhere>;
-  hasMetadataSampleMetadataOptions2?: InputMaybe<SampleMetadataOptions>;
+export type UpdateDashboardSamplesMutationVariables = Exact<{
+  newDashboardSamples: Array<DashboardSampleInput> | DashboardSampleInput;
 }>;
 
-export type SamplesQuery = {
-  __typename?: "Query";
-  samples: Array<{
-    __typename?: "Sample";
-    smileSampleId: string;
-    revisable: boolean;
-    sampleCategory: string;
-    sampleClass: string;
-    datasource: string;
-    hasMetadataSampleMetadata: Array<{
-      __typename?: "SampleMetadata";
-      additionalProperties: string;
-      baitSet?: string | null;
-      cfDNA2dBarcode?: string | null;
-      cmoInfoIgoId?: string | null;
-      cmoPatientId?: string | null;
-      cmoSampleIdFields: string;
-      cmoSampleName?: string | null;
-      collectionYear: string;
-      genePanel: string;
-      igoComplete?: boolean | null;
-      igoRequestId?: string | null;
-      importDate: string;
-      investigatorSampleId?: string | null;
-      libraries: string;
-      oncotreeCode?: string | null;
-      preservation?: string | null;
-      primaryId: string;
-      qcReports: string;
-      sampleClass: string;
-      sampleName?: string | null;
-      sampleOrigin?: string | null;
-      sampleType: string;
-      sex: string;
-      species: string;
-      tissueLocation?: string | null;
-      tubeId?: string | null;
-      tumorOrNormal: string;
-    }>;
-    hasTempoTempos: Array<{
-      __typename?: "Tempo";
-      smileTempoId: string;
-      billed?: boolean | null;
-      billedBy?: string | null;
-      costCenter?: string | null;
-      custodianInformation?: string | null;
-      accessLevel?: string | null;
-    }>;
-  }>;
-};
-
-export type UpdateSamplesMutationVariables = Exact<{
-  where?: InputMaybe<SampleWhere>;
-  update?: InputMaybe<SampleUpdateInput>;
-  connect?: InputMaybe<SampleConnectInput>;
-}>;
-
-export type UpdateSamplesMutation = {
+export type UpdateDashboardSamplesMutation = {
   __typename?: "Mutation";
-  updateSamples: {
-    __typename?: "UpdateSamplesMutationResponse";
-    samples: Array<{
-      __typename?: "Sample";
-      smileSampleId: string;
-      revisable: boolean;
-      datasource: string;
-      sampleCategory: string;
-      sampleClass: string;
-      hasMetadataSampleMetadata: Array<{
-        __typename?: "SampleMetadata";
-        additionalProperties: string;
-        baitSet?: string | null;
-        cfDNA2dBarcode?: string | null;
-        cmoInfoIgoId?: string | null;
-        cmoPatientId?: string | null;
-        cmoSampleIdFields: string;
-        cmoSampleName?: string | null;
-        collectionYear: string;
-        genePanel: string;
-        igoComplete?: boolean | null;
-        igoRequestId?: string | null;
-        importDate: string;
-        investigatorSampleId?: string | null;
-        libraries: string;
-        oncotreeCode?: string | null;
-        preservation?: string | null;
-        primaryId: string;
-        qcReports: string;
-        sampleClass: string;
-        sampleName?: string | null;
-        sampleOrigin?: string | null;
-        sampleType: string;
-        sex: string;
-        species: string;
-        tissueLocation?: string | null;
-        tubeId?: string | null;
-        tumorOrNormal: string;
-      }>;
-      hasTempoTempos: Array<{
-        __typename?: "Tempo";
-        smileTempoId: string;
-        billed?: boolean | null;
-        billedBy?: string | null;
-        costCenter?: string | null;
-        custodianInformation?: string | null;
-        accessLevel?: string | null;
-      }>;
-    }>;
-  };
+  updateDashboardSamples?: Array<{
+    __typename?: "DashboardSample";
+    smileSampleId: string;
+    revisable?: boolean | null;
+    primaryId: string;
+    cmoSampleName?: string | null;
+    importDate?: string | null;
+    cmoPatientId?: string | null;
+    investigatorSampleId?: string | null;
+    sampleType?: string | null;
+    species?: string | null;
+    genePanel?: string | null;
+    baitSet?: string | null;
+    preservation?: string | null;
+    tumorOrNormal?: string | null;
+    sampleClass?: string | null;
+    oncotreeCode?: string | null;
+    collectionYear?: string | null;
+    sampleOrigin?: string | null;
+    tissueLocation?: string | null;
+    sex?: string | null;
+    recipe?: string | null;
+    validationReport?: string | null;
+    validationStatus?: boolean | null;
+    cancerType?: string | null;
+    cancerTypeDetailed?: string | null;
+    billed?: boolean | null;
+    costCenter?: string | null;
+    billedBy?: string | null;
+    custodianInformation?: string | null;
+    accessLevel?: string | null;
+    initialPipelineRunDate?: string | null;
+    embargoDate?: string | null;
+    bamCompleteDate?: string | null;
+    bamCompleteStatus?: string | null;
+    mafCompleteDate?: string | null;
+    mafCompleteNormalPrimaryId?: string | null;
+    mafCompleteStatus?: string | null;
+    qcCompleteDate?: string | null;
+    qcCompleteResult?: string | null;
+    qcCompleteReason?: string | null;
+    qcCompleteStatus?: string | null;
+  } | null> | null;
 };
 
 export type GetPatientIdsTripletsQueryVariables = Exact<{
@@ -12845,56 +12777,6 @@ export const RequestPartsFragmentDoc = gql`
     smileRequestId
   }
 `;
-export const SamplePartsFragmentDoc = gql`
-  fragment SampleParts on Sample {
-    datasource
-    revisable
-    sampleCategory
-    sampleClass
-    smileSampleId
-  }
-`;
-export const SampleMetadataPartsFragmentDoc = gql`
-  fragment SampleMetadataParts on SampleMetadata {
-    additionalProperties
-    baitSet
-    cfDNA2dBarcode
-    cmoInfoIgoId
-    cmoPatientId
-    cmoSampleIdFields
-    cmoSampleName
-    collectionYear
-    genePanel
-    igoComplete
-    igoRequestId
-    importDate
-    investigatorSampleId
-    libraries
-    oncotreeCode
-    preservation
-    primaryId
-    qcReports
-    sampleClass
-    sampleName
-    sampleOrigin
-    sampleType
-    sex
-    species
-    tissueLocation
-    tubeId
-    tumorOrNormal
-  }
-`;
-export const TempoPartsFragmentDoc = gql`
-  fragment TempoParts on Tempo {
-    smileTempoId
-    billed
-    billedBy
-    costCenter
-    custodianInformation
-    accessLevel
-  }
-`;
 export const RequestsListDocument = gql`
   query RequestsList($options: RequestOptions, $where: RequestWhere) {
     requestsConnection(where: $where) {
@@ -12955,14 +12837,22 @@ export type PatientsListQueryResult = Apollo.QueryResult<
   PatientsListQueryVariables
 >;
 export const DashboardSamplesDocument = gql`
-  query DashboardSamples($searchVals: [String], $sampleContext: SampleContext) {
+  query DashboardSamples(
+    $searchVals: [String!]
+    $sampleContext: SampleContext
+    $limit: Int!
+  ) {
     dashboardSampleCount(
       searchVals: $searchVals
       sampleContext: $sampleContext
     ) {
       totalCount
     }
-    dashboardSamples(searchVals: $searchVals, sampleContext: $sampleContext) {
+    dashboardSamples(
+      searchVals: $searchVals
+      sampleContext: $sampleContext
+      limit: $limit
+    ) {
       ...DashboardSampleParts
       ...DashboardSampleMetadataParts
       ...DashboardTempoParts
@@ -12976,70 +12866,29 @@ export type DashboardSamplesQueryResult = Apollo.QueryResult<
   DashboardSamplesQuery,
   DashboardSamplesQueryVariables
 >;
-export const SamplesDocument = gql`
-  query Samples(
-    $where: SampleWhere
-    $hasMetadataSampleMetadataWhere2: SampleMetadataWhere
-    $hasMetadataSampleMetadataOptions2: SampleMetadataOptions
+export const UpdateDashboardSamplesDocument = gql`
+  mutation UpdateDashboardSamples(
+    $newDashboardSamples: [DashboardSampleInput!]!
   ) {
-    samples(where: $where) {
-      smileSampleId
-      revisable
-      sampleCategory
-      sampleClass
-      datasource
-      hasMetadataSampleMetadata(
-        where: $hasMetadataSampleMetadataWhere2
-        options: $hasMetadataSampleMetadataOptions2
-      ) {
-        ...SampleMetadataParts
-      }
-      hasTempoTempos {
-        ...TempoParts
-      }
+    updateDashboardSamples(newDashboardSamples: $newDashboardSamples) {
+      ...DashboardSampleParts
+      ...DashboardSampleMetadataParts
+      ...DashboardTempoParts
     }
   }
-  ${SampleMetadataPartsFragmentDoc}
-  ${TempoPartsFragmentDoc}
+  ${DashboardSamplePartsFragmentDoc}
+  ${DashboardSampleMetadataPartsFragmentDoc}
+  ${DashboardTempoPartsFragmentDoc}
 `;
-export type SamplesQueryResult = Apollo.QueryResult<
-  SamplesQuery,
-  SamplesQueryVariables
+export type UpdateDashboardSamplesMutationFn = Apollo.MutationFunction<
+  UpdateDashboardSamplesMutation,
+  UpdateDashboardSamplesMutationVariables
 >;
-export const UpdateSamplesDocument = gql`
-  mutation UpdateSamples(
-    $where: SampleWhere
-    $update: SampleUpdateInput
-    $connect: SampleConnectInput
-  ) {
-    updateSamples(where: $where, update: $update, connect: $connect) {
-      samples {
-        smileSampleId
-        revisable
-        datasource
-        sampleCategory
-        sampleClass
-        hasMetadataSampleMetadata {
-          ...SampleMetadataParts
-        }
-        hasTempoTempos {
-          ...TempoParts
-        }
-      }
-    }
-  }
-  ${SampleMetadataPartsFragmentDoc}
-  ${TempoPartsFragmentDoc}
-`;
-export type UpdateSamplesMutationFn = Apollo.MutationFunction<
-  UpdateSamplesMutation,
-  UpdateSamplesMutationVariables
->;
-export type UpdateSamplesMutationResult =
-  Apollo.MutationResult<UpdateSamplesMutation>;
-export type UpdateSamplesMutationOptions = Apollo.BaseMutationOptions<
-  UpdateSamplesMutation,
-  UpdateSamplesMutationVariables
+export type UpdateDashboardSamplesMutationResult =
+  Apollo.MutationResult<UpdateDashboardSamplesMutation>;
+export type UpdateDashboardSamplesMutationOptions = Apollo.BaseMutationOptions<
+  UpdateDashboardSamplesMutation,
+  UpdateDashboardSamplesMutationVariables
 >;
 export const GetPatientIdsTripletsDocument = gql`
   query GetPatientIdsTriplets($patientIds: [String!]!) {

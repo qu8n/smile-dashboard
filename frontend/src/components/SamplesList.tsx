@@ -1,9 +1,9 @@
-import { Sample, useDashboardSamplesQuery } from "../generated/graphql";
+import { useDashboardSamplesQuery } from "../generated/graphql";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { Button, Col, Container } from "react-bootstrap";
 import { Dispatch, SetStateAction, useRef } from "react";
 import { DownloadModal } from "./DownloadModal";
-// import { UpdateModal } from "./UpdateModal";
+import { UpdateModal } from "./UpdateModal";
 import { AlertModal } from "./AlertModal";
 import { buildTsvString } from "../utils/stringBuilders";
 import {
@@ -48,7 +48,6 @@ interface ISampleListProps {
   setUnsavedChanges?: (unsavedChanges: boolean) => void;
   parentDataName?: DataName;
   sampleContext?: SampleContext;
-  sampleKeyForUpdate?: keyof Sample;
   userEmail?: string | null;
   setUserEmail?: Dispatch<SetStateAction<string | null>>;
   customToolbarUI?: JSX.Element;
@@ -59,7 +58,6 @@ export default function SamplesList({
   parentDataName,
   sampleContext,
   setUnsavedChanges,
-  sampleKeyForUpdate = "hasMetadataSampleMetadata",
   userEmail,
   setUserEmail,
   customToolbarUI,
@@ -77,11 +75,12 @@ export default function SamplesList({
   const params = useParams();
   const hasParams = Object.keys(params).length > 0;
 
-  const { loading, error, data, startPolling, stopPolling, refetch } =
+  const { error, data, startPolling, stopPolling, refetch } =
     useDashboardSamplesQuery({
       variables: {
         searchVals: [],
         sampleContext,
+        limit: MAX_ROWS_TABLE,
       },
       pollInterval: POLLING_INTERVAL,
     });
@@ -95,6 +94,7 @@ export default function SamplesList({
     refetch({
       searchVals: parseUserSearchVal(userSearchVal),
       sampleContext,
+      limit: MAX_ROWS_TABLE,
     }).then(() => {
       gridRef.current?.api?.hideOverlay();
     });
@@ -232,23 +232,24 @@ export default function SamplesList({
       {showDownloadModal && (
         <DownloadModal
           loader={() => {
+            const allColumns = gridRef.current?.columnApi?.getAllGridColumns();
             return sampleCount <= MAX_ROWS_TABLE
               ? Promise.resolve(
-                  buildTsvString(
-                    samples!,
-                    columnDefs,
-                    gridRef.current?.columnApi?.getAllGridColumns()
-                  )
+                  buildTsvString(samples!, columnDefs, allColumns)
                 )
-              : refetch().then((result) =>
-                  buildTsvString(result.data.dashboardSamples!, columnDefs)
+              : refetch({ limit: MAX_ROWS_EXPORT }).then((result) =>
+                  buildTsvString(
+                    result.data.dashboardSamples!,
+                    columnDefs,
+                    allColumns
+                  )
                 );
           }}
           onComplete={() => {
             setShowDownloadModal(false);
             // Reset the limit back to the default value of MAX_ROWS_TABLE.
             // Otherwise, polling will use the most recent value MAX_ROWS_EXPORT
-            refetch();
+            refetch({ limit: MAX_ROWS_TABLE });
           }}
           exportFileName={[
             parentDataName?.slice(0, -1),
@@ -260,16 +261,15 @@ export default function SamplesList({
         />
       )}
 
-      {/* {showUpdateModal && (
+      {showUpdateModal && (
         <UpdateModal
           changes={changes}
           samples={samples!}
           onSuccess={handleDiscardChanges}
           onHide={() => setShowUpdateModal(false)}
           onOpen={() => stopPolling()}
-          sampleKeyForUpdate={sampleKeyForUpdate}
         />
-      )} */}
+      )}
 
       <AlertModal
         show={showAlertModal}
@@ -382,7 +382,6 @@ export default function SamplesList({
                 setSampleCount(data?.dashboardSampleCount?.totalCount || 0);
               }}
               onGridColumnsChanged={() => handleSearch(userSearchVal)}
-              suppressClickEdit={true} // temporarily disable cell editing
             />
           </div>
         )}

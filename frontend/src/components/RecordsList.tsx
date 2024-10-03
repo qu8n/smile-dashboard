@@ -18,7 +18,7 @@ import {
 } from "ag-grid-community";
 import { DataName, useHookLazyGeneric } from "../shared/types";
 import SamplesList, { SampleContext } from "./SamplesList";
-import { Sample, SortDirection } from "../generated/graphql";
+import { SortDirection } from "../generated/graphql";
 import { defaultColDef } from "../shared/helpers";
 import { PatientIdsTriplet } from "../pages/patients/PatientsPage";
 import {
@@ -55,7 +55,6 @@ interface IRecordsListProps {
   handleDownload: () => void;
   samplesColDefs: ColDef[];
   sampleContext?: SampleContext;
-  sampleKeyForUpdate?: keyof Sample;
   userEmail?: string | null;
   setUserEmail?: Dispatch<SetStateAction<string | null>>;
   setCustomSearchVals?: Dispatch<SetStateAction<PatientIdsTriplet[]>>;
@@ -81,7 +80,6 @@ export default function RecordsList({
   handleDownload,
   samplesColDefs,
   sampleContext,
-  sampleKeyForUpdate,
   userEmail,
   setUserEmail,
   customToolbarUI,
@@ -272,7 +270,6 @@ export default function RecordsList({
                     parentDataName={dataName}
                     sampleContext={sampleContext}
                     setUnsavedChanges={setUnsavedChanges}
-                    sampleKeyForUpdate={sampleKeyForUpdate}
                     userEmail={userEmail}
                     setUserEmail={setUserEmail}
                   />

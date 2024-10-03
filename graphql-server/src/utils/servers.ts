@@ -3,6 +3,7 @@ import fs from "fs";
 import https from "https";
 import { props } from "./constants";
 import { buildNeo4jDbSchema } from "../schemas/neo4j";
+import { buildCustomSchema } from "../schemas/custom";
 import { mergeSchemas } from "@graphql-tools/schema";
 import { oracleDbSchema } from "../schemas/oracle";
 import { ApolloServer } from "apollo-server-express";
@@ -14,7 +15,6 @@ import { updateActiveUserSessions } from "./session";
 import { corsOptions } from "./constants";
 import NodeCache from "node-cache";
 import { fetchAndCacheOncotreeData } from "./oncotree";
-import { customSchema } from "../schemas/custom";
 import neo4j from "neo4j-driver";
 
 export function initializeHttpsServer(app: Express) {
@@ -48,6 +48,7 @@ export async function initializeApolloServer(
   app: Express
 ) {
   const { neo4jDbSchema, ogm } = await buildNeo4jDbSchema();
+  const customSchema = await buildCustomSchema(ogm);
   const mergedSchema = mergeSchemas({
     schemas: [neo4jDbSchema, oracleDbSchema, customSchema],
   });

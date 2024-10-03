@@ -138,7 +138,6 @@ export default function CohortsPage({
   const dataName = "cohorts";
   const sampleQueryParamFieldName = "cohortId";
   const sampleQueryParamValue = params[sampleQueryParamFieldName];
-  const sampleKeyForUpdate = "hasTempoTempos";
   const defaultSort = [{ initialCohortDeliveryDate: SortDirection.Desc }];
 
   return (
@@ -174,7 +173,6 @@ export default function CohortsPage({
             }
           : undefined
       }
-      sampleKeyForUpdate={sampleKeyForUpdate}
       userEmail={userEmail}
       setUserEmail={setUserEmail}
     />

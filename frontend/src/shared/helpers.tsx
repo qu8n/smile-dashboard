@@ -27,12 +27,6 @@ export type SampleChange = {
   rowNode: RowNode;
 };
 
-export type ChangesByPrimaryId = {
-  [primaryId: string]: {
-    [fieldName: string]: string;
-  };
-};
-
 export const RequestsListColumns: ColDef[] = [
   {
     headerName: "View Samples",

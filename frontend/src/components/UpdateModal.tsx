@@ -6,23 +6,32 @@ import "ag-grid-enterprise";
 import styles from "./records.module.scss";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
-import { ChangesByPrimaryId, SampleChange } from "../shared/helpers";
+import { SampleChange } from "../shared/helpers";
 import {
-  DashboardSample,
+  DashboardSampleInput,
   DashboardSamplesQuery,
-  SampleUpdateInput,
-  SampleWhere,
-  useUpdateSamplesMutation,
+  useUpdateDashboardSamplesMutation,
 } from "../generated/graphql";
-import _ from "lodash";
+
+const columnDefs = [
+  { field: "primaryId", rowGroup: true, hide: true },
+  { field: "fieldName" },
+  { field: "oldValue" },
+  { field: "newValue" },
+];
+
+type ChangesByPrimaryId = {
+  [primaryId: string]: {
+    [fieldName: string]: string;
+  };
+};
 
 interface UpdateModalProps {
   changes: SampleChange[];
   onSuccess: () => void;
   onHide: () => void;
   samples: DashboardSamplesQuery["dashboardSamples"];
-  onOpen?: () => void;
-  sampleKeyForUpdate: keyof DashboardSample;
+  onOpen: () => void;
 }
 
 export function UpdateModal({
@@ -31,21 +40,13 @@ export function UpdateModal({
   onSuccess,
   onOpen,
   samples,
-  sampleKeyForUpdate,
 }: UpdateModalProps) {
-  const columnDefs = [
-    { field: "primaryId", rowGroup: true, hide: true },
-    { field: "fieldName" },
-    { field: "oldValue" },
-    { field: "newValue" },
-  ];
-
   useEffect(() => {
     onOpen && onOpen();
     // eslint-disable-next-line
   }, []);
 
-  const [updateSamplesMutation] = useUpdateSamplesMutation();
+  const [updateDashboardSamplesMutation] = useUpdateDashboardSamplesMutation();
 
   async function handleSubmitUpdates() {
     const changesByPrimaryId: ChangesByPrimaryId = {};
@@ -57,49 +58,32 @@ export function UpdateModal({
       }
     }
 
-    const updatedSamples = _.cloneDeep(samples);
-
-    updatedSamples?.forEach((s) => {
-      if (!s) return; // TODO: fix this
-
-      const primaryId = s.primaryId as string;
-      if (primaryId in changesByPrimaryId) {
-        s.revisable = false;
-
-        _.forEach(changesByPrimaryId[primaryId], (v, k) => {
-          /* @ts-ignore */
-          s[sampleKeyForUpdate][0][k] = v;
-        });
+    let newDashboardSamples: DashboardSampleInput[] = [];
+    samples.forEach((s) => {
+      if (s.primaryId in changesByPrimaryId) {
+        const newDashboardSample = {
+          ...s,
+          revisable: false,
+          changedFieldNames: Object.keys(changesByPrimaryId[s.primaryId]),
+        };
+        for (const [fieldName, newValue] of Object.entries(
+          changesByPrimaryId[s.primaryId]
+        )) {
+          if (fieldName in s) {
+            (newDashboardSample as any)[fieldName] = newValue;
+          }
+        }
+        delete newDashboardSample.__typename;
+        newDashboardSamples.push(newDashboardSample);
       }
     });
 
-    for (const [primaryId, changedFields] of Object.entries(
-      changesByPrimaryId
-    )) {
-      updateSamplesMutation({
-        variables: {
-          where: {
-            hasMetadataSampleMetadata_SOME: {
-              primaryId: primaryId,
-            },
-          } as SampleWhere,
-          update: {
-            [sampleKeyForUpdate]: [
-              {
-                update: {
-                  node: changedFields!,
-                },
-              },
-            ],
-          } as SampleUpdateInput,
-        },
-        optimisticResponse: {
-          updateSamples: {
-            samples: updatedSamples as any, // TODO: fix this
-          },
-        },
-      });
-    }
+    updateDashboardSamplesMutation({
+      variables: { newDashboardSamples },
+      optimisticResponse: {
+        updateDashboardSamples: newDashboardSamples,
+      },
+    });
 
     onSuccess();
     onHide();
