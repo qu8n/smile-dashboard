@@ -4,7 +4,6 @@ import {
   IHeaderParams,
   RowNode,
   ITooltipParams,
-  ValueFormatterParams,
   IServerSideGetRowsRequest,
   CellClassParams,
 } from "ag-grid-community";
@@ -210,15 +209,17 @@ export const SampleMetadataDetailsColumns: ColDef[] = [
     field: "revisable",
     headerName: "Status",
     cellRenderer: (params: ICellRendererParams) => {
-      if (params.data?.revisable) {
+      if (params.data?.revisable === true) {
         return params.data?.validationStatus === false ? (
           <WarningIcon />
         ) : (
           <CheckIcon />
         );
-      } else {
+      }
+      if (params.data?.revisable === false) {
         return <LoadingIcon />;
       }
+      return null;
     },
     tooltipComponent: StatusTooltip,
     // This prop is required for tooltip to appear even though we're not using it
@@ -331,6 +332,7 @@ export const SampleMetadataDetailsColumns: ColDef[] = [
         return ONCOTREE_CODE_NA_TOOLTIP;
       }
     },
+    sortable: false,
   },
   {
     field: "cancerTypeDetailed",
@@ -348,6 +350,7 @@ export const SampleMetadataDetailsColumns: ColDef[] = [
         return ONCOTREE_CODE_NA_TOOLTIP;
       }
     },
+    sortable: false,
   },
   {
     field: "collectionYear",
@@ -430,7 +433,7 @@ function setupEditableSampleFields(samplesColDefs: ColDef[]) {
   samplesColDefs.forEach((colDef) => {
     const newClassRule = {
       unsubmittedChange: (params: CellClassParams) => {
-        const changes: SampleChange[] = params.context.getChanges();
+        const changes: SampleChange[] = params.context?.getChanges();
         const changedValue = changes?.find((change) => {
           return (
             change.fieldName === params.colDef.field &&
@@ -451,20 +454,22 @@ function setupEditableSampleFields(samplesColDefs: ColDef[]) {
 
     if (colDef.valueGetter === undefined) {
       colDef.valueGetter = (params) => {
-        const changes: SampleChange[] = params.context?.getChanges();
-        const changedValue = changes?.find((change) => {
-          return (
-            change.fieldName === params.colDef.field &&
-            change.primaryId === params.data?.primaryId
-          );
-        });
-        if (changedValue) {
-          return changedValue.newValue;
-        } else {
-          if (params?.colDef?.field! in params.data!) {
-            return params.data?.[params.colDef?.field!];
+        if (params.data && params.colDef.field) {
+          const changes: SampleChange[] = params.context?.getChanges();
+          const changedValue = changes?.find((change) => {
+            return (
+              change.fieldName === params.colDef.field &&
+              change.primaryId === params.data.primaryId
+            );
+          });
+          if (changedValue) {
+            return changedValue.newValue;
           } else {
-            return "N/A";
+            if (params.colDef.field in params.data) {
+              return params.data[params.colDef.field];
+            } else {
+              return "N/A";
+            }
           }
         }
       };
@@ -689,10 +694,9 @@ export const WesSampleDetailsColumns: ColDef[] = [
           return "";
       }
     },
-    filter: true,
+    filter: "agSetColumnFilter",
     filterParams: {
-      valueFormatter: (params: ValueFormatterParams) =>
-        params.value === "true" ? "Yes" : "No",
+      values: ["Yes", "No"],
       suppressMiniFilter: true,
     },
   },
@@ -829,7 +833,7 @@ export function handleSearch(
   setParsedSearchVals(parsedSearchVals);
 }
 
-function formatDate(date: moment.MomentInput) {
+export function formatDate(date: moment.MomentInput) {
   return date ? moment(date).format("YYYY-MM-DD") : null;
 }
 

@@ -49,14 +49,7 @@ export function UpdateModal({
   const [updateDashboardSamplesMutation] = useUpdateDashboardSamplesMutation();
 
   async function handleSubmitUpdates() {
-    const changesByPrimaryId: ChangesByPrimaryId = {};
-    for (const { primaryId, fieldName, newValue } of changes) {
-      if (changesByPrimaryId[primaryId]) {
-        changesByPrimaryId[primaryId][fieldName] = newValue;
-      } else {
-        changesByPrimaryId[primaryId] = { [fieldName]: newValue };
-      }
-    }
+    const changesByPrimaryId = groupChangesByPrimaryId(changes);
 
     let newDashboardSamples: DashboardSampleInput[] = [];
     samples.forEach((s) => {
@@ -80,9 +73,6 @@ export function UpdateModal({
 
     updateDashboardSamplesMutation({
       variables: { newDashboardSamples },
-      optimisticResponse: {
-        updateDashboardSamples: newDashboardSamples,
-      },
     });
 
     onSuccess();
@@ -133,4 +123,16 @@ export function UpdateModal({
       </Modal.Footer>
     </Modal>
   );
+}
+
+export function groupChangesByPrimaryId(changes: SampleChange[]) {
+  const changesByPrimaryId: ChangesByPrimaryId = {};
+  for (const { primaryId, fieldName, newValue } of changes) {
+    if (changesByPrimaryId[primaryId]) {
+      changesByPrimaryId[primaryId][fieldName] = newValue;
+    } else {
+      changesByPrimaryId[primaryId] = { [fieldName]: newValue };
+    }
+  }
+  return changesByPrimaryId;
 }

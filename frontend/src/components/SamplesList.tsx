@@ -1,14 +1,21 @@
-import { useDashboardSamplesQuery } from "../generated/graphql";
+import {
+  AgGridSortDirection,
+  DashboardSampleFilter,
+  DashboardSampleSort,
+  QueryDashboardSamplesArgs,
+  useDashboardSamplesLazyQuery,
+} from "../generated/graphql";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { Button, Col, Container } from "react-bootstrap";
-import { Dispatch, SetStateAction, useRef } from "react";
+import { Dispatch, SetStateAction, useCallback, useRef } from "react";
 import { DownloadModal } from "./DownloadModal";
-import { UpdateModal } from "./UpdateModal";
+import { groupChangesByPrimaryId, UpdateModal } from "./UpdateModal";
 import { AlertModal } from "./AlertModal";
 import { buildTsvString } from "../utils/stringBuilders";
 import {
   SampleChange,
   defaultColDef,
+  formatDate,
   isValidCostCenter,
 } from "../shared/helpers";
 import { AgGridReact } from "ag-grid-react";
@@ -17,7 +24,11 @@ import { useState } from "react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import "ag-grid-enterprise";
-import { CellValueChangedEvent, ColDef } from "ag-grid-community";
+import {
+  CellValueChangedEvent,
+  ColDef,
+  IServerSideGetRowsParams,
+} from "ag-grid-community";
 import { ErrorMessage, Toolbar } from "../shared/tableElements";
 import styles from "./records.module.scss";
 import { getUserEmail } from "../utils/getUserEmail";
@@ -29,10 +40,8 @@ import { DataName } from "../shared/types";
 import { parseUserSearchVal } from "../utils/parseSearchQueries";
 
 const POLLING_INTERVAL = 5000; // 5s
-const MAX_ROWS_TABLE = 500;
+const CACHE_BLOCK_SIZE = 100; // number of rows to fetch at a time
 const MAX_ROWS_EXPORT = 5000;
-const MAX_ROWS_SCROLLED_ALERT =
-  "You've reached the maximum number of samples that can be displayed. Please refine your search to see more samples.";
 const MAX_ROWS_EXPORT_EXCEED_ALERT =
   "You can only download up to 5,000 rows of data at a time. Please refine your search and try again. If you need the full dataset, contact the SMILE team at cmosmile@mskcc.org.";
 const COST_CENTER_VALIDATION_ALERT =
@@ -53,6 +62,11 @@ interface ISampleListProps {
   customToolbarUI?: JSX.Element;
 }
 
+const DEFAULT_SORT: DashboardSampleSort = {
+  colId: "importDate",
+  sort: AgGridSortDirection.Desc,
+};
+
 export default function SamplesList({
   columnDefs,
   parentDataName,
@@ -63,58 +77,95 @@ export default function SamplesList({
   customToolbarUI,
 }: ISampleListProps) {
   const [userSearchVal, setUserSearchVal] = useState<string>("");
-  const [showDownloadModal, setShowDownloadModal] = useState(false);
-  const [showAlertModal, setShowAlertModal] = useState(false);
-  const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [changes, setChanges] = useState<SampleChange[]>([]);
-  const [editMode, setEditMode] = useState(true);
-  const [alertContent, setAlertContent] = useState(MAX_ROWS_SCROLLED_ALERT);
-  const [sampleCount, setSampleCount] = useState(0);
+
+  const [showDownloadModal, setShowDownloadModal] = useState(false);
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [alertContent, setAlertContent] = useState<string | null>(null);
 
   const gridRef = useRef<AgGridReactType>(null);
   const params = useParams();
   const hasParams = Object.keys(params).length > 0;
 
-  const { error, data, startPolling, stopPolling, refetch } =
-    useDashboardSamplesQuery({
+  const [, { error, data, fetchMore, refetch, startPolling, stopPolling }] =
+    useDashboardSamplesLazyQuery({
       variables: {
         searchVals: [],
         sampleContext,
-        limit: MAX_ROWS_TABLE,
+        sort: DEFAULT_SORT,
+        limit: CACHE_BLOCK_SIZE,
+        offset: 0,
       },
       pollInterval: POLLING_INTERVAL,
     });
 
   const samples = data?.dashboardSamples;
+  const sampleCount = data?.dashboardSampleCount.totalCount;
+
+  const getServerSideDatasource = useCallback(
+    ({ userSearchVal, sampleContext }) => {
+      return {
+        getRows: async (params: IServerSideGetRowsParams) => {
+          let filter: DashboardSampleFilter | undefined;
+          const filterModel = params.request.filterModel;
+          if (filterModel && Object.keys(filterModel).length > 0) {
+            filter = {
+              field: Object.keys(filterModel)[0],
+              values: filterModel[Object.keys(filterModel)[0]].values,
+            };
+          } else {
+            filter = undefined; // all filter values are selected
+          }
+
+          const fetchInput = {
+            searchVals: parseUserSearchVal(userSearchVal),
+            sampleContext,
+            sort: params.request.sortModel[0] || DEFAULT_SORT,
+            filter,
+            offset: params.request.startRow ?? 0,
+            limit: CACHE_BLOCK_SIZE,
+          } as QueryDashboardSamplesArgs;
+
+          const thisFetch =
+            params.request.startRow === 0
+              ? refetch(fetchInput)
+              : fetchMore({
+                  variables: fetchInput,
+                });
+
+          return thisFetch
+            .then((result) => {
+              params.success({
+                rowData: result.data.dashboardSamples,
+                rowCount: result.data.dashboardSampleCount.totalCount,
+              });
+            })
+            .catch((error) => {
+              console.error(error);
+              params.fail();
+            });
+        },
+      };
+    },
+    [refetch, fetchMore]
+  );
+
+  function refreshData(userSearchVal: string) {
+    const newDatasource = getServerSideDatasource({
+      userSearchVal,
+      sampleContext,
+    });
+    gridRef.current?.api.setServerSideDatasource(newDatasource); // triggers a refresh
+  }
 
   if (error) return <ErrorMessage error={error} />;
 
-  function handleSearch(userSearchVal: string) {
-    gridRef.current?.api?.showLoadingOverlay();
-    refetch({
-      searchVals: parseUserSearchVal(userSearchVal),
-      sampleContext,
-      limit: MAX_ROWS_TABLE,
-    }).then(() => {
-      gridRef.current?.api?.hideOverlay();
-    });
-  }
-
   async function onCellValueChanged(params: CellValueChangedEvent) {
-    if (!editMode) return;
-
     const primaryId = params.data.primaryId;
     const fieldName = params.colDef.field!;
     const { oldValue, newValue, node: rowNode } = params;
 
-    function resetAlertIfCostCentersAreAllValid(changes: SampleChange[]) {
-      const allRowsHaveValidCostCenter = changes.every(
-        (c) => c.fieldName !== "costCenter" || isValidCostCenter(c.newValue)
-      );
-      if (allRowsHaveValidCostCenter) setAlertContent(MAX_ROWS_SCROLLED_ALERT);
-    }
-
-    // prevent registering a change if no actual changes are made
+    // Prevent registering a change if no actual changes are made
     const noChangeInVal = rowNode.data[fieldName] === newValue;
     const noChangeInEmptyCell = !rowNode.data[fieldName] && !newValue;
     if (noChangeInVal || noChangeInEmptyCell) {
@@ -123,12 +174,11 @@ export default function SamplesList({
       );
       setChanges(updatedChanges);
       if (updatedChanges.length === 0) setUnsavedChanges?.(false);
-      resetAlertIfCostCentersAreAllValid(updatedChanges);
       gridRef.current?.api?.refreshCells({ rowNodes: [rowNode] });
       return;
     }
 
-    // add/update the billedBy cell to/in the changes array
+    // Add/update the billedBy cell to/in the changes array
     if (fieldName === "billed" && setUserEmail) {
       let currUserEmail = userEmail;
 
@@ -173,7 +223,7 @@ export default function SamplesList({
       });
     }
 
-    // add/update the edited cell to/in the changes array
+    // Add/update the edited cell to/in the changes array
     setChanges((changes) => {
       const change = changes.find(
         (c) => c.primaryId === primaryId && c.fieldName === fieldName
@@ -186,33 +236,59 @@ export default function SamplesList({
       return [...changes];
     });
 
-    // validate Cost Center inputs
-    if (fieldName === "costCenter") {
-      if (!isValidCostCenter(newValue)) {
-        setAlertContent(COST_CENTER_VALIDATION_ALERT);
-        setShowAlertModal(true);
-      } else {
-        resetAlertIfCostCentersAreAllValid(changes);
-      }
+    // Validate Cost Center inputs
+    if (fieldName === "costCenter" && !isValidCostCenter(newValue)) {
+      setAlertContent(COST_CENTER_VALIDATION_ALERT);
     }
 
     setUnsavedChanges?.(true);
     gridRef.current?.api?.refreshCells({ rowNodes: [rowNode] });
   }
 
-  const handleDiscardChanges = () => {
-    setEditMode(false);
+  async function handleDiscardChanges() {
+    setChanges([]);
+    setUnsavedChanges?.(false);
+  }
 
-    setTimeout(() => {
+  async function handleConfirmUpdates() {
+    // Manually handle optimistic updates: refresh updated rows' UI to indicate them being updated
+    // (We can't use GraphQL's optimistic response because it isn't a good fit for
+    // AG Grid's Server-Side data model. e.g. GraphQL's optimistic response only returns
+    // the updated data, while AG Grid expects the datasource == the entire dataset.)
+    const changesByPrimaryId = groupChangesByPrimaryId(changes);
+    const optimisticSamples = samples!.map((s) => {
+      if (s.primaryId in changesByPrimaryId) {
+        return {
+          ...s,
+          revisable: false,
+          importDate: formatDate(new Date()) as string,
+          ...changesByPrimaryId[s.primaryId],
+        };
+      }
+      return s;
+    });
+    optimisticSamples.sort((a, b) => {
+      return (
+        new Date(b.importDate).getTime() - new Date(a.importDate).getTime()
+      );
+    });
+    const optimisticDatasource = {
+      getRows: (params: IServerSideGetRowsParams) => {
+        params.success({
+          rowData: optimisticSamples!,
+          rowCount: sampleCount,
+        });
+      },
+    };
+    gridRef.current?.api?.setServerSideDatasource(optimisticDatasource);
+
+    setTimeout(async () => {
+      refreshData(userSearchVal);
       startPolling(POLLING_INTERVAL);
     }, 10000);
 
-    setUnsavedChanges?.(false);
-    setChanges([]);
-    setTimeout(() => {
-      setEditMode(true);
-    }, 0);
-  };
+    handleDiscardChanges();
+  }
 
   return (
     <>
@@ -231,26 +307,21 @@ export default function SamplesList({
 
       {showDownloadModal && (
         <DownloadModal
-          loader={() => {
-            const allColumns = gridRef.current?.columnApi?.getAllGridColumns();
-            return sampleCount <= MAX_ROWS_TABLE
-              ? Promise.resolve(
-                  buildTsvString(samples!, columnDefs, allColumns)
-                )
-              : refetch({ limit: MAX_ROWS_EXPORT }).then((result) =>
-                  buildTsvString(
-                    result.data.dashboardSamples!,
-                    columnDefs,
-                    allColumns
-                  )
-                );
+          loader={async () => {
+            // Using fetchMore instead of refetch to avoid overriding the cached variables
+            const { data } = await fetchMore({
+              variables: {
+                offset: 0,
+                limit: MAX_ROWS_EXPORT,
+              },
+            });
+            return buildTsvString(
+              data.dashboardSamples,
+              columnDefs,
+              gridRef.current?.columnApi?.getAllGridColumns()
+            );
           }}
-          onComplete={() => {
-            setShowDownloadModal(false);
-            // Reset the limit back to the default value of MAX_ROWS_TABLE.
-            // Otherwise, polling will use the most recent value MAX_ROWS_EXPORT
-            refetch({ limit: MAX_ROWS_TABLE });
-          }}
+          onComplete={() => setShowDownloadModal(false)}
           exportFileName={[
             parentDataName?.slice(0, -1),
             Object.values(params)?.[0],
@@ -265,17 +336,15 @@ export default function SamplesList({
         <UpdateModal
           changes={changes}
           samples={samples!}
-          onSuccess={handleDiscardChanges}
+          onSuccess={handleConfirmUpdates}
           onHide={() => setShowUpdateModal(false)}
           onOpen={() => stopPolling()}
         />
       )}
 
       <AlertModal
-        show={showAlertModal}
-        onHide={() => {
-          setShowAlertModal(false);
-        }}
+        show={!!alertContent}
+        onHide={() => setAlertContent(null)}
         title={"Warning"}
         content={alertContent}
       />
@@ -284,15 +353,13 @@ export default function SamplesList({
         dataName={"samples"}
         userSearchVal={userSearchVal}
         setUserSearchVal={setUserSearchVal}
-        handleSearch={(userSearchVal) => handleSearch(userSearchVal)}
+        refreshData={(userSearchVal) => refreshData(userSearchVal)}
         matchingResultsCount={`${
-          sampleCount ? sampleCount.toLocaleString() : "Loading"
+          sampleCount !== undefined ? sampleCount.toLocaleString() : "Loading"
         } matching samples`}
         handleDownload={() => {
-          if (sampleCount > MAX_ROWS_EXPORT) {
+          if (sampleCount && sampleCount > MAX_ROWS_EXPORT) {
             setAlertContent(MAX_ROWS_EXPORT_EXCEED_ALERT);
-            setShowAlertModal(true);
-            return;
           } else {
             setShowDownloadModal(true);
           }
@@ -304,20 +371,35 @@ export default function SamplesList({
               <Col md="auto">
                 <Button
                   className={"btn btn-secondary"}
-                  onClick={handleDiscardChanges}
+                  onClick={() => {
+                    // Remove cell styles associated with having been edited
+                    gridRef.current?.api?.redrawRows({
+                      rowNodes: changes.map((c) => c.rowNode),
+                    });
+
+                    handleDiscardChanges();
+                  }}
                   size={"sm"}
                 >
                   Discard Changes
                 </Button>{" "}
                 <Button
                   className={"btn btn-success"}
-                  disabled={alertContent === COST_CENTER_VALIDATION_ALERT}
                   onClick={() => {
-                    setShowUpdateModal(true);
+                    const hasInvalidCostCenter = changes.some(
+                      (c) =>
+                        c.fieldName === "costCenter" &&
+                        !isValidCostCenter(c.newValue)
+                    );
+                    if (hasInvalidCostCenter) {
+                      setAlertContent(COST_CENTER_VALIDATION_ALERT);
+                    } else {
+                      setShowUpdateModal(true);
+                    }
                   }}
                   size={"sm"}
                 >
-                  Submit Updates
+                  Confirm Updates
                 </Button>
               </Col>
             </>
@@ -334,9 +416,9 @@ export default function SamplesList({
             style={{ width: width }}
           >
             <AgGridReact
-              getRowId={(d) => {
-                return d.data.primaryId;
-              }}
+              rowModelType="serverSide"
+              serverSideInfiniteScroll={true}
+              cacheBlockSize={CACHE_BLOCK_SIZE}
               rowClassRules={{
                 unlocked: function (params) {
                   return params.data?.revisable === true;
@@ -353,7 +435,6 @@ export default function SamplesList({
                 },
               }}
               columnDefs={columnDefs}
-              rowData={samples!}
               onCellEditRequest={onCellValueChanged}
               readOnlyEdit={true}
               defaultColDef={defaultColDef}
@@ -370,18 +451,7 @@ export default function SamplesList({
               }}
               tooltipShowDelay={0}
               tooltipHideDelay={60000}
-              onBodyScrollEnd={(params) => {
-                if (params.api.getLastDisplayedRow() + 1 === MAX_ROWS_TABLE) {
-                  setShowAlertModal(true);
-                }
-              }}
-              onFilterChanged={(params) => {
-                setSampleCount(params.api.getDisplayedRowCount());
-              }}
-              onRowDataUpdated={() => {
-                setSampleCount(data?.dashboardSampleCount?.totalCount || 0);
-              }}
-              onGridColumnsChanged={() => handleSearch(userSearchVal)}
+              onGridColumnsChanged={() => refreshData(userSearchVal)}
             />
           </div>
         )}

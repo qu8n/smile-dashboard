@@ -30,6 +30,8 @@ import { AgGridReact as AgGridReactType } from "ag-grid-react/lib/agGridReact";
 import { BreadCrumb } from "../shared/components/BreadCrumb";
 import { Title } from "../shared/components/Title";
 
+const CACHE_BLOCK_SIZE = 100;
+
 interface IRecordsListProps {
   colDefs: ColDef[];
   dataName: DataName;
@@ -101,7 +103,7 @@ export default function RecordsList({
     lazyRecordsQuery({
       variables: {
         options: {
-          limit: 20,
+          limit: CACHE_BLOCK_SIZE,
           offset: 0,
           sort: defaultSort,
         },
@@ -314,7 +316,7 @@ export default function RecordsList({
               columnDefs={colDefs}
               serverSideDatasource={datasource}
               serverSideInfiniteScroll={enableInfiniteScroll}
-              cacheBlockSize={20}
+              cacheBlockSize={CACHE_BLOCK_SIZE}
               debug={false}
               context={{
                 navigateFunction: navigate,

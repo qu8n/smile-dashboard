@@ -5,7 +5,7 @@ import Modal from "react-bootstrap/Modal";
 export const AlertModal: FunctionComponent<{
   show: boolean;
   title: string;
-  content: string;
+  content: string | null;
   onHide: () => void;
 }> = ({ show, title, content, onHide }) => {
   return (

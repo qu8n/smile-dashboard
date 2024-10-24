@@ -21,6 +21,11 @@ export type Scalars = {
   Float: number;
 };
 
+export enum AgGridSortDirection {
+  Asc = "asc",
+  Desc = "desc",
+}
+
 export type BamComplete = {
   __typename?: "BamComplete";
   date: Scalars["String"];
@@ -1757,7 +1762,7 @@ export type DashboardSample = {
   custodianInformation?: Maybe<Scalars["String"]>;
   embargoDate?: Maybe<Scalars["String"]>;
   genePanel?: Maybe<Scalars["String"]>;
-  importDate?: Maybe<Scalars["String"]>;
+  importDate: Scalars["String"];
   initialPipelineRunDate?: Maybe<Scalars["String"]>;
   investigatorSampleId?: Maybe<Scalars["String"]>;
   mafCompleteDate?: Maybe<Scalars["String"]>;
@@ -1784,9 +1789,19 @@ export type DashboardSample = {
   validationStatus?: Maybe<Scalars["Boolean"]>;
 };
 
+export type DashboardSampleContext = {
+  fieldName?: InputMaybe<Scalars["String"]>;
+  values: Array<Scalars["String"]>;
+};
+
 export type DashboardSampleCount = {
   __typename?: "DashboardSampleCount";
-  totalCount?: Maybe<Scalars["Int"]>;
+  totalCount: Scalars["Int"];
+};
+
+export type DashboardSampleFilter = {
+  field: Scalars["String"];
+  values: Array<Scalars["String"]>;
 };
 
 export type DashboardSampleInput = {
@@ -1806,7 +1821,7 @@ export type DashboardSampleInput = {
   custodianInformation?: InputMaybe<Scalars["String"]>;
   embargoDate?: InputMaybe<Scalars["String"]>;
   genePanel?: InputMaybe<Scalars["String"]>;
-  importDate?: InputMaybe<Scalars["String"]>;
+  importDate: Scalars["String"];
   initialPipelineRunDate?: InputMaybe<Scalars["String"]>;
   investigatorSampleId?: InputMaybe<Scalars["String"]>;
   mafCompleteDate?: InputMaybe<Scalars["String"]>;
@@ -1831,6 +1846,11 @@ export type DashboardSampleInput = {
   tumorOrNormal?: InputMaybe<Scalars["String"]>;
   validationReport?: InputMaybe<Scalars["String"]>;
   validationStatus?: InputMaybe<Scalars["Boolean"]>;
+};
+
+export type DashboardSampleSort = {
+  colId: Scalars["String"];
+  sort: AgGridSortDirection;
 };
 
 export type DeleteInfo = {
@@ -4607,14 +4627,18 @@ export type QueryCohortsConnectionArgs = {
 };
 
 export type QueryDashboardSampleCountArgs = {
-  sampleContext?: InputMaybe<SampleContext>;
+  filter?: InputMaybe<DashboardSampleFilter>;
+  sampleContext?: InputMaybe<DashboardSampleContext>;
   searchVals?: InputMaybe<Array<Scalars["String"]>>;
 };
 
 export type QueryDashboardSamplesArgs = {
+  filter?: InputMaybe<DashboardSampleFilter>;
   limit: Scalars["Int"];
-  sampleContext?: InputMaybe<SampleContext>;
+  offset: Scalars["Int"];
+  sampleContext?: InputMaybe<DashboardSampleContext>;
   searchVals?: InputMaybe<Array<Scalars["String"]>>;
+  sort: DashboardSampleSort;
 };
 
 export type QueryMafCompletesArgs = {
@@ -7475,11 +7499,6 @@ export type SampleConnectInput = {
 
 export type SampleConnectWhere = {
   node: SampleWhere;
-};
-
-export type SampleContext = {
-  fieldName?: InputMaybe<Scalars["String"]>;
-  values: Array<Scalars["String"]>;
 };
 
 export type SampleCreateInput = {
@@ -12462,15 +12481,18 @@ export type PatientsListQuery = {
 
 export type DashboardSamplesQueryVariables = Exact<{
   searchVals?: InputMaybe<Array<Scalars["String"]> | Scalars["String"]>;
-  sampleContext?: InputMaybe<SampleContext>;
+  sampleContext?: InputMaybe<DashboardSampleContext>;
+  sort: DashboardSampleSort;
+  filter?: InputMaybe<DashboardSampleFilter>;
   limit: Scalars["Int"];
+  offset: Scalars["Int"];
 }>;
 
 export type DashboardSamplesQuery = {
   __typename?: "Query";
   dashboardSampleCount: {
     __typename?: "DashboardSampleCount";
-    totalCount?: number | null;
+    totalCount: number;
   };
   dashboardSamples: Array<{
     __typename?: "DashboardSample";
@@ -12478,7 +12500,7 @@ export type DashboardSamplesQuery = {
     revisable?: boolean | null;
     primaryId: string;
     cmoSampleName?: string | null;
-    importDate?: string | null;
+    importDate: string;
     cmoPatientId?: string | null;
     investigatorSampleId?: string | null;
     sampleType?: string | null;
@@ -12527,7 +12549,7 @@ export type DashboardSampleMetadataPartsFragment = {
   __typename?: "DashboardSample";
   primaryId: string;
   cmoSampleName?: string | null;
-  importDate?: string | null;
+  importDate: string;
   cmoPatientId?: string | null;
   investigatorSampleId?: string | null;
   sampleType?: string | null;
@@ -12603,7 +12625,7 @@ export type UpdateDashboardSamplesMutation = {
     revisable?: boolean | null;
     primaryId: string;
     cmoSampleName?: string | null;
-    importDate?: string | null;
+    importDate: string;
     cmoPatientId?: string | null;
     investigatorSampleId?: string | null;
     sampleType?: string | null;
@@ -12936,19 +12958,26 @@ export type PatientsListQueryResult = Apollo.QueryResult<
 export const DashboardSamplesDocument = gql`
   query DashboardSamples(
     $searchVals: [String!]
-    $sampleContext: SampleContext
+    $sampleContext: DashboardSampleContext
+    $sort: DashboardSampleSort!
+    $filter: DashboardSampleFilter
     $limit: Int!
+    $offset: Int!
   ) {
     dashboardSampleCount(
       searchVals: $searchVals
       sampleContext: $sampleContext
+      filter: $filter
     ) {
       totalCount
     }
     dashboardSamples(
       searchVals: $searchVals
       sampleContext: $sampleContext
+      sort: $sort
+      filter: $filter
       limit: $limit
+      offset: $offset
     ) {
       ...DashboardSampleParts
       ...DashboardSampleMetadataParts
@@ -12974,7 +13003,10 @@ export const DashboardSamplesDocument = gql`
  *   variables: {
  *      searchVals: // value for 'searchVals'
  *      sampleContext: // value for 'sampleContext'
+ *      sort: // value for 'sort'
+ *      filter: // value for 'filter'
  *      limit: // value for 'limit'
+ *      offset: // value for 'offset'
  *   },
  * });
  */

@@ -19,7 +19,14 @@ export async function buildCustomSchema(ogm: OGM) {
     Query: {
       async dashboardSamples(
         _source: undefined,
-        { searchVals, sampleContext, limit }: QueryDashboardSamplesArgs,
+        {
+          searchVals,
+          sampleContext,
+          sort,
+          filter,
+          limit,
+          offset,
+        }: QueryDashboardSamplesArgs,
         { oncotreeCache }: ApolloServerContext
       ) {
         const addlOncotreeCodes = getAddlOtCodesMatchingCtOrCtdVals({
@@ -30,18 +37,21 @@ export async function buildCustomSchema(ogm: OGM) {
         const partialCypherQuery = buildPartialCypherQuery({
           searchVals,
           sampleContext,
+          filter,
           addlOncotreeCodes,
         });
 
         return await queryDashboardSamples({
           partialCypherQuery,
+          sort,
           limit,
+          offset,
           oncotreeCache,
         });
       },
       async dashboardSampleCount(
         _source: undefined,
-        { searchVals, sampleContext }: QueryDashboardSampleCountArgs,
+        { searchVals, sampleContext, filter }: QueryDashboardSampleCountArgs,
         { oncotreeCache }: ApolloServerContext
       ) {
         const addlOncotreeCodes = getAddlOtCodesMatchingCtOrCtdVals({
@@ -52,6 +62,7 @@ export async function buildCustomSchema(ogm: OGM) {
         const partialCypherQuery = buildPartialCypherQuery({
           searchVals,
           sampleContext,
+          filter,
           addlOncotreeCodes,
         });
 
@@ -79,7 +90,7 @@ export async function buildCustomSchema(ogm: OGM) {
 
   const typeDefs = gql`
     type DashboardSampleCount {
-      totalCount: Int
+      totalCount: Int!
     }
 
     type DashboardSample {
@@ -91,7 +102,7 @@ export async function buildCustomSchema(ogm: OGM) {
       ## Root-level fields
       primaryId: String!
       cmoSampleName: String
-      importDate: String
+      importDate: String!
       cmoPatientId: String
       investigatorSampleId: String
       sampleType: String
@@ -140,20 +151,40 @@ export async function buildCustomSchema(ogm: OGM) {
       qcCompleteStatus: String
     }
 
-    input SampleContext {
+    input DashboardSampleContext {
       fieldName: String
+      values: [String!]!
+    }
+
+    enum AgGridSortDirection {
+      asc
+      desc
+    }
+
+    # Modeling after AG Grid's SortModel type
+    input DashboardSampleSort {
+      colId: String! # field name
+      sort: AgGridSortDirection!
+    }
+
+    input DashboardSampleFilter {
+      field: String!
       values: [String!]!
     }
 
     type Query {
       dashboardSamples(
         searchVals: [String!]
-        sampleContext: SampleContext
+        sampleContext: DashboardSampleContext
+        filter: DashboardSampleFilter
+        sort: DashboardSampleSort!
         limit: Int!
+        offset: Int!
       ): [DashboardSample!]!
       dashboardSampleCount(
         searchVals: [String!]
-        sampleContext: SampleContext
+        sampleContext: DashboardSampleContext
+        filter: DashboardSampleFilter
       ): DashboardSampleCount!
     }
 
@@ -170,7 +201,7 @@ export async function buildCustomSchema(ogm: OGM) {
       ## Root-level fields
       primaryId: String!
       cmoSampleName: String
-      importDate: String
+      importDate: String!
       cmoPatientId: String
       investigatorSampleId: String
       sampleType: String
@@ -234,11 +265,15 @@ export async function buildCustomSchema(ogm: OGM) {
 
 async function queryDashboardSamples({
   partialCypherQuery,
+  sort,
   limit,
+  offset,
   oncotreeCache,
 }: {
   partialCypherQuery: string;
+  sort: QueryDashboardSamplesArgs["sort"];
   limit: QueryDashboardSamplesArgs["limit"];
+  offset: QueryDashboardSamplesArgs["offset"];
   oncotreeCache: NodeCache;
 }) {
   const cypherQuery = `
@@ -264,9 +299,10 @@ async function queryDashboardSamples({
       latestSm.sampleOrigin AS sampleOrigin,
       latestSm.tissueLocation AS tissueLocation,
       latestSm.sex AS sex,
-      latestSm.cmoSampleIdFields AS cmoSampleIdFields,
+      apoc.convert.fromJsonMap(latestSm.cmoSampleIdFields).recipe as recipe,
 
       oldestCCDate AS initialPipelineRunDate,
+      toString(datetime(replace(oldestCCDate, ' ', 'T')) + duration({ months: 18 })) AS embargoDate,
 
       t.smileTempoId AS smileTempoId,
       t.billed AS billed,
@@ -287,7 +323,8 @@ async function queryDashboardSamples({
       latestQC.reason AS qcCompleteReason,
       latestQC.status AS qcCompleteStatus
 
-    ORDER BY importDate DESC
+    ORDER BY ${sort.colId} ${sort.sort}
+    SKIP ${offset}
     LIMIT ${limit}
   `;
 
@@ -303,14 +340,6 @@ async function queryDashboardSamples({
 
       return {
         ...recordObject,
-        recipe: parseJsonSafely(recordObject.cmoSampleIdFields)?.recipe,
-        embargoDate: recordObject.initialPipelineRunDate
-          ? new Date(
-              new Date(recordObject.initialPipelineRunDate).setMonth(
-                new Date(recordObject.initialPipelineRunDate).getMonth() + 18
-              )
-            ).toISOString()
-          : null,
         cancerType: otCache?.mainType,
         cancerTypeDetailed: otCache?.name,
       };
@@ -402,10 +431,12 @@ const searchFiltersConfig = [
 function buildPartialCypherQuery({
   searchVals,
   sampleContext,
+  filter,
   addlOncotreeCodes,
 }: {
   searchVals: QueryDashboardSampleCountArgs["searchVals"];
   sampleContext?: QueryDashboardSampleCountArgs["sampleContext"];
+  filter?: QueryDashboardSamplesArgs["filter"];
   addlOncotreeCodes: string[];
 }) {
   // Build search filters given user's search values input. For example:
@@ -466,6 +497,18 @@ function buildPartialCypherQuery({
       ? `c.cohortId = '${sampleContext.values[0]}'`
       : "";
 
+  // Column filter of Cohort Samples view
+  let tempoFilter = "";
+  if (filter?.field === "billed") {
+    if (filter.values[0] === "Yes") {
+      tempoFilter = "t.billed = true";
+    } else if (filter.values[0] === "No") {
+      tempoFilter = "t.billed = false OR t.billed IS NULL";
+    } else if (filter.values.length === 0) {
+      tempoFilter = "t.billed <> true AND t.billed <> false";
+    }
+  }
+
   const partialCypherQuery = `
     // Get Sample and the most recent SampleMetadata
     MATCH (s:Sample)-[:HAS_METADATA]->(sm:SampleMetadata)
@@ -493,7 +536,9 @@ function buildPartialCypherQuery({
 
     // Get Tempo data
     OPTIONAL MATCH (s:Sample)-[:HAS_TEMPO]->(t:Tempo)
+    // We're calling WITH immediately after OPTIONAL MATCH here to correctly filter Tempo data
     WITH s, latestSm, latestSt, oldestCCDate, t
+    ${tempoFilter && `WHERE ${tempoFilter}`}
 
     // Get the most recent BamComplete event
     OPTIONAL MATCH (t)-[:HAS_EVENT]->(bc:BamComplete)
