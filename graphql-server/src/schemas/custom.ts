@@ -4,6 +4,7 @@ import { CachedOncotreeData } from "../utils/oncotree";
 import NodeCache from "node-cache";
 import { gql } from "apollo-server";
 import {
+  AgGridSortDirection,
   DashboardSampleInput,
   QueryDashboardPatientCountArgs,
   QueryDashboardPatientsArgs,
@@ -897,6 +898,11 @@ async function queryDashboardPatients({
   limit: QueryDashboardPatientsArgs["limit"];
   offset: QueryDashboardPatientsArgs["offset"];
 }) {
+  const orderBy =
+    sort.sort === AgGridSortDirection.Desc
+      ? `COALESCE(${sort.colId}, '') DESC`
+      : `${sort.colId} ASC`;
+
   const cypherQuery = `
     ${queryBody}
     RETURN
@@ -907,7 +913,7 @@ async function queryDashboardPatients({
       cmoSampleIds,
       consentPartA,
       consentPartC
-    ORDER BY ${sort.colId} ${sort.sort}
+    ORDER BY ${orderBy}
     SKIP ${offset}
     LIMIT ${limit}
   `;

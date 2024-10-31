@@ -1,11 +1,11 @@
 import {
+  AgGridSortDirection,
   PatientWhere,
   PatientsListQuery,
+  useDashboardPatientsLazyQuery,
   useGetPatientIdsTripletsLazyQuery,
-  usePatientsListLazyQuery,
 } from "../../generated/graphql";
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
-import RecordsList from "../../components/RecordsList";
 import { useParams } from "react-router-dom";
 import { Col, Form } from "react-bootstrap";
 import { AlertModal } from "../../components/AlertModal";
@@ -18,6 +18,7 @@ import {
 } from "../../shared/helpers";
 import { getUserEmail } from "../../utils/getUserEmail";
 import { openLoginPopup } from "../../utils/openLoginPopup";
+import NewRecordsList from "../../components/NewRecordsList";
 
 // Mirror the field types in the CRDB, where CMO_ID is stored without the "C-" prefix
 export type PatientIdsTriplet = {
@@ -69,6 +70,14 @@ function patientFilterWhereVariables(
 function addCDashToCMOId(cmoId: string): string {
   return cmoId.length === 6 ? `C-${cmoId}` : cmoId;
 }
+
+const MAX_ROWS_EXPORT = 5000;
+
+const MAX_ROWS_EXPORT_WARNING = {
+  title: "Warning",
+  content:
+    "You can only download up to 5,000 rows of data at a time. Please refine your search and try again. If you need the full dataset, contact the SMILE team at cmosmile@mskcc.org.",
+};
 
 const PHI_WARNING = {
   title: "Warning",
@@ -239,13 +248,18 @@ export default function PatientsPage({
   const dataName = "patients";
   const sampleQueryParamFieldName = "patientId";
   const sampleQueryParamValue = params[sampleQueryParamFieldName];
+  const defaultSort = {
+    colId: "dmpPatientId",
+    sort: AgGridSortDirection.Desc,
+  };
 
   return (
     <>
-      <RecordsList
-        colDefs={ActivePatientsListColumns}
+      <NewRecordsList
+        columnDefs={ActivePatientsListColumns}
         dataName={dataName}
-        lazyRecordsQuery={usePatientsListLazyQuery}
+        defaultSort={defaultSort}
+        lazyRecordsQuery={useDashboardPatientsLazyQuery}
         queryFilterWhereVariables={patientFilterWhereVariables}
         userSearchVal={userSearchVal}
         setUserSearchVal={setUserSearchVal}
@@ -254,14 +268,21 @@ export default function PatientsPage({
         handleSearch={handlePatientSearch}
         showDownloadModal={showDownloadModal}
         setShowDownloadModal={setShowDownloadModal}
-        handleDownload={() => {
-          if (phiEnabled) {
+        handleDownload={(recordCount: number) => {
+          if (recordCount && recordCount > MAX_ROWS_EXPORT) {
             setAlertModal({
               show: true,
-              ...PHI_WARNING,
+              ...MAX_ROWS_EXPORT_WARNING,
             });
+          } else {
+            if (phiEnabled) {
+              setAlertModal({
+                show: true,
+                ...PHI_WARNING,
+              });
+            }
+            setShowDownloadModal(true);
           }
-          setShowDownloadModal(true);
         }}
         samplesColDefs={SampleMetadataDetailsColumns}
         sampleContext={
