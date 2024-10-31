@@ -2,10 +2,11 @@ import { makeExecutableSchema } from "@graphql-tools/schema";
 import { ApolloServerContext, neo4jDriver } from "../utils/servers";
 import { CachedOncotreeData } from "../utils/oncotree";
 import NodeCache from "node-cache";
-import { parseJsonSafely } from "../utils/json";
 import { gql } from "apollo-server";
 import {
   DashboardSampleInput,
+  QueryDashboardPatientCountArgs,
+  QueryDashboardPatientsArgs,
   QueryDashboardSampleCountArgs,
   QueryDashboardSamplesArgs,
 } from "../generated/graphql";
@@ -21,7 +22,7 @@ export async function buildCustomSchema(ogm: OGM) {
         _source: undefined,
         {
           searchVals,
-          sampleContext,
+          context,
           sort,
           filter,
           limit,
@@ -36,7 +37,7 @@ export async function buildCustomSchema(ogm: OGM) {
 
         const partialCypherQuery = buildPartialCypherQuery({
           searchVals,
-          sampleContext,
+          context,
           filter,
           addlOncotreeCodes,
         });
@@ -51,7 +52,7 @@ export async function buildCustomSchema(ogm: OGM) {
       },
       async dashboardSampleCount(
         _source: undefined,
-        { searchVals, sampleContext, filter }: QueryDashboardSampleCountArgs,
+        { searchVals, context, filter }: QueryDashboardSampleCountArgs,
         { oncotreeCache }: ApolloServerContext
       ) {
         const addlOncotreeCodes = getAddlOtCodesMatchingCtOrCtdVals({
@@ -61,13 +62,34 @@ export async function buildCustomSchema(ogm: OGM) {
 
         const partialCypherQuery = buildPartialCypherQuery({
           searchVals,
-          sampleContext,
+          context,
           filter,
           addlOncotreeCodes,
         });
 
         return await queryDashboardSampleCount({
           partialCypherQuery,
+        });
+      },
+      async dashboardPatients(
+        _source: undefined,
+        { searchVals, filter, sort, limit, offset }: QueryDashboardPatientsArgs
+      ) {
+        const queryBody = buildPatientsQueryBody({ searchVals, filter });
+        return await queryDashboardPatients({
+          queryBody: queryBody,
+          sort,
+          limit,
+          offset,
+        });
+      },
+      async dashboardPatientCount(
+        _source: undefined,
+        { searchVals, filter }: QueryDashboardPatientCountArgs
+      ) {
+        const queryBody = buildPatientsQueryBody({ searchVals, filter });
+        return await queryDashboardPatientCount({
+          queryBody,
         });
       },
     },
@@ -89,7 +111,7 @@ export async function buildCustomSchema(ogm: OGM) {
   };
 
   const typeDefs = gql`
-    type DashboardSampleCount {
+    type DashboardRecordCount {
       totalCount: Int!
     }
 
@@ -151,9 +173,19 @@ export async function buildCustomSchema(ogm: OGM) {
       qcCompleteStatus: String
     }
 
-    input DashboardSampleContext {
+    input DashboardRecordContext {
       fieldName: String
       values: [String!]!
+    }
+
+    type DashboardPatient {
+      smilePatientId: String!
+      cmoPatientId: String
+      dmpPatientId: String
+      totalSampleCount: Int
+      cmoSampleIds: String
+      consentPartA: String
+      consentPartC: String
     }
 
     enum AgGridSortDirection {
@@ -162,12 +194,12 @@ export async function buildCustomSchema(ogm: OGM) {
     }
 
     # Modeling after AG Grid's SortModel type
-    input DashboardSampleSort {
+    input DashboardRecordSort {
       colId: String! # field name
       sort: AgGridSortDirection!
     }
 
-    input DashboardSampleFilter {
+    input DashboardRecordFilter {
       field: String!
       values: [String!]!
     }
@@ -175,17 +207,29 @@ export async function buildCustomSchema(ogm: OGM) {
     type Query {
       dashboardSamples(
         searchVals: [String!]
-        sampleContext: DashboardSampleContext
-        filter: DashboardSampleFilter
-        sort: DashboardSampleSort!
+        context: DashboardRecordContext
+        filter: DashboardRecordFilter
+        sort: DashboardRecordSort!
         limit: Int!
         offset: Int!
       ): [DashboardSample!]!
       dashboardSampleCount(
         searchVals: [String!]
-        sampleContext: DashboardSampleContext
-        filter: DashboardSampleFilter
-      ): DashboardSampleCount!
+        context: DashboardRecordContext
+        filter: DashboardRecordFilter
+      ): DashboardRecordCount!
+
+      dashboardPatients(
+        searchVals: [String!]
+        filter: DashboardRecordFilter
+        sort: DashboardRecordSort!
+        limit: Int!
+        offset: Int!
+      ): [DashboardPatient!]!
+      dashboardPatientCount(
+        searchVals: [String!]
+        filter: DashboardRecordFilter
+      ): DashboardRecordCount!
     }
 
     # We have to define a separate "input" type and can't reuse DashboardSample.
@@ -430,12 +474,12 @@ const searchFiltersConfig = [
 
 function buildPartialCypherQuery({
   searchVals,
-  sampleContext,
+  context,
   filter,
   addlOncotreeCodes,
 }: {
   searchVals: QueryDashboardSampleCountArgs["searchVals"];
-  sampleContext?: QueryDashboardSampleCountArgs["sampleContext"];
+  context?: QueryDashboardSampleCountArgs["context"];
   filter?: QueryDashboardSamplesArgs["filter"];
   addlOncotreeCodes: string[];
 }) {
@@ -469,32 +513,32 @@ function buildPartialCypherQuery({
 
   // Filters for the WES Samples view on Samples page
   const wesContext =
-    sampleContext?.fieldName === "genePanel"
+    context?.fieldName === "genePanel"
       ? `${fullSearchFilters && " AND "}${buildSearchFilters({
           variable: "latestSm",
           fields: ["genePanel"],
-          searchVals: sampleContext.values,
+          searchVals: context.values,
         })}`
       : "";
 
   // Filters for the Request Samples view
   const requestContext =
-    sampleContext?.fieldName === "igoRequestId"
+    context?.fieldName === "igoRequestId"
       ? `${fullSearchFilters && " AND "}latestSm.igoRequestId = '${
-          sampleContext.values[0]
+          context.values[0]
         }'`
       : "";
 
   // Filters for the Patient Samples view
   const patientContext =
-    sampleContext?.fieldName === "patientId"
-      ? `pa.value = '${sampleContext.values[0]}'`
+    context?.fieldName === "patientId"
+      ? `pa.value = '${context.values[0]}'`
       : "";
 
   // Filters for the Cohort Samples view
   const cohortContext =
-    sampleContext?.fieldName === "cohortId"
-      ? `c.cohortId = '${sampleContext.values[0]}'`
+    context?.fieldName === "cohortId"
+      ? `c.cohortId = '${context.values[0]}'`
       : "";
 
   // Column filter of Cohort Samples view
@@ -756,5 +800,142 @@ async function publishNatsMessage(topic: string, message: string) {
       `error connecting to ${JSON.stringify(natsConnProperties)}`,
       err
     );
+  }
+}
+
+function buildPatientsQueryBody({
+  searchVals,
+  filter,
+}: {
+  searchVals: QueryDashboardPatientsArgs["searchVals"];
+  filter: QueryDashboardPatientsArgs["filter"];
+}) {
+  const fieldsToSearch = [
+    "smilePatientId",
+    "cmoPatientId",
+    "dmpPatientId",
+    "cmoSampleIds",
+    "consentPartA",
+    "consentPartC",
+  ];
+
+  const searchFilters = searchVals?.length
+    ? "WHERE " +
+      fieldsToSearch
+        .map((field) => `${field} =~ '(?i).*(${searchVals.join("|")}).*'`)
+        .join(" OR ")
+    : "";
+
+  const patientsQueryBody = `
+    MATCH (p:Patient)
+
+    // Get patient aliases
+    OPTIONAL MATCH (p)<-[:IS_ALIAS]-(cmoPa:PatientAlias {namespace: 'cmoId'})
+    OPTIONAL MATCH (p)<-[:IS_ALIAS]-(dmpPa:PatientAlias {namespace: 'dmpId'})
+
+    // Get the latest SampleMetadata of each Sample
+    OPTIONAL MATCH (p)-[:HAS_SAMPLE]->(s:Sample)-[:HAS_METADATA]->(sm:SampleMetadata)
+    WITH
+      p,
+      cmoPa,
+      dmpPa,
+      s,
+      collect(sm) AS allSampleMetadata,
+      max(sm.importDate) AS latestImportDate
+    WITH
+      p,
+      cmoPa,
+      dmpPa,
+      s,
+      [sm IN allSampleMetadata WHERE sm.importDate = latestImportDate][0] AS latestSm
+
+    // Get the CMO Sample IDs and additionalProperties JSONs from SampleMetadata
+    WITH
+      p,
+      cmoPa,
+      dmpPa,
+      s,
+      CASE
+        WHEN latestSm.cmoSampleName IS NOT NULL THEN latestSm.cmoSampleName
+            ELSE latestSm.primaryId
+        END AS cmoSampleId,
+      apoc.convert.fromJsonMap(latestSm.additionalProperties) AS latestSmAddlPropsJson
+
+    // Implode/aggregate the different arrays
+    WITH
+      p,
+      cmoPa,
+      dmpPa,
+      collect(s) as samples,
+      collect(cmoSampleId) AS cmoSampleIds,
+      collect(latestSmAddlPropsJson.\`consent-parta\`) as consentPartAs,
+      collect(latestSmAddlPropsJson.\`consent-partc\`) as consentPartCs
+    
+    WITH
+      p.smilePatientId AS smilePatientId,
+      cmoPa.value AS cmoPatientId,
+      dmpPa.value AS dmpPatientId,
+      size(samples) as totalSampleCount,
+      apoc.text.join(cmoSampleIds, ', ') AS cmoSampleIds,
+      consentPartAs[0] as consentPartA,
+      consentPartCs[0] as consentPartC
+    
+    ${searchFilters}
+  `;
+
+  return patientsQueryBody;
+}
+
+async function queryDashboardPatients({
+  queryBody,
+  sort,
+  limit,
+  offset,
+}: {
+  queryBody: string;
+  sort: QueryDashboardPatientsArgs["sort"];
+  limit: QueryDashboardPatientsArgs["limit"];
+  offset: QueryDashboardPatientsArgs["offset"];
+}) {
+  const cypherQuery = `
+    ${queryBody}
+    RETURN
+      smilePatientId,
+      cmoPatientId,
+      dmpPatientId,
+      totalSampleCount,
+      cmoSampleIds,
+      consentPartA,
+      consentPartC
+    ORDER BY ${sort.colId} ${sort.sort}
+    SKIP ${offset}
+    LIMIT ${limit}
+  `;
+
+  const session = neo4jDriver.session();
+  try {
+    const result = await session.run(cypherQuery);
+    return result.records.map((record) => record.toObject());
+  } catch (error) {
+    console.error("Error with queryDashboardPatients:", error);
+  }
+}
+
+async function queryDashboardPatientCount({
+  queryBody,
+}: {
+  queryBody: string;
+}) {
+  const cypherQuery = `
+    ${queryBody}
+    RETURN count(smilePatientId) AS totalCount
+  `;
+
+  const session = neo4jDriver.session();
+  try {
+    const result = await session.run(cypherQuery);
+    return result.records[0].toObject();
+  } catch (error) {
+    console.error("Error with queryDashboardPatientCount:", error);
   }
 }

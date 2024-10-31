@@ -1,7 +1,7 @@
 import {
   AgGridSortDirection,
-  DashboardSampleFilter,
-  DashboardSampleSort,
+  DashboardRecordFilter,
+  DashboardRecordSort,
   QueryDashboardSamplesArgs,
   useDashboardSamplesLazyQuery,
 } from "../generated/graphql";
@@ -62,7 +62,7 @@ interface ISampleListProps {
   customToolbarUI?: JSX.Element;
 }
 
-const DEFAULT_SORT: DashboardSampleSort = {
+const DEFAULT_SORT: DashboardRecordSort = {
   colId: "importDate",
   sort: AgGridSortDirection.Desc,
 };
@@ -91,7 +91,7 @@ export default function SamplesList({
     useDashboardSamplesLazyQuery({
       variables: {
         searchVals: [],
-        sampleContext,
+        context: sampleContext,
         sort: DEFAULT_SORT,
         limit: CACHE_BLOCK_SIZE,
         offset: 0,
@@ -106,7 +106,7 @@ export default function SamplesList({
     ({ userSearchVal, sampleContext }) => {
       return {
         getRows: async (params: IServerSideGetRowsParams) => {
-          let filter: DashboardSampleFilter | undefined;
+          let filter: DashboardRecordFilter | undefined;
           const filterModel = params.request.filterModel;
           if (filterModel && Object.keys(filterModel).length > 0) {
             filter = {

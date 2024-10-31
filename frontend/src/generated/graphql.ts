@@ -1745,6 +1745,37 @@ export type CreateTemposMutationResponse = {
   tempos: Array<Tempo>;
 };
 
+export type DashboardPatient = {
+  __typename?: "DashboardPatient";
+  cmoPatientId?: Maybe<Scalars["String"]>;
+  cmoSampleIds?: Maybe<Scalars["String"]>;
+  consentPartA?: Maybe<Scalars["String"]>;
+  consentPartC?: Maybe<Scalars["String"]>;
+  dmpPatientId?: Maybe<Scalars["String"]>;
+  smilePatientId: Scalars["String"];
+  totalSampleCount?: Maybe<Scalars["Int"]>;
+};
+
+export type DashboardRecordContext = {
+  fieldName?: InputMaybe<Scalars["String"]>;
+  values: Array<Scalars["String"]>;
+};
+
+export type DashboardRecordCount = {
+  __typename?: "DashboardRecordCount";
+  totalCount: Scalars["Int"];
+};
+
+export type DashboardRecordFilter = {
+  field: Scalars["String"];
+  values: Array<Scalars["String"]>;
+};
+
+export type DashboardRecordSort = {
+  colId: Scalars["String"];
+  sort: AgGridSortDirection;
+};
+
 export type DashboardSample = {
   __typename?: "DashboardSample";
   accessLevel?: Maybe<Scalars["String"]>;
@@ -1789,21 +1820,6 @@ export type DashboardSample = {
   validationStatus?: Maybe<Scalars["Boolean"]>;
 };
 
-export type DashboardSampleContext = {
-  fieldName?: InputMaybe<Scalars["String"]>;
-  values: Array<Scalars["String"]>;
-};
-
-export type DashboardSampleCount = {
-  __typename?: "DashboardSampleCount";
-  totalCount: Scalars["Int"];
-};
-
-export type DashboardSampleFilter = {
-  field: Scalars["String"];
-  values: Array<Scalars["String"]>;
-};
-
 export type DashboardSampleInput = {
   accessLevel?: InputMaybe<Scalars["String"]>;
   baitSet?: InputMaybe<Scalars["String"]>;
@@ -1846,11 +1862,6 @@ export type DashboardSampleInput = {
   tumorOrNormal?: InputMaybe<Scalars["String"]>;
   validationReport?: InputMaybe<Scalars["String"]>;
   validationStatus?: InputMaybe<Scalars["Boolean"]>;
-};
-
-export type DashboardSampleSort = {
-  colId: Scalars["String"];
-  sort: AgGridSortDirection;
 };
 
 export type DeleteInfo = {
@@ -4537,7 +4548,9 @@ export type Query = {
   cohorts: Array<Cohort>;
   cohortsAggregate: CohortAggregateSelection;
   cohortsConnection: CohortsConnection;
-  dashboardSampleCount: DashboardSampleCount;
+  dashboardPatientCount: DashboardRecordCount;
+  dashboardPatients: Array<DashboardPatient>;
+  dashboardSampleCount: DashboardRecordCount;
   dashboardSamples: Array<DashboardSample>;
   mafCompletes: Array<MafComplete>;
   mafCompletesAggregate: MafCompleteAggregateSelection;
@@ -4626,19 +4639,32 @@ export type QueryCohortsConnectionArgs = {
   where?: InputMaybe<CohortWhere>;
 };
 
+export type QueryDashboardPatientCountArgs = {
+  filter?: InputMaybe<DashboardRecordFilter>;
+  searchVals?: InputMaybe<Array<Scalars["String"]>>;
+};
+
+export type QueryDashboardPatientsArgs = {
+  filter?: InputMaybe<DashboardRecordFilter>;
+  limit: Scalars["Int"];
+  offset: Scalars["Int"];
+  searchVals?: InputMaybe<Array<Scalars["String"]>>;
+  sort: DashboardRecordSort;
+};
+
 export type QueryDashboardSampleCountArgs = {
-  filter?: InputMaybe<DashboardSampleFilter>;
-  sampleContext?: InputMaybe<DashboardSampleContext>;
+  context?: InputMaybe<DashboardRecordContext>;
+  filter?: InputMaybe<DashboardRecordFilter>;
   searchVals?: InputMaybe<Array<Scalars["String"]>>;
 };
 
 export type QueryDashboardSamplesArgs = {
-  filter?: InputMaybe<DashboardSampleFilter>;
+  context?: InputMaybe<DashboardRecordContext>;
+  filter?: InputMaybe<DashboardRecordFilter>;
   limit: Scalars["Int"];
   offset: Scalars["Int"];
-  sampleContext?: InputMaybe<DashboardSampleContext>;
   searchVals?: InputMaybe<Array<Scalars["String"]>>;
-  sort: DashboardSampleSort;
+  sort: DashboardRecordSort;
 };
 
 export type QueryMafCompletesArgs = {
@@ -12479,11 +12505,37 @@ export type PatientsListQuery = {
   }>;
 };
 
+export type DashboardPatientsQueryVariables = Exact<{
+  searchVals?: InputMaybe<Array<Scalars["String"]> | Scalars["String"]>;
+  filter?: InputMaybe<DashboardRecordFilter>;
+  sort: DashboardRecordSort;
+  limit: Scalars["Int"];
+  offset: Scalars["Int"];
+}>;
+
+export type DashboardPatientsQuery = {
+  __typename?: "Query";
+  dashboardPatientCount: {
+    __typename?: "DashboardRecordCount";
+    totalCount: number;
+  };
+  dashboardPatients: Array<{
+    __typename?: "DashboardPatient";
+    smilePatientId: string;
+    cmoPatientId?: string | null;
+    dmpPatientId?: string | null;
+    totalSampleCount?: number | null;
+    cmoSampleIds?: string | null;
+    consentPartA?: string | null;
+    consentPartC?: string | null;
+  }>;
+};
+
 export type DashboardSamplesQueryVariables = Exact<{
   searchVals?: InputMaybe<Array<Scalars["String"]> | Scalars["String"]>;
-  sampleContext?: InputMaybe<DashboardSampleContext>;
-  sort: DashboardSampleSort;
-  filter?: InputMaybe<DashboardSampleFilter>;
+  context?: InputMaybe<DashboardRecordContext>;
+  sort: DashboardRecordSort;
+  filter?: InputMaybe<DashboardRecordFilter>;
   limit: Scalars["Int"];
   offset: Scalars["Int"];
 }>;
@@ -12491,7 +12543,7 @@ export type DashboardSamplesQueryVariables = Exact<{
 export type DashboardSamplesQuery = {
   __typename?: "Query";
   dashboardSampleCount: {
-    __typename?: "DashboardSampleCount";
+    __typename?: "DashboardRecordCount";
     totalCount: number;
   };
   dashboardSamples: Array<{
@@ -12955,25 +13007,108 @@ export type PatientsListQueryResult = Apollo.QueryResult<
   PatientsListQuery,
   PatientsListQueryVariables
 >;
+export const DashboardPatientsDocument = gql`
+  query DashboardPatients(
+    $searchVals: [String!]
+    $filter: DashboardRecordFilter
+    $sort: DashboardRecordSort!
+    $limit: Int!
+    $offset: Int!
+  ) {
+    dashboardPatientCount(searchVals: $searchVals, filter: $filter) {
+      totalCount
+    }
+    dashboardPatients(
+      searchVals: $searchVals
+      filter: $filter
+      sort: $sort
+      limit: $limit
+      offset: $offset
+    ) {
+      smilePatientId
+      cmoPatientId
+      dmpPatientId
+      totalSampleCount
+      cmoSampleIds
+      consentPartA
+      consentPartC
+    }
+  }
+`;
+
+/**
+ * __useDashboardPatientsQuery__
+ *
+ * To run a query within a React component, call `useDashboardPatientsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useDashboardPatientsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useDashboardPatientsQuery({
+ *   variables: {
+ *      searchVals: // value for 'searchVals'
+ *      filter: // value for 'filter'
+ *      sort: // value for 'sort'
+ *      limit: // value for 'limit'
+ *      offset: // value for 'offset'
+ *   },
+ * });
+ */
+export function useDashboardPatientsQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    DashboardPatientsQuery,
+    DashboardPatientsQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    DashboardPatientsQuery,
+    DashboardPatientsQueryVariables
+  >(DashboardPatientsDocument, options);
+}
+export function useDashboardPatientsLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    DashboardPatientsQuery,
+    DashboardPatientsQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    DashboardPatientsQuery,
+    DashboardPatientsQueryVariables
+  >(DashboardPatientsDocument, options);
+}
+export type DashboardPatientsQueryHookResult = ReturnType<
+  typeof useDashboardPatientsQuery
+>;
+export type DashboardPatientsLazyQueryHookResult = ReturnType<
+  typeof useDashboardPatientsLazyQuery
+>;
+export type DashboardPatientsQueryResult = Apollo.QueryResult<
+  DashboardPatientsQuery,
+  DashboardPatientsQueryVariables
+>;
 export const DashboardSamplesDocument = gql`
   query DashboardSamples(
     $searchVals: [String!]
-    $sampleContext: DashboardSampleContext
-    $sort: DashboardSampleSort!
-    $filter: DashboardSampleFilter
+    $context: DashboardRecordContext
+    $sort: DashboardRecordSort!
+    $filter: DashboardRecordFilter
     $limit: Int!
     $offset: Int!
   ) {
     dashboardSampleCount(
       searchVals: $searchVals
-      sampleContext: $sampleContext
+      context: $context
       filter: $filter
     ) {
       totalCount
     }
     dashboardSamples(
       searchVals: $searchVals
-      sampleContext: $sampleContext
+      context: $context
       sort: $sort
       filter: $filter
       limit: $limit
@@ -13002,7 +13137,7 @@ export const DashboardSamplesDocument = gql`
  * const { data, loading, error } = useDashboardSamplesQuery({
  *   variables: {
  *      searchVals: // value for 'searchVals'
- *      sampleContext: // value for 'sampleContext'
+ *      context: // value for 'context'
  *      sort: // value for 'sort'
  *      filter: // value for 'filter'
  *      limit: // value for 'limit'

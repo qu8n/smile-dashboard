@@ -46,24 +46,51 @@ query PatientsList($options: PatientOptions, $where: PatientWhere) {
   }
 }
 
+query DashboardPatients(
+  $searchVals: [String!]
+  $filter: DashboardRecordFilter
+  $sort: DashboardRecordSort!
+  $limit: Int!
+  $offset: Int!
+) {
+  dashboardPatientCount(searchVals: $searchVals, filter: $filter) {
+    totalCount
+  }
+  dashboardPatients(
+    searchVals: $searchVals
+    filter: $filter
+    sort: $sort
+    limit: $limit
+    offset: $offset
+  ) {
+    smilePatientId
+    cmoPatientId
+    dmpPatientId
+    totalSampleCount
+    cmoSampleIds
+    consentPartA
+    consentPartC
+  }
+}
+
 query DashboardSamples(
   $searchVals: [String!]
-  $sampleContext: DashboardSampleContext
-  $sort: DashboardSampleSort!
-  $filter: DashboardSampleFilter
+  $context: DashboardRecordContext
+  $sort: DashboardRecordSort!
+  $filter: DashboardRecordFilter
   $limit: Int!
   $offset: Int!
 ) {
   dashboardSampleCount(
     searchVals: $searchVals
-    sampleContext: $sampleContext
+    context: $context
     filter: $filter
   ) {
     totalCount
   }
   dashboardSamples(
     searchVals: $searchVals
-    sampleContext: $sampleContext
+    context: $context
     sort: $sort
     filter: $filter
     limit: $limit
