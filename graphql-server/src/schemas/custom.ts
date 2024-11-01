@@ -368,7 +368,7 @@ async function queryDashboardSamples({
       latestQC.reason AS qcCompleteReason,
       latestQC.status AS qcCompleteStatus
 
-    ORDER BY ${sort.colId} ${sort.sort}
+    ORDER BY ${getNeo4jCustomSort(sort)}
     SKIP ${offset}
     LIMIT ${limit}
   `;
@@ -877,7 +877,7 @@ function buildPatientsQueryBody({
       cmoPa.value AS cmoPatientId,
       dmpPa.value AS dmpPatientId,
       size(samples) as totalSampleCount,
-      apoc.text.join(cmoSampleIds, ', ') AS cmoSampleIds,
+      apoc.text.join([id IN cmoSampleIds WHERE id <> ''], ', ') AS cmoSampleIds,
       consentPartAs[0] as consentPartA,
       consentPartCs[0] as consentPartC
     
@@ -898,11 +898,6 @@ async function queryDashboardPatients({
   limit: QueryDashboardPatientsArgs["limit"];
   offset: QueryDashboardPatientsArgs["offset"];
 }) {
-  const orderBy =
-    sort.sort === AgGridSortDirection.Desc
-      ? `COALESCE(${sort.colId}, '') DESC`
-      : `${sort.colId} ASC`;
-
   const cypherQuery = `
     ${queryBody}
     RETURN
@@ -913,7 +908,7 @@ async function queryDashboardPatients({
       cmoSampleIds,
       consentPartA,
       consentPartC
-    ORDER BY ${orderBy}
+    ORDER BY ${getNeo4jCustomSort(sort)}
     SKIP ${offset}
     LIMIT ${limit}
   `;
@@ -944,4 +939,14 @@ async function queryDashboardPatientCount({
   } catch (error) {
     console.error("Error with queryDashboardPatientCount:", error);
   }
+}
+
+/**
+ * Disable Neo4j's defaults of showing nulls first for DESC sorting
+ * and empty strings first for ASC sorting
+ */
+function getNeo4jCustomSort(sort: QueryDashboardPatientsArgs["sort"]) {
+  return sort.sort === AgGridSortDirection.Desc
+    ? `COALESCE(${sort.colId}, '') DESC`
+    : `${sort.colId}='' ASC, ${sort.colId} ASC`;
 }
