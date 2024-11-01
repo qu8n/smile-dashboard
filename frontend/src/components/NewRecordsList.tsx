@@ -35,7 +35,7 @@ import { Title } from "../shared/components/Title";
 import { parseUserSearchVal } from "../utils/parseSearchQueries";
 
 const CACHE_BLOCK_SIZE = 100; // number of rows to fetch at a time
-const MAX_ROWS_EXPORT = 5000;
+const MAX_ROWS_EXPORT = 10000;
 
 interface INewRecordsListProps {
   columnDefs: ColDef[];
