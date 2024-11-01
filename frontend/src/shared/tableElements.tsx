@@ -5,6 +5,7 @@ import Spinner from "react-spinkit";
 import { DataName } from "./types";
 import { Dispatch, SetStateAction } from "react";
 import { InfoToolTip } from "./components/InfoToolTip";
+import { PatientIdsTriplet } from "../generated/graphql";
 
 export function LoadingSpinner() {
   return (
@@ -26,9 +27,10 @@ interface IToolbarProps {
   dataName: DataName;
   userSearchVal: string;
   setUserSearchVal: Dispatch<SetStateAction<string>>;
-  refreshData: (userSearchVal: string) => void;
+  setCustomSearchStates?: Dispatch<SetStateAction<PatientIdsTriplet[]>>;
+  onSearch: (userSearchVal: string) => void;
   matchingResultsCount: string;
-  handleDownload: () => void;
+  onDownload: () => void;
   customUILeft?: JSX.Element;
   customUIRight?: JSX.Element;
 }
@@ -37,9 +39,10 @@ export function Toolbar({
   dataName,
   userSearchVal,
   setUserSearchVal,
-  refreshData,
+  setCustomSearchStates,
+  onSearch,
   matchingResultsCount,
-  handleDownload,
+  onDownload,
   customUILeft,
   customUIRight,
 }: IToolbarProps) {
@@ -57,14 +60,15 @@ export function Toolbar({
           value={userSearchVal}
           onKeyDown={(event) => {
             if (event.key === "Enter") {
-              refreshData(userSearchVal);
+              onSearch(userSearchVal);
             }
           }}
           onInput={(event) => {
             const userSearchVal = event.currentTarget.value;
             setUserSearchVal(userSearchVal);
             if (userSearchVal === "") {
-              refreshData("");
+              setCustomSearchStates && setCustomSearchStates([]);
+              onSearch("");
             }
           }}
         />
@@ -82,7 +86,7 @@ export function Toolbar({
 
       <Col md="auto" style={{ marginLeft: -15 }}>
         <Button
-          onClick={() => refreshData(userSearchVal)}
+          onClick={() => onSearch(userSearchVal)}
           className={"btn btn-secondary"}
           size={"sm"}
         >
@@ -95,7 +99,7 @@ export function Toolbar({
       {customUIRight}
 
       <Col className={"text-end"}>
-        <Button onClick={handleDownload} size={"sm"}>
+        <Button onClick={onDownload} size={"sm"}>
           Generate report
         </Button>
       </Col>

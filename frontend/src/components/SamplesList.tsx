@@ -353,11 +353,11 @@ export default function SamplesList({
         dataName={"samples"}
         userSearchVal={userSearchVal}
         setUserSearchVal={setUserSearchVal}
-        refreshData={(userSearchVal) => refreshData(userSearchVal)}
+        onSearch={(userSearchVal) => refreshData(userSearchVal)}
         matchingResultsCount={`${
           sampleCount !== undefined ? sampleCount.toLocaleString() : "Loading"
         } matching samples`}
-        handleDownload={() => {
+        onDownload={() => {
           if (sampleCount && sampleCount > MAX_ROWS_EXPORT) {
             setAlertContent(MAX_ROWS_EXPORT_EXCEED_ALERT);
           } else {

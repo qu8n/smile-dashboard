@@ -13,21 +13,16 @@ import styles from "./records.module.scss";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import "ag-grid-enterprise";
-import {
-  ColDef,
-  IServerSideGetRowsParams,
-  IServerSideGetRowsRequest,
-} from "ag-grid-community";
+import { ColDef, IServerSideGetRowsParams } from "ag-grid-community";
 import { DataName, useHookLazyGeneric } from "../shared/types";
 import SamplesList, { SampleContext } from "./SamplesList";
 import {
   DashboardRecordFilter,
   DashboardRecordSort,
+  PatientIdsTriplet,
   QueryDashboardPatientsArgs,
-  SortDirection,
 } from "../generated/graphql";
 import { defaultColDef } from "../shared/helpers";
-import { PatientIdsTriplet } from "../pages/patients/PatientsPage";
 import { ErrorMessage, Toolbar } from "../shared/tableElements";
 import { AgGridReact as AgGridReactType } from "ag-grid-react/lib/agGridReact";
 import { BreadCrumb } from "../shared/components/BreadCrumb";
@@ -42,21 +37,12 @@ interface INewRecordsListProps {
   dataName: DataName;
   enableInfiniteScroll?: boolean;
   lazyRecordsQuery: typeof useHookLazyGeneric;
-  lazyRecordsQueryAddlVariables?: Record<string, any>;
-  prepareDataForAgGrid?: (
-    data: any,
-    filterModel: IServerSideGetRowsRequest["filterModel"],
-    sortModel?: { [key: string]: SortDirection }[] | undefined
-  ) => any;
-  queryFilterWhereVariables: (
-    parsedSearchVals: string[]
-  ) => Record<string, any>[];
   defaultSort: DashboardRecordSort;
   userSearchVal: string;
   setUserSearchVal: Dispatch<SetStateAction<string>>;
-  parsedSearchVals: string[];
-  setParsedSearchVals: Dispatch<SetStateAction<string[]>>;
-  handleSearch: () => void;
+  customSearchStates?: PatientIdsTriplet[];
+  setCustomSearchStates?: Dispatch<SetStateAction<PatientIdsTriplet[]>>;
+  searchInterceptor?: (userSearchVal: string) => Promise<string[]>;
   showDownloadModal: boolean;
   setShowDownloadModal: Dispatch<SetStateAction<boolean>>;
   handleDownload: (recordCount: number) => void;
@@ -64,7 +50,6 @@ interface INewRecordsListProps {
   sampleContext?: SampleContext;
   userEmail?: string | null;
   setUserEmail?: Dispatch<SetStateAction<string | null>>;
-  setCustomSearchVals?: Dispatch<SetStateAction<PatientIdsTriplet[]>>;
   customToolbarUI?: JSX.Element;
 }
 
@@ -76,9 +61,9 @@ export default function NewRecordsList({
   defaultSort,
   userSearchVal,
   setUserSearchVal,
-  parsedSearchVals,
-  setParsedSearchVals,
-  handleSearch,
+  customSearchStates,
+  setCustomSearchStates,
+  searchInterceptor,
   showDownloadModal,
   setShowDownloadModal,
   handleDownload,
@@ -87,7 +72,6 @@ export default function NewRecordsList({
   userEmail,
   setUserEmail,
   customToolbarUI,
-  setCustomSearchVals,
 }: INewRecordsListProps) {
   const [showClosingWarning, setShowClosingWarning] = useState(false);
   const [unsavedChanges, setUnsavedChanges] = useState(false);
@@ -114,7 +98,7 @@ export default function NewRecordsList({
   const recordCount = data?.[recordCountQueryName]?.totalCount;
 
   const getServerSideDatasource = useCallback(
-    ({ userSearchVal }) => {
+    ({ searchVals }) => {
       return {
         getRows: async (params: IServerSideGetRowsParams) => {
           let filter: DashboardRecordFilter | undefined;
@@ -129,7 +113,7 @@ export default function NewRecordsList({
           }
 
           const fetchInput = {
-            searchVals: parseUserSearchVal(userSearchVal),
+            searchVals,
             sort: params.request.sortModel[0] || defaultSort,
             filter,
             offset: params.request.startRow ?? -1,
@@ -160,11 +144,15 @@ export default function NewRecordsList({
     [defaultSort, refetch, fetchMore, recordsQueryName, recordCountQueryName]
   );
 
-  function refreshData(userSearchVal: string) {
-    const newDatasource = getServerSideDatasource({
-      userSearchVal,
-      sampleContext,
-    });
+  async function refreshData(userSearchVal: string) {
+    const extraSearchVals = searchInterceptor
+      ? await searchInterceptor(userSearchVal)
+      : [];
+    const searchVals = [
+      ...parseUserSearchVal(userSearchVal),
+      ...extraSearchVals,
+    ];
+    const newDatasource = getServerSideDatasource({ searchVals });
     gridRef.current?.api.setServerSideDatasource(newDatasource); // triggers a refresh
   }
 
@@ -268,11 +256,12 @@ export default function NewRecordsList({
         dataName={dataName}
         userSearchVal={userSearchVal}
         setUserSearchVal={setUserSearchVal}
-        refreshData={(userSearchVal) => refreshData(userSearchVal)}
+        setCustomSearchStates={setCustomSearchStates}
+        onSearch={async (userSearchVal) => refreshData(userSearchVal)}
         matchingResultsCount={`${
           recordCount !== undefined ? recordCount.toLocaleString() : "Loading"
         } matching ${dataName}`}
-        handleDownload={() => handleDownload(recordCount)}
+        onDownload={() => handleDownload(recordCount)}
         customUIRight={customToolbarUI}
       />
 

@@ -92,9 +92,9 @@ export async function buildOracleDbSchema() {
 
   const typeDefs = `
   type PatientIdsTriplet {
-    CMO_ID: String
+    CMO_ID: String!
     DMP_ID: String
-    PT_MRN: String
+    PT_MRN: String!
   }
 
   type Query {

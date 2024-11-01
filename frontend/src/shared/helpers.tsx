@@ -164,20 +164,20 @@ export const PatientsListColumns: ColDef[] = [
     headerName: "DMP Patient ID",
   },
   {
-    field: "totalSampleCount",
-    headerName: "# Samples",
-  },
-  {
-    field: "cmoSampleIds",
-    headerName: "Sample IDs",
-  },
-  {
     field: "consentPartA",
     headerName: "12-245 Part A",
   },
   {
     field: "consentPartC",
     headerName: "12-245 Part C",
+  },
+  {
+    field: "totalSampleCount",
+    headerName: "# Samples",
+  },
+  {
+    field: "cmoSampleIds",
+    headerName: "Sample IDs",
   },
   {
     field: "smilePatientId",

@@ -18,9 +18,8 @@ import {
 } from "ag-grid-community";
 import { DataName, useHookLazyGeneric } from "../shared/types";
 import SamplesList, { SampleContext } from "./SamplesList";
-import { SortDirection } from "../generated/graphql";
+import { PatientIdsTriplet, SortDirection } from "../generated/graphql";
 import { defaultColDef } from "../shared/helpers";
-import { PatientIdsTriplet } from "../pages/patients/PatientsPage";
 import {
   ErrorMessage,
   LoadingSpinner,

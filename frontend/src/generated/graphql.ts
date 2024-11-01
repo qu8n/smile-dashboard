@@ -3209,9 +3209,9 @@ export type PatientHasSampleSamplesUpdateFieldInput = {
 
 export type PatientIdsTriplet = {
   __typename?: "PatientIdsTriplet";
-  CMO_ID?: Maybe<Scalars["String"]>;
+  CMO_ID: Scalars["String"];
   DMP_ID?: Maybe<Scalars["String"]>;
-  PT_MRN?: Maybe<Scalars["String"]>;
+  PT_MRN: Scalars["String"];
 };
 
 export type PatientOptions = {
@@ -12724,9 +12724,9 @@ export type GetPatientIdsTripletsQuery = {
   __typename?: "Query";
   patientIdsTriplets?: Array<{
     __typename?: "PatientIdsTriplet";
-    CMO_ID?: string | null;
+    CMO_ID: string;
     DMP_ID?: string | null;
-    PT_MRN?: string | null;
+    PT_MRN: string;
   } | null> | null;
 };
 

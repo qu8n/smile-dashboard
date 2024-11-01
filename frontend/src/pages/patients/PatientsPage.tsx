@@ -1,6 +1,6 @@
 import {
   AgGridSortDirection,
-  PatientWhere,
+  PatientIdsTriplet,
   PatientsListQuery,
   useDashboardPatientsLazyQuery,
   useGetPatientIdsTripletsLazyQuery,
@@ -20,63 +20,16 @@ import { getUserEmail } from "../../utils/getUserEmail";
 import { openLoginPopup } from "../../utils/openLoginPopup";
 import NewRecordsList from "../../components/NewRecordsList";
 
-// Mirror the field types in the CRDB, where CMO_ID is stored without the "C-" prefix
-export type PatientIdsTriplet = {
-  CMO_ID: string;
-  PT_MRN: string;
-  DMP_ID: string | null;
-};
-
-function patientFilterWhereVariables(
-  parsedSearchVals: string[]
-): PatientWhere[] {
-  if (parsedSearchVals.length > 1) {
-    return [
-      {
-        patientAliasesIsAlias_SOME: {
-          value_IN: parsedSearchVals,
-        },
-      },
-      {
-        hasSampleSamples_SOME: {
-          hasMetadataSampleMetadata_SOME: {
-            cmoSampleName_IN: parsedSearchVals,
-          },
-        },
-      },
-    ];
-  }
-
-  if (parsedSearchVals.length === 1) {
-    return [
-      {
-        patientAliasesIsAlias_SOME: {
-          value_CONTAINS: parsedSearchVals[0],
-        },
-      },
-      {
-        hasSampleSamples_SOME: {
-          hasMetadataSampleMetadata_SOME: {
-            cmoSampleName_CONTAINS: parsedSearchVals[0],
-          },
-        },
-      },
-    ];
-  }
-
-  return [];
-}
-
 function addCDashToCMOId(cmoId: string): string {
   return cmoId.length === 6 ? `C-${cmoId}` : cmoId;
 }
 
-const MAX_ROWS_EXPORT = 5000;
+const MAX_ROWS_EXPORT = 10000;
 
 const MAX_ROWS_EXPORT_WARNING = {
   title: "Warning",
   content:
-    "You can only download up to 5,000 rows of data at a time. Please refine your search and try again. If you need the full dataset, contact the SMILE team at cmosmile@mskcc.org.",
+    "You can only download up to 10,000 rows of data at a time. Please refine your search and try again. If you need the full dataset, contact the SMILE team at cmosmile@mskcc.org.",
 };
 
 const PHI_WARNING = {
@@ -109,7 +62,6 @@ export default function PatientsPage({
   const params = useParams();
 
   const [userSearchVal, setUserSearchVal] = useState<string>("");
-  const [parsedSearchVals, setParsedSearchVals] = useState<string[]>([]);
   const [showDownloadModal, setShowDownloadModal] = useState(false);
   const [phiEnabled, setPhiEnabled] = useState(false);
   const [patientIdsTriplets, setPatientIdsTriplets] = useState<
@@ -124,8 +76,13 @@ export default function PatientsPage({
   const [getPatientIdsTriplets] = useGetPatientIdsTripletsLazyQuery();
 
   async function fetchPatientIdsTriplets(
-    patientIds: string[]
-  ): Promise<string[]> {
+    parsedSearchVals: string[]
+  ): Promise<PatientIdsTriplet[]> {
+    // Remove C- from CMO IDs because they are stored without it in the CRDB
+    const patientIds = parsedSearchVals.map((query) =>
+      query.startsWith("C-") ? query.slice(2) : query
+    );
+
     const { data, error } = await getPatientIdsTriplets({
       variables: {
         patientIds: patientIds,
@@ -147,49 +104,45 @@ export default function PatientsPage({
       return [];
     }
 
-    const patientIdsTriplets = data?.patientIdsTriplets?.filter((triplet) =>
-      Boolean(triplet)
-    ) as PatientIdsTriplet[];
-
-    if (patientIdsTriplets && patientIdsTriplets.length > 0) {
-      setPatientIdsTriplets(patientIdsTriplets);
-
-      return patientIdsTriplets.map((triplet) =>
-        addCDashToCMOId(triplet?.CMO_ID as string)
-      );
-    } else {
-      return [];
-    }
+    return (
+      data?.patientIdsTriplets?.filter(
+        (triplet): triplet is PatientIdsTriplet => triplet !== null
+      ) ?? []
+    );
   }
 
-  async function handlePatientSearch() {
-    let parsedSearchVals = parseUserSearchVal(userSearchVal);
+  async function getExtraCmoIdsFromMrnInputs(userSearchVal: string) {
+    let extraCmoIds: string[] = [];
+    if (phiEnabled && userSearchVal !== "") {
+      const parsedSearchVals = parseUserSearchVal(userSearchVal);
 
-    if (phiEnabled) {
-      parsedSearchVals = parsedSearchVals.map((query) =>
-        query.startsWith("C-") ? query.slice(2) : query
+      const patientIdsTriplets = await fetchPatientIdsTriplets(
+        parsedSearchVals
       );
+      setPatientIdsTriplets(patientIdsTriplets);
 
-      const customSearchVals = await fetchPatientIdsTriplets(parsedSearchVals);
-
-      if (customSearchVals.length > 0) {
-        setParsedSearchVals(customSearchVals);
+      if (patientIdsTriplets.length > 0) {
+        patientIdsTriplets.forEach((triplet) => {
+          // Add back C- to CMO IDs because they are stored without it in the CRDB
+          const cmoIdWithCDash = addCDashToCMOId(triplet.CMO_ID);
+          if (
+            !parsedSearchVals.includes(cmoIdWithCDash) &&
+            !parsedSearchVals.includes(triplet.DMP_ID ?? "")
+          ) {
+            extraCmoIds.push(cmoIdWithCDash);
+          }
+        });
       } else if (userEmail) {
         setAlertModal({
           show: true,
           ...NO_PHI_SEARCH_RESULTS,
         });
-
-        setParsedSearchVals([]);
       }
-    } else {
-      setParsedSearchVals(parsedSearchVals);
     }
+    return extraCmoIds;
   }
 
   useEffect(() => {
-    window.addEventListener("message", handleLogin);
-
     async function handleLogin(event: MessageEvent) {
       if (event.data !== "success") return;
 
@@ -200,17 +153,19 @@ export default function PatientsPage({
         show: true,
         ...PHI_WARNING,
       });
-
-      handlePatientSearch();
     }
 
-    return () => {
-      window.removeEventListener("message", handleLogin);
-    };
+    if (phiEnabled) {
+      window.addEventListener("message", handleLogin);
+      if (!userEmail) openLoginPopup();
+      return () => {
+        window.removeEventListener("message", handleLogin);
+      };
+    }
     // eslint-disable-next-line
   }, [phiEnabled]);
 
-  let ActivePatientsListColumns = useMemo(() => {
+  const ActivePatientsListColumns = useMemo(() => {
     return PatientsListColumns.map((column) => {
       if (
         column.headerName === "Patient MRN" &&
@@ -260,12 +215,13 @@ export default function PatientsPage({
         dataName={dataName}
         defaultSort={defaultSort}
         lazyRecordsQuery={useDashboardPatientsLazyQuery}
-        queryFilterWhereVariables={patientFilterWhereVariables}
         userSearchVal={userSearchVal}
         setUserSearchVal={setUserSearchVal}
-        parsedSearchVals={parsedSearchVals}
-        setParsedSearchVals={setParsedSearchVals}
-        handleSearch={handlePatientSearch}
+        customSearchStates={patientIdsTriplets}
+        setCustomSearchStates={setPatientIdsTriplets}
+        searchInterceptor={(userSearchVal) =>
+          getExtraCmoIdsFromMrnInputs(userSearchVal)
+        }
         showDownloadModal={showDownloadModal}
         setShowDownloadModal={setShowDownloadModal}
         handleDownload={(recordCount: number) => {
@@ -293,7 +249,6 @@ export default function PatientsPage({
               }
             : undefined
         }
-        setCustomSearchVals={setPatientIdsTriplets}
         customToolbarUI={
           <>
             <Col md="auto" className="mt-1">
