@@ -78,7 +78,7 @@ export async function buildCustomSchema(ogm: OGM) {
       ) {
         const queryBody = buildPatientsQueryBody({ searchVals, filter });
         return await queryDashboardPatients({
-          queryBody: queryBody,
+          queryBody,
           sort,
           limit,
           offset,
@@ -89,9 +89,7 @@ export async function buildCustomSchema(ogm: OGM) {
         { searchVals, filter }: QueryDashboardPatientCountArgs
       ) {
         const queryBody = buildPatientsQueryBody({ searchVals, filter });
-        return await queryDashboardPatientCount({
-          queryBody,
-        });
+        return await queryDashboardPatientCount({ queryBody });
       },
     },
     Mutation: {
