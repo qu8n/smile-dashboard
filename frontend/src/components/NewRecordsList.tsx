@@ -114,7 +114,7 @@ export default function NewRecordsList({
             searchVals,
             sort: params.request.sortModel[0] || defaultSort,
             filter,
-            offset: params.request.startRow ?? -1,
+            offset: params.request.startRow ?? 0,
             limit: CACHE_BLOCK_SIZE,
           } as QueryDashboardPatientsArgs; // TODO: apply TS union typing when implementing this for Requests and Cohorts
 
