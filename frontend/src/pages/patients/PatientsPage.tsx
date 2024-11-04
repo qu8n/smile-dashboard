@@ -217,7 +217,6 @@ export default function PatientsPage({
         lazyRecordsQuery={useDashboardPatientsLazyQuery}
         userSearchVal={userSearchVal}
         setUserSearchVal={setUserSearchVal}
-        customSearchStates={patientIdsTriplets}
         setCustomSearchStates={setPatientIdsTriplets}
         searchInterceptor={(userSearchVal) =>
           getExtraCmoIdsFromMrnInputs(userSearchVal)

@@ -40,7 +40,6 @@ interface INewRecordsListProps {
   defaultSort: DashboardRecordSort;
   userSearchVal: string;
   setUserSearchVal: Dispatch<SetStateAction<string>>;
-  customSearchStates?: PatientIdsTriplet[];
   setCustomSearchStates?: Dispatch<SetStateAction<PatientIdsTriplet[]>>;
   searchInterceptor?: (userSearchVal: string) => Promise<string[]>;
   showDownloadModal: boolean;
@@ -61,7 +60,6 @@ export default function NewRecordsList({
   defaultSort,
   userSearchVal,
   setUserSearchVal,
-  customSearchStates,
   setCustomSearchStates,
   searchInterceptor,
   showDownloadModal,
