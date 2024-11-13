@@ -2,7 +2,7 @@ import fetch from "node-fetch";
 import NodeCache from "node-cache";
 import { props } from "./constants";
 import { InputMaybe, SampleWhere } from "../generated/graphql";
-import { GraphQLWhereArg } from "@neo4j/graphql";
+import { GraphQLWhereArg } from "@neo4j/graphql/dist/types";
 import { neo4jDriver } from "./servers";
 
 /**

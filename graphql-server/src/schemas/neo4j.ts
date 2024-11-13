@@ -65,14 +65,25 @@ export async function buildNeo4jDbSchema() {
     }
   `;
 
-  const ogm = new OGM({ typeDefs: extendedTypeDefs, driver: neo4jDriver });
+  const features = {
+    filters: {
+      String: {
+        MATCHES: true,
+      },
+    },
+  };
+
+  const ogm = new OGM({
+    typeDefs: extendedTypeDefs,
+    driver: neo4jDriver,
+    features,
+  });
   const neoSchema = new Neo4jGraphQL({
     typeDefs: extendedTypeDefs,
     driver: neo4jDriver,
-    config: {
-      skipValidateTypeDefs: true,
-    },
+    validate: false,
     resolvers: buildResolvers(ogm, client),
+    features,
   });
 
   await ogm.init();
