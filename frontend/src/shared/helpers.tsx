@@ -843,3 +843,11 @@ export function isValidCostCenter(costCenter: string): boolean {
   const validCostCenter = new RegExp("^\\d{5}/\\d{5}$");
   return validCostCenter.test(costCenter);
 }
+
+export const MAX_ROWS_EXPORT = 10000;
+
+export const MAX_ROWS_EXPORT_WARNING = {
+  title: "Warning",
+  content:
+    "You can only download up to 10,000 rows of data at a time. Please refine your search and try again. If you need the full dataset, contact the SMILE team at cmosmile@mskcc.org.",
+};

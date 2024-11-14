@@ -8,6 +8,8 @@ import {
   DashboardSampleInput,
   QueryDashboardPatientCountArgs,
   QueryDashboardPatientsArgs,
+  QueryDashboardRequestCountArgs,
+  QueryDashboardRequestsArgs,
   QueryDashboardSampleCountArgs,
   QueryDashboardSamplesArgs,
 } from "../generated/graphql";
@@ -36,7 +38,7 @@ export async function buildCustomSchema(ogm: OGM) {
           oncotreeCache,
         });
 
-        const partialCypherQuery = buildPartialCypherQuery({
+        const queryBody = buildSamplesQueryBody({
           searchVals,
           context,
           filter,
@@ -44,7 +46,7 @@ export async function buildCustomSchema(ogm: OGM) {
         });
 
         return await queryDashboardSamples({
-          partialCypherQuery,
+          queryBody,
           sort,
           limit,
           offset,
@@ -61,7 +63,7 @@ export async function buildCustomSchema(ogm: OGM) {
           oncotreeCache,
         });
 
-        const partialCypherQuery = buildPartialCypherQuery({
+        const queryBody = buildSamplesQueryBody({
           searchVals,
           context,
           filter,
@@ -69,9 +71,30 @@ export async function buildCustomSchema(ogm: OGM) {
         });
 
         return await queryDashboardSampleCount({
-          partialCypherQuery,
+          queryBody,
         });
       },
+
+      async dashboardRequests(
+        _source: undefined,
+        { searchVals, filter, sort, limit, offset }: QueryDashboardRequestsArgs
+      ) {
+        const queryBody = buildRequestsQueryBody({ searchVals, filter });
+        return await queryDashboardRequests({
+          queryBody,
+          sort,
+          limit,
+          offset,
+        });
+      },
+      async dashboardRequestCount(
+        _source: undefined,
+        { searchVals, filter }: QueryDashboardRequestCountArgs
+      ) {
+        const queryBody = buildRequestsQueryBody({ searchVals, filter });
+        return await queryDashboardRequestCount({ queryBody });
+      },
+
       async dashboardPatients(
         _source: undefined,
         { searchVals, filter, sort, limit, offset }: QueryDashboardPatientsArgs
@@ -92,6 +115,7 @@ export async function buildCustomSchema(ogm: OGM) {
         return await queryDashboardPatientCount({ queryBody });
       },
     },
+
     Mutation: {
       async updateDashboardSamples(
         _source: undefined,
@@ -177,6 +201,27 @@ export async function buildCustomSchema(ogm: OGM) {
       values: [String!]!
     }
 
+    type DashboardRequest {
+      igoRequestId: String!
+      igoProjectId: String
+      importDate: String
+      totalSampleCount: Int
+      projectManagerName: String
+      investigatorName: String
+      investigatorEmail: String
+      piEmail: String
+      dataAnalystName: String
+      dataAnalystEmail: String
+      genePanel: String
+      labHeadName: String
+      labHeadEmail: String
+      qcAccessEmails: String
+      dataAccessEmails: String
+      bicAnalysis: Boolean
+      isCmoRequest: Boolean
+      otherContactEmails: String
+    }
+
     type DashboardPatient {
       smilePatientId: String!
       cmoPatientId: String
@@ -229,9 +274,21 @@ export async function buildCustomSchema(ogm: OGM) {
         searchVals: [String!]
         filter: DashboardRecordFilter
       ): DashboardRecordCount!
+
+      dashboardRequests(
+        searchVals: [String!]
+        filter: DashboardRecordFilter
+        sort: DashboardRecordSort!
+        limit: Int!
+        offset: Int!
+      ): [DashboardRequest!]!
+      dashboardRequestCount(
+        searchVals: [String!]
+        filter: DashboardRecordFilter
+      ): DashboardRecordCount!
     }
 
-    # We have to define a separate "input" type and can't reuse DashboardSample.
+    # We have to define a separate "input" type for the mutation and can't reuse DashboardSample.
     # For more context, see: https://stackoverflow.com/q/41743253
     input DashboardSampleInput {
       changedFieldNames: [String!]!
@@ -307,20 +364,20 @@ export async function buildCustomSchema(ogm: OGM) {
 }
 
 async function queryDashboardSamples({
-  partialCypherQuery,
+  queryBody,
   sort,
   limit,
   offset,
   oncotreeCache,
 }: {
-  partialCypherQuery: string;
+  queryBody: string;
   sort: QueryDashboardSamplesArgs["sort"];
   limit: QueryDashboardSamplesArgs["limit"];
   offset: QueryDashboardSamplesArgs["offset"];
   oncotreeCache: NodeCache;
 }) {
   const cypherQuery = `
-    ${partialCypherQuery}
+    ${queryBody}
     RETURN
       s.smileSampleId AS smileSampleId,
       s.revisable AS revisable,
@@ -392,13 +449,9 @@ async function queryDashboardSamples({
   }
 }
 
-async function queryDashboardSampleCount({
-  partialCypherQuery,
-}: {
-  partialCypherQuery: string;
-}) {
+async function queryDashboardSampleCount({ queryBody }: { queryBody: string }) {
   const cypherQuery = `
-    ${partialCypherQuery}
+    ${queryBody}
     RETURN
       count(s) AS totalCount
   `;
@@ -471,7 +524,7 @@ const searchFiltersConfig = [
   { variable: "latestQC", fields: ["date", "result", "reason", "status"] },
 ];
 
-function buildPartialCypherQuery({
+function buildSamplesQueryBody({
   searchVals,
   context,
   filter,
@@ -552,7 +605,7 @@ function buildPartialCypherQuery({
     }
   }
 
-  const partialCypherQuery = `
+  const samplesQueryBody = `
     // Get Sample and the most recent SampleMetadata
     MATCH (s:Sample)-[:HAS_METADATA]->(sm:SampleMetadata)
     WITH s, collect(sm) AS allSampleMetadata, max(sm.importDate) AS latestImportDate
@@ -615,7 +668,7 @@ function buildPartialCypherQuery({
     }
   `;
 
-  return partialCypherQuery;
+  return samplesQueryBody;
 }
 
 function getAddlOtCodesMatchingCtOrCtdVals({
@@ -802,6 +855,146 @@ async function publishNatsMessage(topic: string, message: string) {
   }
 }
 
+function buildRequestsQueryBody({
+  searchVals,
+  filter,
+}: {
+  searchVals: QueryDashboardRequestsArgs["searchVals"];
+  filter: QueryDashboardRequestsArgs["filter"];
+}) {
+  const fieldsToSearch = [
+    "igoRequestId",
+    "igoProjectId",
+    "importDate",
+    "projectManagerName",
+    "investigatorName",
+    "investigatorEmail",
+    "piEmail",
+    "dataAnalystName",
+    "dataAnalystEmail",
+    "genePanel",
+    "labHeadName",
+    "labHeadEmail",
+    "qcAccessEmails",
+    "dataAccessEmails",
+    "bicAnalysis",
+    "isCmoRequest",
+    "otherContactEmails",
+  ];
+
+  const searchFilters = searchVals?.length
+    ? "WHERE " +
+      fieldsToSearch
+        .map((field) => `${field} =~ '(?i).*(${searchVals.join("|")}).*'`)
+        .join(" OR ")
+    : "";
+
+  const requestQueryBody = `
+    MATCH (r:Request)
+
+    // Get the latest SampleMetadata of each Sample
+    OPTIONAL MATCH (r)-[:HAS_SAMPLE]->(s:Sample)-[:HAS_METADATA]->(sm:SampleMetadata)
+    WITH
+      r,
+      collect(s) as samples,
+      collect(sm) AS allSampleMetadata,
+      max(sm.importDate) AS latestImportDate
+    WITH
+      r,
+      size(samples) as totalSampleCount,
+      [sm IN allSampleMetadata WHERE sm.importDate = latestImportDate][0] AS latestSm
+
+    WITH
+      r.igoRequestId as igoRequestId,
+      r.igoProjectId as igoProjectId,
+      latestSm.importDate as importDate,
+      totalSampleCount,
+      r.projectManagerName as projectManagerName,
+      r.investigatorName as investigatorName,
+      r.investigatorEmail as investigatorEmail,
+      r.piEmail as piEmail,
+      r.dataAnalystName as dataAnalystName,
+      r.dataAnalystEmail as dataAnalystEmail,
+      r.genePanel as genePanel,
+      r.labHeadName as labHeadName,
+      r.labHeadEmail as labHeadEmail,
+      r.qcAccessEmails as qcAccessEmails,
+      r.dataAccessEmails as dataAccessEmails,
+      r.bicAnalysis as bicAnalysis,
+      r.isCmoRequest as isCmoRequest,
+      r.otherContactEmails as otherContactEmails
+
+    ${searchFilters}
+  `;
+
+  return requestQueryBody;
+}
+
+async function queryDashboardRequests({
+  queryBody,
+  sort,
+  limit,
+  offset,
+}: {
+  queryBody: string;
+  sort: QueryDashboardRequestsArgs["sort"];
+  limit: QueryDashboardRequestsArgs["limit"];
+  offset: QueryDashboardRequestsArgs["offset"];
+}) {
+  const cypherQuery = `
+    ${queryBody}
+    RETURN
+      igoRequestId,
+      igoProjectId,
+      importDate,
+      totalSampleCount,
+      projectManagerName,
+      investigatorName,
+      investigatorEmail,
+      piEmail,
+      dataAnalystName,
+      dataAnalystEmail,
+      genePanel,
+      labHeadName,
+      labHeadEmail,
+      qcAccessEmails,
+      dataAccessEmails,
+      bicAnalysis,
+      isCmoRequest,
+      otherContactEmails
+    ORDER BY ${getNeo4jCustomSort(sort)}
+    SKIP ${offset}
+    LIMIT ${limit}
+  `;
+
+  const session = neo4jDriver.session();
+  try {
+    const result = await session.run(cypherQuery);
+    return result.records.map((record) => record.toObject());
+  } catch (error) {
+    console.error("Error with queryDashboardRequests:", error);
+  }
+}
+
+async function queryDashboardRequestCount({
+  queryBody,
+}: {
+  queryBody: string;
+}) {
+  const cypherQuery = `
+    ${queryBody}
+    RETURN count(igoRequestId) AS totalCount
+  `;
+
+  const session = neo4jDriver.session();
+  try {
+    const result = await session.run(cypherQuery);
+    return result.records[0].toObject();
+  } catch (error) {
+    console.error("Error with queryDashboardRequestCount:", error);
+  }
+}
+
 function buildPatientsQueryBody({
   searchVals,
   filter,
@@ -846,6 +1039,7 @@ function buildPatientsQueryBody({
       cmoPa,
       dmpPa,
       s,
+      latestImportDate,
       [sm IN allSampleMetadata WHERE sm.importDate = latestImportDate][0] AS latestSm
 
     // Get the CMO Sample IDs and additionalProperties JSONs from SampleMetadata
@@ -854,6 +1048,7 @@ function buildPatientsQueryBody({
       cmoPa,
       dmpPa,
       s,
+      latestImportDate,
       CASE
         WHEN latestSm.cmoSampleName IS NOT NULL THEN latestSm.cmoSampleName
             ELSE latestSm.primaryId
@@ -865,6 +1060,7 @@ function buildPatientsQueryBody({
       p,
       cmoPa,
       dmpPa,
+      latestImportDate,
       collect(s) as samples,
       collect(cmoSampleId) AS cmoSampleIds,
       collect(latestSmAddlPropsJson.\`consent-parta\`) as consentPartAs,
@@ -874,6 +1070,7 @@ function buildPatientsQueryBody({
       p.smilePatientId AS smilePatientId,
       cmoPa.value AS cmoPatientId,
       dmpPa.value AS dmpPatientId,
+      latestImportDate,
       size(samples) as totalSampleCount,
       apoc.text.join([id IN cmoSampleIds WHERE id <> ''], ', ') AS cmoSampleIds,
       consentPartAs[0] as consentPartA,

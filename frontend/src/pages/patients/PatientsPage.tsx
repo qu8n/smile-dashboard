@@ -13,6 +13,8 @@ import { Tooltip } from "@material-ui/core";
 import InfoIcon from "@material-ui/icons/InfoOutlined";
 import { parseUserSearchVal } from "../../utils/parseSearchQueries";
 import {
+  MAX_ROWS_EXPORT,
+  MAX_ROWS_EXPORT_WARNING,
   PatientsListColumns,
   SampleMetadataDetailsColumns,
 } from "../../shared/helpers";
@@ -23,14 +25,6 @@ import NewRecordsList from "../../components/NewRecordsList";
 function addCDashToCMOId(cmoId: string): string {
   return cmoId.length === 6 ? `C-${cmoId}` : cmoId;
 }
-
-const MAX_ROWS_EXPORT = 10000;
-
-const MAX_ROWS_EXPORT_WARNING = {
-  title: "Warning",
-  content:
-    "You can only download up to 10,000 rows of data at a time. Please refine your search and try again. If you need the full dataset, contact the SMILE team at cmosmile@mskcc.org.",
-};
 
 const PHI_WARNING = {
   title: "Warning",
@@ -204,7 +198,7 @@ export default function PatientsPage({
   const sampleQueryParamFieldName = "patientId";
   const sampleQueryParamValue = params[sampleQueryParamFieldName];
   const defaultSort = {
-    colId: "dmpPatientId",
+    colId: "latestImportDate",
     sort: AgGridSortDirection.Desc,
   };
 

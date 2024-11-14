@@ -1775,6 +1775,28 @@ export type DashboardRecordSort = {
   sort: AgGridSortDirection;
 };
 
+export type DashboardRequest = {
+  __typename?: "DashboardRequest";
+  bicAnalysis?: Maybe<Scalars["Boolean"]>;
+  dataAccessEmails?: Maybe<Scalars["String"]>;
+  dataAnalystEmail?: Maybe<Scalars["String"]>;
+  dataAnalystName?: Maybe<Scalars["String"]>;
+  genePanel?: Maybe<Scalars["String"]>;
+  igoProjectId?: Maybe<Scalars["String"]>;
+  igoRequestId: Scalars["String"];
+  importDate?: Maybe<Scalars["String"]>;
+  investigatorEmail?: Maybe<Scalars["String"]>;
+  investigatorName?: Maybe<Scalars["String"]>;
+  isCmoRequest?: Maybe<Scalars["Boolean"]>;
+  labHeadEmail?: Maybe<Scalars["String"]>;
+  labHeadName?: Maybe<Scalars["String"]>;
+  otherContactEmails?: Maybe<Scalars["String"]>;
+  piEmail?: Maybe<Scalars["String"]>;
+  projectManagerName?: Maybe<Scalars["String"]>;
+  qcAccessEmails?: Maybe<Scalars["String"]>;
+  totalSampleCount?: Maybe<Scalars["Int"]>;
+};
+
 export type DashboardSample = {
   __typename?: "DashboardSample";
   accessLevel?: Maybe<Scalars["String"]>;
@@ -4549,6 +4571,8 @@ export type Query = {
   cohortsConnection: CohortsConnection;
   dashboardPatientCount: DashboardRecordCount;
   dashboardPatients: Array<DashboardPatient>;
+  dashboardRequestCount: DashboardRecordCount;
+  dashboardRequests: Array<DashboardRequest>;
   dashboardSampleCount: DashboardRecordCount;
   dashboardSamples: Array<DashboardSample>;
   mafCompletes: Array<MafComplete>;
@@ -4644,6 +4668,19 @@ export type QueryDashboardPatientCountArgs = {
 };
 
 export type QueryDashboardPatientsArgs = {
+  filter?: InputMaybe<DashboardRecordFilter>;
+  limit: Scalars["Int"];
+  offset: Scalars["Int"];
+  searchVals?: InputMaybe<Array<Scalars["String"]>>;
+  sort: DashboardRecordSort;
+};
+
+export type QueryDashboardRequestCountArgs = {
+  filter?: InputMaybe<DashboardRecordFilter>;
+  searchVals?: InputMaybe<Array<Scalars["String"]>>;
+};
+
+export type QueryDashboardRequestsArgs = {
   filter?: InputMaybe<DashboardRecordFilter>;
   limit: Scalars["Int"];
   offset: Scalars["Int"];
@@ -6759,7 +6796,7 @@ export type Sample = {
   requestsHasSample: Array<Request>;
   requestsHasSampleAggregate?: Maybe<SampleRequestRequestsHasSampleAggregationSelection>;
   requestsHasSampleConnection: SampleRequestsHasSampleConnection;
-  revisable: Scalars["Boolean"];
+  revisable?: Maybe<Scalars["Boolean"]>;
   sampleAliasesIsAlias: Array<SampleAlias>;
   sampleAliasesIsAliasAggregate?: Maybe<SampleSampleAliasSampleAliasesIsAliasAggregationSelection>;
   sampleAliasesIsAliasConnection: SampleSampleAliasesIsAliasConnection;
@@ -7533,7 +7570,7 @@ export type SampleCreateInput = {
   hasTempoTempos?: InputMaybe<SampleHasTempoTemposFieldInput>;
   patientsHasSample?: InputMaybe<SamplePatientsHasSampleFieldInput>;
   requestsHasSample?: InputMaybe<SampleRequestsHasSampleFieldInput>;
-  revisable: Scalars["Boolean"];
+  revisable?: InputMaybe<Scalars["Boolean"]>;
   sampleAliasesIsAlias?: InputMaybe<SampleSampleAliasesIsAliasFieldInput>;
   sampleCategory: Scalars["String"];
   sampleClass: Scalars["String"];
@@ -12504,6 +12541,43 @@ export type PatientsListQuery = {
   }>;
 };
 
+export type DashboardRequestsQueryVariables = Exact<{
+  searchVals?: InputMaybe<Array<Scalars["String"]> | Scalars["String"]>;
+  filter?: InputMaybe<DashboardRecordFilter>;
+  sort: DashboardRecordSort;
+  limit: Scalars["Int"];
+  offset: Scalars["Int"];
+}>;
+
+export type DashboardRequestsQuery = {
+  __typename?: "Query";
+  dashboardRequestCount: {
+    __typename?: "DashboardRecordCount";
+    totalCount: number;
+  };
+  dashboardRequests: Array<{
+    __typename?: "DashboardRequest";
+    igoRequestId: string;
+    igoProjectId?: string | null;
+    importDate?: string | null;
+    totalSampleCount?: number | null;
+    projectManagerName?: string | null;
+    investigatorName?: string | null;
+    investigatorEmail?: string | null;
+    piEmail?: string | null;
+    dataAnalystName?: string | null;
+    dataAnalystEmail?: string | null;
+    genePanel?: string | null;
+    labHeadName?: string | null;
+    labHeadEmail?: string | null;
+    qcAccessEmails?: string | null;
+    dataAccessEmails?: string | null;
+    bicAnalysis?: boolean | null;
+    isCmoRequest?: boolean | null;
+    otherContactEmails?: string | null;
+  }>;
+};
+
 export type DashboardPatientsQueryVariables = Exact<{
   searchVals?: InputMaybe<Array<Scalars["String"]> | Scalars["String"]>;
   filter?: InputMaybe<DashboardRecordFilter>;
@@ -12909,6 +12983,49 @@ export const PatientsListDocument = gql`
 export type PatientsListQueryResult = Apollo.QueryResult<
   PatientsListQuery,
   PatientsListQueryVariables
+>;
+export const DashboardRequestsDocument = gql`
+  query DashboardRequests(
+    $searchVals: [String!]
+    $filter: DashboardRecordFilter
+    $sort: DashboardRecordSort!
+    $limit: Int!
+    $offset: Int!
+  ) {
+    dashboardRequestCount(searchVals: $searchVals, filter: $filter) {
+      totalCount
+    }
+    dashboardRequests(
+      searchVals: $searchVals
+      filter: $filter
+      sort: $sort
+      limit: $limit
+      offset: $offset
+    ) {
+      igoRequestId
+      igoProjectId
+      importDate
+      totalSampleCount
+      projectManagerName
+      investigatorName
+      investigatorEmail
+      piEmail
+      dataAnalystName
+      dataAnalystEmail
+      genePanel
+      labHeadName
+      labHeadEmail
+      qcAccessEmails
+      dataAccessEmails
+      bicAnalysis
+      isCmoRequest
+      otherContactEmails
+    }
+  }
+`;
+export type DashboardRequestsQueryResult = Apollo.QueryResult<
+  DashboardRequestsQuery,
+  DashboardRequestsQueryVariables
 >;
 export const DashboardPatientsDocument = gql`
   query DashboardPatients(

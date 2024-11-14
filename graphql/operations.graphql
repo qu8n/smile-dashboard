@@ -46,6 +46,44 @@ query PatientsList($options: PatientOptions, $where: PatientWhere) {
   }
 }
 
+query DashboardRequests(
+  $searchVals: [String!]
+  $filter: DashboardRecordFilter
+  $sort: DashboardRecordSort!
+  $limit: Int!
+  $offset: Int!
+) {
+  dashboardRequestCount(searchVals: $searchVals, filter: $filter) {
+    totalCount
+  }
+  dashboardRequests(
+    searchVals: $searchVals
+    filter: $filter
+    sort: $sort
+    limit: $limit
+    offset: $offset
+  ) {
+    igoRequestId
+    igoProjectId
+    importDate
+    totalSampleCount
+    projectManagerName
+    investigatorName
+    investigatorEmail
+    piEmail
+    dataAnalystName
+    dataAnalystEmail
+    genePanel
+    labHeadName
+    labHeadEmail
+    qcAccessEmails
+    dataAccessEmails
+    bicAnalysis
+    isCmoRequest
+    otherContactEmails
+  }
+}
+
 query DashboardPatients(
   $searchVals: [String!]
   $filter: DashboardRecordFilter
