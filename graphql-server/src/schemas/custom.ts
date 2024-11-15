@@ -660,7 +660,7 @@ function buildSamplesQueryBody({
       latestBC,
       latestMC,
       latestQC
-    
+
     ${
       fullSearchFilters || wesContext || requestContext
         ? `WHERE ${fullSearchFilters}${wesContext}${requestContext}`
@@ -1065,7 +1065,7 @@ function buildPatientsQueryBody({
       collect(cmoSampleId) AS cmoSampleIds,
       collect(latestSmAddlPropsJson.\`consent-parta\`) as consentPartAs,
       collect(latestSmAddlPropsJson.\`consent-partc\`) as consentPartCs
-    
+
     WITH
       p.smilePatientId AS smilePatientId,
       cmoPa.value AS cmoPatientId,
@@ -1075,7 +1075,7 @@ function buildPatientsQueryBody({
       apoc.text.join([id IN cmoSampleIds WHERE id <> ''], ', ') AS cmoSampleIds,
       consentPartAs[0] as consentPartA,
       consentPartCs[0] as consentPartC
-    
+
     ${searchFilters}
   `;
 
@@ -1133,6 +1133,151 @@ async function queryDashboardPatientCount({
     return result.records[0].toObject();
   } catch (error) {
     console.error("Error with queryDashboardPatientCount:", error);
+  }
+}
+
+function buildCohortsQueryBody({
+  searchVals,
+  filter,
+}: {
+  // searchVals: QueryDashboardPatientsArgs["searchVals"];
+  // filter: QueryDashboardPatientsArgs["filter"];
+  searchVals: any; // TODO: fill in the type
+  filter: any;
+}) {
+  const fieldsToSearch = [
+    "cohortId",
+    "initialCohortDeliveryDate",
+    "endUsers",
+    "pmUsers",
+    "projectTitle",
+    "projectSubtitle",
+    "status",
+    "type",
+  ];
+
+  const searchFilters = searchVals?.length
+    ? "WHERE " +
+      fieldsToSearch
+        .map((field) => `${field} =~ '(?i).*(${searchVals.join("|")}).*'`)
+        .join(" OR ")
+    : "";
+
+  const cohortsQueryBody = `
+    MATCH (c:Cohort)-[:HAS_COHORT_COMPLETE]->(cc:CohortComplete)
+    OPTIONAL MATCH (c)-[:HAS_COHORT_SAMPLE]->(s:Sample)-[:HAS_TEMPO]->(t:Tempo)
+
+    // Aggregate Tempo and CohortComplete data
+    WITH
+        c.cohortId AS cohortId,
+        s,
+        count(t) AS tempoCount,
+        count(CASE WHEN t.billed = true THEN 1 END) AS billedCount,
+        collect(cc) AS cohortCompletes,
+        max(cc.date) AS latestCohortDeliveryDate,
+        min(cc.date) AS initialCohortDeliveryDate
+
+    // Aggregate Sample data and get the latest CohortComplete
+    WITH
+        cohortId,
+        collect(s.smileSampleId) AS sampleIdsByCohort,
+        size(collect(s)) AS totalSampleCount,
+        tempoCount,
+        billedCount,
+        initialCohortDeliveryDate,
+        [cc IN cohortCompletes WHERE cc.date = latestCohortDeliveryDate][0] AS latestCC
+
+    // Calculate values for the "Billed" column
+    WITH
+        cohortId,
+        sampleIdsByCohort,
+        totalSampleCount,
+        CASE totalSampleCount
+            WHEN 0 THEN "Yes"
+            ELSE
+                CASE (billedCount = tempoCount)
+                    WHEN true THEN "Yes"
+                    ELSE "No"
+                END
+        END AS allSamplesBilled,
+        initialCohortDeliveryDate,
+        latestCC
+
+    WITH
+        cohortId,
+        sampleIdsByCohort,
+        totalSampleCount,
+        allSamplesBilled,
+        initialCohortDeliveryDate,
+        latestCC.endUsers AS endUsers,
+        latestCC.pmUsers AS pmUsers,
+        latestCC.projectTitle AS projectTitle,
+        latestCC.projectSubtitle AS projectSubtitle,
+        latestCC.status AS status,
+        latestCC.type AS type
+
+    ${searchFilters}
+  `;
+
+  return cohortsQueryBody;
+}
+
+async function queryDashboardCohorts({
+  queryBody,
+  sort,
+  limit,
+  offset,
+}: {
+  queryBody: string;
+  // sort: QueryDashboardPatientsArgs["sort"];
+  // limit: QueryDashboardPatientsArgs["limit"];
+  // offset: QueryDashboardPatientsArgs["offset"];
+  sort: any; // TODO: fill out the type
+  limit: any;
+  offset: any;
+}) {
+  const cypherQuery = `
+    ${queryBody}
+    RETURN
+      cohortId,
+      totalSampleCount,
+      allSamplesBilled,
+      initialCohortDeliveryDate,
+      endUsers,
+      pmUsers,
+      projectTitle,
+      projectSubtitle,
+      status,
+      type
+
+    ORDER BY ${getNeo4jCustomSort(sort)}
+    SKIP ${offset}
+    LIMIT ${limit}
+  `;
+
+  const session = neo4jDriver.session();
+  try {
+    const result = await session.run(cypherQuery);
+    return result.records.map((record) => record.toObject());
+  } catch (error) {
+    console.error("Error with queryDashboardCohorts:", error);
+  }
+}
+
+async function queryDashboardCohortCount({ queryBody }: { queryBody: string }) {
+  const cypherQuery = `
+    ${queryBody}
+    RETURN
+      count(cohortId) AS totalCount,
+      size(apoc.coll.toSet(apoc.coll.flatten(collect(sampleIdsByCohort)))) AS uniqueSampleCount
+  `;
+
+  const session = neo4jDriver.session();
+  try {
+    const result = await session.run(cypherQuery);
+    return result.records[0].toObject();
+  } catch (error) {
+    console.error("Error with queryDashboardCohortCount:", error);
   }
 }
 
