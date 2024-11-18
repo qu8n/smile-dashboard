@@ -6,6 +6,8 @@ import { gql } from "apollo-server";
 import {
   AgGridSortDirection,
   DashboardSampleInput,
+  QueryDashboardCohortsArgs,
+  QueryDashboardCohortCountArgs,
   QueryDashboardPatientCountArgs,
   QueryDashboardPatientsArgs,
   QueryDashboardRequestCountArgs,
@@ -114,6 +116,26 @@ export async function buildCustomSchema(ogm: OGM) {
         const queryBody = buildPatientsQueryBody({ searchVals, filter });
         return await queryDashboardPatientCount({ queryBody });
       },
+
+      async dashboardCohorts(
+        _source: undefined,
+        { searchVals, filter, sort, limit, offset }: QueryDashboardCohortsArgs
+      ) {
+        const queryBody = buildCohortsQueryBody({ searchVals, filter });
+        return await queryDashboardCohorts({
+          queryBody,
+          sort,
+          limit,
+          offset,
+        });
+      },
+      async dashboardCohortCount(
+        _source: undefined,
+        { searchVals, filter }: QueryDashboardCohortCountArgs
+      ) {
+        const queryBody = buildCohortsQueryBody({ searchVals, filter });
+        return await queryDashboardCohortCount({ queryBody });
+      },
     },
 
     Mutation: {
@@ -136,6 +158,7 @@ export async function buildCustomSchema(ogm: OGM) {
   const typeDefs = gql`
     type DashboardRecordCount {
       totalCount: Int!
+      uniqueSampleCount: Int
     }
 
     type DashboardSample {
@@ -232,6 +255,19 @@ export async function buildCustomSchema(ogm: OGM) {
       consentPartC: String
     }
 
+    type DashboardCohort {
+      cohortId: String!
+      totalSampleCount: Int
+      billed: String
+      initialCohortDeliveryDate: String
+      endUsers: String
+      pmUsers: String
+      projectTitle: String
+      projectSubtitle: String
+      status: String
+      type: String
+    }
+
     enum AgGridSortDirection {
       asc
       desc
@@ -283,6 +319,18 @@ export async function buildCustomSchema(ogm: OGM) {
         offset: Int!
       ): [DashboardRequest!]!
       dashboardRequestCount(
+        searchVals: [String!]
+        filter: DashboardRecordFilter
+      ): DashboardRecordCount!
+
+      dashboardCohorts(
+        searchVals: [String!]
+        filter: DashboardRecordFilter
+        sort: DashboardRecordSort!
+        limit: Int!
+        offset: Int!
+      ): [DashboardCohort!]!
+      dashboardCohortCount(
         searchVals: [String!]
         filter: DashboardRecordFilter
       ): DashboardRecordCount!
@@ -1140,13 +1188,12 @@ function buildCohortsQueryBody({
   searchVals,
   filter,
 }: {
-  // searchVals: QueryDashboardPatientsArgs["searchVals"];
-  // filter: QueryDashboardPatientsArgs["filter"];
-  searchVals: any; // TODO: fill in the type
-  filter: any;
+  searchVals: QueryDashboardCohortsArgs["searchVals"];
+  filter: QueryDashboardCohortsArgs["filter"];
 }) {
   const fieldsToSearch = [
     "cohortId",
+    "billed",
     "initialCohortDeliveryDate",
     "endUsers",
     "pmUsers",
@@ -1179,8 +1226,8 @@ function buildCohortsQueryBody({
 
     // Aggregate Sample data and get the latest CohortComplete
     WITH
-        cohortId,
         collect(s.smileSampleId) AS sampleIdsByCohort,
+        cohortId,
         size(collect(s)) AS totalSampleCount,
         tempoCount,
         billedCount,
@@ -1189,8 +1236,8 @@ function buildCohortsQueryBody({
 
     // Calculate values for the "Billed" column
     WITH
-        cohortId,
         sampleIdsByCohort,
+        cohortId,
         totalSampleCount,
         CASE totalSampleCount
             WHEN 0 THEN "Yes"
@@ -1199,15 +1246,15 @@ function buildCohortsQueryBody({
                     WHEN true THEN "Yes"
                     ELSE "No"
                 END
-        END AS allSamplesBilled,
+        END AS billed,
         initialCohortDeliveryDate,
         latestCC
 
     WITH
-        cohortId,
         sampleIdsByCohort,
+        cohortId,
         totalSampleCount,
-        allSamplesBilled,
+        billed,
         initialCohortDeliveryDate,
         latestCC.endUsers AS endUsers,
         latestCC.pmUsers AS pmUsers,
@@ -1229,19 +1276,16 @@ async function queryDashboardCohorts({
   offset,
 }: {
   queryBody: string;
-  // sort: QueryDashboardPatientsArgs["sort"];
-  // limit: QueryDashboardPatientsArgs["limit"];
-  // offset: QueryDashboardPatientsArgs["offset"];
-  sort: any; // TODO: fill out the type
-  limit: any;
-  offset: any;
+  sort: QueryDashboardPatientsArgs["sort"];
+  limit: QueryDashboardPatientsArgs["limit"];
+  offset: QueryDashboardPatientsArgs["offset"];
 }) {
   const cypherQuery = `
     ${queryBody}
     RETURN
       cohortId,
       totalSampleCount,
-      allSamplesBilled,
+      billed,
       initialCohortDeliveryDate,
       endUsers,
       pmUsers,

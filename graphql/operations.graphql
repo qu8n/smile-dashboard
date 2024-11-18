@@ -111,6 +111,37 @@ query DashboardPatients(
   }
 }
 
+query DashboardCohorts(
+  $searchVals: [String!]
+  $filter: DashboardRecordFilter
+  $sort: DashboardRecordSort!
+  $limit: Int!
+  $offset: Int!
+) {
+  dashboardCohortCount(searchVals: $searchVals, filter: $filter) {
+    totalCount
+    uniqueSampleCount
+  }
+  dashboardCohorts(
+    searchVals: $searchVals
+    filter: $filter
+    sort: $sort
+    limit: $limit
+    offset: $offset
+  ) {
+    cohortId
+    totalSampleCount
+    billed
+    initialCohortDeliveryDate
+    endUsers
+    pmUsers
+    projectTitle
+    projectSubtitle
+    status
+    type
+  }
+}
+
 query DashboardSamples(
   $searchVals: [String!]
   $context: DashboardRecordContext

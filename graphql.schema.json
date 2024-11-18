@@ -2586,18 +2586,6 @@
             "deprecationReason": null
           },
           {
-            "name": "date_ID",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "date_IN",
             "description": null,
             "type": {
@@ -2667,18 +2655,6 @@
           },
           {
             "name": "status_ENDS_WITH",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "status_ID",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -7852,18 +7828,6 @@
             "deprecationReason": null
           },
           {
-            "name": "date_ID",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "date_IN",
             "description": null,
             "type": {
@@ -7933,18 +7897,6 @@
           },
           {
             "name": "endUsers_ENDS_WITH",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "endUsers_ID",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -8036,18 +7988,6 @@
             "deprecationReason": null
           },
           {
-            "name": "pmUsers_ID",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "pmUsers_IN",
             "description": null,
             "type": {
@@ -8117,18 +8057,6 @@
           },
           {
             "name": "projectSubtitle_ENDS_WITH",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "projectSubtitle_ID",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -8220,18 +8148,6 @@
             "deprecationReason": null
           },
           {
-            "name": "projectTitle_ID",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "projectTitle_IN",
             "description": null,
             "type": {
@@ -8312,18 +8228,6 @@
             "deprecationReason": null
           },
           {
-            "name": "status_ID",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "status_IN",
             "description": null,
             "type": {
@@ -8393,18 +8297,6 @@
           },
           {
             "name": "type_ENDS_WITH",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "type_ID",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -11506,7 +11398,7 @@
             "deprecationReason": null
           },
           {
-            "name": "datasource_AVERAGE_EQUAL",
+            "name": "datasource_AVERAGE_LENGTH_EQUAL",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -11686,55 +11578,7 @@
             "deprecationReason": null
           },
           {
-            "name": "dmpPatientId_AVERAGE_LENGTH_EQUAL",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "datasource_SHORTEST_GTE",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "datasource_SHORTEST_LT",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "datasource_SHORTEST_LTE",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "sampleCategory_AVERAGE_EQUAL",
+            "name": "sampleCategory_AVERAGE_LENGTH_EQUAL",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -12094,55 +11938,7 @@
             "deprecationReason": null
           },
           {
-            "name": "sampleName_AVERAGE_LENGTH_EQUAL",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "sampleClass_SHORTEST_GTE",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "sampleClass_SHORTEST_LT",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "sampleClass_SHORTEST_LTE",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "smileSampleId_AVERAGE_EQUAL",
+            "name": "smileSampleId_AVERAGE_LENGTH_EQUAL",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -12311,54 +12107,6 @@
           },
           {
             "name": "smileSampleId_SHORTEST_LENGTH_LTE",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "smileTempoId_AVERAGE_LENGTH_EQUAL",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "smileSampleId_SHORTEST_GTE",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "smileSampleId_SHORTEST_LT",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "smileSampleId_SHORTEST_LTE",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -13240,18 +12988,6 @@
             "deprecationReason": null
           },
           {
-            "name": "billed_ID",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "billed_IN",
             "description": null,
             "type": {
@@ -13317,18 +13053,6 @@
           },
           {
             "name": "cohortId_ENDS_WITH",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "cohortId_ID",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -13409,18 +13133,6 @@
           },
           {
             "name": "endUsers_ENDS_WITH",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "endUsers_ID",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -13724,18 +13436,6 @@
             "deprecationReason": null
           },
           {
-            "name": "initialCohortDeliveryDate_ID",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "initialCohortDeliveryDate_IN",
             "description": null,
             "type": {
@@ -13801,18 +13501,6 @@
           },
           {
             "name": "pmUsers_ENDS_WITH",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "pmUsers_ID",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -13900,18 +13588,6 @@
             "deprecationReason": null
           },
           {
-            "name": "projectSubtitle_ID",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "projectSubtitle_IN",
             "description": null,
             "type": {
@@ -13977,18 +13653,6 @@
           },
           {
             "name": "projectTitle_ENDS_WITH",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "projectTitle_ID",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -14093,18 +13757,6 @@
           },
           {
             "name": "status_ENDS_WITH",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "status_ID",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -14257,18 +13909,6 @@
           },
           {
             "name": "type_ENDS_WITH",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "type_ID",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -15213,6 +14853,141 @@
       },
       {
         "kind": "OBJECT",
+        "name": "DashboardCohort",
+        "description": null,
+        "fields": [
+          {
+            "name": "billed",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "cohortId",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "endUsers",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "initialCohortDeliveryDate",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "pmUsers",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "projectSubtitle",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "projectTitle",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "status",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "totalSampleCount",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "Int",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "type",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
         "name": "DashboardPatient",
         "description": null,
         "fields": [
@@ -15374,6 +15149,18 @@
                 "name": "Int",
                 "ofType": null
               }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "uniqueSampleCount",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "Int",
+              "ofType": null
             },
             "isDeprecated": false,
             "deprecationReason": null
@@ -19500,18 +19287,6 @@
             "deprecationReason": null
           },
           {
-            "name": "date_ID",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "date_IN",
             "description": null,
             "type": {
@@ -19592,18 +19367,6 @@
             "deprecationReason": null
           },
           {
-            "name": "normalPrimaryId_ID",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "normalPrimaryId_IN",
             "description": null,
             "type": {
@@ -19673,18 +19436,6 @@
           },
           {
             "name": "status_ENDS_WITH",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "status_ID",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -21159,54 +20910,6 @@
             "description": null,
             "args": [
               {
-                "name": "connect",
-                "description": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "BamCompleteConnectInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
-                "name": "create",
-                "description": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "BamCompleteRelationInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
-                "name": "delete",
-                "description": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "BamCompleteDeleteInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
-                "name": "disconnect",
-                "description": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "BamCompleteDisconnectInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
                 "name": "update",
                 "description": null,
                 "type": {
@@ -21248,54 +20951,6 @@
             "description": null,
             "args": [
               {
-                "name": "connect",
-                "description": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "CohortCompleteConnectInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
-                "name": "create",
-                "description": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "CohortCompleteRelationInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
-                "name": "delete",
-                "description": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "CohortCompleteDeleteInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
-                "name": "disconnect",
-                "description": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "CohortCompleteDisconnectInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
                 "name": "update",
                 "description": null,
                 "type": {
@@ -21336,54 +20991,6 @@
             "name": "updateCohorts",
             "description": null,
             "args": [
-              {
-                "name": "connect",
-                "description": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "CohortConnectInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
-                "name": "create",
-                "description": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "CohortRelationInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
-                "name": "delete",
-                "description": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "CohortDeleteInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
-                "name": "disconnect",
-                "description": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "CohortDisconnectInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
               {
                 "name": "update",
                 "description": null,
@@ -21459,54 +21066,6 @@
             "description": null,
             "args": [
               {
-                "name": "connect",
-                "description": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "MafCompleteConnectInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
-                "name": "create",
-                "description": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "MafCompleteRelationInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
-                "name": "delete",
-                "description": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "MafCompleteDeleteInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
-                "name": "disconnect",
-                "description": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "MafCompleteDisconnectInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
                 "name": "update",
                 "description": null,
                 "type": {
@@ -21547,54 +21106,6 @@
             "name": "updatePatientAliases",
             "description": null,
             "args": [
-              {
-                "name": "connect",
-                "description": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "PatientAliasConnectInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
-                "name": "create",
-                "description": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "PatientAliasRelationInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
-                "name": "delete",
-                "description": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "PatientAliasDeleteInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
-                "name": "disconnect",
-                "description": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "PatientAliasDisconnectInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
               {
                 "name": "update",
                 "description": null,
@@ -21637,54 +21148,6 @@
             "description": null,
             "args": [
               {
-                "name": "connect",
-                "description": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "PatientConnectInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
-                "name": "create",
-                "description": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "PatientRelationInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
-                "name": "delete",
-                "description": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "PatientDeleteInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
-                "name": "disconnect",
-                "description": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "PatientDisconnectInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
                 "name": "update",
                 "description": null,
                 "type": {
@@ -21725,54 +21188,6 @@
             "name": "updateProjects",
             "description": null,
             "args": [
-              {
-                "name": "connect",
-                "description": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "ProjectConnectInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
-                "name": "create",
-                "description": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "ProjectRelationInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
-                "name": "delete",
-                "description": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "ProjectDeleteInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
-                "name": "disconnect",
-                "description": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "ProjectDisconnectInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
               {
                 "name": "update",
                 "description": null,
@@ -21815,54 +21230,6 @@
             "description": null,
             "args": [
               {
-                "name": "connect",
-                "description": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "QcCompleteConnectInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
-                "name": "create",
-                "description": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "QcCompleteRelationInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
-                "name": "delete",
-                "description": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "QcCompleteDeleteInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
-                "name": "disconnect",
-                "description": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "QcCompleteDisconnectInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
                 "name": "update",
                 "description": null,
                 "type": {
@@ -21903,54 +21270,6 @@
             "name": "updateRequestMetadata",
             "description": null,
             "args": [
-              {
-                "name": "connect",
-                "description": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "RequestMetadataConnectInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
-                "name": "create",
-                "description": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "RequestMetadataRelationInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
-                "name": "delete",
-                "description": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "RequestMetadataDeleteInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
-                "name": "disconnect",
-                "description": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "RequestMetadataDisconnectInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
               {
                 "name": "update",
                 "description": null,
@@ -21993,54 +21312,6 @@
             "description": null,
             "args": [
               {
-                "name": "connect",
-                "description": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "RequestConnectInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
-                "name": "create",
-                "description": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "RequestRelationInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
-                "name": "delete",
-                "description": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "RequestDeleteInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
-                "name": "disconnect",
-                "description": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "RequestDisconnectInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
                 "name": "update",
                 "description": null,
                 "type": {
@@ -22081,54 +21352,6 @@
             "name": "updateSampleAliases",
             "description": null,
             "args": [
-              {
-                "name": "connect",
-                "description": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "SampleAliasConnectInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
-                "name": "create",
-                "description": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "SampleAliasRelationInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
-                "name": "delete",
-                "description": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "SampleAliasDeleteInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
-                "name": "disconnect",
-                "description": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "SampleAliasDisconnectInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
               {
                 "name": "update",
                 "description": null,
@@ -22171,54 +21394,6 @@
             "description": null,
             "args": [
               {
-                "name": "connect",
-                "description": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "SampleMetadataConnectInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
-                "name": "create",
-                "description": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "SampleMetadataRelationInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
-                "name": "delete",
-                "description": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "SampleMetadataDeleteInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
-                "name": "disconnect",
-                "description": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "SampleMetadataDisconnectInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
                 "name": "update",
                 "description": null,
                 "type": {
@@ -22259,54 +21434,6 @@
             "name": "updateSamples",
             "description": null,
             "args": [
-              {
-                "name": "connect",
-                "description": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "SampleConnectInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
-                "name": "create",
-                "description": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "SampleRelationInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
-                "name": "delete",
-                "description": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "SampleDeleteInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
-                "name": "disconnect",
-                "description": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "SampleDisconnectInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
               {
                 "name": "update",
                 "description": null,
@@ -22349,54 +21476,6 @@
             "description": null,
             "args": [
               {
-                "name": "connect",
-                "description": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "StatusConnectInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
-                "name": "create",
-                "description": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "StatusRelationInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
-                "name": "delete",
-                "description": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "StatusDeleteInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
-                "name": "disconnect",
-                "description": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "StatusDisconnectInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
                 "name": "update",
                 "description": null,
                 "type": {
@@ -22437,54 +21516,6 @@
             "name": "updateTempos",
             "description": null,
             "args": [
-              {
-                "name": "connect",
-                "description": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "TempoConnectInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
-                "name": "create",
-                "description": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "TempoRelationInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
-                "name": "delete",
-                "description": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "TempoDeleteInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
-                "name": "disconnect",
-                "description": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "TempoDisconnectInput",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
               {
                 "name": "update",
                 "description": null,
@@ -26314,18 +25345,6 @@
             "deprecationReason": null
           },
           {
-            "name": "namespace_ID",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "namespace_IN",
             "description": null,
             "type": {
@@ -26395,18 +25414,6 @@
           },
           {
             "name": "value_ENDS_WITH",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "value_ID",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -27445,7 +26452,7 @@
             "deprecationReason": null
           },
           {
-            "name": "datasource_AVERAGE_EQUAL",
+            "name": "datasource_AVERAGE_LENGTH_EQUAL",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -27625,55 +26632,7 @@
             "deprecationReason": null
           },
           {
-            "name": "dmpPatientId_AVERAGE_LENGTH_EQUAL",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "datasource_SHORTEST_GTE",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "datasource_SHORTEST_LT",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "datasource_SHORTEST_LTE",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "sampleCategory_AVERAGE_EQUAL",
+            "name": "sampleCategory_AVERAGE_LENGTH_EQUAL",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -28033,55 +26992,7 @@
             "deprecationReason": null
           },
           {
-            "name": "sampleName_AVERAGE_LENGTH_EQUAL",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "sampleClass_SHORTEST_GTE",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "sampleClass_SHORTEST_LT",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "sampleClass_SHORTEST_LTE",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "smileSampleId_AVERAGE_EQUAL",
+            "name": "smileSampleId_AVERAGE_LENGTH_EQUAL",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -28250,54 +27161,6 @@
           },
           {
             "name": "smileSampleId_SHORTEST_LENGTH_LTE",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "smileTempoId_AVERAGE_LENGTH_EQUAL",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "smileSampleId_SHORTEST_GTE",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "smileSampleId_SHORTEST_LT",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "smileSampleId_SHORTEST_LTE",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -30311,18 +29174,6 @@
             "deprecationReason": null
           },
           {
-            "name": "cmoPatientId_ID",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "cmoPatientId_IN",
             "description": null,
             "type": {
@@ -30388,18 +29239,6 @@
           },
           {
             "name": "cmoSampleIds_ENDS_WITH",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "cmoSampleIds_ID",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -30487,18 +29326,6 @@
             "deprecationReason": null
           },
           {
-            "name": "consentPartA_ID",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "consentPartA_IN",
             "description": null,
             "type": {
@@ -30575,18 +29402,6 @@
             "deprecationReason": null
           },
           {
-            "name": "consentPartC_ID",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "consentPartC_IN",
             "description": null,
             "type": {
@@ -30652,18 +29467,6 @@
           },
           {
             "name": "dmpPatientId_ENDS_WITH",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "dmpPatientId_ID",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -30956,18 +29759,6 @@
           },
           {
             "name": "smilePatientId_ENDS_WITH",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "smilePatientId_ID",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -37029,18 +35820,6 @@
             "deprecationReason": null
           },
           {
-            "name": "igoProjectId_ID",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "igoProjectId_IN",
             "description": null,
             "type": {
@@ -37110,18 +35889,6 @@
           },
           {
             "name": "namespace_ENDS_WITH",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "namespace_ID",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -39947,18 +38714,6 @@
             "deprecationReason": null
           },
           {
-            "name": "date_ID",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "date_IN",
             "description": null,
             "type": {
@@ -40028,18 +38783,6 @@
           },
           {
             "name": "reason_ENDS_WITH",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "reason_ID",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -40131,18 +38874,6 @@
             "deprecationReason": null
           },
           {
-            "name": "result_ID",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "result_IN",
             "description": null,
             "type": {
@@ -40212,18 +38943,6 @@
           },
           {
             "name": "status_ENDS_WITH",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "status_ID",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -40899,6 +39618,160 @@
                 "kind": "OBJECT",
                 "name": "CohortsConnection",
                 "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "dashboardCohortCount",
+            "description": null,
+            "args": [
+              {
+                "name": "filter",
+                "description": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "DashboardRecordFilter",
+                  "ofType": null
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              },
+              {
+                "name": "searchVals",
+                "description": null,
+                "type": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "String",
+                      "ofType": null
+                    }
+                  }
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              }
+            ],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "DashboardRecordCount",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "dashboardCohorts",
+            "description": null,
+            "args": [
+              {
+                "name": "filter",
+                "description": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "DashboardRecordFilter",
+                  "ofType": null
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              },
+              {
+                "name": "limit",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              },
+              {
+                "name": "offset",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              },
+              {
+                "name": "searchVals",
+                "description": null,
+                "type": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "String",
+                      "ofType": null
+                    }
+                  }
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              },
+              {
+                "name": "sort",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "DashboardRecordSort",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              }
+            ],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "OBJECT",
+                    "name": "DashboardCohort",
+                    "ofType": null
+                  }
+                }
               }
             },
             "isDeprecated": false,
@@ -47047,7 +45920,7 @@
             "deprecationReason": null
           },
           {
-            "name": "datasource_AVERAGE_EQUAL",
+            "name": "datasource_AVERAGE_LENGTH_EQUAL",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -47227,55 +46100,7 @@
             "deprecationReason": null
           },
           {
-            "name": "dmpPatientId_AVERAGE_LENGTH_EQUAL",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "datasource_SHORTEST_GTE",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "datasource_SHORTEST_LT",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "datasource_SHORTEST_LTE",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "sampleCategory_AVERAGE_EQUAL",
+            "name": "sampleCategory_AVERAGE_LENGTH_EQUAL",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -47635,55 +46460,7 @@
             "deprecationReason": null
           },
           {
-            "name": "sampleName_AVERAGE_LENGTH_EQUAL",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "sampleClass_SHORTEST_GTE",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "sampleClass_SHORTEST_LT",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "sampleClass_SHORTEST_LTE",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "smileSampleId_AVERAGE_EQUAL",
+            "name": "smileSampleId_AVERAGE_LENGTH_EQUAL",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -47852,54 +46629,6 @@
           },
           {
             "name": "smileSampleId_SHORTEST_LENGTH_LTE",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "smileTempoId_AVERAGE_LENGTH_EQUAL",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "smileSampleId_SHORTEST_GTE",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "smileSampleId_SHORTEST_LT",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "smileSampleId_SHORTEST_LTE",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -55386,18 +54115,6 @@
             "deprecationReason": null
           },
           {
-            "name": "igoRequestId_ID",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "igoRequestId_IN",
             "description": null,
             "type": {
@@ -55478,18 +54195,6 @@
             "deprecationReason": null
           },
           {
-            "name": "importDate_ID",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "importDate_IN",
             "description": null,
             "type": {
@@ -55559,18 +54264,6 @@
           },
           {
             "name": "requestMetadataJson_ENDS_WITH",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "requestMetadataJson_ID",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -58078,18 +56771,6 @@
             "deprecationReason": null
           },
           {
-            "name": "dataAccessEmails_ID",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "dataAccessEmails_IN",
             "description": null,
             "type": {
@@ -58159,18 +56840,6 @@
           },
           {
             "name": "dataAnalystEmail_ENDS_WITH",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "dataAnalystEmail_ID",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -58262,18 +56931,6 @@
             "deprecationReason": null
           },
           {
-            "name": "dataAnalystName_ID",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "dataAnalystName_IN",
             "description": null,
             "type": {
@@ -58343,18 +57000,6 @@
           },
           {
             "name": "genePanel_ENDS_WITH",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "genePanel_ID",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -58662,18 +57307,6 @@
             "deprecationReason": null
           },
           {
-            "name": "igoProjectId_ID",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "igoProjectId_IN",
             "description": null,
             "type": {
@@ -58743,18 +57376,6 @@
           },
           {
             "name": "igoRequestId_ENDS_WITH",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "igoRequestId_ID",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -58846,18 +57467,6 @@
             "deprecationReason": null
           },
           {
-            "name": "importDate_ID",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "importDate_IN",
             "description": null,
             "type": {
@@ -58923,18 +57532,6 @@
           },
           {
             "name": "investigatorEmail_ENDS_WITH",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "investigatorEmail_ID",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -59015,18 +57612,6 @@
           },
           {
             "name": "investigatorName_ENDS_WITH",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "investigatorName_ID",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -59130,18 +57715,6 @@
             "deprecationReason": null
           },
           {
-            "name": "labHeadEmail_ID",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "labHeadEmail_IN",
             "description": null,
             "type": {
@@ -59211,18 +57784,6 @@
           },
           {
             "name": "labHeadName_ENDS_WITH",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "labHeadName_ID",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -59314,18 +57875,6 @@
             "deprecationReason": null
           },
           {
-            "name": "libraryType_ID",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "libraryType_IN",
             "description": null,
             "type": {
@@ -59391,18 +57940,6 @@
           },
           {
             "name": "namespace_ENDS_WITH",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "namespace_ID",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -59494,18 +58031,6 @@
             "deprecationReason": null
           },
           {
-            "name": "otherContactEmails_ID",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "otherContactEmails_IN",
             "description": null,
             "type": {
@@ -59575,18 +58100,6 @@
           },
           {
             "name": "piEmail_ENDS_WITH",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "piEmail_ID",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -59695,18 +58208,6 @@
           },
           {
             "name": "projectManagerName_ENDS_WITH",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "projectManagerName_ID",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -59906,18 +58407,6 @@
             "deprecationReason": null
           },
           {
-            "name": "qcAccessEmails_ID",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "qcAccessEmails_IN",
             "description": null,
             "type": {
@@ -59987,18 +58476,6 @@
           },
           {
             "name": "requestJson_ENDS_WITH",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "requestJson_ID",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -60090,18 +58567,6 @@
             "deprecationReason": null
           },
           {
-            "name": "smileRequestId_ID",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "smileRequestId_IN",
             "description": null,
             "type": {
@@ -60171,18 +58636,6 @@
           },
           {
             "name": "strand_ENDS_WITH",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "strand_ID",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -62726,7 +61179,7 @@
             "deprecationReason": null
           },
           {
-            "name": "datasource_AVERAGE_EQUAL",
+            "name": "datasource_AVERAGE_LENGTH_EQUAL",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -62906,55 +61359,7 @@
             "deprecationReason": null
           },
           {
-            "name": "dmpPatientId_AVERAGE_LENGTH_EQUAL",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "datasource_SHORTEST_GTE",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "datasource_SHORTEST_LT",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "datasource_SHORTEST_LTE",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "sampleCategory_AVERAGE_EQUAL",
+            "name": "sampleCategory_AVERAGE_LENGTH_EQUAL",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -63314,55 +61719,7 @@
             "deprecationReason": null
           },
           {
-            "name": "sampleName_AVERAGE_LENGTH_EQUAL",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "sampleClass_SHORTEST_GTE",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "sampleClass_SHORTEST_LT",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "sampleClass_SHORTEST_LTE",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "smileSampleId_AVERAGE_EQUAL",
+            "name": "smileSampleId_AVERAGE_LENGTH_EQUAL",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -63531,54 +61888,6 @@
           },
           {
             "name": "smileSampleId_SHORTEST_LENGTH_LTE",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "smileTempoId_AVERAGE_LENGTH_EQUAL",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "smileSampleId_SHORTEST_GTE",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "smileSampleId_SHORTEST_LT",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "smileSampleId_SHORTEST_LTE",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -64268,18 +62577,6 @@
             "deprecationReason": null
           },
           {
-            "name": "namespace_ID",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "namespace_IN",
             "description": null,
             "type": {
@@ -64349,18 +62646,6 @@
           },
           {
             "name": "value_ENDS_WITH",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "value_ID",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -78626,7 +76911,7 @@
             "deprecationReason": null
           },
           {
-            "name": "datasource_AVERAGE_EQUAL",
+            "name": "datasource_AVERAGE_LENGTH_EQUAL",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -78806,55 +77091,7 @@
             "deprecationReason": null
           },
           {
-            "name": "dmpPatientId_AVERAGE_LENGTH_EQUAL",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "datasource_SHORTEST_GTE",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "datasource_SHORTEST_LT",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "datasource_SHORTEST_LTE",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "sampleCategory_AVERAGE_EQUAL",
+            "name": "sampleCategory_AVERAGE_LENGTH_EQUAL",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -79214,55 +77451,7 @@
             "deprecationReason": null
           },
           {
-            "name": "sampleName_AVERAGE_LENGTH_EQUAL",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "sampleClass_SHORTEST_GTE",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "sampleClass_SHORTEST_LT",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "sampleClass_SHORTEST_LTE",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "smileSampleId_AVERAGE_EQUAL",
+            "name": "smileSampleId_AVERAGE_LENGTH_EQUAL",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -79431,54 +77620,6 @@
           },
           {
             "name": "smileSampleId_SHORTEST_LENGTH_LTE",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "smileTempoId_AVERAGE_LENGTH_EQUAL",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "smileSampleId_SHORTEST_GTE",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "smileSampleId_SHORTEST_LT",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "smileSampleId_SHORTEST_LTE",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -80546,18 +78687,6 @@
             "deprecationReason": null
           },
           {
-            "name": "additionalProperties_ID",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "additionalProperties_IN",
             "description": null,
             "type": {
@@ -80627,18 +78756,6 @@
           },
           {
             "name": "baitSet_ENDS_WITH",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "baitSet_ID",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -80726,18 +78843,6 @@
             "deprecationReason": null
           },
           {
-            "name": "cfDNA2dBarcode_ID",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "cfDNA2dBarcode_IN",
             "description": null,
             "type": {
@@ -80803,18 +78908,6 @@
           },
           {
             "name": "cmoInfoIgoId_ENDS_WITH",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "cmoInfoIgoId_ID",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -80902,18 +78995,6 @@
             "deprecationReason": null
           },
           {
-            "name": "cmoPatientId_ID",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "cmoPatientId_IN",
             "description": null,
             "type": {
@@ -80979,18 +79060,6 @@
           },
           {
             "name": "cmoSampleIdFields_ENDS_WITH",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "cmoSampleIdFields_ID",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -81082,18 +79151,6 @@
             "deprecationReason": null
           },
           {
-            "name": "cmoSampleName_ID",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "cmoSampleName_IN",
             "description": null,
             "type": {
@@ -81159,18 +79216,6 @@
           },
           {
             "name": "collectionYear_ENDS_WITH",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "collectionYear_ID",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -81251,18 +79296,6 @@
           },
           {
             "name": "genePanel_ENDS_WITH",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "genePanel_ID",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -81474,18 +79507,6 @@
             "deprecationReason": null
           },
           {
-            "name": "igoRequestId_ID",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "igoRequestId_IN",
             "description": null,
             "type": {
@@ -81551,18 +79572,6 @@
           },
           {
             "name": "importDate_ENDS_WITH",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "importDate_ID",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -81654,18 +79663,6 @@
             "deprecationReason": null
           },
           {
-            "name": "investigatorSampleId_ID",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "investigatorSampleId_IN",
             "description": null,
             "type": {
@@ -81731,18 +79728,6 @@
           },
           {
             "name": "libraries_ENDS_WITH",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "libraries_ID",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -81834,18 +79819,6 @@
             "deprecationReason": null
           },
           {
-            "name": "oncotreeCode_ID",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "oncotreeCode_IN",
             "description": null,
             "type": {
@@ -81922,18 +79895,6 @@
             "deprecationReason": null
           },
           {
-            "name": "preservation_ID",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "preservation_IN",
             "description": null,
             "type": {
@@ -81999,18 +79960,6 @@
           },
           {
             "name": "primaryId_ENDS_WITH",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "primaryId_ID",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -82102,18 +80051,6 @@
             "deprecationReason": null
           },
           {
-            "name": "qcReports_ID",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "qcReports_IN",
             "description": null,
             "type": {
@@ -82183,18 +80120,6 @@
           },
           {
             "name": "sampleClass_ENDS_WITH",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "sampleClass_ID",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -82286,18 +80211,6 @@
             "deprecationReason": null
           },
           {
-            "name": "sampleName_ID",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "sampleName_IN",
             "description": null,
             "type": {
@@ -82374,18 +80287,6 @@
             "deprecationReason": null
           },
           {
-            "name": "sampleOrigin_ID",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "sampleOrigin_IN",
             "description": null,
             "type": {
@@ -82451,18 +80352,6 @@
           },
           {
             "name": "sampleType_ENDS_WITH",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "sampleType_ID",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -82662,18 +80551,6 @@
             "deprecationReason": null
           },
           {
-            "name": "sex_ID",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "sex_IN",
             "description": null,
             "type": {
@@ -82743,18 +80620,6 @@
           },
           {
             "name": "species_ENDS_WITH",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "species_ID",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -82846,18 +80711,6 @@
             "deprecationReason": null
           },
           {
-            "name": "tissueLocation_ID",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "tissueLocation_IN",
             "description": null,
             "type": {
@@ -82934,18 +80787,6 @@
             "deprecationReason": null
           },
           {
-            "name": "tubeId_ID",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "tubeId_IN",
             "description": null,
             "type": {
@@ -83011,18 +80852,6 @@
           },
           {
             "name": "tumorOrNormal_ENDS_WITH",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "tumorOrNormal_ID",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -92732,18 +90561,6 @@
             "deprecationReason": null
           },
           {
-            "name": "datasource_ID",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "datasource_IN",
             "description": null,
             "type": {
@@ -93376,18 +91193,6 @@
             "deprecationReason": null
           },
           {
-            "name": "sampleCategory_ID",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "sampleCategory_IN",
             "description": null,
             "type": {
@@ -93468,18 +91273,6 @@
             "deprecationReason": null
           },
           {
-            "name": "sampleClass_ID",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "sampleClass_IN",
             "description": null,
             "type": {
@@ -93549,18 +91342,6 @@
           },
           {
             "name": "smileSampleId_ENDS_WITH",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "smileSampleId_ID",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -102265,18 +100046,6 @@
             "deprecationReason": null
           },
           {
-            "name": "validationReport_ID",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "validationReport_IN",
             "description": null,
             "type": {
@@ -108846,7 +106615,7 @@
             "deprecationReason": null
           },
           {
-            "name": "datasource_AVERAGE_EQUAL",
+            "name": "datasource_AVERAGE_LENGTH_EQUAL",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -109026,55 +106795,7 @@
             "deprecationReason": null
           },
           {
-            "name": "dmpPatientId_AVERAGE_LENGTH_EQUAL",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "datasource_SHORTEST_GTE",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "datasource_SHORTEST_LT",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "datasource_SHORTEST_LTE",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "sampleCategory_AVERAGE_EQUAL",
+            "name": "sampleCategory_AVERAGE_LENGTH_EQUAL",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -109434,55 +107155,7 @@
             "deprecationReason": null
           },
           {
-            "name": "sampleName_AVERAGE_LENGTH_EQUAL",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "sampleClass_SHORTEST_GTE",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "sampleClass_SHORTEST_LT",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "sampleClass_SHORTEST_LTE",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "smileSampleId_AVERAGE_EQUAL",
+            "name": "smileSampleId_AVERAGE_LENGTH_EQUAL",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -109651,54 +107324,6 @@
           },
           {
             "name": "smileSampleId_SHORTEST_LENGTH_LTE",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "smileTempoId_AVERAGE_LENGTH_EQUAL",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "smileSampleId_SHORTEST_GTE",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "smileSampleId_SHORTEST_LT",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "smileSampleId_SHORTEST_LTE",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -110236,18 +107861,6 @@
             "deprecationReason": null
           },
           {
-            "name": "accessLevel_ID",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "accessLevel_IN",
             "description": null,
             "type": {
@@ -110336,18 +107949,6 @@
             "deprecationReason": null
           },
           {
-            "name": "billedBy_ID",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "billedBy_IN",
             "description": null,
             "type": {
@@ -110424,18 +108025,6 @@
             "deprecationReason": null
           },
           {
-            "name": "costCenter_ID",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "costCenter_IN",
             "description": null,
             "type": {
@@ -110501,18 +108090,6 @@
           },
           {
             "name": "custodianInformation_ENDS_WITH",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "custodianInformation_ID",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -111021,18 +108598,6 @@
           },
           {
             "name": "smileTempoId_ENDS_WITH",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "smileTempoId_ID",
             "description": null,
             "type": {
               "kind": "SCALAR",
