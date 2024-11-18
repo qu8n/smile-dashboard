@@ -29,7 +29,7 @@ export async function buildCustomSchema(ogm: OGM) {
           searchVals,
           context,
           sort,
-          filter,
+          filters,
           limit,
           offset,
         }: QueryDashboardSamplesArgs,
@@ -43,7 +43,7 @@ export async function buildCustomSchema(ogm: OGM) {
         const queryBody = buildSamplesQueryBody({
           searchVals,
           context,
-          filter,
+          filters,
           addlOncotreeCodes,
         });
 
@@ -57,7 +57,7 @@ export async function buildCustomSchema(ogm: OGM) {
       },
       async dashboardSampleCount(
         _source: undefined,
-        { searchVals, context, filter }: QueryDashboardSampleCountArgs,
+        { searchVals, context, filters }: QueryDashboardSampleCountArgs,
         { oncotreeCache }: ApolloServerContext
       ) {
         const addlOncotreeCodes = getAddlOtCodesMatchingCtOrCtdVals({
@@ -68,7 +68,7 @@ export async function buildCustomSchema(ogm: OGM) {
         const queryBody = buildSamplesQueryBody({
           searchVals,
           context,
-          filter,
+          filters,
           addlOncotreeCodes,
         });
 
@@ -79,9 +79,9 @@ export async function buildCustomSchema(ogm: OGM) {
 
       async dashboardRequests(
         _source: undefined,
-        { searchVals, filter, sort, limit, offset }: QueryDashboardRequestsArgs
+        { searchVals, filters, sort, limit, offset }: QueryDashboardRequestsArgs
       ) {
-        const queryBody = buildRequestsQueryBody({ searchVals, filter });
+        const queryBody = buildRequestsQueryBody({ searchVals, filters });
         return await queryDashboardRequests({
           queryBody,
           sort,
@@ -91,17 +91,17 @@ export async function buildCustomSchema(ogm: OGM) {
       },
       async dashboardRequestCount(
         _source: undefined,
-        { searchVals, filter }: QueryDashboardRequestCountArgs
+        { searchVals, filters }: QueryDashboardRequestCountArgs
       ) {
-        const queryBody = buildRequestsQueryBody({ searchVals, filter });
+        const queryBody = buildRequestsQueryBody({ searchVals, filters });
         return await queryDashboardRequestCount({ queryBody });
       },
 
       async dashboardPatients(
         _source: undefined,
-        { searchVals, filter, sort, limit, offset }: QueryDashboardPatientsArgs
+        { searchVals, filters, sort, limit, offset }: QueryDashboardPatientsArgs
       ) {
-        const queryBody = buildPatientsQueryBody({ searchVals, filter });
+        const queryBody = buildPatientsQueryBody({ searchVals, filters });
         return await queryDashboardPatients({
           queryBody,
           sort,
@@ -111,17 +111,17 @@ export async function buildCustomSchema(ogm: OGM) {
       },
       async dashboardPatientCount(
         _source: undefined,
-        { searchVals, filter }: QueryDashboardPatientCountArgs
+        { searchVals, filters }: QueryDashboardPatientCountArgs
       ) {
-        const queryBody = buildPatientsQueryBody({ searchVals, filter });
+        const queryBody = buildPatientsQueryBody({ searchVals, filters });
         return await queryDashboardPatientCount({ queryBody });
       },
 
       async dashboardCohorts(
         _source: undefined,
-        { searchVals, filter, sort, limit, offset }: QueryDashboardCohortsArgs
+        { searchVals, filters, sort, limit, offset }: QueryDashboardCohortsArgs
       ) {
-        const queryBody = buildCohortsQueryBody({ searchVals, filter });
+        const queryBody = buildCohortsQueryBody({ searchVals, filters });
         return await queryDashboardCohorts({
           queryBody,
           sort,
@@ -131,9 +131,9 @@ export async function buildCustomSchema(ogm: OGM) {
       },
       async dashboardCohortCount(
         _source: undefined,
-        { searchVals, filter }: QueryDashboardCohortCountArgs
+        { searchVals, filters }: QueryDashboardCohortCountArgs
       ) {
-        const queryBody = buildCohortsQueryBody({ searchVals, filter });
+        const queryBody = buildCohortsQueryBody({ searchVals, filters });
         return await queryDashboardCohortCount({ queryBody });
       },
     },
@@ -281,14 +281,14 @@ export async function buildCustomSchema(ogm: OGM) {
 
     input DashboardRecordFilter {
       field: String!
-      values: [String!]!
+      filter: String!
     }
 
     type Query {
       dashboardSamples(
         searchVals: [String!]
         context: DashboardRecordContext
-        filter: DashboardRecordFilter
+        filters: [DashboardRecordFilter!]
         sort: DashboardRecordSort!
         limit: Int!
         offset: Int!
@@ -296,43 +296,43 @@ export async function buildCustomSchema(ogm: OGM) {
       dashboardSampleCount(
         searchVals: [String!]
         context: DashboardRecordContext
-        filter: DashboardRecordFilter
+        filters: [DashboardRecordFilter!]
       ): DashboardRecordCount!
 
       dashboardPatients(
         searchVals: [String!]
-        filter: DashboardRecordFilter
+        filters: [DashboardRecordFilter!]
         sort: DashboardRecordSort!
         limit: Int!
         offset: Int!
       ): [DashboardPatient!]!
       dashboardPatientCount(
         searchVals: [String!]
-        filter: DashboardRecordFilter
+        filters: [DashboardRecordFilter!]
       ): DashboardRecordCount!
 
       dashboardRequests(
         searchVals: [String!]
-        filter: DashboardRecordFilter
+        filters: [DashboardRecordFilter!]
         sort: DashboardRecordSort!
         limit: Int!
         offset: Int!
       ): [DashboardRequest!]!
       dashboardRequestCount(
         searchVals: [String!]
-        filter: DashboardRecordFilter
+        filters: [DashboardRecordFilter!]
       ): DashboardRecordCount!
 
       dashboardCohorts(
         searchVals: [String!]
-        filter: DashboardRecordFilter
+        filters: [DashboardRecordFilter!]
         sort: DashboardRecordSort!
         limit: Int!
         offset: Int!
       ): [DashboardCohort!]!
       dashboardCohortCount(
         searchVals: [String!]
-        filter: DashboardRecordFilter
+        filters: [DashboardRecordFilter!]
       ): DashboardRecordCount!
     }
 
@@ -575,12 +575,12 @@ const searchFiltersConfig = [
 function buildSamplesQueryBody({
   searchVals,
   context,
-  filter,
+  filters,
   addlOncotreeCodes,
 }: {
   searchVals: QueryDashboardSampleCountArgs["searchVals"];
   context?: QueryDashboardSampleCountArgs["context"];
-  filter?: QueryDashboardSamplesArgs["filter"];
+  filters?: QueryDashboardSamplesArgs["filters"];
   addlOncotreeCodes: string[];
 }) {
   // Build search filters given user's search values input. For example:
@@ -643,12 +643,13 @@ function buildSamplesQueryBody({
 
   // Column filter of Cohort Samples view
   let tempoFilter = "";
-  if (filter?.field === "billed") {
-    if (filter.values[0] === "Yes") {
+  if (filters?.[0].field === "billed") {
+    const billedFilter = JSON.parse(filters[0].filter).values;
+    if (billedFilter[0] === "Yes") {
       tempoFilter = "t.billed = true";
-    } else if (filter.values[0] === "No") {
+    } else if (billedFilter[0] === "No") {
       tempoFilter = "t.billed = false OR t.billed IS NULL";
-    } else if (filter.values.length === 0) {
+    } else if (billedFilter.length === 0) {
       tempoFilter = "t.billed <> true AND t.billed <> false";
     }
   }
@@ -905,10 +906,10 @@ async function publishNatsMessage(topic: string, message: string) {
 
 function buildRequestsQueryBody({
   searchVals,
-  filter,
+  filters,
 }: {
   searchVals: QueryDashboardRequestsArgs["searchVals"];
-  filter: QueryDashboardRequestsArgs["filter"];
+  filters?: QueryDashboardRequestsArgs["filters"];
 }) {
   const fieldsToSearch = [
     "igoRequestId",
@@ -1045,10 +1046,10 @@ async function queryDashboardRequestCount({
 
 function buildPatientsQueryBody({
   searchVals,
-  filter,
+  filters,
 }: {
   searchVals: QueryDashboardPatientsArgs["searchVals"];
-  filter: QueryDashboardPatientsArgs["filter"];
+  filters?: QueryDashboardPatientsArgs["filters"];
 }) {
   const fieldsToSearch = [
     "smilePatientId",
@@ -1186,11 +1187,13 @@ async function queryDashboardPatientCount({
 
 function buildCohortsQueryBody({
   searchVals,
-  filter,
+  filters,
 }: {
   searchVals: QueryDashboardCohortsArgs["searchVals"];
-  filter: QueryDashboardCohortsArgs["filter"];
+  filters?: QueryDashboardCohortsArgs["filters"];
 }) {
+  // TODO: handle cohorts filters
+
   const fieldsToSearch = [
     "cohortId",
     "billed",

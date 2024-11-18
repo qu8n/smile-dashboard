@@ -15194,23 +15194,15 @@
             "deprecationReason": null
           },
           {
-            "name": "values",
+            "name": "filter",
             "description": null,
             "type": {
               "kind": "NON_NULL",
               "name": null,
               "ofType": {
-                "kind": "LIST",
-                "name": null,
-                "ofType": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "String",
-                    "ofType": null
-                  }
-                }
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
               }
             },
             "defaultValue": null,
@@ -39628,12 +39620,20 @@
             "description": null,
             "args": [
               {
-                "name": "filter",
+                "name": "filters",
                 "description": null,
                 "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "DashboardRecordFilter",
-                  "ofType": null
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
+                      "name": "DashboardRecordFilter",
+                      "ofType": null
+                    }
+                  }
                 },
                 "defaultValue": null,
                 "isDeprecated": false,
@@ -39677,12 +39677,20 @@
             "description": null,
             "args": [
               {
-                "name": "filter",
+                "name": "filters",
                 "description": null,
                 "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "DashboardRecordFilter",
-                  "ofType": null
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
+                      "name": "DashboardRecordFilter",
+                      "ofType": null
+                    }
+                  }
                 },
                 "defaultValue": null,
                 "isDeprecated": false,
@@ -39782,12 +39790,20 @@
             "description": null,
             "args": [
               {
-                "name": "filter",
+                "name": "filters",
                 "description": null,
                 "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "DashboardRecordFilter",
-                  "ofType": null
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
+                      "name": "DashboardRecordFilter",
+                      "ofType": null
+                    }
+                  }
                 },
                 "defaultValue": null,
                 "isDeprecated": false,
@@ -39831,12 +39847,20 @@
             "description": null,
             "args": [
               {
-                "name": "filter",
+                "name": "filters",
                 "description": null,
                 "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "DashboardRecordFilter",
-                  "ofType": null
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
+                      "name": "DashboardRecordFilter",
+                      "ofType": null
+                    }
+                  }
                 },
                 "defaultValue": null,
                 "isDeprecated": false,
@@ -39936,12 +39960,20 @@
             "description": null,
             "args": [
               {
-                "name": "filter",
+                "name": "filters",
                 "description": null,
                 "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "DashboardRecordFilter",
-                  "ofType": null
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
+                      "name": "DashboardRecordFilter",
+                      "ofType": null
+                    }
+                  }
                 },
                 "defaultValue": null,
                 "isDeprecated": false,
@@ -39985,12 +40017,20 @@
             "description": null,
             "args": [
               {
-                "name": "filter",
+                "name": "filters",
                 "description": null,
                 "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "DashboardRecordFilter",
-                  "ofType": null
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
+                      "name": "DashboardRecordFilter",
+                      "ofType": null
+                    }
+                  }
                 },
                 "defaultValue": null,
                 "isDeprecated": false,
@@ -40102,12 +40142,20 @@
                 "deprecationReason": null
               },
               {
-                "name": "filter",
+                "name": "filters",
                 "description": null,
                 "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "DashboardRecordFilter",
-                  "ofType": null
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
+                      "name": "DashboardRecordFilter",
+                      "ofType": null
+                    }
+                  }
                 },
                 "defaultValue": null,
                 "isDeprecated": false,
@@ -40163,12 +40211,20 @@
                 "deprecationReason": null
               },
               {
-                "name": "filter",
+                "name": "filters",
                 "description": null,
                 "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "DashboardRecordFilter",
-                  "ofType": null
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
+                      "name": "DashboardRecordFilter",
+                      "ofType": null
+                    }
+                  }
                 },
                 "defaultValue": null,
                 "isDeprecated": false,

@@ -1611,7 +1611,7 @@ export type DashboardRecordCount = {
 
 export type DashboardRecordFilter = {
   field: Scalars["String"];
-  values: Array<Scalars["String"]>;
+  filter: Scalars["String"];
 };
 
 export type DashboardRecordSort = {
@@ -4214,12 +4214,12 @@ export type QueryCohortsConnectionArgs = {
 };
 
 export type QueryDashboardCohortCountArgs = {
-  filter?: InputMaybe<DashboardRecordFilter>;
+  filters?: InputMaybe<Array<DashboardRecordFilter>>;
   searchVals?: InputMaybe<Array<Scalars["String"]>>;
 };
 
 export type QueryDashboardCohortsArgs = {
-  filter?: InputMaybe<DashboardRecordFilter>;
+  filters?: InputMaybe<Array<DashboardRecordFilter>>;
   limit: Scalars["Int"];
   offset: Scalars["Int"];
   searchVals?: InputMaybe<Array<Scalars["String"]>>;
@@ -4227,12 +4227,12 @@ export type QueryDashboardCohortsArgs = {
 };
 
 export type QueryDashboardPatientCountArgs = {
-  filter?: InputMaybe<DashboardRecordFilter>;
+  filters?: InputMaybe<Array<DashboardRecordFilter>>;
   searchVals?: InputMaybe<Array<Scalars["String"]>>;
 };
 
 export type QueryDashboardPatientsArgs = {
-  filter?: InputMaybe<DashboardRecordFilter>;
+  filters?: InputMaybe<Array<DashboardRecordFilter>>;
   limit: Scalars["Int"];
   offset: Scalars["Int"];
   searchVals?: InputMaybe<Array<Scalars["String"]>>;
@@ -4240,12 +4240,12 @@ export type QueryDashboardPatientsArgs = {
 };
 
 export type QueryDashboardRequestCountArgs = {
-  filter?: InputMaybe<DashboardRecordFilter>;
+  filters?: InputMaybe<Array<DashboardRecordFilter>>;
   searchVals?: InputMaybe<Array<Scalars["String"]>>;
 };
 
 export type QueryDashboardRequestsArgs = {
-  filter?: InputMaybe<DashboardRecordFilter>;
+  filters?: InputMaybe<Array<DashboardRecordFilter>>;
   limit: Scalars["Int"];
   offset: Scalars["Int"];
   searchVals?: InputMaybe<Array<Scalars["String"]>>;
@@ -4254,13 +4254,13 @@ export type QueryDashboardRequestsArgs = {
 
 export type QueryDashboardSampleCountArgs = {
   context?: InputMaybe<DashboardRecordContext>;
-  filter?: InputMaybe<DashboardRecordFilter>;
+  filters?: InputMaybe<Array<DashboardRecordFilter>>;
   searchVals?: InputMaybe<Array<Scalars["String"]>>;
 };
 
 export type QueryDashboardSamplesArgs = {
   context?: InputMaybe<DashboardRecordContext>;
-  filter?: InputMaybe<DashboardRecordFilter>;
+  filters?: InputMaybe<Array<DashboardRecordFilter>>;
   limit: Scalars["Int"];
   offset: Scalars["Int"];
   searchVals?: InputMaybe<Array<Scalars["String"]>>;
@@ -11248,7 +11248,7 @@ export type PatientsListQuery = {
 
 export type DashboardRequestsQueryVariables = Exact<{
   searchVals?: InputMaybe<Array<Scalars["String"]> | Scalars["String"]>;
-  filter?: InputMaybe<DashboardRecordFilter>;
+  filters?: InputMaybe<Array<DashboardRecordFilter> | DashboardRecordFilter>;
   sort: DashboardRecordSort;
   limit: Scalars["Int"];
   offset: Scalars["Int"];
@@ -11285,7 +11285,7 @@ export type DashboardRequestsQuery = {
 
 export type DashboardPatientsQueryVariables = Exact<{
   searchVals?: InputMaybe<Array<Scalars["String"]> | Scalars["String"]>;
-  filter?: InputMaybe<DashboardRecordFilter>;
+  filters?: InputMaybe<Array<DashboardRecordFilter> | DashboardRecordFilter>;
   sort: DashboardRecordSort;
   limit: Scalars["Int"];
   offset: Scalars["Int"];
@@ -11311,7 +11311,7 @@ export type DashboardPatientsQuery = {
 
 export type DashboardCohortsQueryVariables = Exact<{
   searchVals?: InputMaybe<Array<Scalars["String"]> | Scalars["String"]>;
-  filter?: InputMaybe<DashboardRecordFilter>;
+  filters?: InputMaybe<Array<DashboardRecordFilter> | DashboardRecordFilter>;
   sort: DashboardRecordSort;
   limit: Scalars["Int"];
   offset: Scalars["Int"];
@@ -11343,7 +11343,7 @@ export type DashboardSamplesQueryVariables = Exact<{
   searchVals?: InputMaybe<Array<Scalars["String"]> | Scalars["String"]>;
   context?: InputMaybe<DashboardRecordContext>;
   sort: DashboardRecordSort;
-  filter?: InputMaybe<DashboardRecordFilter>;
+  filters?: InputMaybe<Array<DashboardRecordFilter> | DashboardRecordFilter>;
   limit: Scalars["Int"];
   offset: Scalars["Int"];
 }>;
@@ -11722,17 +11722,17 @@ export type PatientsListQueryResult = Apollo.QueryResult<
 export const DashboardRequestsDocument = gql`
   query DashboardRequests(
     $searchVals: [String!]
-    $filter: DashboardRecordFilter
+    $filters: [DashboardRecordFilter!]
     $sort: DashboardRecordSort!
     $limit: Int!
     $offset: Int!
   ) {
-    dashboardRequestCount(searchVals: $searchVals, filter: $filter) {
+    dashboardRequestCount(searchVals: $searchVals, filters: $filters) {
       totalCount
     }
     dashboardRequests(
       searchVals: $searchVals
-      filter: $filter
+      filters: $filters
       sort: $sort
       limit: $limit
       offset: $offset
@@ -11765,17 +11765,17 @@ export type DashboardRequestsQueryResult = Apollo.QueryResult<
 export const DashboardPatientsDocument = gql`
   query DashboardPatients(
     $searchVals: [String!]
-    $filter: DashboardRecordFilter
+    $filters: [DashboardRecordFilter!]
     $sort: DashboardRecordSort!
     $limit: Int!
     $offset: Int!
   ) {
-    dashboardPatientCount(searchVals: $searchVals, filter: $filter) {
+    dashboardPatientCount(searchVals: $searchVals, filters: $filters) {
       totalCount
     }
     dashboardPatients(
       searchVals: $searchVals
-      filter: $filter
+      filters: $filters
       sort: $sort
       limit: $limit
       offset: $offset
@@ -11797,18 +11797,18 @@ export type DashboardPatientsQueryResult = Apollo.QueryResult<
 export const DashboardCohortsDocument = gql`
   query DashboardCohorts(
     $searchVals: [String!]
-    $filter: DashboardRecordFilter
+    $filters: [DashboardRecordFilter!]
     $sort: DashboardRecordSort!
     $limit: Int!
     $offset: Int!
   ) {
-    dashboardCohortCount(searchVals: $searchVals, filter: $filter) {
+    dashboardCohortCount(searchVals: $searchVals, filters: $filters) {
       totalCount
       uniqueSampleCount
     }
     dashboardCohorts(
       searchVals: $searchVals
-      filter: $filter
+      filters: $filters
       sort: $sort
       limit: $limit
       offset: $offset
@@ -11835,14 +11835,14 @@ export const DashboardSamplesDocument = gql`
     $searchVals: [String!]
     $context: DashboardRecordContext
     $sort: DashboardRecordSort!
-    $filter: DashboardRecordFilter
+    $filters: [DashboardRecordFilter!]
     $limit: Int!
     $offset: Int!
   ) {
     dashboardSampleCount(
       searchVals: $searchVals
       context: $context
-      filter: $filter
+      filters: $filters
     ) {
       totalCount
     }
@@ -11850,7 +11850,7 @@ export const DashboardSamplesDocument = gql`
       searchVals: $searchVals
       context: $context
       sort: $sort
-      filter: $filter
+      filters: $filters
       limit: $limit
       offset: $offset
     ) {

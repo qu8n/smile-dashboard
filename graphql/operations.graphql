@@ -48,17 +48,17 @@ query PatientsList($options: PatientOptions, $where: PatientWhere) {
 
 query DashboardRequests(
   $searchVals: [String!]
-  $filter: DashboardRecordFilter
+  $filters: [DashboardRecordFilter!]
   $sort: DashboardRecordSort!
   $limit: Int!
   $offset: Int!
 ) {
-  dashboardRequestCount(searchVals: $searchVals, filter: $filter) {
+  dashboardRequestCount(searchVals: $searchVals, filters: $filters) {
     totalCount
   }
   dashboardRequests(
     searchVals: $searchVals
-    filter: $filter
+    filters: $filters
     sort: $sort
     limit: $limit
     offset: $offset
@@ -86,17 +86,17 @@ query DashboardRequests(
 
 query DashboardPatients(
   $searchVals: [String!]
-  $filter: DashboardRecordFilter
+  $filters: [DashboardRecordFilter!]
   $sort: DashboardRecordSort!
   $limit: Int!
   $offset: Int!
 ) {
-  dashboardPatientCount(searchVals: $searchVals, filter: $filter) {
+  dashboardPatientCount(searchVals: $searchVals, filters: $filters) {
     totalCount
   }
   dashboardPatients(
     searchVals: $searchVals
-    filter: $filter
+    filters: $filters
     sort: $sort
     limit: $limit
     offset: $offset
@@ -113,18 +113,18 @@ query DashboardPatients(
 
 query DashboardCohorts(
   $searchVals: [String!]
-  $filter: DashboardRecordFilter
+  $filters: [DashboardRecordFilter!]
   $sort: DashboardRecordSort!
   $limit: Int!
   $offset: Int!
 ) {
-  dashboardCohortCount(searchVals: $searchVals, filter: $filter) {
+  dashboardCohortCount(searchVals: $searchVals, filters: $filters) {
     totalCount
     uniqueSampleCount
   }
   dashboardCohorts(
     searchVals: $searchVals
-    filter: $filter
+    filters: $filters
     sort: $sort
     limit: $limit
     offset: $offset
@@ -146,14 +146,14 @@ query DashboardSamples(
   $searchVals: [String!]
   $context: DashboardRecordContext
   $sort: DashboardRecordSort!
-  $filter: DashboardRecordFilter
+  $filters: [DashboardRecordFilter!]
   $limit: Int!
   $offset: Int!
 ) {
   dashboardSampleCount(
     searchVals: $searchVals
     context: $context
-    filter: $filter
+    filters: $filters
   ) {
     totalCount
   }
@@ -161,7 +161,7 @@ query DashboardSamples(
     searchVals: $searchVals
     context: $context
     sort: $sort
-    filter: $filter
+    filters: $filters
     limit: $limit
     offset: $offset
   ) {

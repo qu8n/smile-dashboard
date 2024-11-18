@@ -20,7 +20,9 @@ import {
   DashboardRecordFilter,
   DashboardRecordSort,
   PatientIdsTriplet,
+  QueryDashboardCohortsArgs,
   QueryDashboardPatientsArgs,
+  QueryDashboardRequestsArgs,
 } from "../generated/graphql";
 import { defaultColDef } from "../shared/helpers";
 import { ErrorMessage, Toolbar } from "../shared/tableElements";
@@ -99,24 +101,29 @@ export default function NewRecordsList({
     ({ searchVals }) => {
       return {
         getRows: async (params: IServerSideGetRowsParams) => {
-          let filter: DashboardRecordFilter | undefined;
+          let filters: DashboardRecordFilter[] | undefined;
           const filterModel = params.request.filterModel;
           if (filterModel && Object.keys(filterModel).length > 0) {
-            filter = {
-              field: Object.keys(filterModel)[0],
-              values: filterModel[Object.keys(filterModel)[0]].values,
-            };
+            filters = Object.entries(filterModel).map(([key, value]) => ({
+              field: key,
+              // Flexibly handle AG Grid's `any` type for filter settings by JSON.parse() this string value,
+              // then check the field name before consuming it at the GraphQL server (see https://stackoverflow.com/a/45601881)
+              filter: JSON.stringify(value),
+            }));
           } else {
-            filter = undefined; // all filter values are selected
+            filters = undefined; // all filter values are selected
           }
 
           const fetchInput = {
             searchVals,
             sort: params.request.sortModel[0] || defaultSort,
-            filter,
+            filters,
             offset: params.request.startRow ?? 0,
             limit: CACHE_BLOCK_SIZE,
-          } as QueryDashboardPatientsArgs; // TODO: apply TS union typing when implementing this for Requests and Cohorts
+          } as
+            | QueryDashboardRequestsArgs
+            | QueryDashboardPatientsArgs
+            | QueryDashboardCohortsArgs;
 
           const thisFetch =
             params.request.startRow === 0
