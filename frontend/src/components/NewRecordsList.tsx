@@ -96,6 +96,7 @@ export default function NewRecordsList({
     -1
   )}Count`;
   const recordCount = data?.[recordCountQueryName]?.totalCount;
+  const uniqueSampleCount = data?.[recordCountQueryName]?.uniqueSampleCount;
 
   const getServerSideDatasource = useCallback(
     ({ searchVals }) => {
@@ -265,7 +266,11 @@ export default function NewRecordsList({
         onSearch={async (userSearchVal) => refreshData(userSearchVal)}
         matchingResultsCount={`${
           recordCount !== undefined ? recordCount.toLocaleString() : "Loading"
-        } matching ${dataName}`}
+        } matching ${dataName} ${
+          uniqueSampleCount
+            ? `(${uniqueSampleCount.toLocaleString()} unique samples)`
+            : ""
+        }`}
         onDownload={() => handleDownload(recordCount)}
         customUIRight={customToolbarUI}
       />
