@@ -4,12 +4,10 @@ import {
   IHeaderParams,
   RowNode,
   ITooltipParams,
-  IServerSideGetRowsRequest,
   CellClassParams,
 } from "ag-grid-community";
 import { Button } from "react-bootstrap";
 import "ag-grid-enterprise";
-import { CohortsListQuery, SortDirection } from "../generated/graphql";
 import WarningIcon from "@material-ui/icons/Warning";
 import CheckIcon from "@material-ui/icons/Check";
 import { StatusTooltip } from "./components/StatusToolTip";
@@ -491,89 +489,6 @@ function setupEditableSampleFields(samplesColDefs: ColDef[]) {
   });
 }
 
-export function prepareCohortDataForAgGrid(
-  cohortsListQueryResult: CohortsListQuery,
-  filterModel: IServerSideGetRowsRequest["filterModel"],
-  sortModel: { [key: string]: SortDirection }[] | undefined
-) {
-  let newCohorts = [...cohortsListQueryResult.cohorts];
-  let newCohortsConnection = { ...cohortsListQueryResult.cohortsConnection };
-
-  // Handle filtering
-  if ("initialCohortDeliveryDate" in filterModel) {
-    const { dateFrom, dateTo } = filterModel.initialCohortDeliveryDate;
-    newCohorts = newCohorts.filter((cohort) => {
-      const deliveryDate = cohort.initialCohortDeliveryDate;
-      if (!deliveryDate) return false; // handles moment(undefined) returning today's date
-      return (
-        moment(deliveryDate).isSameOrAfter(dateFrom) &&
-        moment(deliveryDate).isSameOrBefore(dateTo)
-      );
-    });
-    newCohortsConnection.totalCount = newCohorts.length;
-  }
-
-  if ("billed" in filterModel) {
-    const selectedValues = filterModel.billed.values;
-    const selectedNone = selectedValues.length === 0;
-    if (selectedNone) {
-      newCohorts = [];
-      newCohortsConnection.totalCount = 0;
-    } else {
-      newCohorts = newCohorts.filter((cohort) =>
-        selectedValues.includes(cohort.billed)
-      );
-      newCohortsConnection.totalCount = newCohorts.length;
-    }
-  }
-
-  const uniqueSmileSampleIds: Set<string> = new Set();
-  newCohorts.forEach((cohort) => {
-    cohort.smileSampleIds?.forEach((id) => {
-      uniqueSmileSampleIds.add(id!);
-    });
-  });
-
-  // Handle sorting the Cohort records when users perform an export while a sort is active
-  // The sorting logic cover cases when the value is null/undefined, string, and number
-  if (sortModel) {
-    const sortField = Object.keys(
-      sortModel[0]
-    )[0] as keyof typeof newCohorts[number];
-    const sortOrder = sortModel[0][sortField];
-    sortArray(newCohorts, sortField, sortOrder);
-  }
-
-  return {
-    cohorts: newCohorts,
-    cohortsConnection: newCohortsConnection,
-    uniqueSampleCount: uniqueSmileSampleIds.size,
-  };
-}
-
-function sortArray(arr: any[], sortField: string, sortOrder: SortDirection) {
-  arr.sort((objA, objB) => {
-    let a = objA[sortField],
-      b = objB[sortField];
-
-    if (a === null || a === undefined) return 1;
-    if (b === null || b === undefined) return -1;
-
-    if (Array.isArray(a)) a = a.join(", ");
-    if (Array.isArray(b)) b = b.join(", ");
-
-    if (typeof a === "number" && typeof b === "number") {
-      return sortOrder === "ASC" ? a - b : b - a;
-    } else if (typeof a === "string" && typeof b === "string") {
-      return sortOrder === "ASC"
-        ? a.localeCompare(b, "en", { sensitivity: "base" })
-        : b.localeCompare(a, "en", { sensitivity: "base" });
-    } else {
-      return 0;
-    }
-  });
-}
-
 export const CohortsListColumns: ColDef[] = [
   {
     headerName: "View Samples",
@@ -825,14 +740,6 @@ const editableSampleFields = [
   "custodianInformation",
   "accessLevel",
 ];
-
-export function handleSearch(
-  userSearchVal: string,
-  setParsedSearchVals: Dispatch<SetStateAction<string[]>>
-) {
-  const parsedSearchVals = parseUserSearchVal(userSearchVal);
-  setParsedSearchVals(parsedSearchVals);
-}
 
 export function formatDate(date: moment.MomentInput) {
   return date ? moment(date).format("YYYY-MM-DD") : null;

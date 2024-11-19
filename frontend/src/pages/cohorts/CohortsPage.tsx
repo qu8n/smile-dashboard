@@ -10,7 +10,7 @@ import {
   CohortsListColumns,
 } from "../../shared/helpers";
 import { useParams } from "react-router-dom";
-import NewRecordsList from "../../components/NewRecordsList";
+import RecordsList from "../../components/RecordsList";
 import { AlertModal } from "../../components/AlertModal";
 
 interface ICohortsPageProps {
@@ -41,7 +41,7 @@ export default function CohortsPage({
 
   return (
     <>
-      <NewRecordsList
+      <RecordsList
         columnDefs={CohortsListColumns}
         dataName={dataName}
         defaultSort={defaultSort}

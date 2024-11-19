@@ -10,7 +10,7 @@ import {
   SampleMetadataDetailsColumns,
 } from "../../shared/helpers";
 import { useParams } from "react-router-dom";
-import NewRecordsList from "../../components/NewRecordsList";
+import RecordsList from "../../components/RecordsList";
 import { AlertModal } from "../../components/AlertModal";
 
 export default function RequestsPage() {
@@ -33,7 +33,7 @@ export default function RequestsPage() {
 
   return (
     <>
-      <NewRecordsList
+      <RecordsList
         columnDefs={RequestsListColumns}
         dataName={dataName}
         defaultSort={defaultSort}

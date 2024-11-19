@@ -1,7 +1,7 @@
 import {
   AgGridSortDirection,
+  DashboardPatientsQuery,
   PatientIdsTriplet,
-  PatientsListQuery,
   useDashboardPatientsLazyQuery,
   useGetPatientIdsTripletsLazyQuery,
 } from "../../generated/graphql";
@@ -20,7 +20,7 @@ import {
 } from "../../shared/helpers";
 import { getUserEmail } from "../../utils/getUserEmail";
 import { openLoginPopup } from "../../utils/openLoginPopup";
-import NewRecordsList from "../../components/NewRecordsList";
+import RecordsList from "../../components/RecordsList";
 
 function addCDashToCMOId(cmoId: string): string {
   return cmoId.length === 6 ? `C-${cmoId}` : cmoId;
@@ -173,7 +173,7 @@ export default function PatientsPage({
           valueGetter: ({
             data,
           }: {
-            data: PatientsListQuery["patients"][number];
+            data: DashboardPatientsQuery["dashboardPatients"][number];
           }) => {
             const cmoId = data.cmoPatientId;
 
@@ -204,7 +204,7 @@ export default function PatientsPage({
 
   return (
     <>
-      <NewRecordsList
+      <RecordsList
         columnDefs={ActivePatientsListColumns}
         dataName={dataName}
         defaultSort={defaultSort}
