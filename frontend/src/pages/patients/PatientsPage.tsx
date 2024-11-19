@@ -208,7 +208,7 @@ export default function PatientsPage({
         columnDefs={ActivePatientsListColumns}
         dataName={dataName}
         defaultSort={defaultSort}
-        lazyRecordsQuery={useDashboardPatientsLazyQuery}
+        useRecordsLazyQuery={useDashboardPatientsLazyQuery}
         userSearchVal={userSearchVal}
         setUserSearchVal={setUserSearchVal}
         setCustomSearchStates={setPatientIdsTriplets}

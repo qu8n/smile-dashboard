@@ -45,7 +45,7 @@ export default function CohortsPage({
         columnDefs={CohortsListColumns}
         dataName={dataName}
         defaultSort={defaultSort}
-        lazyRecordsQuery={useDashboardCohortsLazyQuery}
+        useRecordsLazyQuery={useDashboardCohortsLazyQuery}
         userSearchVal={userSearchVal}
         setUserSearchVal={setUserSearchVal}
         showDownloadModal={showDownloadModal}

@@ -37,7 +37,7 @@ export default function RequestsPage() {
         columnDefs={RequestsListColumns}
         dataName={dataName}
         defaultSort={defaultSort}
-        lazyRecordsQuery={useDashboardRequestsLazyQuery}
+        useRecordsLazyQuery={useDashboardRequestsLazyQuery}
         userSearchVal={userSearchVal}
         setUserSearchVal={setUserSearchVal}
         showDownloadModal={showDownloadModal}

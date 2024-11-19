@@ -1,5 +1,6 @@
 import {
   AgGridSortDirection,
+  DashboardRecordContext,
   DashboardRecordFilter,
   DashboardRecordSort,
   QueryDashboardSamplesArgs,
@@ -13,6 +14,9 @@ import { groupChangesByPrimaryId, UpdateModal } from "./UpdateModal";
 import { AlertModal } from "./AlertModal";
 import { buildTsvString } from "../utils/stringBuilders";
 import {
+  CACHE_BLOCK_SIZE,
+  MAX_ROWS_EXPORT,
+  MAX_ROWS_EXPORT_WARNING,
   SampleChange,
   defaultColDef,
   formatDate,
@@ -40,32 +44,24 @@ import { DataName } from "../shared/types";
 import { parseUserSearchVal } from "../utils/parseSearchQueries";
 
 const POLLING_INTERVAL = 5000; // 5s
-const CACHE_BLOCK_SIZE = 100; // number of rows to fetch at a time
-const MAX_ROWS_EXPORT = 10000;
-const MAX_ROWS_EXPORT_EXCEED_ALERT =
-  "You can only download up to 10,000 rows of data at a time. Please refine your search and try again. If you need the full dataset, contact the SMILE team at cmosmile@mskcc.org.";
+
 const COST_CENTER_VALIDATION_ALERT =
   "Please update your Cost Center/Fund Number input as #####/##### (5 digits, a forward slash, then 5 digits). For example: 12345/12345.";
-
-export interface SampleContext {
-  fieldName: string;
-  values: string[];
-}
-
-interface ISampleListProps {
-  columnDefs: ColDef[];
-  setUnsavedChanges?: (unsavedChanges: boolean) => void;
-  parentDataName?: DataName;
-  sampleContext?: SampleContext;
-  userEmail?: string | null;
-  setUserEmail?: Dispatch<SetStateAction<string | null>>;
-  customToolbarUI?: JSX.Element;
-}
 
 const DEFAULT_SORT: DashboardRecordSort = {
   colId: "importDate",
   sort: AgGridSortDirection.Desc,
 };
+
+interface ISampleListProps {
+  columnDefs: ColDef[];
+  setUnsavedChanges?: (unsavedChanges: boolean) => void;
+  parentDataName?: DataName;
+  sampleContext?: DashboardRecordContext;
+  userEmail?: string | null;
+  setUserEmail?: Dispatch<SetStateAction<string | null>>;
+  customToolbarUI?: JSX.Element;
+}
 
 export default function SamplesList({
   columnDefs,
@@ -361,7 +357,7 @@ export default function SamplesList({
         } matching samples`}
         onDownload={() => {
           if (sampleCount && sampleCount > MAX_ROWS_EXPORT) {
-            setAlertContent(MAX_ROWS_EXPORT_EXCEED_ALERT);
+            setAlertContent(MAX_ROWS_EXPORT_WARNING.content);
           } else {
             setShowDownloadModal(true);
           }
@@ -418,9 +414,21 @@ export default function SamplesList({
             style={{ width: width }}
           >
             <AgGridReact
+              ref={gridRef}
               rowModelType="serverSide"
               serverSideInfiniteScroll={true}
               cacheBlockSize={CACHE_BLOCK_SIZE}
+              columnDefs={columnDefs}
+              defaultColDef={defaultColDef}
+              enableRangeSelection={true}
+              onGridReady={(params) => params.api.sizeColumnsToFit()}
+              onFirstDataRendered={(params) =>
+                params.columnApi.autoSizeAllColumns()
+              }
+              onGridColumnsChanged={() => refreshData(userSearchVal)}
+              context={{
+                getChanges: () => changes,
+              }}
               rowClassRules={{
                 unlocked: function (params) {
                   return params.data?.revisable === true;
@@ -436,24 +444,10 @@ export default function SamplesList({
                   );
                 },
               }}
-              columnDefs={columnDefs}
               onCellEditRequest={onCellValueChanged}
               readOnlyEdit={true}
-              defaultColDef={defaultColDef}
-              ref={gridRef}
-              context={{
-                getChanges: () => changes,
-              }}
-              enableRangeSelection={true}
-              onGridReady={(params) => {
-                params.api.sizeColumnsToFit();
-              }}
-              onFirstDataRendered={(params) => {
-                params.columnApi.autoSizeAllColumns();
-              }}
               tooltipShowDelay={0}
               tooltipHideDelay={60000}
-              onGridColumnsChanged={() => refreshData(userSearchVal)}
             />
           </div>
         )}

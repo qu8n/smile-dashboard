@@ -11,8 +11,6 @@ import "ag-grid-enterprise";
 import WarningIcon from "@material-ui/icons/Warning";
 import CheckIcon from "@material-ui/icons/Check";
 import { StatusTooltip } from "./components/StatusToolTip";
-import { parseUserSearchVal } from "../utils/parseSearchQueries";
-import { Dispatch, SetStateAction } from "react";
 import moment from "moment";
 import _ from "lodash";
 
@@ -751,6 +749,8 @@ export function isValidCostCenter(costCenter: string): boolean {
   const validCostCenter = new RegExp("^\\d{5}/\\d{5}$");
   return validCostCenter.test(costCenter);
 }
+
+export const CACHE_BLOCK_SIZE = 100; // number of rows to fetch at a time
 
 export const MAX_ROWS_EXPORT = 10000;
 

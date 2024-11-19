@@ -15,8 +15,9 @@ import "ag-grid-community/styles/ag-theme-alpine.css";
 import "ag-grid-enterprise";
 import { ColDef, IServerSideGetRowsParams } from "ag-grid-community";
 import { DataName, useHookLazyGeneric } from "../shared/types";
-import SamplesList, { SampleContext } from "./SamplesList";
+import SamplesList from "./SamplesList";
 import {
+  DashboardRecordContext,
   DashboardRecordFilter,
   DashboardRecordSort,
   PatientIdsTriplet,
@@ -24,21 +25,21 @@ import {
   QueryDashboardPatientsArgs,
   QueryDashboardRequestsArgs,
 } from "../generated/graphql";
-import { defaultColDef } from "../shared/helpers";
+import {
+  CACHE_BLOCK_SIZE,
+  defaultColDef,
+  MAX_ROWS_EXPORT,
+} from "../shared/helpers";
 import { ErrorMessage, Toolbar } from "../shared/tableElements";
 import { AgGridReact as AgGridReactType } from "ag-grid-react/lib/agGridReact";
 import { BreadCrumb } from "../shared/components/BreadCrumb";
 import { Title } from "../shared/components/Title";
 import { parseUserSearchVal } from "../utils/parseSearchQueries";
 
-const CACHE_BLOCK_SIZE = 100; // number of rows to fetch at a time
-const MAX_ROWS_EXPORT = 10000;
-
-interface INewRecordsListProps {
+interface IRecordsListProps {
   columnDefs: ColDef[];
   dataName: DataName;
-  enableInfiniteScroll?: boolean;
-  lazyRecordsQuery: typeof useHookLazyGeneric;
+  useRecordsLazyQuery: typeof useHookLazyGeneric;
   defaultSort: DashboardRecordSort;
   userSearchVal: string;
   setUserSearchVal: Dispatch<SetStateAction<string>>;
@@ -48,7 +49,7 @@ interface INewRecordsListProps {
   setShowDownloadModal: Dispatch<SetStateAction<boolean>>;
   handleDownload: (recordCount: number) => void;
   samplesColDefs: ColDef[];
-  sampleContext?: SampleContext;
+  sampleContext?: DashboardRecordContext;
   userEmail?: string | null;
   setUserEmail?: Dispatch<SetStateAction<string | null>>;
   customToolbarUI?: JSX.Element;
@@ -57,8 +58,7 @@ interface INewRecordsListProps {
 export default function RecordsList({
   columnDefs,
   dataName,
-  enableInfiniteScroll = true,
-  lazyRecordsQuery,
+  useRecordsLazyQuery,
   defaultSort,
   userSearchVal,
   setUserSearchVal,
@@ -72,7 +72,7 @@ export default function RecordsList({
   userEmail,
   setUserEmail,
   customToolbarUI,
-}: INewRecordsListProps) {
+}: IRecordsListProps) {
   const [showClosingWarning, setShowClosingWarning] = useState(false);
   const [unsavedChanges, setUnsavedChanges] = useState(false);
 
@@ -80,7 +80,7 @@ export default function RecordsList({
   const navigate = useNavigate();
   const params = useParams();
 
-  const [, { error, data, fetchMore, refetch }] = lazyRecordsQuery({
+  const [, { error, data, fetchMore, refetch }] = useRecordsLazyQuery({
     variables: {
       searchVals: [],
       sort: defaultSort,
@@ -284,22 +284,20 @@ export default function RecordsList({
             <AgGridReact
               ref={gridRef}
               rowModelType="serverSide"
-              serverSideInfiniteScroll={enableInfiniteScroll}
+              serverSideInfiniteScroll={true}
               cacheBlockSize={CACHE_BLOCK_SIZE}
               columnDefs={columnDefs}
-              debug={false}
+              defaultColDef={defaultColDef}
+              enableRangeSelection={true}
+              onGridReady={(params) => params.api.sizeColumnsToFit()}
+              onFirstDataRendered={(params) =>
+                params.columnApi.autoSizeAllColumns()
+              }
+              onGridColumnsChanged={() => refreshData(userSearchVal)}
               context={{
                 navigateFunction: navigate,
               }}
-              defaultColDef={defaultColDef}
-              onGridReady={(params) => {
-                params.api.sizeColumnsToFit();
-              }}
-              onFirstDataRendered={(params) => {
-                params.columnApi.autoSizeAllColumns();
-              }}
-              enableRangeSelection={true}
-              onGridColumnsChanged={() => refreshData(userSearchVal)}
+              debug={false}
             />
           </div>
         )}
