@@ -889,7 +889,7 @@ async function publishNatsMessage(topic: string, message: string) {
 
   try {
     const natsConn = await connect(natsConnProperties);
-    console.log(
+    console.info(
       `Publishing message to NATS server at ${natsConn.getServer()} under topic ${topic}: `,
       message
     );
@@ -1192,8 +1192,6 @@ function buildCohortsQueryBody({
   searchVals: QueryDashboardCohortsArgs["searchVals"];
   filters?: QueryDashboardCohortsArgs["filters"];
 }) {
-  // TODO: handle cohorts filters
-
   const fieldsToSearch = [
     "cohortId",
     "billed",
@@ -1212,6 +1210,39 @@ function buildCohortsQueryBody({
         .map((field) => `${field} =~ '(?i).*(${searchVals.join("|")}).*'`)
         .join(" OR ")
     : "";
+
+  let columnFilters = "";
+  if (filters) {
+    let billedFilter;
+    const billedFilterObj = filters?.find(
+      (filter) => filter.field === "billed"
+    );
+    if (billedFilterObj) {
+      const filter = JSON.parse(billedFilterObj.filter);
+      if (filter.values[0] === "Yes") {
+        billedFilter = "billed = 'Yes'";
+      } else if (filter.values[0] === "No") {
+        billedFilter = "billed = 'No'";
+      } else if (filter.values.length === 0) {
+        billedFilter = "billed <> 'Yes' AND billed <> 'No'";
+      }
+    }
+
+    let initialCohortDeliveryDateFilter;
+    const initialCohortDeliveryDateFilterObj = filters?.find(
+      (filter) => filter.field === "initialCohortDeliveryDate"
+    );
+    if (initialCohortDeliveryDateFilterObj) {
+      const filter = JSON.parse(initialCohortDeliveryDateFilterObj.filter);
+      initialCohortDeliveryDateFilter = `(apoc.date.parse(initialCohortDeliveryDate, 'ms', 'yyyy-MM-dd HH:mm') >= apoc.date.parse('${filter.dateFrom}', 'ms', 'yyyy-MM-dd HH:mm:ss')`;
+      initialCohortDeliveryDateFilter += `AND apoc.date.parse(initialCohortDeliveryDate, 'ms', 'yyyy-MM-dd HH:mm') <= apoc.date.parse('${filter.dateTo}', 'ms', 'yyyy-MM-dd HH:mm:ss'))`;
+    }
+
+    const combinedPredicates = [billedFilter, initialCohortDeliveryDateFilter]
+      .filter(Boolean)
+      .join(" AND ");
+    columnFilters = combinedPredicates ? "WHERE " + combinedPredicates : "";
+  }
 
   const cohortsQueryBody = `
     MATCH (c:Cohort)-[:HAS_COHORT_COMPLETE]->(cc:CohortComplete)
@@ -1266,6 +1297,7 @@ function buildCohortsQueryBody({
         latestCC.status AS status,
         latestCC.type AS type
 
+    ${columnFilters}
     ${searchFilters}
   `;
 

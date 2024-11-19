@@ -623,6 +623,7 @@ export const CohortsListColumns: ColDef[] = [
       inRangeInclusive: true,
       minValidYear: 2016,
       maxValidYear: new Date().getFullYear(),
+      suppressAndOrCondition: true,
     },
     valueFormatter: (params) => formatDate(params.value) ?? "",
   },
