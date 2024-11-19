@@ -1284,6 +1284,8 @@ function buildCohortsQueryBody({
         initialCohortDeliveryDate,
         latestCC
 
+    ${columnFilters}
+
     WITH
         sampleIdsByCohort,
         cohortId,
@@ -1297,7 +1299,6 @@ function buildCohortsQueryBody({
         latestCC.status AS status,
         latestCC.type AS type
 
-    ${columnFilters}
     ${searchFilters}
   `;
 
