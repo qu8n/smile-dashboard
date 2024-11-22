@@ -122,6 +122,11 @@ export const RequestsListColumns: ColDef[] = [
   {
     field: "bicAnalysis",
     headerName: "BIC Analysis",
+    filter: true,
+    filterParams: {
+      values: ["true", "false"],
+      suppressMiniFilter: true,
+    },
   },
   {
     field: "isCmoRequest",

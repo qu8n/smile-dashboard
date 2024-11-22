@@ -420,6 +420,7 @@ function buildRequestsQueryBody({
   filters?: QueryDashboardRequestsArgs["filters"];
 }) {
   // TODO: make other queries' filter builder consistent with the below setup
+  // TODO: create resuable functions from repetitive filtering logic (e.g. boolean filter)
 
   const queryFilters = [];
 
@@ -458,6 +459,22 @@ function buildRequestsQueryBody({
       let importDateFilter = `(apoc.date.parse(importDate, 'ms', 'yyyy-MM-dd') >= apoc.date.parse('${filter.dateFrom}', 'ms', 'yyyy-MM-dd HH:mm:ss')`;
       importDateFilter += `AND apoc.date.parse(importDate, 'ms', 'yyyy-MM-dd') <= apoc.date.parse('${filter.dateTo}', 'ms', 'yyyy-MM-dd HH:mm:ss'))`;
       queryFilters.push(importDateFilter);
+    }
+
+    const bicAnalysisFilterObj = filters?.find(
+      (filter) => filter.field === "bicAnalysis"
+    );
+    if (bicAnalysisFilterObj) {
+      const filter = JSON.parse(bicAnalysisFilterObj.filter);
+      let bicAnalysisFilter;
+      if (filter.values[0] === "true") {
+        bicAnalysisFilter = "bicAnalysis = true";
+      } else if (filter.values[0] === "false") {
+        bicAnalysisFilter = "bicAnalysis = false OR bicAnalysis IS NULL";
+      } else if (filter.values.length === 0) {
+        bicAnalysisFilter = "bicAnalysis <> true AND bicAnalysis <> false";
+      }
+      queryFilters.push(bicAnalysisFilter);
     }
   }
 
