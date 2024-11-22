@@ -124,13 +124,38 @@ export const RequestsListColumns: ColDef[] = [
     headerName: "BIC Analysis",
     filter: true,
     filterParams: {
-      values: ["true", "false"],
+      values: ["Yes", "No"],
       suppressMiniFilter: true,
+    },
+    valueFormatter: (params) => {
+      switch (params.value) {
+        case true:
+          return "Yes";
+        case false:
+          return "No";
+        default:
+          return "";
+      }
     },
   },
   {
     field: "isCmoRequest",
     headerName: "CMO Request?",
+    filter: true,
+    filterParams: {
+      values: ["Yes", "No"],
+      suppressMiniFilter: true,
+    },
+    valueFormatter: (params) => {
+      switch (params.value) {
+        case true:
+          return "Yes";
+        case false:
+          return "No";
+        default:
+          return "";
+      }
+    },
   },
   {
     field: "otherContactEmails",

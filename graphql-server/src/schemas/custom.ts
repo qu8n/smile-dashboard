@@ -467,14 +467,30 @@ function buildRequestsQueryBody({
     if (bicAnalysisFilterObj) {
       const filter = JSON.parse(bicAnalysisFilterObj.filter);
       let bicAnalysisFilter;
-      if (filter.values[0] === "true") {
+      if (filter.values[0] === "Yes") {
         bicAnalysisFilter = "bicAnalysis = true";
-      } else if (filter.values[0] === "false") {
+      } else if (filter.values[0] === "No") {
         bicAnalysisFilter = "bicAnalysis = false OR bicAnalysis IS NULL";
       } else if (filter.values.length === 0) {
         bicAnalysisFilter = "bicAnalysis <> true AND bicAnalysis <> false";
       }
       queryFilters.push(bicAnalysisFilter);
+    }
+
+    const cmoRequestFilterObj = filters?.find(
+      (filter) => filter.field === "isCmoRequest"
+    );
+    if (cmoRequestFilterObj) {
+      const filter = JSON.parse(cmoRequestFilterObj.filter);
+      let cmoRequestFilter;
+      if (filter.values[0] === "Yes") {
+        cmoRequestFilter = "isCmoRequest = true";
+      } else if (filter.values[0] === "No") {
+        cmoRequestFilter = "isCmoRequest = false OR isCmoRequest IS NULL";
+      } else if (filter.values.length === 0) {
+        cmoRequestFilter = "isCmoRequest <> true AND isCmoRequest <> false";
+      }
+      queryFilters.push(cmoRequestFilter);
     }
   }
 
