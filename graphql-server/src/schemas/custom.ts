@@ -286,18 +286,6 @@ export async function buildCustomSchema(ogm: OGM) {
     }
 
     type Query {
-      dashboardPatients(
-        searchVals: [String!]
-        filters: [DashboardRecordFilter!]
-        sort: DashboardRecordSort!
-        limit: Int!
-        offset: Int!
-      ): [DashboardPatient!]!
-      dashboardPatientCount(
-        searchVals: [String!]
-        filters: [DashboardRecordFilter!]
-      ): DashboardRecordCount!
-
       dashboardRequests(
         searchVals: [String!]
         filters: [DashboardRecordFilter!]
@@ -306,6 +294,18 @@ export async function buildCustomSchema(ogm: OGM) {
         offset: Int!
       ): [DashboardRequest!]!
       dashboardRequestCount(
+        searchVals: [String!]
+        filters: [DashboardRecordFilter!]
+      ): DashboardRecordCount!
+
+      dashboardPatients(
+        searchVals: [String!]
+        filters: [DashboardRecordFilter!]
+        sort: DashboardRecordSort!
+        limit: Int!
+        offset: Int!
+      ): [DashboardPatient!]!
+      dashboardPatientCount(
         searchVals: [String!]
         filters: [DashboardRecordFilter!]
       ): DashboardRecordCount!
@@ -419,34 +419,57 @@ function buildRequestsQueryBody({
   searchVals: QueryDashboardRequestsArgs["searchVals"];
   filters?: QueryDashboardRequestsArgs["filters"];
 }) {
-  const fieldsToSearch = [
-    "igoRequestId",
-    "igoProjectId",
-    "importDate",
-    "projectManagerName",
-    "investigatorName",
-    "investigatorEmail",
-    "piEmail",
-    "dataAnalystName",
-    "dataAnalystEmail",
-    "genePanel",
-    "labHeadName",
-    "labHeadEmail",
-    "qcAccessEmails",
-    "dataAccessEmails",
-    "bicAnalysis",
-    "isCmoRequest",
-    "otherContactEmails",
-  ];
+  // TODO: make other queries' filter builder consistent with the below setup
 
-  const searchFilters = searchVals?.length
-    ? "WHERE " +
-      fieldsToSearch
-        .map((field) => `${field} =~ '(?i).*(${searchVals.join("|")}).*'`)
-        .join(" OR ")
+  const queryFilters = [];
+
+  if (searchVals?.length) {
+    const fieldsToSearch = [
+      "igoRequestId",
+      "igoProjectId",
+      "importDate",
+      "projectManagerName",
+      "investigatorName",
+      "investigatorEmail",
+      "piEmail",
+      "dataAnalystName",
+      "dataAnalystEmail",
+      "genePanel",
+      "labHeadName",
+      "labHeadEmail",
+      "qcAccessEmails",
+      "dataAccessEmails",
+      "bicAnalysis",
+      "isCmoRequest",
+      "otherContactEmails",
+    ];
+    const searchFilters = fieldsToSearch
+      .map((field) => `${field} =~ '(?i).*(${searchVals.join("|")}).*'`)
+      .join(" OR ");
+    queryFilters.push(searchFilters);
+  }
+
+  if (filters) {
+    const importDateFilterObj = filters?.find(
+      (filter) => filter.field === "importDate"
+    );
+    if (importDateFilterObj) {
+      const filter = JSON.parse(importDateFilterObj.filter);
+      let importDateFilter = `(apoc.date.parse(importDate, 'ms', 'yyyy-MM-dd') >= apoc.date.parse('${filter.dateFrom}', 'ms', 'yyyy-MM-dd HH:mm:ss')`;
+      importDateFilter += `AND apoc.date.parse(importDate, 'ms', 'yyyy-MM-dd') <= apoc.date.parse('${filter.dateTo}', 'ms', 'yyyy-MM-dd HH:mm:ss'))`;
+      queryFilters.push(importDateFilter);
+    }
+  }
+
+  const combinedPredicates = queryFilters
+    .filter(Boolean)
+    .map((queryFilter) => `(${queryFilter})`)
+    .join(" AND ");
+  const filtersAsCypher = combinedPredicates
+    ? "WHERE " + combinedPredicates
     : "";
 
-  const requestQueryBody = `
+  const requestsQueryBody = `
     MATCH (r:Request)
 
     // Get the latest SampleMetadata of each Sample
@@ -481,10 +504,10 @@ function buildRequestsQueryBody({
       r.isCmoRequest as isCmoRequest,
       r.otherContactEmails as otherContactEmails
 
-    ${searchFilters}
+    ${filtersAsCypher}
   `;
 
-  return requestQueryBody;
+  return requestsQueryBody;
 }
 
 async function queryDashboardRequests({

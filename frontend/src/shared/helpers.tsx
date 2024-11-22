@@ -55,6 +55,15 @@ export const RequestsListColumns: ColDef[] = [
   {
     field: "importDate",
     headerName: "Import Date",
+    filter: "agDateColumnFilter",
+    filterParams: {
+      buttons: ["apply", "reset"],
+      filterOptions: ["inRange"],
+      inRangeInclusive: true,
+      minValidYear: 2016,
+      maxValidYear: new Date().getFullYear(),
+      suppressAndOrCondition: true,
+    },
   },
   {
     field: "totalSampleCount",
