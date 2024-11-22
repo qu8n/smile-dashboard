@@ -1234,19 +1234,25 @@ async function updateSampleMetadata(
     });
 
     // Ensure validator and label generator use latest status data added during validation
-    delete sampleManifest["status"];
+    delete sampleManifest.status;
 
-    // Ensure isCmoSample is set in sample's 'additionalProperties' if not already present.
-    // This ensures that cmo samples get sent to the label generator after validation as
-    // some of the older SMILE samples do not have this additionalProperty set
-    if (sampleManifest["additionalProperties"]["isCmoSample"] == null) {
-      const requestId = sampleManifest["additionalProperties"]["igoRequestId"];
-      let req = ogm.model("Request");
-      const rd = await req.find({
-        where: { igoRequestId: requestId },
-      });
-      sampleManifest["additionalProperties"]["isCmoSample"] =
-        rd[0]["isCmoRequest"].toString();
+    // Ensure isCmoSample is set in sample's 'additionalProperties' if not already present
+    if (sampleManifest.additionalProperties.isCmoSample == null) {
+      // For research samples, this ensures that they get sent to the label generator after
+      // validation as some of the older SMILE samples do not have this additionalProperty set
+      if (sampleManifest.datasource === "igo") {
+        const requestId = sampleManifest.additionalProperties.igoRequestId;
+        let requestOgm = ogm.model("Request");
+        const requestOfSample = await requestOgm.find({
+          where: { igoRequestId: requestId },
+        });
+        sampleManifest.additionalProperties.isCmoSample =
+          requestOfSample[0].isCmoRequest.toString();
+      }
+
+      if (sampleManifest.datasource === "dmp") {
+        sampleManifest.additionalProperties.isCmoSample = false;
+      }
     }
 
     publishNatsMessage(
