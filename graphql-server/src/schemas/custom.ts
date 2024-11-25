@@ -1012,9 +1012,14 @@ function buildSamplesQueryBody({
   filters?: QueryDashboardSamplesArgs["filters"];
   addlOncotreeCodes: string[];
 }) {
+  // Because the samples query is more complex than other queries (e.g. requests), we improve its performance
+  // by building WHERE clauses and injecting them into the query as early as possible and when convenient.
+  // This contrasts with our approach in other query builders, where we combine all predicates into a single
+  // WHERE clause and injecting that at the end (right before the RETURN statement).
+
   // Build search filters given user's search values input. For example:
   // latestSm.primaryId =~ '(?i).*(someInput).*' OR latestSm.cmoSampleName =~ '(?i).*(someInput).* OR ...
-  const searchFilters = searchVals?.length
+  let searchFilters = searchVals?.length
     ? samplesSearchFiltersConfig
         .map((c) =>
           buildSamplesSearchFilters({
@@ -1025,37 +1030,30 @@ function buildSamplesQueryBody({
         )
         .join(" OR ")
     : "";
-
   // Add add'l Oncotree codes to search if user inputted "cancerTypeDetailed" or "cancerType" values
-  const addlOncotreeCodeFilters = addlOncotreeCodes.length
-    ? ` OR ${buildSamplesSearchFilters({
-        variable: "latestSm",
-        fields: ["oncotreeCode"],
-        searchVals: addlOncotreeCodes,
-        useFuzzyMatch: false,
-      })}`
-    : "";
-
-  const fullSearchFilters = searchFilters
-    ? `(${searchFilters}${addlOncotreeCodeFilters})`
-    : "";
+  if (addlOncotreeCodes.length) {
+    searchFilters += ` OR ${buildSamplesSearchFilters({
+      variable: "latestSm",
+      fields: ["oncotreeCode"],
+      searchVals: addlOncotreeCodes,
+      useFuzzyMatch: false,
+    })}`;
+  }
 
   // Filters for the WES Samples view on Samples page
   const wesContext =
     context?.fieldName === "genePanel"
-      ? `${fullSearchFilters && " AND "}${buildSamplesSearchFilters({
+      ? buildSamplesSearchFilters({
           variable: "latestSm",
           fields: ["genePanel"],
           searchVals: context.values,
-        })}`
+        })
       : "";
 
   // Filters for the Request Samples view
   const requestContext =
     context?.fieldName === "igoRequestId"
-      ? `${fullSearchFilters && " AND "}latestSm.igoRequestId = '${
-          context.values[0]
-        }'`
+      ? `latestSm.igoRequestId = '${context.values[0]}'`
       : "";
 
   // Filters for the Patient Samples view
@@ -1072,13 +1070,14 @@ function buildSamplesQueryBody({
 
   // Column filter of Cohort Samples view
   let tempoFilter = "";
-  if (filters?.[0].field === "billed") {
-    const billedFilter = JSON.parse(filters[0].filter).values;
-    if (billedFilter[0] === "Yes") {
+  const tempoFilterObj = filters?.find((filter) => filter.field === "billed");
+  if (tempoFilterObj) {
+    const filter = JSON.parse(tempoFilterObj.filter);
+    if (filter.values[0] === "Yes") {
       tempoFilter = "t.billed = true";
-    } else if (billedFilter[0] === "No") {
+    } else if (filter.values[0] === "No") {
       tempoFilter = "t.billed = false OR t.billed IS NULL";
-    } else if (billedFilter.length === 0) {
+    } else if (filter.values.length === 0) {
       tempoFilter = "t.billed <> true AND t.billed <> false";
     }
   }
@@ -1088,6 +1087,8 @@ function buildSamplesQueryBody({
     MATCH (s:Sample)-[:HAS_METADATA]->(sm:SampleMetadata)
     WITH s, collect(sm) AS allSampleMetadata, max(sm.importDate) AS latestImportDate
     WITH s, [sm IN allSampleMetadata WHERE sm.importDate = latestImportDate][0] AS latestSm
+    ${wesContext && `WHERE ${wesContext}`}
+    ${requestContext && `WHERE ${requestContext}`}
 
     // Get SampleMetadata's Status
     OPTIONAL MATCH (latestSm)-[:HAS_STATUS]->(st:Status)
@@ -1102,14 +1103,14 @@ function buildSamplesQueryBody({
     // Filters for Cohort Samples view, if applicable
     ${
       cohortContext ? "" : "OPTIONAL "
-    }MATCH (s:Sample)<-[:HAS_COHORT_SAMPLE]-(c:Cohort)-[:HAS_COHORT_COMPLETE]->(cc:CohortComplete)
+    }MATCH (s)<-[:HAS_COHORT_SAMPLE]-(c:Cohort)-[:HAS_COHORT_COMPLETE]->(cc:CohortComplete)
     ${cohortContext && `WHERE ${cohortContext}`}
 
     // Get the oldest CohortComplete date ("Initial Pipeline Run Date" in Cohort Samples view)
     WITH s, latestSm, latestSt, min(cc.date) AS oldestCCDate
 
     // Get Tempo data
-    OPTIONAL MATCH (s:Sample)-[:HAS_TEMPO]->(t:Tempo)
+    OPTIONAL MATCH (s)-[:HAS_TEMPO]->(t:Tempo)
     // We're calling WITH immediately after OPTIONAL MATCH here to correctly filter Tempo data
     WITH s, latestSm, latestSt, oldestCCDate, t
     ${tempoFilter && `WHERE ${tempoFilter}`}
@@ -1139,11 +1140,7 @@ function buildSamplesQueryBody({
       latestMC,
       latestQC
 
-    ${
-      fullSearchFilters || wesContext || requestContext
-        ? `WHERE ${fullSearchFilters}${wesContext}${requestContext}`
-        : ""
-    }
+    ${searchFilters && `WHERE ${searchFilters}`}
   `;
 
   return samplesQueryBody;
@@ -1185,7 +1182,7 @@ async function queryDashboardSamples({
       latestSm.sampleOrigin AS sampleOrigin,
       latestSm.tissueLocation AS tissueLocation,
       latestSm.sex AS sex,
-      apoc.convert.fromJsonMap(latestSm.cmoSampleIdFields).recipe as recipe,
+      apoc.convert.fromJsonMap(latestSm.cmoSampleIdFields).recipe AS recipe,
 
       oldestCCDate AS initialPipelineRunDate,
       toString(datetime(replace(oldestCCDate, ' ', 'T')) + duration({ months: 18 })) AS embargoDate,
