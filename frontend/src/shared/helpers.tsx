@@ -298,6 +298,16 @@ export const SampleMetadataDetailsColumns: ColDef[] = [
   {
     field: "importDate",
     headerName: "Last Updated",
+    // TODO: standardize common filter settings like date into a function or object
+    filter: "agDateColumnFilter",
+    filterParams: {
+      buttons: ["apply", "reset"],
+      filterOptions: ["inRange"],
+      inRangeInclusive: true,
+      minValidYear: 2016,
+      maxValidYear: new Date().getFullYear(),
+      suppressAndOrCondition: true,
+    },
   },
   {
     field: "cmoPatientId",

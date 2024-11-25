@@ -1082,17 +1082,31 @@ function buildSamplesQueryBody({
     }
   }
 
+  let importDateFilter = "";
+  const importDateFilterObj = filters?.find(
+    (filter) => filter.field === "importDate"
+  );
+  if (importDateFilterObj) {
+    const filter = JSON.parse(importDateFilterObj.filter);
+    importDateFilter = `(apoc.date.parse(latestSm.importDate, 'ms', 'yyyy-MM-dd') >= apoc.date.parse('${filter.dateFrom}', 'ms', 'yyyy-MM-dd HH:mm:ss')`;
+    importDateFilter += `AND apoc.date.parse(latestSm.importDate, 'ms', 'yyyy-MM-dd') <= apoc.date.parse('${filter.dateTo}', 'ms', 'yyyy-MM-dd HH:mm:ss'))`;
+  }
+
   const samplesQueryBody = `
     // Get Sample and the most recent SampleMetadata
     MATCH (s:Sample)-[:HAS_METADATA]->(sm:SampleMetadata)
     WITH s, collect(sm) AS allSampleMetadata, max(sm.importDate) AS latestImportDate
     WITH s, [sm IN allSampleMetadata WHERE sm.importDate = latestImportDate][0] AS latestSm
+
+    // Filters for either the WES Samples or Request Samples view, if applicable
     ${wesContext && `WHERE ${wesContext}`}
     ${requestContext && `WHERE ${requestContext}`}
 
     // Get SampleMetadata's Status
     OPTIONAL MATCH (latestSm)-[:HAS_STATUS]->(st:Status)
     WITH s, latestSm, st AS latestSt
+
+    ${importDateFilter && `WHERE ${importDateFilter}`}
 
     // Filters for Patient Samples view, if applicable
     ${
