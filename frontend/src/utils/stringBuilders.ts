@@ -28,6 +28,14 @@ export function buildTsvString(
           });
         }
         if (colDef.field) {
+          if (colDef.valueFormatter) {
+            // @ts-ignore
+            return colDef.valueFormatter({
+              colDef,
+              data: row,
+              value: row[colDef.field],
+            });
+          }
           return row[colDef.field];
         }
         return " ";
