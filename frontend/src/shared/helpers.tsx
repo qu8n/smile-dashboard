@@ -201,10 +201,40 @@ export const PatientsListColumns: ColDef[] = [
   {
     field: "consentPartA",
     headerName: "12-245 Part A",
+    filter: true,
+    filterParams: {
+      values: ["Yes", "No"],
+      suppressMiniFilter: true,
+    },
+    valueFormatter: (params) => {
+      switch (params.value) {
+        case "YES":
+          return "Yes";
+        case "NO":
+          return "No";
+        default:
+          return "";
+      }
+    },
   },
   {
     field: "consentPartC",
     headerName: "12-245 Part C",
+    filter: true,
+    filterParams: {
+      values: ["Yes", "No"],
+      suppressMiniFilter: true,
+    },
+    valueFormatter: (params) => {
+      switch (params.value) {
+        case "YES":
+          return "Yes";
+        case "NO":
+          return "No";
+        default:
+          return "";
+      }
+    },
   },
   {
     field: "totalSampleCount",

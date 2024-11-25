@@ -615,20 +615,63 @@ function buildPatientsQueryBody({
   searchVals: QueryDashboardPatientsArgs["searchVals"];
   filters?: QueryDashboardPatientsArgs["filters"];
 }) {
-  const fieldsToSearch = [
-    "smilePatientId",
-    "cmoPatientId",
-    "dmpPatientId",
-    "cmoSampleIds",
-    "consentPartA",
-    "consentPartC",
-  ];
+  const queryFilters = [];
 
-  const searchFilters = searchVals?.length
-    ? "WHERE " +
-      fieldsToSearch
-        .map((field) => `${field} =~ '(?i).*(${searchVals.join("|")}).*'`)
-        .join(" OR ")
+  if (searchVals?.length) {
+    const fieldsToSearch = [
+      "smilePatientId",
+      "cmoPatientId",
+      "dmpPatientId",
+      "cmoSampleIds",
+      "consentPartA",
+      "consentPartC",
+    ];
+    const searchFilters = fieldsToSearch
+      .map((field) => `${field} =~ '(?i).*(${searchVals.join("|")}).*'`)
+      .join(" OR ");
+    queryFilters.push(searchFilters);
+  }
+
+  if (filters) {
+    const consentPartAFilterObj = filters?.find(
+      (filter) => filter.field === "consentPartA"
+    );
+    if (consentPartAFilterObj) {
+      const filter = JSON.parse(consentPartAFilterObj.filter);
+      let consentPartAFilter;
+      if (filter.values[0] === "Yes") {
+        consentPartAFilter = "consentPartA = 'YES'";
+      } else if (filter.values[0] === "No") {
+        consentPartAFilter = "consentPartA = 'NO' OR consentPartA IS NULL";
+      } else if (filter.values.length === 0) {
+        consentPartAFilter = "consentPartA <> 'YES' AND consentPartA <> 'NO'";
+      }
+      queryFilters.push(consentPartAFilter);
+    }
+
+    const consentPartCFilterObj = filters?.find(
+      (filter) => filter.field === "consentPartC"
+    );
+    if (consentPartCFilterObj) {
+      const filter = JSON.parse(consentPartCFilterObj.filter);
+      let consentPartCFilter;
+      if (filter.values[0] === "Yes") {
+        consentPartCFilter = "consentPartC = 'YES'";
+      } else if (filter.values[0] === "No") {
+        consentPartCFilter = "consentPartC = 'NO' OR consentPartC IS NULL";
+      } else if (filter.values.length === 0) {
+        consentPartCFilter = "consentPartC <> 'YES' AND consentPartC <> 'NO'";
+      }
+      queryFilters.push(consentPartCFilter);
+    }
+  }
+
+  const combinedPredicates = queryFilters
+    .filter(Boolean)
+    .map((queryFilter) => `(${queryFilter})`)
+    .join(" AND ");
+  const filtersAsCypher = combinedPredicates
+    ? "WHERE " + combinedPredicates
     : "";
 
   const patientsQueryBody = `
@@ -689,7 +732,7 @@ function buildPatientsQueryBody({
       consentPartAs[0] as consentPartA,
       consentPartCs[0] as consentPartC
 
-    ${searchFilters}
+    ${filtersAsCypher}
   `;
 
   return patientsQueryBody;
