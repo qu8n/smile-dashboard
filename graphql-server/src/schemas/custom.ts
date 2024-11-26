@@ -1117,6 +1117,19 @@ function buildSamplesQueryBody({
     initialPipelineRunDateFilter = `(apoc.date.parse(oldestCCDate, 'ms', 'yyyy-MM-dd') >= apoc.date.parse('${filter.dateFrom}', 'ms', 'yyyy-MM-dd HH:mm:ss')`;
     initialPipelineRunDateFilter += `AND apoc.date.parse(oldestCCDate, 'ms', 'yyyy-MM-dd') <= apoc.date.parse('${filter.dateTo}', 'ms', 'yyyy-MM-dd HH:mm:ss'))`;
   }
+  let embargoDateFilter = "";
+  const embargoDateFilterObj = filters?.find(
+    (filter) => filter.field === "embargoDate"
+  );
+  if (embargoDateFilterObj) {
+    const filter = JSON.parse(embargoDateFilterObj.filter);
+    embargoDateFilter = `(apoc.date.parse(embargoDate, 'ms', 'yyyy-MM-dd') >= apoc.date.parse('${filter.dateFrom}', 'ms', 'yyyy-MM-dd HH:mm:ss')`;
+    embargoDateFilter += `AND apoc.date.parse(embargoDate, 'ms', 'yyyy-MM-dd') <= apoc.date.parse('${filter.dateTo}', 'ms', 'yyyy-MM-dd HH:mm:ss'))`;
+  }
+  const cohortDateFilters = [initialPipelineRunDateFilter, embargoDateFilter]
+    .filter(Boolean)
+    .map((filter) => `(${filter})`)
+    .join(" AND ");
 
   const samplesQueryBody = `
     // Get Sample and the most recent SampleMetadata
@@ -1147,29 +1160,29 @@ function buildSamplesQueryBody({
     ${cohortContext && `WHERE ${cohortContext}`}
 
     // Get the oldest CohortComplete date ("Initial Pipeline Run Date" in Cohort Samples view)
-    WITH s, latestSm, latestSt, min(cc.date) AS oldestCCDate
-    ${initialPipelineRunDateFilter && `WHERE ${initialPipelineRunDateFilter}`}
+    WITH s, latestSm, latestSt, min(cc.date) AS oldestCCDate, toString(datetime(replace(min(cc.date), ' ', 'T')) + duration({ months: 18 })) AS embargoDate
+    ${cohortDateFilters && `WHERE ${cohortDateFilters}`}
 
     // Get Tempo data
     OPTIONAL MATCH (s)-[:HAS_TEMPO]->(t:Tempo)
     // We're calling WITH immediately after OPTIONAL MATCH here to correctly filter Tempo data
-    WITH s, latestSm, latestSt, oldestCCDate, t
+    WITH s, latestSm, latestSt, oldestCCDate, embargoDate, t
     ${tempoFilter && `WHERE ${tempoFilter}`}
 
     // Get the most recent BamComplete event
     OPTIONAL MATCH (t)-[:HAS_EVENT]->(bc:BamComplete)
-    WITH s, latestSm, latestSt, oldestCCDate, t, collect(bc) AS allBamCompletes, max(bc.date) AS latestBCDate
-    WITH s, latestSm, latestSt, oldestCCDate, t, [bc IN allBamCompletes WHERE bc.date = latestBCDate][0] AS latestBC
+    WITH s, latestSm, latestSt, oldestCCDate, embargoDate, t, collect(bc) AS allBamCompletes, max(bc.date) AS latestBCDate
+    WITH s, latestSm, latestSt, oldestCCDate, embargoDate, t, [bc IN allBamCompletes WHERE bc.date = latestBCDate][0] AS latestBC
 
     // Get the most recent MafComplete event
     OPTIONAL MATCH (t)-[:HAS_EVENT]->(mc:MafComplete)
-    WITH s, latestSm, latestSt, oldestCCDate, t, latestBC, collect(mc) AS allMafCompletes, max(mc.date) AS latestMCDate
-    WITH s, latestSm, latestSt, oldestCCDate, t, latestBC, [mc IN allMafCompletes WHERE mc.date = latestMCDate][0] AS latestMC
+    WITH s, latestSm, latestSt, oldestCCDate, embargoDate, t, latestBC, collect(mc) AS allMafCompletes, max(mc.date) AS latestMCDate
+    WITH s, latestSm, latestSt, oldestCCDate, embargoDate, t, latestBC, [mc IN allMafCompletes WHERE mc.date = latestMCDate][0] AS latestMC
 
     // Get the most recent QcComplete event
     OPTIONAL MATCH (t)-[:HAS_EVENT]->(qc:QcComplete)
-    WITH s, latestSm, latestSt, oldestCCDate, t, latestBC, latestMC, collect(qc) AS allQcCompletes, max(qc.date) AS latestQCDate
-    WITH s, latestSm, latestSt, oldestCCDate, t, latestBC, latestMC, [qc IN allQcCompletes WHERE qc.date = latestQCDate][0] AS latestQC
+    WITH s, latestSm, latestSt, oldestCCDate, embargoDate, t, latestBC, latestMC, collect(qc) AS allQcCompletes, max(qc.date) AS latestQCDate
+    WITH s, latestSm, latestSt, oldestCCDate, embargoDate, t, latestBC, latestMC, [qc IN allQcCompletes WHERE qc.date = latestQCDate][0] AS latestQC
 
     WITH
       s,

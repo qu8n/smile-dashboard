@@ -23,17 +23,21 @@ export type SampleChange = {
   rowNode: RowNode;
 };
 
-const agGridDateFilterConfigs: IFilterDef = {
-  filter: "agDateColumnFilter",
-  filterParams: {
-    buttons: ["apply", "reset"],
-    filterOptions: ["inRange"],
-    inRangeInclusive: true,
-    minValidYear: 2016,
-    maxValidYear: new Date().getFullYear(),
-    suppressAndOrCondition: true,
-  },
-};
+function getAgGridDateFilterConfigs({
+  maxValidYear = new Date().getFullYear(),
+}: { maxValidYear?: number } = {}): IFilterDef {
+  return {
+    filter: "agDateColumnFilter",
+    filterParams: {
+      buttons: ["apply", "reset"],
+      filterOptions: ["inRange"],
+      inRangeInclusive: true,
+      minValidYear: 2016,
+      maxValidYear: maxValidYear,
+      suppressAndOrCondition: true,
+    },
+  };
+}
 
 function getAgGridBooleanFilterConfigs({
   showBlanksFilterOption = false,
@@ -102,7 +106,7 @@ export const RequestsListColumns: ColDef[] = [
   {
     field: "importDate",
     headerName: "Import Date",
-    ...agGridDateFilterConfigs,
+    ...getAgGridDateFilterConfigs(),
   },
   {
     field: "totalSampleCount",
@@ -301,7 +305,7 @@ export const SampleMetadataDetailsColumns: ColDef[] = [
   {
     field: "importDate",
     headerName: "Last Updated",
-    ...agGridDateFilterConfigs,
+    ...getAgGridDateFilterConfigs(),
   },
   {
     field: "cmoPatientId",
@@ -599,7 +603,7 @@ export const CohortsListColumns: ColDef[] = [
     field: "initialCohortDeliveryDate",
     headerName: "Initial Cohort Delivery Date",
     valueFormatter: (params) => formatDate(params.value) ?? "",
-    ...agGridDateFilterConfigs,
+    ...getAgGridDateFilterConfigs(),
   },
   {
     field: "endUsers",
@@ -644,13 +648,16 @@ export const WesSampleDetailsColumns: ColDef[] = [
     field: "initialPipelineRunDate",
     headerName: "Initial Pipeline Run Date",
     valueFormatter: (params) => formatDate(params.value) ?? "",
-    ...agGridDateFilterConfigs,
+    ...getAgGridDateFilterConfigs(),
   },
   {
     field: "embargoDate",
     headerName: "Embargo Date",
     valueFormatter: (params) => formatDate(params.value) ?? "",
-    ...agGridDateFilterConfigs,
+    ...getAgGridDateFilterConfigs({
+      // embargoDate is 18 months ahead of initialPipelineRunDate
+      maxValidYear: new Date().getFullYear() + 2,
+    }),
   },
   {
     field: "billed",
@@ -697,7 +704,7 @@ export const WesSampleDetailsColumns: ColDef[] = [
     field: "bamCompleteDate",
     headerName: "Latest BAM Complete Date",
     valueFormatter: (params) => formatDate(params.value) ?? "",
-    ...agGridDateFilterConfigs,
+    ...getAgGridDateFilterConfigs(),
   },
   {
     field: "bamCompleteStatus",
@@ -707,7 +714,7 @@ export const WesSampleDetailsColumns: ColDef[] = [
     field: "mafCompleteDate",
     headerName: "Latest MAF Complete Date",
     valueFormatter: (params) => formatDate(params.value) ?? "",
-    ...agGridDateFilterConfigs,
+    ...getAgGridDateFilterConfigs(),
   },
   {
     field: "mafCompleteNormalPrimaryId",
@@ -721,7 +728,7 @@ export const WesSampleDetailsColumns: ColDef[] = [
     field: "qcCompleteDate",
     headerName: "Latest QC Complete Date",
     valueFormatter: (params) => formatDate(params.value) ?? "",
-    ...agGridDateFilterConfigs,
+    ...getAgGridDateFilterConfigs(),
   },
   {
     field: "qcCompleteResult",
