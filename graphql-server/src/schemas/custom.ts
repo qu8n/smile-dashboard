@@ -633,36 +633,52 @@ function buildPatientsQueryBody({
   }
 
   if (filters) {
+    // Unlike other Boolean filters, for consentPartA and consentPartB columns we're giving users an option
+    // to filter by null (blanks). This is because there is a distinction between patients who explicitly
+    // did not consent to 12-245 and those who were not asked to consent
+
     const consentPartAFilterObj = filters?.find(
       (filter) => filter.field === "consentPartA"
     );
     if (consentPartAFilterObj) {
-      const filter = JSON.parse(consentPartAFilterObj.filter);
-      let consentPartAFilter;
-      if (filter.values[0] === "Yes") {
-        consentPartAFilter = "consentPartA = 'YES'";
-      } else if (filter.values[0] === "No") {
-        consentPartAFilter = "consentPartA = 'NO' OR consentPartA IS NULL";
-      } else if (filter.values.length === 0) {
-        consentPartAFilter = "consentPartA <> 'YES' AND consentPartA <> 'NO'";
+      const filterValues = JSON.parse(consentPartAFilterObj.filter).values;
+      if (filterValues?.length > 0) {
+        const consentPartAFilters = [];
+        for (const value of filterValues) {
+          if (value === "Yes") {
+            consentPartAFilters.push("consentPartA = 'YES'");
+          } else if (value === "No") {
+            consentPartAFilters.push("consentPartA = 'NO'");
+          } else if (value === null) {
+            consentPartAFilters.push("consentPartA IS NULL");
+          }
+        }
+        queryFilters.push(consentPartAFilters.join(" OR "));
+      } else {
+        queryFilters.push("consentPartA <> 'YES' AND consentPartA <> 'NO'");
       }
-      queryFilters.push(consentPartAFilter);
     }
 
     const consentPartCFilterObj = filters?.find(
       (filter) => filter.field === "consentPartC"
     );
     if (consentPartCFilterObj) {
-      const filter = JSON.parse(consentPartCFilterObj.filter);
-      let consentPartCFilter;
-      if (filter.values[0] === "Yes") {
-        consentPartCFilter = "consentPartC = 'YES'";
-      } else if (filter.values[0] === "No") {
-        consentPartCFilter = "consentPartC = 'NO' OR consentPartC IS NULL";
-      } else if (filter.values.length === 0) {
-        consentPartCFilter = "consentPartC <> 'YES' AND consentPartC <> 'NO'";
+      const filterValues = JSON.parse(consentPartCFilterObj.filter).values;
+      if (filterValues?.length > 0) {
+        const consentPartCFilters = [];
+        for (const value of filterValues) {
+          if (value === "Yes") {
+            consentPartCFilters.push("consentPartC = 'YES'");
+          } else if (value === "No") {
+            consentPartCFilters.push("consentPartC = 'NO'");
+          } else if (value === null) {
+            consentPartCFilters.push("consentPartC IS NULL");
+          }
+        }
+        queryFilters.push(consentPartCFilters.join(" OR "));
+      } else {
+        queryFilters.push("consentPartC <> 'YES' AND consentPartC <> 'NO'");
       }
-      queryFilters.push(consentPartCFilter);
     }
   }
 
