@@ -5,6 +5,7 @@ import {
   RowNode,
   ITooltipParams,
   CellClassParams,
+  IFilterDef,
 } from "ag-grid-community";
 import { Button } from "react-bootstrap";
 import "ag-grid-enterprise";
@@ -21,6 +22,52 @@ export type SampleChange = {
   newValue: string;
   rowNode: RowNode;
 };
+
+const agGridDateFilterConfigs: IFilterDef = {
+  filter: "agDateColumnFilter",
+  filterParams: {
+    buttons: ["apply", "reset"],
+    filterOptions: ["inRange"],
+    inRangeInclusive: true,
+    minValidYear: 2016,
+    maxValidYear: new Date().getFullYear(),
+    suppressAndOrCondition: true,
+  },
+};
+
+function getAgGridBooleanFilterConfigs({
+  showBlanksFilterOption = false,
+}: { showBlanksFilterOption?: Boolean } = {}): IFilterDef {
+  return {
+    filter: true,
+    filterParams: {
+      values: !showBlanksFilterOption ? ["Yes", "No"] : ["Yes", "No", ""],
+      suppressMiniFilter: true,
+    },
+  };
+}
+
+function getAgGridBooleanValueFormatter({
+  trueVal,
+  falseVal,
+}: {
+  // The true/false values that appear in the database for the given field
+  trueVal: String | Boolean;
+  falseVal: String | Boolean;
+}): ColDef {
+  return {
+    valueFormatter: (params) => {
+      switch (params.value) {
+        case trueVal:
+          return "Yes";
+        case falseVal:
+          return "No";
+        default:
+          return "";
+      }
+    },
+  };
+}
 
 export const RequestsListColumns: ColDef[] = [
   {
@@ -55,15 +102,7 @@ export const RequestsListColumns: ColDef[] = [
   {
     field: "importDate",
     headerName: "Import Date",
-    filter: "agDateColumnFilter",
-    filterParams: {
-      buttons: ["apply", "reset"],
-      filterOptions: ["inRange"],
-      inRangeInclusive: true,
-      minValidYear: 2016,
-      maxValidYear: new Date().getFullYear(),
-      suppressAndOrCondition: true,
-    },
+    ...agGridDateFilterConfigs,
   },
   {
     field: "totalSampleCount",
@@ -122,40 +161,20 @@ export const RequestsListColumns: ColDef[] = [
   {
     field: "bicAnalysis",
     headerName: "BIC Analysis",
-    filter: true,
-    filterParams: {
-      values: ["Yes", "No"],
-      suppressMiniFilter: true,
-    },
-    valueFormatter: (params) => {
-      switch (params.value) {
-        case true:
-          return "Yes";
-        case false:
-          return "No";
-        default:
-          return "";
-      }
-    },
+    ...getAgGridBooleanFilterConfigs(),
+    ...getAgGridBooleanValueFormatter({
+      trueVal: true,
+      falseVal: false,
+    }),
   },
   {
     field: "isCmoRequest",
     headerName: "CMO Request?",
-    filter: true,
-    filterParams: {
-      values: ["Yes", "No"],
-      suppressMiniFilter: true,
-    },
-    valueFormatter: (params) => {
-      switch (params.value) {
-        case true:
-          return "Yes";
-        case false:
-          return "No";
-        default:
-          return "";
-      }
-    },
+    ...getAgGridBooleanFilterConfigs(),
+    ...getAgGridBooleanValueFormatter({
+      trueVal: true,
+      falseVal: false,
+    }),
   },
   {
     field: "otherContactEmails",
@@ -201,40 +220,24 @@ export const PatientsListColumns: ColDef[] = [
   {
     field: "consentPartA",
     headerName: "12-245 Part A",
-    filter: true,
-    filterParams: {
-      values: ["Yes", "No"],
-      suppressMiniFilter: true,
-    },
-    valueFormatter: (params) => {
-      switch (params.value) {
-        case "YES":
-          return "Yes";
-        case "NO":
-          return "No";
-        default:
-          return "";
-      }
-    },
+    ...getAgGridBooleanFilterConfigs({
+      showBlanksFilterOption: true,
+    }),
+    ...getAgGridBooleanValueFormatter({
+      trueVal: "YES",
+      falseVal: "NO",
+    }),
   },
   {
     field: "consentPartC",
     headerName: "12-245 Part C",
-    filter: true,
-    filterParams: {
-      values: ["Yes", "No"],
-      suppressMiniFilter: true,
-    },
-    valueFormatter: (params) => {
-      switch (params.value) {
-        case "YES":
-          return "Yes";
-        case "NO":
-          return "No";
-        default:
-          return "";
-      }
-    },
+    ...getAgGridBooleanFilterConfigs({
+      showBlanksFilterOption: true,
+    }),
+    ...getAgGridBooleanValueFormatter({
+      trueVal: "YES",
+      falseVal: "NO",
+    }),
   },
   {
     field: "totalSampleCount",
@@ -298,16 +301,7 @@ export const SampleMetadataDetailsColumns: ColDef[] = [
   {
     field: "importDate",
     headerName: "Last Updated",
-    // TODO: standardize common filter settings like date into a function or object
-    filter: "agDateColumnFilter",
-    filterParams: {
-      buttons: ["apply", "reset"],
-      filterOptions: ["inRange"],
-      inRangeInclusive: true,
-      minValidYear: 2016,
-      maxValidYear: new Date().getFullYear(),
-      suppressAndOrCondition: true,
-    },
+    ...agGridDateFilterConfigs,
   },
   {
     field: "cmoPatientId",
@@ -599,25 +593,13 @@ export const CohortsListColumns: ColDef[] = [
   {
     field: "billed",
     headerName: "Billed",
-    filter: true,
-    filterParams: {
-      values: ["Yes", "No"],
-      suppressMiniFilter: true,
-    },
+    ...getAgGridBooleanFilterConfigs(),
   },
   {
     field: "initialCohortDeliveryDate",
     headerName: "Initial Cohort Delivery Date",
-    filter: "agDateColumnFilter",
-    filterParams: {
-      buttons: ["apply", "reset"],
-      filterOptions: ["inRange"],
-      inRangeInclusive: true,
-      minValidYear: 2016,
-      maxValidYear: new Date().getFullYear(),
-      suppressAndOrCondition: true,
-    },
     valueFormatter: (params) => formatDate(params.value) ?? "",
+    ...agGridDateFilterConfigs,
   },
   {
     field: "endUsers",
@@ -677,21 +659,11 @@ export const WesSampleDetailsColumns: ColDef[] = [
     cellEditorParams: {
       values: [true, false],
     },
-    valueFormatter: (params) => {
-      switch (params.value) {
-        case true:
-          return "Yes";
-        case false:
-          return "No";
-        default:
-          return "";
-      }
-    },
-    filter: "agSetColumnFilter",
-    filterParams: {
-      values: ["Yes", "No"],
-      suppressMiniFilter: true,
-    },
+    ...getAgGridBooleanFilterConfigs(),
+    ...getAgGridBooleanValueFormatter({
+      trueVal: true,
+      falseVal: false,
+    }),
   },
   {
     field: "costCenter",
