@@ -644,11 +644,13 @@ export const WesSampleDetailsColumns: ColDef[] = [
     field: "initialPipelineRunDate",
     headerName: "Initial Pipeline Run Date",
     valueFormatter: (params) => formatDate(params.value) ?? "",
+    ...agGridDateFilterConfigs,
   },
   {
     field: "embargoDate",
     headerName: "Embargo Date",
     valueFormatter: (params) => formatDate(params.value) ?? "",
+    ...agGridDateFilterConfigs,
   },
   {
     field: "billed",
@@ -695,6 +697,7 @@ export const WesSampleDetailsColumns: ColDef[] = [
     field: "bamCompleteDate",
     headerName: "Latest BAM Complete Date",
     valueFormatter: (params) => formatDate(params.value) ?? "",
+    ...agGridDateFilterConfigs,
   },
   {
     field: "bamCompleteStatus",
@@ -704,6 +707,7 @@ export const WesSampleDetailsColumns: ColDef[] = [
     field: "mafCompleteDate",
     headerName: "Latest MAF Complete Date",
     valueFormatter: (params) => formatDate(params.value) ?? "",
+    ...agGridDateFilterConfigs,
   },
   {
     field: "mafCompleteNormalPrimaryId",
@@ -717,6 +721,7 @@ export const WesSampleDetailsColumns: ColDef[] = [
     field: "qcCompleteDate",
     headerName: "Latest QC Complete Date",
     valueFormatter: (params) => formatDate(params.value) ?? "",
+    ...agGridDateFilterConfigs,
   },
   {
     field: "qcCompleteResult",

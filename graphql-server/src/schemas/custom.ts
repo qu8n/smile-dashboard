@@ -1108,6 +1108,16 @@ function buildSamplesQueryBody({
     importDateFilter += `AND apoc.date.parse(latestSm.importDate, 'ms', 'yyyy-MM-dd') <= apoc.date.parse('${filter.dateTo}', 'ms', 'yyyy-MM-dd HH:mm:ss'))`;
   }
 
+  let initialPipelineRunDateFilter = "";
+  const initialPipelineRunDateFilterObj = filters?.find(
+    (filter) => filter.field === "initialPipelineRunDate"
+  );
+  if (initialPipelineRunDateFilterObj) {
+    const filter = JSON.parse(initialPipelineRunDateFilterObj.filter);
+    initialPipelineRunDateFilter = `(apoc.date.parse(oldestCCDate, 'ms', 'yyyy-MM-dd') >= apoc.date.parse('${filter.dateFrom}', 'ms', 'yyyy-MM-dd HH:mm:ss')`;
+    initialPipelineRunDateFilter += `AND apoc.date.parse(oldestCCDate, 'ms', 'yyyy-MM-dd') <= apoc.date.parse('${filter.dateTo}', 'ms', 'yyyy-MM-dd HH:mm:ss'))`;
+  }
+
   const samplesQueryBody = `
     // Get Sample and the most recent SampleMetadata
     MATCH (s:Sample)-[:HAS_METADATA]->(sm:SampleMetadata)
@@ -1138,6 +1148,7 @@ function buildSamplesQueryBody({
 
     // Get the oldest CohortComplete date ("Initial Pipeline Run Date" in Cohort Samples view)
     WITH s, latestSm, latestSt, min(cc.date) AS oldestCCDate
+    ${initialPipelineRunDateFilter && `WHERE ${initialPipelineRunDateFilter}`}
 
     // Get Tempo data
     OPTIONAL MATCH (s)-[:HAS_TEMPO]->(t:Tempo)
@@ -1164,7 +1175,8 @@ function buildSamplesQueryBody({
       s,
       latestSm,
       latestSt,
-      oldestCCDate,
+      oldestCCDate AS initialPipelineRunDate,
+      toString(datetime(replace(oldestCCDate, ' ', 'T')) + duration({ months: 18 })) AS embargoDate,
       t,
       latestBC,
       latestMC,
@@ -1214,8 +1226,8 @@ async function queryDashboardSamples({
       latestSm.sex AS sex,
       apoc.convert.fromJsonMap(latestSm.cmoSampleIdFields).recipe AS recipe,
 
-      oldestCCDate AS initialPipelineRunDate,
-      toString(datetime(replace(oldestCCDate, ' ', 'T')) + duration({ months: 18 })) AS embargoDate,
+      initialPipelineRunDate,
+      embargoDate,
 
       t.smileTempoId AS smileTempoId,
       t.billed AS billed,
