@@ -1090,7 +1090,7 @@ function buildSamplesQueryBody({
     })}`;
   }
 
-  // Filters for the WES Samples view on Samples page
+  // Filter for WES samples on click on the Samples page
   const wesContext =
     context?.fieldName === "genePanel"
       ? buildSamplesSearchFilters({
@@ -1100,38 +1100,25 @@ function buildSamplesQueryBody({
         })
       : "";
 
-  // Filters for the Request Samples view
+  // Filter for the current request in the Request Samples view
   const requestContext =
     context?.fieldName === "igoRequestId"
       ? `latestSm.igoRequestId = '${context.values[0]}'`
       : "";
 
-  // Filters for the Patient Samples view
+  // Filter for the current patient for the Patient Samples view
   const patientContext =
     context?.fieldName === "patientId"
       ? `pa.value = '${context.values[0]}'`
       : "";
 
-  // Filters for the Cohort Samples view
+  // Filter for the current cohort for the Cohort Samples view
   const cohortContext =
     context?.fieldName === "cohortId"
       ? `c.cohortId = '${context.values[0]}'`
       : "";
 
-  // Column filter of Cohort Samples view
-  let tempoFilter = "";
-  const tempoFilterObj = filters?.find((filter) => filter.field === "billed");
-  if (tempoFilterObj) {
-    const filter = JSON.parse(tempoFilterObj.filter);
-    if (filter.values[0] === "Yes") {
-      tempoFilter = "t.billed = true";
-    } else if (filter.values[0] === "No") {
-      tempoFilter = "t.billed = false OR t.billed IS NULL";
-    } else if (filter.values.length === 0) {
-      tempoFilter = "t.billed <> true AND t.billed <> false";
-    }
-  }
-
+  // "Last Updated" column filter in the Samples Metadata view
   let importDateFilter = "";
   const importDateFilterObj = filters?.find(
     (filter) => filter.field === "importDate"
@@ -1142,6 +1129,21 @@ function buildSamplesQueryBody({
     importDateFilter += `AND apoc.date.parse(latestSm.importDate, 'ms', 'yyyy-MM-dd') <= apoc.date.parse('${filter.dateTo}', 'ms', 'yyyy-MM-dd HH:mm:ss'))`;
   }
 
+  // "Billed" column filter for the Cohort Samples view
+  let billedFilter = "";
+  const billedFilterObj = filters?.find((filter) => filter.field === "billed");
+  if (billedFilterObj) {
+    const filter = JSON.parse(billedFilterObj.filter);
+    if (filter.values[0] === "Yes") {
+      billedFilter = "t.billed = true";
+    } else if (filter.values[0] === "No") {
+      billedFilter = "t.billed = false OR t.billed IS NULL";
+    } else if (filter.values.length === 0) {
+      billedFilter = "t.billed <> true AND t.billed <> false";
+    }
+  }
+
+  // "Initial Pipeline Run Date" column filter in the Cohort Samples view
   let initialPipelineRunDateFilter = "";
   const initialPipelineRunDateFilterObj = filters?.find(
     (filter) => filter.field === "initialPipelineRunDate"
@@ -1151,6 +1153,7 @@ function buildSamplesQueryBody({
     initialPipelineRunDateFilter = `(apoc.date.parse(initialPipelineRunDate, 'ms', 'yyyy-MM-dd') >= apoc.date.parse('${filter.dateFrom}', 'ms', 'yyyy-MM-dd HH:mm:ss')`;
     initialPipelineRunDateFilter += `AND apoc.date.parse(initialPipelineRunDate, 'ms', 'yyyy-MM-dd') <= apoc.date.parse('${filter.dateTo}', 'ms', 'yyyy-MM-dd HH:mm:ss'))`;
   }
+  // Embargo Date" column filter in the Cohort Samples view
   let embargoDateFilter = "";
   const embargoDateFilterObj = filters?.find(
     (filter) => filter.field === "embargoDate"
@@ -1165,6 +1168,7 @@ function buildSamplesQueryBody({
     .map((filter) => `(${filter})`)
     .join(" AND ");
 
+  // "Latest BAM Complete Date" column filter in the Cohort Samples view
   let bamCompleteDateFilter = "";
   const bamCompleteDateFilterObj = filters?.find(
     (filter) => filter.field === "bamCompleteDate"
@@ -1177,6 +1181,7 @@ function buildSamplesQueryBody({
     });
   }
 
+  // "Latest MAF Complete Date" column filter in the Cohort Samples view
   let mafCompleteDateFilter = "";
   const mafCompleteDateFilterObj = filters?.find(
     (filter) => filter.field === "mafCompleteDate"
@@ -1189,6 +1194,7 @@ function buildSamplesQueryBody({
     });
   }
 
+  // "Latest QC Complete Date" column filter in the Cohort Samples view
   let qcCompleteDateFilter = "";
   const qcCompleteDateFilterObj = filters?.find(
     (filter) => filter.field === "qcCompleteDate"
@@ -1236,7 +1242,7 @@ function buildSamplesQueryBody({
     OPTIONAL MATCH (s)-[:HAS_TEMPO]->(t:Tempo)
     // We're calling WITH immediately after OPTIONAL MATCH here to correctly filter Tempo data
     WITH s, latestSm, latestSt, initialPipelineRunDate, embargoDate, t
-    ${tempoFilter && `WHERE ${tempoFilter}`}
+    ${billedFilter && `WHERE ${billedFilter}`}
 
     // Get the most recent BamComplete event
     OPTIONAL MATCH (t)-[:HAS_EVENT]->(bc:BamComplete)
