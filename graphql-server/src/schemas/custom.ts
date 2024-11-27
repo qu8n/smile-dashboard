@@ -455,9 +455,10 @@ function buildRequestsQueryBody({
       (filter) => filter.field === "importDate"
     );
     if (importDateFilterObj) {
-      const filter = JSON.parse(importDateFilterObj.filter);
-      let importDateFilter = `(apoc.date.parse(importDate, 'ms', 'yyyy-MM-dd') >= apoc.date.parse('${filter.dateFrom}', 'ms', 'yyyy-MM-dd HH:mm:ss')`;
-      importDateFilter += `AND apoc.date.parse(importDate, 'ms', 'yyyy-MM-dd') <= apoc.date.parse('${filter.dateTo}', 'ms', 'yyyy-MM-dd HH:mm:ss'))`;
+      const importDateFilter = buildCypherDateFilter({
+        dateString: "importDate",
+        filter: JSON.parse(importDateFilterObj.filter),
+      });
       queryFilters.push(importDateFilter);
     }
 
@@ -856,9 +857,10 @@ function buildCohortsQueryBody({
       (filter) => filter.field === "initialCohortDeliveryDate"
     );
     if (initialCohortDeliveryDateFilterObj) {
-      const filter = JSON.parse(initialCohortDeliveryDateFilterObj.filter);
-      initialCohortDeliveryDateFilter = `(apoc.date.parse(initialCohortDeliveryDate, 'ms', 'yyyy-MM-dd HH:mm') >= apoc.date.parse('${filter.dateFrom}', 'ms', 'yyyy-MM-dd HH:mm:ss')`;
-      initialCohortDeliveryDateFilter += `AND apoc.date.parse(initialCohortDeliveryDate, 'ms', 'yyyy-MM-dd HH:mm') <= apoc.date.parse('${filter.dateTo}', 'ms', 'yyyy-MM-dd HH:mm:ss'))`;
+      initialCohortDeliveryDateFilter = buildCypherDateFilter({
+        dateString: "initialCohortDeliveryDate",
+        filter: JSON.parse(initialCohortDeliveryDateFilterObj.filter),
+      });
     }
 
     const combinedPredicates = [billedFilter, initialCohortDeliveryDateFilter]
@@ -1018,36 +1020,41 @@ const samplesSearchFiltersConfig = [
 ];
 
 /**
- * Build Cypher predicates that safely handle Tempo event date values, which don't arrive in a standardized format.
- * Examples: date values in "yyyy-MM-dd" or "yyyy-MM-dd HH:mm" or "yyyy-MM-dd HH:mm:ss.SSSSSS", empty strings, or "FAILED"
+ * Build "from date" and "to date" predicates to be used in a WHERE clause in Cypher.
+ *
+ * This function can also handle unsafe date values like Tempo event dates, which can come in a variety of formats
+ * such as date values in "yyyy-MM-dd" or "yyyy-MM-dd HH:mm" or "yyyy-MM-dd HH:mm:ss.SSSSSS", empty strings, or "FAILED".
  *
  * @param dateString The date value of Tempo event e.g. `bc.date` from `MATCH (bc:BamComplete) RETURN bc.date`
- * @param filter The filter object from AG Grid's `agDateColumnFilter`
+ * @param safelyHandleDateString Set this to true when working with date values that are unpredictable/non-standardized
+ * @param filter The filter object type from AG Grid's `agDateColumnFilter`
+ *
  */
-function buildTempoEventDateFilterInCypher({
+function buildCypherDateFilter({
   dateString,
+  safelyHandleDateString = false,
   filter,
 }: {
   dateString: string;
+  safelyHandleDateString?: boolean;
   filter: {
     dateFrom: string;
     dateTo: string;
   };
 }) {
-  return `
-      apoc.date.parse(
-        CASE
-          WHEN size(${dateString}) >= 10 THEN left(${dateString}, 10)
-          ELSE '1900-01-01' // excludes record from the result
-        END, 'ms', 'yyyy-MM-dd'
-      ) >= apoc.date.parse('${filter.dateFrom}', 'ms', 'yyyy-MM-dd HH:mm:ss') // AG Grid's provided date format
+  const formattedDateString = safelyHandleDateString
+    ? `
+    CASE
+      WHEN size(${dateString}) >= 10 THEN left(${dateString}, 10) // trims date formats more granular than yyyy-MM-dd
+      ELSE '1900-01-01' // excludes record from the result
+    END`
+    : dateString;
 
-      AND apoc.date.parse(
-        CASE
-          WHEN size(${dateString}) >= 10 THEN left(${dateString}, 10)
-          ELSE '1900-01-01'
-        END, 'ms', 'yyyy-MM-dd'
-      ) <= apoc.date.parse('${filter.dateTo}', 'ms', 'yyyy-MM-dd HH:mm:ss')
+  return `
+      apoc.date.parse(${formattedDateString}, 'ms', 'yyyy-MM-dd')
+        >= apoc.date.parse('${filter.dateFrom}', 'ms', 'yyyy-MM-dd HH:mm:ss') // AG Grid's provided date format
+      AND apoc.date.parse(${formattedDateString}, 'ms', 'yyyy-MM-dd')
+        <= apoc.date.parse('${filter.dateTo}', 'ms', 'yyyy-MM-dd HH:mm:ss')
     `;
 }
 
@@ -1124,9 +1131,10 @@ function buildSamplesQueryBody({
     (filter) => filter.field === "importDate"
   );
   if (importDateFilterObj) {
-    const filter = JSON.parse(importDateFilterObj.filter);
-    importDateFilter = `(apoc.date.parse(latestSm.importDate, 'ms', 'yyyy-MM-dd') >= apoc.date.parse('${filter.dateFrom}', 'ms', 'yyyy-MM-dd HH:mm:ss')`;
-    importDateFilter += `AND apoc.date.parse(latestSm.importDate, 'ms', 'yyyy-MM-dd') <= apoc.date.parse('${filter.dateTo}', 'ms', 'yyyy-MM-dd HH:mm:ss'))`;
+    importDateFilter = buildCypherDateFilter({
+      dateString: "latestSm.importDate",
+      filter: JSON.parse(importDateFilterObj.filter),
+    });
   }
 
   // "Billed" column filter for the Cohort Samples view
@@ -1149,9 +1157,10 @@ function buildSamplesQueryBody({
     (filter) => filter.field === "initialPipelineRunDate"
   );
   if (initialPipelineRunDateFilterObj) {
-    const filter = JSON.parse(initialPipelineRunDateFilterObj.filter);
-    initialPipelineRunDateFilter = `(apoc.date.parse(initialPipelineRunDate, 'ms', 'yyyy-MM-dd') >= apoc.date.parse('${filter.dateFrom}', 'ms', 'yyyy-MM-dd HH:mm:ss')`;
-    initialPipelineRunDateFilter += `AND apoc.date.parse(initialPipelineRunDate, 'ms', 'yyyy-MM-dd') <= apoc.date.parse('${filter.dateTo}', 'ms', 'yyyy-MM-dd HH:mm:ss'))`;
+    initialPipelineRunDateFilter = buildCypherDateFilter({
+      dateString: "initialPipelineRunDate",
+      filter: JSON.parse(initialPipelineRunDateFilterObj.filter),
+    });
   }
   // Embargo Date" column filter in the Cohort Samples view
   let embargoDateFilter = "";
@@ -1159,9 +1168,10 @@ function buildSamplesQueryBody({
     (filter) => filter.field === "embargoDate"
   );
   if (embargoDateFilterObj) {
-    const filter = JSON.parse(embargoDateFilterObj.filter);
-    embargoDateFilter = `(apoc.date.parse(embargoDate, 'ms', 'yyyy-MM-dd') >= apoc.date.parse('${filter.dateFrom}', 'ms', 'yyyy-MM-dd HH:mm:ss')`;
-    embargoDateFilter += `AND apoc.date.parse(embargoDate, 'ms', 'yyyy-MM-dd') <= apoc.date.parse('${filter.dateTo}', 'ms', 'yyyy-MM-dd HH:mm:ss'))`;
+    embargoDateFilter = buildCypherDateFilter({
+      dateString: "embargoDate",
+      filter: JSON.parse(embargoDateFilterObj.filter),
+    });
   }
   const cohortDateFilters = [initialPipelineRunDateFilter, embargoDateFilter]
     .filter(Boolean)
@@ -1174,10 +1184,10 @@ function buildSamplesQueryBody({
     (filter) => filter.field === "bamCompleteDate"
   );
   if (bamCompleteDateFilterObj) {
-    const filter = JSON.parse(bamCompleteDateFilterObj.filter);
-    bamCompleteDateFilter = buildTempoEventDateFilterInCypher({
+    bamCompleteDateFilter = buildCypherDateFilter({
       dateString: "latestBC.date",
-      filter: filter,
+      safelyHandleDateString: true,
+      filter: JSON.parse(bamCompleteDateFilterObj.filter),
     });
   }
 
@@ -1187,10 +1197,10 @@ function buildSamplesQueryBody({
     (filter) => filter.field === "mafCompleteDate"
   );
   if (mafCompleteDateFilterObj) {
-    const filter = JSON.parse(mafCompleteDateFilterObj.filter);
-    mafCompleteDateFilter = buildTempoEventDateFilterInCypher({
+    mafCompleteDateFilter = buildCypherDateFilter({
       dateString: "latestMC.date",
-      filter: filter,
+      safelyHandleDateString: true,
+      filter: JSON.parse(mafCompleteDateFilterObj.filter),
     });
   }
 
@@ -1200,10 +1210,10 @@ function buildSamplesQueryBody({
     (filter) => filter.field === "qcCompleteDate"
   );
   if (qcCompleteDateFilterObj) {
-    const filter = JSON.parse(qcCompleteDateFilterObj.filter);
-    qcCompleteDateFilter = buildTempoEventDateFilterInCypher({
+    qcCompleteDateFilter = buildCypherDateFilter({
       dateString: "latestQC.date",
-      filter: filter,
+      safelyHandleDateString: true,
+      filter: JSON.parse(qcCompleteDateFilterObj.filter),
     });
   }
 
