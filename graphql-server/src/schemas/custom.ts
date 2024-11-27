@@ -1017,6 +1017,40 @@ const samplesSearchFiltersConfig = [
   { variable: "latestQC", fields: ["date", "result", "reason", "status"] },
 ];
 
+/**
+ * Build Cypher predicates that safely handle Tempo event date values, which don't arrive in a standardized format.
+ * Examples: date values in "yyyy-MM-dd" or "yyyy-MM-dd HH:mm" or "yyyy-MM-dd HH:mm:ss.SSSSSS", empty strings, or "FAILED"
+ *
+ * @param dateString The date value of Tempo event e.g. `bc.date` from `MATCH (bc:BamComplete) RETURN bc.date`
+ * @param filter The filter object from AG Grid's `agDateColumnFilter`
+ */
+function buildTempoEventDateFilterInCypher({
+  dateString,
+  filter,
+}: {
+  dateString: string;
+  filter: {
+    dateFrom: string;
+    dateTo: string;
+  };
+}) {
+  return `
+      apoc.date.parse(
+        CASE
+          WHEN size(${dateString}) >= 10 THEN left(${dateString}, 10)
+          ELSE '1900-01-01' // excludes record from the result
+        END, 'ms', 'yyyy-MM-dd'
+      ) >= apoc.date.parse('${filter.dateFrom}', 'ms', 'yyyy-MM-dd HH:mm:ss') // AG Grid's provided date format
+
+      AND apoc.date.parse(
+        CASE
+          WHEN size(${dateString}) >= 10 THEN left(${dateString}, 10)
+          ELSE '1900-01-01'
+        END, 'ms', 'yyyy-MM-dd'
+      ) <= apoc.date.parse('${filter.dateTo}', 'ms', 'yyyy-MM-dd HH:mm:ss')
+    `;
+}
+
 function buildSamplesQueryBody({
   searchVals,
   context,
@@ -1114,8 +1148,8 @@ function buildSamplesQueryBody({
   );
   if (initialPipelineRunDateFilterObj) {
     const filter = JSON.parse(initialPipelineRunDateFilterObj.filter);
-    initialPipelineRunDateFilter = `(apoc.date.parse(oldestCCDate, 'ms', 'yyyy-MM-dd') >= apoc.date.parse('${filter.dateFrom}', 'ms', 'yyyy-MM-dd HH:mm:ss')`;
-    initialPipelineRunDateFilter += `AND apoc.date.parse(oldestCCDate, 'ms', 'yyyy-MM-dd') <= apoc.date.parse('${filter.dateTo}', 'ms', 'yyyy-MM-dd HH:mm:ss'))`;
+    initialPipelineRunDateFilter = `(apoc.date.parse(initialPipelineRunDate, 'ms', 'yyyy-MM-dd') >= apoc.date.parse('${filter.dateFrom}', 'ms', 'yyyy-MM-dd HH:mm:ss')`;
+    initialPipelineRunDateFilter += `AND apoc.date.parse(initialPipelineRunDate, 'ms', 'yyyy-MM-dd') <= apoc.date.parse('${filter.dateTo}', 'ms', 'yyyy-MM-dd HH:mm:ss'))`;
   }
   let embargoDateFilter = "";
   const embargoDateFilterObj = filters?.find(
@@ -1131,6 +1165,42 @@ function buildSamplesQueryBody({
     .map((filter) => `(${filter})`)
     .join(" AND ");
 
+  let bamCompleteDateFilter = "";
+  const bamCompleteDateFilterObj = filters?.find(
+    (filter) => filter.field === "bamCompleteDate"
+  );
+  if (bamCompleteDateFilterObj) {
+    const filter = JSON.parse(bamCompleteDateFilterObj.filter);
+    bamCompleteDateFilter = buildTempoEventDateFilterInCypher({
+      dateString: "latestBC.date",
+      filter: filter,
+    });
+  }
+
+  let mafCompleteDateFilter = "";
+  const mafCompleteDateFilterObj = filters?.find(
+    (filter) => filter.field === "mafCompleteDate"
+  );
+  if (mafCompleteDateFilterObj) {
+    const filter = JSON.parse(mafCompleteDateFilterObj.filter);
+    mafCompleteDateFilter = buildTempoEventDateFilterInCypher({
+      dateString: "latestMC.date",
+      filter: filter,
+    });
+  }
+
+  let qcCompleteDateFilter = "";
+  const qcCompleteDateFilterObj = filters?.find(
+    (filter) => filter.field === "qcCompleteDate"
+  );
+  if (qcCompleteDateFilterObj) {
+    const filter = JSON.parse(qcCompleteDateFilterObj.filter);
+    qcCompleteDateFilter = buildTempoEventDateFilterInCypher({
+      dateString: "latestQC.date",
+      filter: filter,
+    });
+  }
+
   const samplesQueryBody = `
     // Get Sample and the most recent SampleMetadata
     MATCH (s:Sample)-[:HAS_METADATA]->(sm:SampleMetadata)
@@ -1144,7 +1214,6 @@ function buildSamplesQueryBody({
     // Get SampleMetadata's Status
     OPTIONAL MATCH (latestSm)-[:HAS_STATUS]->(st:Status)
     WITH s, latestSm, st AS latestSt
-
     ${importDateFilter && `WHERE ${importDateFilter}`}
 
     // Filters for Patient Samples view, if applicable
@@ -1160,41 +1229,43 @@ function buildSamplesQueryBody({
     ${cohortContext && `WHERE ${cohortContext}`}
 
     // Get the oldest CohortComplete date ("Initial Pipeline Run Date" in Cohort Samples view)
-    WITH s, latestSm, latestSt, min(cc.date) AS oldestCCDate, toString(datetime(replace(min(cc.date), ' ', 'T')) + duration({ months: 18 })) AS embargoDate
+    WITH s, latestSm, latestSt, min(cc.date) AS initialPipelineRunDate, toString(datetime(replace(min(cc.date), ' ', 'T')) + duration({ months: 18 })) AS embargoDate
     ${cohortDateFilters && `WHERE ${cohortDateFilters}`}
 
     // Get Tempo data
     OPTIONAL MATCH (s)-[:HAS_TEMPO]->(t:Tempo)
     // We're calling WITH immediately after OPTIONAL MATCH here to correctly filter Tempo data
-    WITH s, latestSm, latestSt, oldestCCDate, embargoDate, t
+    WITH s, latestSm, latestSt, initialPipelineRunDate, embargoDate, t
     ${tempoFilter && `WHERE ${tempoFilter}`}
 
     // Get the most recent BamComplete event
     OPTIONAL MATCH (t)-[:HAS_EVENT]->(bc:BamComplete)
-    WITH s, latestSm, latestSt, oldestCCDate, embargoDate, t, collect(bc) AS allBamCompletes, max(bc.date) AS latestBCDate
-    WITH s, latestSm, latestSt, oldestCCDate, embargoDate, t, [bc IN allBamCompletes WHERE bc.date = latestBCDate][0] AS latestBC
+    WITH s, latestSm, latestSt, initialPipelineRunDate, embargoDate, t, collect(bc) AS allBamCompletes, max(bc.date) AS latestBCDate
+    WITH s, latestSm, latestSt, initialPipelineRunDate, embargoDate, t, [bc IN allBamCompletes WHERE bc.date = latestBCDate][0] AS latestBC
+    ${bamCompleteDateFilter && `WHERE ${bamCompleteDateFilter}`}
 
     // Get the most recent MafComplete event
     OPTIONAL MATCH (t)-[:HAS_EVENT]->(mc:MafComplete)
-    WITH s, latestSm, latestSt, oldestCCDate, embargoDate, t, latestBC, collect(mc) AS allMafCompletes, max(mc.date) AS latestMCDate
-    WITH s, latestSm, latestSt, oldestCCDate, embargoDate, t, latestBC, [mc IN allMafCompletes WHERE mc.date = latestMCDate][0] AS latestMC
+    WITH s, latestSm, latestSt, initialPipelineRunDate, embargoDate, t, latestBC, collect(mc) AS allMafCompletes, max(mc.date) AS latestMCDate
+    WITH s, latestSm, latestSt, initialPipelineRunDate, embargoDate, t, latestBC, [mc IN allMafCompletes WHERE mc.date = latestMCDate][0] AS latestMC
+    ${mafCompleteDateFilter && `WHERE ${mafCompleteDateFilter}`}
 
     // Get the most recent QcComplete event
     OPTIONAL MATCH (t)-[:HAS_EVENT]->(qc:QcComplete)
-    WITH s, latestSm, latestSt, oldestCCDate, embargoDate, t, latestBC, latestMC, collect(qc) AS allQcCompletes, max(qc.date) AS latestQCDate
-    WITH s, latestSm, latestSt, oldestCCDate, embargoDate, t, latestBC, latestMC, [qc IN allQcCompletes WHERE qc.date = latestQCDate][0] AS latestQC
+    WITH s, latestSm, latestSt, initialPipelineRunDate, embargoDate, t, latestBC, latestMC, collect(qc) AS allQcCompletes, max(qc.date) AS latestQCDate
+    WITH s, latestSm, latestSt, initialPipelineRunDate, embargoDate, t, latestBC, latestMC, [qc IN allQcCompletes WHERE qc.date = latestQCDate][0] AS latestQC
+    ${qcCompleteDateFilter && `WHERE ${qcCompleteDateFilter}`}
 
     WITH
       s,
       latestSm,
       latestSt,
-      oldestCCDate AS initialPipelineRunDate,
-      toString(datetime(replace(oldestCCDate, ' ', 'T')) + duration({ months: 18 })) AS embargoDate,
+      initialPipelineRunDate,
+      embargoDate,
       t,
       latestBC,
       latestMC,
       latestQC
-
     ${searchFilters && `WHERE ${searchFilters}`}
   `;
 
