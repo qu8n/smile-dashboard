@@ -453,7 +453,7 @@ function buildRequestsQueryBody({
     );
     if (importDateFilterObj) {
       const importDateFilter = buildCypherDateFilter({
-        dateString: "importDate",
+        dateVar: "importDate",
         filter: JSON.parse(importDateFilterObj.filter),
       });
       queryFilters.push(importDateFilter);
@@ -463,15 +463,11 @@ function buildRequestsQueryBody({
       (filter) => filter.field === "bicAnalysis"
     );
     if (bicAnalysisFilterObj) {
-      const filter = JSON.parse(bicAnalysisFilterObj.filter);
-      let bicAnalysisFilter;
-      if (filter.values[0] === "Yes") {
-        bicAnalysisFilter = "bicAnalysis = true";
-      } else if (filter.values[0] === "No") {
-        bicAnalysisFilter = "bicAnalysis = false OR bicAnalysis IS NULL";
-      } else if (filter.values.length === 0) {
-        bicAnalysisFilter = "bicAnalysis <> true AND bicAnalysis <> false";
-      }
+      const bicAnalysisFilter = buildCypherBooleanFilter({
+        booleanVar: "bicAnalysis",
+        filter: JSON.parse(bicAnalysisFilterObj.filter),
+        noIncludesFalseAndNull: true,
+      });
       queryFilters.push(bicAnalysisFilter);
     }
 
@@ -479,15 +475,11 @@ function buildRequestsQueryBody({
       (filter) => filter.field === "isCmoRequest"
     );
     if (cmoRequestFilterObj) {
-      const filter = JSON.parse(cmoRequestFilterObj.filter);
-      let cmoRequestFilter;
-      if (filter.values[0] === "Yes") {
-        cmoRequestFilter = "isCmoRequest = true";
-      } else if (filter.values[0] === "No") {
-        cmoRequestFilter = "isCmoRequest = false OR isCmoRequest IS NULL";
-      } else if (filter.values.length === 0) {
-        cmoRequestFilter = "isCmoRequest <> true AND isCmoRequest <> false";
-      }
+      const cmoRequestFilter = buildCypherBooleanFilter({
+        booleanVar: "isCmoRequest",
+        filter: JSON.parse(cmoRequestFilterObj.filter),
+        noIncludesFalseAndNull: true,
+      });
       queryFilters.push(cmoRequestFilter);
     }
   }
@@ -639,44 +631,26 @@ function buildPatientsQueryBody({
       (filter) => filter.field === "consentPartA"
     );
     if (consentPartAFilterObj) {
-      const filterValues = JSON.parse(consentPartAFilterObj.filter).values;
-      if (filterValues?.length > 0) {
-        const consentPartAFilters = [];
-        for (const value of filterValues) {
-          if (value === "Yes") {
-            consentPartAFilters.push("consentPartA = 'YES'");
-          } else if (value === "No") {
-            consentPartAFilters.push("consentPartA = 'NO'");
-          } else if (value === null) {
-            consentPartAFilters.push("consentPartA IS NULL");
-          }
-        }
-        queryFilters.push(consentPartAFilters.join(" OR "));
-      } else {
-        queryFilters.push("consentPartA <> 'YES' AND consentPartA <> 'NO'");
-      }
+      const consentPartAFilter = buildCypherBooleanFilter({
+        booleanVar: "consentPartA",
+        filter: JSON.parse(consentPartAFilterObj.filter),
+        trueVal: "YES",
+        falseVal: "NO",
+      });
+      queryFilters.push(consentPartAFilter);
     }
 
     const consentPartCFilterObj = filters?.find(
       (filter) => filter.field === "consentPartC"
     );
     if (consentPartCFilterObj) {
-      const filterValues = JSON.parse(consentPartCFilterObj.filter).values;
-      if (filterValues?.length > 0) {
-        const consentPartCFilters = [];
-        for (const value of filterValues) {
-          if (value === "Yes") {
-            consentPartCFilters.push("consentPartC = 'YES'");
-          } else if (value === "No") {
-            consentPartCFilters.push("consentPartC = 'NO'");
-          } else if (value === null) {
-            consentPartCFilters.push("consentPartC IS NULL");
-          }
-        }
-        queryFilters.push(consentPartCFilters.join(" OR "));
-      } else {
-        queryFilters.push("consentPartC <> 'YES' AND consentPartC <> 'NO'");
-      }
+      const consentPartCFilter = buildCypherBooleanFilter({
+        booleanVar: "consentPartC",
+        filter: JSON.parse(consentPartCFilterObj.filter),
+        trueVal: "YES",
+        falseVal: "NO",
+      });
+      queryFilters.push(consentPartCFilter);
     }
   }
 
@@ -847,6 +821,12 @@ function buildCohortsQueryBody({
       } else if (filter.values.length === 0) {
         billedFilter = "billed <> 'Yes' AND billed <> 'No'";
       }
+      billedFilter = buildCypherBooleanFilter({
+        booleanVar: "billed",
+        filter: JSON.parse(billedFilterObj.filter),
+        trueVal: "Yes",
+        falseVal: "No",
+      });
     }
 
     let initialCohortDeliveryDateFilter;
@@ -855,7 +835,7 @@ function buildCohortsQueryBody({
     );
     if (initialCohortDeliveryDateFilterObj) {
       initialCohortDeliveryDateFilter = buildCypherDateFilter({
-        dateString: "initialCohortDeliveryDate",
+        dateVar: "initialCohortDeliveryDate",
         filter: JSON.parse(initialCohortDeliveryDateFilterObj.filter),
       });
     }
@@ -1017,22 +997,22 @@ const samplesSearchFiltersConfig = [
 ];
 
 /**
- * Build "from date" and "to date" predicates to be used in a WHERE clause in Cypher.
+ * Build "from" and "to" date predicates to be used in a WHERE clause in Cypher.
  *
  * This function can also handle unsafe date values like Tempo event dates, which can come in a variety of formats
  * such as date values in "yyyy-MM-dd" or "yyyy-MM-dd HH:mm" or "yyyy-MM-dd HH:mm:ss.SSSSSS", empty strings, or "FAILED".
  *
- * @param dateString The date value of Tempo event e.g. `bc.date` from `MATCH (bc:BamComplete) RETURN bc.date`
- * @param safelyHandleDateString Set this to true when working with date values that are unpredictable/non-standardized
+ * @param dateVar The date variable in the current Cypher context e.g. `bc.date` from `MATCH (bc:BamComplete) RETURN bc.date`
  * @param filter The filter object type from AG Grid's `agDateColumnFilter`
+ * @param safelyHandleDateString Set this to true when working with date values that are unpredictable/non-standardized
  *
  */
 function buildCypherDateFilter({
-  dateString,
-  safelyHandleDateString = false,
+  dateVar,
   filter,
+  safelyHandleDateString = false,
 }: {
-  dateString: string;
+  dateVar: string;
   safelyHandleDateString?: boolean;
   filter: {
     dateFrom: string;
@@ -1042,10 +1022,10 @@ function buildCypherDateFilter({
   const formattedDateString = safelyHandleDateString
     ? `
     CASE
-      WHEN size(${dateString}) >= 10 THEN left(${dateString}, 10) // trims date formats more granular than yyyy-MM-dd
+      WHEN size(${dateVar}) >= 10 THEN left(${dateVar}, 10) // trims date formats more granular than yyyy-MM-dd
       ELSE '1900-01-01' // excludes record from the result
     END`
-    : dateString;
+    : dateVar;
 
   return `
       apoc.date.parse(${formattedDateString}, 'ms', 'yyyy-MM-dd')
@@ -1053,6 +1033,60 @@ function buildCypherDateFilter({
       AND apoc.date.parse(${formattedDateString}, 'ms', 'yyyy-MM-dd')
         <= apoc.date.parse('${filter.dateTo}', 'ms', 'yyyy-MM-dd HH:mm:ss')
     `;
+}
+
+/**
+ * Build boolean predicates to be used in a WHERE clause in Cypher.
+ *
+ * @param booleanVar The boolean variable in the current Cypher context e.g. `t.billed` from `MATCH (t:Tempo) RETURN t.billed`
+ * @param filter The filter object type from AG Grid's `agSetColumnFilter`
+ * @param noIncludesFalseAndNull Set this to true if we want the user's filter selection of "No" to include both false and null values
+ * @param trueVal The true value that appears in the database for a given field (e.g. "Yes", true)
+ * @param falseVal The false value that appears in the database for a given field (e.g. "No", false)
+ *
+ */
+function buildCypherBooleanFilter({
+  booleanVar,
+  filter,
+  noIncludesFalseAndNull = false,
+  trueVal = true,
+  falseVal = false,
+}: {
+  booleanVar: string;
+  filter: {
+    values: string[];
+  };
+  noIncludesFalseAndNull?: boolean;
+  trueVal?: string | boolean;
+  falseVal?: string | boolean;
+}) {
+  const formattedTrueVal =
+    typeof trueVal === "string" ? `'${trueVal}'` : trueVal;
+  const formattedFalseVal =
+    typeof falseVal === "string" ? `'${falseVal}'` : falseVal;
+
+  const filterValues = filter.values;
+  if (filterValues?.length > 0) {
+    const activeFilters = [];
+    for (const value of filterValues) {
+      if (value === "Yes") {
+        activeFilters.push(`${booleanVar} = ${formattedTrueVal}`);
+      } else if (value === "No") {
+        if (!noIncludesFalseAndNull) {
+          activeFilters.push(`${booleanVar} = ${formattedFalseVal}`);
+        } else {
+          activeFilters.push(
+            `${booleanVar} = ${formattedFalseVal} OR ${booleanVar} IS NULL`
+          );
+        }
+      } else if (value === null) {
+        activeFilters.push(`${booleanVar} IS NULL`);
+      }
+    }
+    return activeFilters.join(" OR ");
+  } else {
+    return `${booleanVar} <> ${formattedTrueVal} AND ${booleanVar} <> ${formattedFalseVal} AND ${booleanVar} IS NOT NULL`;
+  }
 }
 
 function buildSamplesQueryBody({
@@ -1129,7 +1163,7 @@ function buildSamplesQueryBody({
   );
   if (importDateFilterObj) {
     importDateFilter = buildCypherDateFilter({
-      dateString: "latestSm.importDate",
+      dateVar: "latestSm.importDate",
       filter: JSON.parse(importDateFilterObj.filter),
     });
   }
@@ -1138,14 +1172,11 @@ function buildSamplesQueryBody({
   let billedFilter = "";
   const billedFilterObj = filters?.find((filter) => filter.field === "billed");
   if (billedFilterObj) {
-    const filter = JSON.parse(billedFilterObj.filter);
-    if (filter.values[0] === "Yes") {
-      billedFilter = "t.billed = true";
-    } else if (filter.values[0] === "No") {
-      billedFilter = "t.billed = false OR t.billed IS NULL";
-    } else if (filter.values.length === 0) {
-      billedFilter = "t.billed <> true AND t.billed <> false";
-    }
+    billedFilter = buildCypherBooleanFilter({
+      booleanVar: "t.billed",
+      filter: JSON.parse(billedFilterObj.filter),
+      noIncludesFalseAndNull: true,
+    });
   }
 
   // "Initial Pipeline Run Date" column filter in the Cohort Samples view
@@ -1155,7 +1186,7 @@ function buildSamplesQueryBody({
   );
   if (initialPipelineRunDateFilterObj) {
     initialPipelineRunDateFilter = buildCypherDateFilter({
-      dateString: "initialPipelineRunDate",
+      dateVar: "initialPipelineRunDate",
       filter: JSON.parse(initialPipelineRunDateFilterObj.filter),
     });
   }
@@ -1166,7 +1197,7 @@ function buildSamplesQueryBody({
   );
   if (embargoDateFilterObj) {
     embargoDateFilter = buildCypherDateFilter({
-      dateString: "embargoDate",
+      dateVar: "embargoDate",
       filter: JSON.parse(embargoDateFilterObj.filter),
     });
   }
@@ -1182,7 +1213,7 @@ function buildSamplesQueryBody({
   );
   if (bamCompleteDateFilterObj) {
     bamCompleteDateFilter = buildCypherDateFilter({
-      dateString: "latestBC.date",
+      dateVar: "latestBC.date",
       safelyHandleDateString: true,
       filter: JSON.parse(bamCompleteDateFilterObj.filter),
     });
@@ -1195,7 +1226,7 @@ function buildSamplesQueryBody({
   );
   if (mafCompleteDateFilterObj) {
     mafCompleteDateFilter = buildCypherDateFilter({
-      dateString: "latestMC.date",
+      dateVar: "latestMC.date",
       safelyHandleDateString: true,
       filter: JSON.parse(mafCompleteDateFilterObj.filter),
     });
@@ -1208,7 +1239,7 @@ function buildSamplesQueryBody({
   );
   if (qcCompleteDateFilterObj) {
     qcCompleteDateFilter = buildCypherDateFilter({
-      dateString: "latestQC.date",
+      dateVar: "latestQC.date",
       safelyHandleDateString: true,
       filter: JSON.parse(qcCompleteDateFilterObj.filter),
     });
