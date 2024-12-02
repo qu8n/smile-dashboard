@@ -419,9 +419,6 @@ function buildRequestsQueryBody({
   searchVals: QueryDashboardRequestsArgs["searchVals"];
   filters?: QueryDashboardRequestsArgs["filters"];
 }) {
-  // TODO: make other queries' filter builder consistent with the below setup
-  // TODO: create resuable functions from repetitive filtering logic (e.g. boolean filter)
-
   const queryFilters = [];
 
   if (searchVals?.length) {
