@@ -484,13 +484,7 @@ function buildRequestsQueryBody({
     }
   }
 
-  const combinedPredicates = queryFilters
-    .filter(Boolean)
-    .map((queryFilter) => `(${queryFilter})`)
-    .join(" AND ");
-  const filtersAsCypher = combinedPredicates
-    ? "WHERE " + combinedPredicates
-    : "";
+  const filtersAsCypher = buildFinalCypherFilter({ queryFilters });
 
   const requestsQueryBody = `
     MATCH (r:Request)
@@ -623,10 +617,6 @@ function buildPatientsQueryBody({
   }
 
   if (filters) {
-    // Unlike other Boolean filters, for consentPartA and consentPartB columns we're giving users an option
-    // to filter by null (blanks). This is because there is a distinction between patients who explicitly
-    // did not consent to 12-245 and those who were not asked to consent
-
     const consentPartAFilterObj = filters?.find(
       (filter) => filter.field === "consentPartA"
     );
@@ -654,13 +644,7 @@ function buildPatientsQueryBody({
     }
   }
 
-  const combinedPredicates = queryFilters
-    .filter(Boolean)
-    .map((queryFilter) => `(${queryFilter})`)
-    .join(" AND ");
-  const filtersAsCypher = combinedPredicates
-    ? "WHERE " + combinedPredicates
-    : "";
+  const filtersAsCypher = buildFinalCypherFilter({ queryFilters });
 
   const patientsQueryBody = `
     MATCH (p:Patient)
@@ -787,64 +771,53 @@ function buildCohortsQueryBody({
   searchVals: QueryDashboardCohortsArgs["searchVals"];
   filters?: QueryDashboardCohortsArgs["filters"];
 }) {
-  const fieldsToSearch = [
-    "cohortId",
-    "billed",
-    "initialCohortDeliveryDate",
-    "endUsers",
-    "pmUsers",
-    "projectTitle",
-    "projectSubtitle",
-    "status",
-    "type",
-  ];
+  const queryFilters = [];
 
-  const searchFilters = searchVals?.length
-    ? "WHERE " +
-      fieldsToSearch
-        .map((field) => `${field} =~ '(?i).*(${searchVals.join("|")}).*'`)
-        .join(" OR ")
-    : "";
+  if (searchVals?.length) {
+    const fieldsToSearch = [
+      "cohortId",
+      "billed",
+      "initialCohortDeliveryDate",
+      "endUsers",
+      "pmUsers",
+      "projectTitle",
+      "projectSubtitle",
+      "status",
+      "type",
+    ];
+    const searchFilters = fieldsToSearch
+      .map((field) => `${field} =~ '(?i).*(${searchVals.join("|")}).*'`)
+      .join(" OR ");
+    queryFilters.push(searchFilters);
+  }
 
-  let columnFilters = "";
   if (filters) {
-    let billedFilter;
     const billedFilterObj = filters?.find(
       (filter) => filter.field === "billed"
     );
     if (billedFilterObj) {
-      const filter = JSON.parse(billedFilterObj.filter);
-      if (filter.values[0] === "Yes") {
-        billedFilter = "billed = 'Yes'";
-      } else if (filter.values[0] === "No") {
-        billedFilter = "billed = 'No'";
-      } else if (filter.values.length === 0) {
-        billedFilter = "billed <> 'Yes' AND billed <> 'No'";
-      }
-      billedFilter = buildCypherBooleanFilter({
+      const billedFilter = buildCypherBooleanFilter({
         booleanVar: "billed",
         filter: JSON.parse(billedFilterObj.filter),
         trueVal: "Yes",
         falseVal: "No",
       });
+      queryFilters.push(billedFilter);
     }
 
-    let initialCohortDeliveryDateFilter;
     const initialCohortDeliveryDateFilterObj = filters?.find(
       (filter) => filter.field === "initialCohortDeliveryDate"
     );
     if (initialCohortDeliveryDateFilterObj) {
-      initialCohortDeliveryDateFilter = buildCypherDateFilter({
+      const initialCohortDeliveryDateFilter = buildCypherDateFilter({
         dateVar: "initialCohortDeliveryDate",
         filter: JSON.parse(initialCohortDeliveryDateFilterObj.filter),
       });
+      queryFilters.push(initialCohortDeliveryDateFilter);
     }
-
-    const combinedPredicates = [billedFilter, initialCohortDeliveryDateFilter]
-      .filter(Boolean)
-      .join(" AND ");
-    columnFilters = combinedPredicates ? "WHERE " + combinedPredicates : "";
   }
+
+  const filtersAsCypher = buildFinalCypherFilter({ queryFilters });
 
   const cohortsQueryBody = `
     MATCH (c:Cohort)-[:HAS_COHORT_COMPLETE]->(cc:CohortComplete)
@@ -886,8 +859,6 @@ function buildCohortsQueryBody({
         initialCohortDeliveryDate,
         latestCC
 
-    ${columnFilters}
-
     WITH
         sampleIdsByCohort,
         cohortId,
@@ -901,7 +872,7 @@ function buildCohortsQueryBody({
         latestCC.status AS status,
         latestCC.type AS type
 
-    ${searchFilters}
+    ${filtersAsCypher}
   `;
 
   return cohortsQueryBody;
@@ -962,39 +933,6 @@ async function queryDashboardCohortCount({ queryBody }: { queryBody: string }) {
     console.error("Error with queryDashboardCohortCount:", error);
   }
 }
-
-const samplesSearchFiltersConfig = [
-  {
-    variable: "latestSm",
-    fields: [
-      "primaryId",
-      "cmoSampleName",
-      "importDate",
-      "cmoPatientId",
-      "investigatorSampleId",
-      "sampleType",
-      "species",
-      "genePanel",
-      "baitSet",
-      "preservation",
-      "tumorOrNormal",
-      "sampleClass",
-      "oncotreeCode",
-      "collectionYear",
-      "sampleOrigin",
-      "tissueLocation",
-      "sex",
-      "cmoSampleIdFields", // for searching recipe
-    ],
-  },
-  {
-    variable: "t",
-    fields: ["costCenter", "billedBy", "custodianInformation", "accessLevel"],
-  },
-  { variable: "latestBC", fields: ["date", "status"] },
-  { variable: "latestMC", fields: ["date", "normalPrimaryId", "status"] },
-  { variable: "latestQC", fields: ["date", "result", "reason", "status"] },
-];
 
 /**
  * Build "from" and "to" date predicates to be used in a WHERE clause in Cypher.
@@ -1088,6 +1026,48 @@ function buildCypherBooleanFilter({
     return `${booleanVar} <> ${formattedTrueVal} AND ${booleanVar} <> ${formattedFalseVal} AND ${booleanVar} IS NOT NULL`;
   }
 }
+
+function buildFinalCypherFilter({ queryFilters }: { queryFilters: string[] }) {
+  const combinedPredicates = queryFilters
+    .filter(Boolean)
+    .map((queryFilter) => `(${queryFilter})`)
+    .join(" AND ");
+
+  return combinedPredicates ? "WHERE " + combinedPredicates : "";
+}
+
+const samplesSearchFiltersConfig = [
+  {
+    variable: "latestSm",
+    fields: [
+      "primaryId",
+      "cmoSampleName",
+      "importDate",
+      "cmoPatientId",
+      "investigatorSampleId",
+      "sampleType",
+      "species",
+      "genePanel",
+      "baitSet",
+      "preservation",
+      "tumorOrNormal",
+      "sampleClass",
+      "oncotreeCode",
+      "collectionYear",
+      "sampleOrigin",
+      "tissueLocation",
+      "sex",
+      "cmoSampleIdFields", // for searching recipe
+    ],
+  },
+  {
+    variable: "t",
+    fields: ["costCenter", "billedBy", "custodianInformation", "accessLevel"],
+  },
+  { variable: "latestBC", fields: ["date", "status"] },
+  { variable: "latestMC", fields: ["date", "normalPrimaryId", "status"] },
+  { variable: "latestQC", fields: ["date", "result", "reason", "status"] },
+];
 
 function buildSamplesQueryBody({
   searchVals,
