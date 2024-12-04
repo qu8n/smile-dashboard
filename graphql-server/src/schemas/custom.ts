@@ -493,33 +493,33 @@ function buildRequestsQueryBody({
     OPTIONAL MATCH (r)-[:HAS_SAMPLE]->(s:Sample)-[:HAS_METADATA]->(sm:SampleMetadata)
     WITH
       r,
-      collect(s) as samples,
+      collect(s) AS samples,
       collect(sm) AS allSampleMetadata,
       max(sm.importDate) AS latestImportDate
     WITH
       r,
-      size(samples) as totalSampleCount,
+      size(samples) AS totalSampleCount,
       [sm IN allSampleMetadata WHERE sm.importDate = latestImportDate][0] AS latestSm
 
     WITH
-      r.igoRequestId as igoRequestId,
-      r.igoProjectId as igoProjectId,
-      latestSm.importDate as importDate,
+      r.igoRequestId AS igoRequestId,
+      r.igoProjectId AS igoProjectId,
+      latestSm.importDate AS importDate,
       totalSampleCount,
-      r.projectManagerName as projectManagerName,
-      r.investigatorName as investigatorName,
-      r.investigatorEmail as investigatorEmail,
-      r.piEmail as piEmail,
-      r.dataAnalystName as dataAnalystName,
-      r.dataAnalystEmail as dataAnalystEmail,
-      r.genePanel as genePanel,
-      r.labHeadName as labHeadName,
-      r.labHeadEmail as labHeadEmail,
-      r.qcAccessEmails as qcAccessEmails,
-      r.dataAccessEmails as dataAccessEmails,
-      r.bicAnalysis as bicAnalysis,
-      r.isCmoRequest as isCmoRequest,
-      r.otherContactEmails as otherContactEmails
+      r.projectManagerName AS projectManagerName,
+      r.investigatorName AS investigatorName,
+      r.investigatorEmail AS investigatorEmail,
+      r.piEmail AS piEmail,
+      r.dataAnalystName AS dataAnalystName,
+      r.dataAnalystEmail AS dataAnalystEmail,
+      r.genePanel AS genePanel,
+      r.labHeadName AS labHeadName,
+      r.labHeadEmail AS labHeadEmail,
+      r.qcAccessEmails AS qcAccessEmails,
+      r.dataAccessEmails AS dataAccessEmails,
+      r.bicAnalysis AS bicAnalysis,
+      r.isCmoRequest AS isCmoRequest,
+      r.otherContactEmails AS otherContactEmails
 
     ${filtersAsCypher}
   `;
@@ -688,21 +688,21 @@ function buildPatientsQueryBody({
       p,
       cmoPa,
       dmpPa,
-      latestImportDate,
-      collect(s) as samples,
+      max(latestImportDate) AS latestImportDate,
+      collect(s) AS samples,
       collect(cmoSampleId) AS cmoSampleIds,
-      collect(latestSmAddlPropsJson.\`consent-parta\`) as consentPartAs,
-      collect(latestSmAddlPropsJson.\`consent-partc\`) as consentPartCs
+      collect(latestSmAddlPropsJson.\`consent-parta\`) AS consentPartAs,
+      collect(latestSmAddlPropsJson.\`consent-partc\`) AS consentPartCs
 
     WITH
       p.smilePatientId AS smilePatientId,
       cmoPa.value AS cmoPatientId,
       dmpPa.value AS dmpPatientId,
       latestImportDate,
-      size(samples) as totalSampleCount,
+      size(samples) AS totalSampleCount,
       apoc.text.join([id IN cmoSampleIds WHERE id <> ''], ', ') AS cmoSampleIds,
-      consentPartAs[0] as consentPartA,
-      consentPartCs[0] as consentPartC
+      consentPartAs[0] AS consentPartA,
+      consentPartCs[0] AS consentPartC
 
     ${filtersAsCypher}
   `;
