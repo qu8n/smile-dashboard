@@ -227,6 +227,7 @@ export async function buildCustomSchema(ogm: OGM) {
       sex: String
       ## Custom fields
       recipe: String
+      historicalCmoSampleNames: String
       ## (sm:SampleMetadata)-[:HAS_STATUS]->(s:Status)
       validationReport: String
       validationStatus: Boolean
@@ -367,6 +368,7 @@ export async function buildCustomSchema(ogm: OGM) {
       sex: String
       ## Custom fields
       recipe: String
+      historicalCmoSampleNames: String
       ## (sm:SampleMetadata)-[:HAS_STATUS]->(s:Status)
       validationReport: String
       validationStatus: Boolean
@@ -493,12 +495,12 @@ function buildRequestsQueryBody({
     OPTIONAL MATCH (r)-[:HAS_SAMPLE]->(s:Sample)-[:HAS_METADATA]->(sm:SampleMetadata)
     WITH
       r,
-      collect(s) AS samples,
+      count(DISTINCT s.smileSampleId) AS totalSampleCount,
       collect(sm) AS allSampleMetadata,
       max(sm.importDate) AS latestImportDate
     WITH
       r,
-      size(samples) AS totalSampleCount,
+      totalSampleCount,
       [sm IN allSampleMetadata WHERE sm.importDate = latestImportDate][0] AS latestSm
 
     WITH
@@ -1036,39 +1038,6 @@ function buildFinalCypherFilter({ queryFilters }: { queryFilters: string[] }) {
   return combinedPredicates ? "WHERE " + combinedPredicates : "";
 }
 
-const samplesSearchFiltersConfig = [
-  {
-    variable: "latestSm",
-    fields: [
-      "primaryId",
-      "cmoSampleName",
-      "importDate",
-      "cmoPatientId",
-      "investigatorSampleId",
-      "sampleType",
-      "species",
-      "genePanel",
-      "baitSet",
-      "preservation",
-      "tumorOrNormal",
-      "sampleClass",
-      "oncotreeCode",
-      "collectionYear",
-      "sampleOrigin",
-      "tissueLocation",
-      "sex",
-      "cmoSampleIdFields", // for searching recipe
-    ],
-  },
-  {
-    variable: "t",
-    fields: ["costCenter", "billedBy", "custodianInformation", "accessLevel"],
-  },
-  { variable: "latestBC", fields: ["date", "status"] },
-  { variable: "latestMC", fields: ["date", "normalPrimaryId", "status"] },
-  { variable: "latestQC", fields: ["date", "result", "reason", "status"] },
-];
-
 function buildSamplesQueryBody({
   searchVals,
   context,
@@ -1085,37 +1054,56 @@ function buildSamplesQueryBody({
   // This contrasts with our approach in other query builders, where we combine all predicates into a single
   // WHERE clause and injecting that at the end (right before the RETURN statement).
 
-  // Build search filters given user's search values input. For example:
-  // latestSm.primaryId =~ '(?i).*(someInput).*' OR latestSm.cmoSampleName =~ '(?i).*(someInput).* OR ...
-  let searchFilters = searchVals?.length
-    ? samplesSearchFiltersConfig
-        .map((c) =>
-          buildSamplesSearchFilters({
-            variable: c.variable,
-            fields: c.fields,
-            searchVals,
-          })
-        )
-        .join(" OR ")
-    : "";
-  // Add add'l Oncotree codes to search if user inputted "cancerTypeDetailed" or "cancerType" values
-  if (addlOncotreeCodes.length) {
-    searchFilters += ` OR ${buildSamplesSearchFilters({
-      variable: "latestSm",
-      fields: ["oncotreeCode"],
-      searchVals: addlOncotreeCodes,
-      useFuzzyMatch: false,
-    })}`;
+  let searchFilters = "";
+  if (searchVals?.length) {
+    const fieldsToSearch = [
+      "latestSm.primaryId",
+      "latestSm.cmoSampleName",
+      "latestSm.importDate",
+      "latestSm.cmoPatientId",
+      "latestSm.investigatorSampleId",
+      "latestSm.sampleType",
+      "latestSm.species",
+      "latestSm.genePanel",
+      "latestSm.baitSet",
+      "latestSm.preservation",
+      "latestSm.tumorOrNormal",
+      "latestSm.sampleClass",
+      "latestSm.oncotreeCode",
+      "latestSm.collectionYear",
+      "latestSm.sampleOrigin",
+      "latestSm.tissueLocation",
+      "latestSm.sex",
+      "latestSm.cmoSampleIdFields", // for searching recipe
+      "t.costCenter",
+      "t.billedBy",
+      "t.custodianInformation",
+      "t.accessLevel",
+      "latestBC.date",
+      "latestBC.status",
+      "latestMC.date",
+      "latestMC.normalPrimaryId",
+      "latestMC.status",
+      "latestQC.date",
+      "latestQC.result",
+      "latestQC.reason",
+      "latestQC.status",
+      "historicalCmoSampleNames",
+    ];
+    searchFilters += fieldsToSearch
+      .map((field) => `${field} =~ '(?i).*(${searchVals.join("|")}).*'`)
+      .join(" OR ");
+    if (addlOncotreeCodes.length) {
+      searchFilters += ` OR latestSm.oncotreeCode =~ '^(${addlOncotreeCodes.join(
+        "|"
+      )})'`;
+    }
   }
 
   // Filter for WES samples on click on the Samples page
   const wesContext =
     context?.fieldName === "genePanel"
-      ? buildSamplesSearchFilters({
-          variable: "latestSm",
-          fields: ["genePanel"],
-          searchVals: context.values,
-        })
+      ? `latestSm.genePanel =~ '(?i).*(${context.values.join("|")}).*'`
       : "";
 
   // Filter for the current request in the Request Samples view
@@ -1225,11 +1213,32 @@ function buildSamplesQueryBody({
     });
   }
 
+  // NOTE: For future reference, we can get a list of historical CMO labels and import dates by replacing
+  // '| sm.cmoSampleName' with '| {cmoSampleName: sm.cmoSampleName, importDate: sm.importDate}'
   const samplesQueryBody = `
     // Get Sample and the most recent SampleMetadata
     MATCH (s:Sample)-[:HAS_METADATA]->(sm:SampleMetadata)
-    WITH s, collect(sm) AS allSampleMetadata, max(sm.importDate) AS latestImportDate
-    WITH s, [sm IN allSampleMetadata WHERE sm.importDate = latestImportDate][0] AS latestSm
+    WITH
+      s,
+      collect(sm) AS allSampleMetadata,
+      max(sm.importDate) AS latestImportDate
+    WITH
+      s,
+      allSampleMetadata,
+      [sm IN allSampleMetadata WHERE sm.importDate = latestImportDate][0] AS latestSm
+
+    // Get a list of historical CMO sample labels
+    WITH
+      s,
+      latestSm,
+      apoc.text.join(
+        apoc.coll.toSet(
+          [sm IN apoc.coll.sortMaps(allSampleMetadata, "importDate")
+            WHERE sm.cmoSampleName <> latestSm.cmoSampleName AND sm.cmoSampleName <> ""
+            | sm.cmoSampleName + " (" + sm.importDate + ")"
+          ]
+        ),
+      ", ") AS historicalCmoSampleNames
 
     // Filters for either the WES Samples or Request Samples view, if applicable
     ${wesContext && `WHERE ${wesContext}`}
@@ -1237,7 +1246,11 @@ function buildSamplesQueryBody({
 
     // Get SampleMetadata's Status
     OPTIONAL MATCH (latestSm)-[:HAS_STATUS]->(st:Status)
-    WITH s, latestSm, st AS latestSt
+    WITH
+      s,
+      latestSm,
+      historicalCmoSampleNames,
+      st AS latestSt
     ${importDateFilter && `WHERE ${importDateFilter}`}
 
     // Filters for Patient Samples view, if applicable
@@ -1253,37 +1266,108 @@ function buildSamplesQueryBody({
     ${cohortContext && `WHERE ${cohortContext}`}
 
     // Get the oldest CohortComplete date ("Initial Pipeline Run Date" in Cohort Samples view)
-    WITH s, latestSm, latestSt, min(cc.date) AS initialPipelineRunDate, toString(datetime(replace(min(cc.date), ' ', 'T')) + duration({ months: 18 })) AS embargoDate
+    WITH
+      s,
+      latestSm,
+      latestSt,
+      historicalCmoSampleNames,
+      min(cc.date) AS initialPipelineRunDate,
+      toString(datetime(replace(min(cc.date), ' ', 'T')) + duration({ months: 18 })) AS embargoDate
     ${cohortDateFilters && `WHERE ${cohortDateFilters}`}
 
     // Get Tempo data
     OPTIONAL MATCH (s)-[:HAS_TEMPO]->(t:Tempo)
     // We're calling WITH immediately after OPTIONAL MATCH here to correctly filter Tempo data
-    WITH s, latestSm, latestSt, initialPipelineRunDate, embargoDate, t
+    WITH
+      s,
+      latestSm,
+      latestSt,
+      historicalCmoSampleNames,
+      initialPipelineRunDate,
+      embargoDate,
+      t
     ${billedFilter && `WHERE ${billedFilter}`}
 
     // Get the most recent BamComplete event
     OPTIONAL MATCH (t)-[:HAS_EVENT]->(bc:BamComplete)
-    WITH s, latestSm, latestSt, initialPipelineRunDate, embargoDate, t, collect(bc) AS allBamCompletes, max(bc.date) AS latestBCDate
-    WITH s, latestSm, latestSt, initialPipelineRunDate, embargoDate, t, [bc IN allBamCompletes WHERE bc.date = latestBCDate][0] AS latestBC
+    WITH
+      s,
+      latestSm,
+      latestSt,
+      historicalCmoSampleNames,
+      initialPipelineRunDate,
+      embargoDate,
+      t,
+      collect(bc) AS allBamCompletes,
+      max(bc.date) AS latestBCDate
+    WITH
+      s,
+      latestSm,
+      latestSt,
+      historicalCmoSampleNames,
+      initialPipelineRunDate,
+      embargoDate,
+      t,
+      [bc IN allBamCompletes WHERE bc.date = latestBCDate][0] AS latestBC
     ${bamCompleteDateFilter && `WHERE ${bamCompleteDateFilter}`}
 
     // Get the most recent MafComplete event
     OPTIONAL MATCH (t)-[:HAS_EVENT]->(mc:MafComplete)
-    WITH s, latestSm, latestSt, initialPipelineRunDate, embargoDate, t, latestBC, collect(mc) AS allMafCompletes, max(mc.date) AS latestMCDate
-    WITH s, latestSm, latestSt, initialPipelineRunDate, embargoDate, t, latestBC, [mc IN allMafCompletes WHERE mc.date = latestMCDate][0] AS latestMC
+    WITH
+      s,
+      latestSm,
+      latestSt,
+      historicalCmoSampleNames,
+      initialPipelineRunDate,
+      embargoDate,
+      t,
+      latestBC,
+      collect(mc) AS allMafCompletes,
+      max(mc.date) AS latestMCDate
+    WITH
+      s,
+      latestSm,
+      latestSt,
+      historicalCmoSampleNames,
+      initialPipelineRunDate,
+      embargoDate,
+      t,
+      latestBC,
+      [mc IN allMafCompletes WHERE mc.date = latestMCDate][0] AS latestMC
     ${mafCompleteDateFilter && `WHERE ${mafCompleteDateFilter}`}
 
     // Get the most recent QcComplete event
     OPTIONAL MATCH (t)-[:HAS_EVENT]->(qc:QcComplete)
-    WITH s, latestSm, latestSt, initialPipelineRunDate, embargoDate, t, latestBC, latestMC, collect(qc) AS allQcCompletes, max(qc.date) AS latestQCDate
-    WITH s, latestSm, latestSt, initialPipelineRunDate, embargoDate, t, latestBC, latestMC, [qc IN allQcCompletes WHERE qc.date = latestQCDate][0] AS latestQC
+    WITH
+      s,
+      latestSm,
+      latestSt,
+      historicalCmoSampleNames,
+      initialPipelineRunDate,
+      embargoDate,
+      t,
+      latestBC,
+      latestMC,
+      collect(qc) AS allQcCompletes,
+      max(qc.date) AS latestQCDate
+    WITH
+      s,
+      latestSm,
+      latestSt,
+      historicalCmoSampleNames,
+      initialPipelineRunDate,
+      embargoDate,
+      t,
+      latestBC,
+      latestMC,
+      [qc IN allQcCompletes WHERE qc.date = latestQCDate][0] AS latestQC
     ${qcCompleteDateFilter && `WHERE ${qcCompleteDateFilter}`}
 
     WITH
       s,
       latestSm,
       latestSt,
+      historicalCmoSampleNames,
       initialPipelineRunDate,
       embargoDate,
       t,
@@ -1333,6 +1417,7 @@ async function queryDashboardSamples({
       latestSm.tissueLocation AS tissueLocation,
       latestSm.sex AS sex,
       apoc.convert.fromJsonMap(latestSm.cmoSampleIdFields).recipe AS recipe,
+      historicalCmoSampleNames,
 
       initialPipelineRunDate,
       embargoDate,
@@ -1422,32 +1507,6 @@ function getAddlOtCodesMatchingCtOrCtdVals({
     });
   }
   return Array.from(addlOncotreeCodes);
-}
-
-function buildSamplesSearchFilters({
-  variable,
-  fields,
-  searchVals,
-  useFuzzyMatch = true,
-}: {
-  variable: string;
-  fields: string[];
-  searchVals: string[];
-  useFuzzyMatch?: boolean;
-}): string {
-  if (useFuzzyMatch) {
-    return fields
-      .map(
-        (field) => `${variable}.${field} =~ '(?i).*(${searchVals.join("|")}).*'`
-      )
-      .join(" OR ");
-  } else {
-    return fields
-      .flatMap((field) =>
-        searchVals.map((val) => `${variable}.${field} = '${val}'`)
-      )
-      .join(" OR ");
-  }
 }
 
 /**
