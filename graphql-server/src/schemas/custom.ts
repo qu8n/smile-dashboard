@@ -227,6 +227,7 @@ export async function buildCustomSchema(ogm: OGM) {
       sex: String
       ## Custom fields
       recipe: String
+      altId: String
       historicalCmoSampleNames: String
       ## (sm:SampleMetadata)-[:HAS_STATUS]->(s:Status)
       validationReport: String
@@ -368,6 +369,7 @@ export async function buildCustomSchema(ogm: OGM) {
       sex: String
       ## Custom fields
       recipe: String
+      altId: String
       historicalCmoSampleNames: String
       ## (sm:SampleMetadata)-[:HAS_STATUS]->(s:Status)
       validationReport: String
@@ -1417,6 +1419,7 @@ async function queryDashboardSamples({
       latestSm.tissueLocation AS tissueLocation,
       latestSm.sex AS sex,
       apoc.convert.fromJsonMap(latestSm.cmoSampleIdFields).recipe AS recipe,
+      apoc.convert.fromJsonMap(latestSm.additionalProperties).altId AS altId,
       historicalCmoSampleNames,
 
       initialPipelineRunDate,

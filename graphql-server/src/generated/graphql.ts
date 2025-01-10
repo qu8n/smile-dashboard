@@ -1385,6 +1385,7 @@ export type DashboardRequest = {
 export type DashboardSample = {
   __typename?: "DashboardSample";
   accessLevel?: Maybe<Scalars["String"]>;
+  altId?: Maybe<Scalars["String"]>;
   baitSet?: Maybe<Scalars["String"]>;
   bamCompleteDate?: Maybe<Scalars["String"]>;
   bamCompleteStatus?: Maybe<Scalars["String"]>;
@@ -1429,6 +1430,7 @@ export type DashboardSample = {
 
 export type DashboardSampleInput = {
   accessLevel?: InputMaybe<Scalars["String"]>;
+  altId?: InputMaybe<Scalars["String"]>;
   baitSet?: InputMaybe<Scalars["String"]>;
   bamCompleteDate?: InputMaybe<Scalars["String"]>;
   bamCompleteStatus?: InputMaybe<Scalars["String"]>;
@@ -1444,6 +1446,7 @@ export type DashboardSampleInput = {
   custodianInformation?: InputMaybe<Scalars["String"]>;
   embargoDate?: InputMaybe<Scalars["String"]>;
   genePanel?: InputMaybe<Scalars["String"]>;
+  historicalCmoSampleNames?: InputMaybe<Scalars["String"]>;
   importDate: Scalars["String"];
   initialPipelineRunDate?: InputMaybe<Scalars["String"]>;
   investigatorSampleId?: InputMaybe<Scalars["String"]>;
@@ -10475,6 +10478,7 @@ export type DashboardSamplesQuery = {
     tissueLocation?: string | null;
     sex?: string | null;
     recipe?: string | null;
+    altId?: string | null;
     historicalCmoSampleNames?: string | null;
     validationReport?: string | null;
     validationStatus?: boolean | null;
@@ -10525,6 +10529,7 @@ export type DashboardSampleMetadataPartsFragment = {
   tissueLocation?: string | null;
   sex?: string | null;
   recipe?: string | null;
+  altId?: string | null;
   historicalCmoSampleNames?: string | null;
   validationReport?: string | null;
   validationStatus?: boolean | null;
@@ -10602,6 +10607,7 @@ export type UpdateDashboardSamplesMutation = {
     tissueLocation?: string | null;
     sex?: string | null;
     recipe?: string | null;
+    altId?: string | null;
     historicalCmoSampleNames?: string | null;
     validationReport?: string | null;
     validationStatus?: boolean | null;
@@ -10666,6 +10672,7 @@ export const DashboardSampleMetadataPartsFragmentDoc = gql`
     tissueLocation
     sex
     recipe
+    altId
     historicalCmoSampleNames
     validationReport
     validationStatus
