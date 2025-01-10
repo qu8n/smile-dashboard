@@ -309,6 +309,10 @@ export const SampleMetadataDetailsColumns: ColDef[] = [
     autoHeight: true,
   },
   {
+    field: "altId",
+    headerName: "Alt ID",
+  },
+  {
     field: "importDate",
     headerName: "Last Updated",
     ...getAgGridDateFilterConfigs(),
