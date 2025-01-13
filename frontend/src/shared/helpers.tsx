@@ -647,6 +647,10 @@ export const WesSampleDetailsColumns: ColDef[] = [
     headerName: "Primary ID",
   },
   {
+    field: "altId",
+    headerName: "Alt ID",
+  },
+  {
     field: "cmoSampleName",
     headerName: "CMO Sample Name",
   },
