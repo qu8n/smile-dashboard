@@ -1077,6 +1077,7 @@ function buildSamplesQueryBody({
       "latestSm.tissueLocation",
       "latestSm.sex",
       "latestSm.cmoSampleIdFields", // for searching recipe
+      "latestSm.additionalProperties", // for searching alt ID
       "t.costCenter",
       "t.billedBy",
       "t.custodianInformation",
