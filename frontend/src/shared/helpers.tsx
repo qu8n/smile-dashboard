@@ -278,6 +278,10 @@ export const SampleMetadataDetailsColumns: ColDef[] = [
     headerName: "Primary ID",
   },
   {
+    field: "altId",
+    headerName: "Alt ID",
+  },
+  {
     field: "revisable",
     headerName: "Status",
     cellRenderer: (params: ICellRendererParams) => {
@@ -307,10 +311,6 @@ export const SampleMetadataDetailsColumns: ColDef[] = [
     headerName: "Historical CMO Sample Names",
     wrapText: true,
     autoHeight: true,
-  },
-  {
-    field: "altId",
-    headerName: "Alt ID",
   },
   {
     field: "importDate",
