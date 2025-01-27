@@ -40,8 +40,13 @@ workflows:
   version: 2
   install_and_prettify:
     jobs:
-      - install
+      - install:
+          filters:
+            branches:
+              ignore: master
       - prettier:
           requires:
             - install
-
+          filters:
+            branches:
+              ignore: master
