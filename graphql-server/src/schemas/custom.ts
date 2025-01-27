@@ -1422,6 +1422,8 @@ async function queryDashboardSamples({
       apoc.convert.fromJsonMap(latestSm.cmoSampleIdFields).recipe AS recipe,
       apoc.convert.fromJsonMap(latestSm.additionalProperties).altId AS altId,
       historicalCmoSampleNames,
+      latestSt.validationReport AS validationReport,
+      latestSt.validationStatus AS validationStatus,
 
       initialPipelineRunDate,
       embargoDate,
