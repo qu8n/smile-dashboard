@@ -1157,7 +1157,7 @@ function buildSamplesQueryBody({
   );
   if (initialPipelineRunDateFilterObj) {
     initialPipelineRunDateFilter = buildCypherDateFilter({
-      dateVar: "initialPipelineRunDate",
+      dateVar: "t.initialPipelineRunDate",
       filter: JSON.parse(initialPipelineRunDateFilterObj.filter),
     });
   }
@@ -1168,7 +1168,7 @@ function buildSamplesQueryBody({
   );
   if (embargoDateFilterObj) {
     embargoDateFilter = buildCypherDateFilter({
-      dateVar: "embargoDate",
+      dateVar: "t.embargoDate",
       filter: JSON.parse(embargoDateFilterObj.filter),
     });
   }
@@ -1265,18 +1265,8 @@ function buildSamplesQueryBody({
     // Filters for Cohort Samples view, if applicable
     ${
       cohortContext ? "" : "OPTIONAL "
-    }MATCH (s)<-[:HAS_COHORT_SAMPLE]-(c:Cohort)-[:HAS_COHORT_COMPLETE]->(cc:CohortComplete)
+    }MATCH (s)<-[:HAS_COHORT_SAMPLE]-(c:Cohort)
     ${cohortContext && `WHERE ${cohortContext}`}
-
-    // Get the oldest CohortComplete date ("Initial Pipeline Run Date" in Cohort Samples view)
-    WITH
-      s,
-      latestSm,
-      latestSt,
-      historicalCmoSampleNames,
-      min(cc.date) AS initialPipelineRunDate,
-      toString(datetime(replace(min(cc.date), ' ', 'T')) + duration({ months: 18 })) AS embargoDate
-    ${cohortDateFilters && `WHERE ${cohortDateFilters}`}
 
     // Get Tempo data
     OPTIONAL MATCH (s)-[:HAS_TEMPO]->(t:Tempo)
@@ -1286,10 +1276,9 @@ function buildSamplesQueryBody({
       latestSm,
       latestSt,
       historicalCmoSampleNames,
-      initialPipelineRunDate,
-      embargoDate,
       t
     ${billedFilter && `WHERE ${billedFilter}`}
+    ${cohortDateFilters && `WHERE ${cohortDateFilters}`}
 
     // Get the most recent BamComplete event
     OPTIONAL MATCH (t)-[:HAS_EVENT]->(bc:BamComplete)
@@ -1298,8 +1287,6 @@ function buildSamplesQueryBody({
       latestSm,
       latestSt,
       historicalCmoSampleNames,
-      initialPipelineRunDate,
-      embargoDate,
       t,
       collect(bc) AS allBamCompletes,
       max(bc.date) AS latestBCDate
@@ -1308,8 +1295,6 @@ function buildSamplesQueryBody({
       latestSm,
       latestSt,
       historicalCmoSampleNames,
-      initialPipelineRunDate,
-      embargoDate,
       t,
       [bc IN allBamCompletes WHERE bc.date = latestBCDate][0] AS latestBC
     ${bamCompleteDateFilter && `WHERE ${bamCompleteDateFilter}`}
@@ -1321,8 +1306,6 @@ function buildSamplesQueryBody({
       latestSm,
       latestSt,
       historicalCmoSampleNames,
-      initialPipelineRunDate,
-      embargoDate,
       t,
       latestBC,
       collect(mc) AS allMafCompletes,
@@ -1332,8 +1315,6 @@ function buildSamplesQueryBody({
       latestSm,
       latestSt,
       historicalCmoSampleNames,
-      initialPipelineRunDate,
-      embargoDate,
       t,
       latestBC,
       [mc IN allMafCompletes WHERE mc.date = latestMCDate][0] AS latestMC
@@ -1346,8 +1327,6 @@ function buildSamplesQueryBody({
       latestSm,
       latestSt,
       historicalCmoSampleNames,
-      initialPipelineRunDate,
-      embargoDate,
       t,
       latestBC,
       latestMC,
@@ -1358,8 +1337,6 @@ function buildSamplesQueryBody({
       latestSm,
       latestSt,
       historicalCmoSampleNames,
-      initialPipelineRunDate,
-      embargoDate,
       t,
       latestBC,
       latestMC,
@@ -1371,8 +1348,6 @@ function buildSamplesQueryBody({
       latestSm,
       latestSt,
       historicalCmoSampleNames,
-      initialPipelineRunDate,
-      embargoDate,
       t,
       latestBC,
       latestMC,
@@ -1425,15 +1400,14 @@ async function queryDashboardSamples({
       latestSt.validationReport AS validationReport,
       latestSt.validationStatus AS validationStatus,
 
-      initialPipelineRunDate,
-      embargoDate,
-
       t.smileTempoId AS smileTempoId,
       t.billed AS billed,
       t.costCenter AS costCenter,
       t.billedBy AS billedBy,
       t.custodianInformation AS custodianInformation,
       t.accessLevel AS accessLevel,
+      t.initialPipelineRunDate AS initialPipelineRunDate,
+      t.embargoDate AS embargoDate,
 
       latestBC.date AS bamCompleteDate,
       latestBC.status AS bamCompleteStatus,
