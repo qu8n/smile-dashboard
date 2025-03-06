@@ -196,3 +196,15 @@ Command:
 ```
 docker-compose up -d
 ```
+
+### Making changes to the schema
+
+Pre-build steps:
+
+Confirm your [application.properties](./graphql-server/src/env/application.properties) is up to date and points to the desired NATS and neo4j servers.
+
+Steps: 
+1. Make desired changes to [custom.ts](./graphql-server/src/schemas/custom.ts)
+2. Build the backend `yarn build:backend`
+3. Launch the backend `yarn dev:backend`
+4. Run codegen in another window `yarn run codegen`
