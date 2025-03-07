@@ -122,6 +122,8 @@ export type BamCompleteTempoTemposHasEventNodeAggregateSelection = {
   billedBy: StringAggregateSelection;
   costCenter: StringAggregateSelection;
   custodianInformation: StringAggregateSelection;
+  embargoDate: StringAggregateSelection;
+  initialPipelineRunDate: StringAggregateSelection;
   smileTempoId: StringAggregateSelection;
 };
 
@@ -245,6 +247,36 @@ export type BamCompleteTemposHasEventNodeAggregationWhereInput = {
   custodianInformation_SHORTEST_LENGTH_GTE?: InputMaybe<Scalars["Int"]>;
   custodianInformation_SHORTEST_LENGTH_LT?: InputMaybe<Scalars["Int"]>;
   custodianInformation_SHORTEST_LENGTH_LTE?: InputMaybe<Scalars["Int"]>;
+  embargoDate_AVERAGE_LENGTH_EQUAL?: InputMaybe<Scalars["Float"]>;
+  embargoDate_AVERAGE_LENGTH_GT?: InputMaybe<Scalars["Float"]>;
+  embargoDate_AVERAGE_LENGTH_GTE?: InputMaybe<Scalars["Float"]>;
+  embargoDate_AVERAGE_LENGTH_LT?: InputMaybe<Scalars["Float"]>;
+  embargoDate_AVERAGE_LENGTH_LTE?: InputMaybe<Scalars["Float"]>;
+  embargoDate_LONGEST_LENGTH_EQUAL?: InputMaybe<Scalars["Int"]>;
+  embargoDate_LONGEST_LENGTH_GT?: InputMaybe<Scalars["Int"]>;
+  embargoDate_LONGEST_LENGTH_GTE?: InputMaybe<Scalars["Int"]>;
+  embargoDate_LONGEST_LENGTH_LT?: InputMaybe<Scalars["Int"]>;
+  embargoDate_LONGEST_LENGTH_LTE?: InputMaybe<Scalars["Int"]>;
+  embargoDate_SHORTEST_LENGTH_EQUAL?: InputMaybe<Scalars["Int"]>;
+  embargoDate_SHORTEST_LENGTH_GT?: InputMaybe<Scalars["Int"]>;
+  embargoDate_SHORTEST_LENGTH_GTE?: InputMaybe<Scalars["Int"]>;
+  embargoDate_SHORTEST_LENGTH_LT?: InputMaybe<Scalars["Int"]>;
+  embargoDate_SHORTEST_LENGTH_LTE?: InputMaybe<Scalars["Int"]>;
+  initialPipelineRunDate_AVERAGE_LENGTH_EQUAL?: InputMaybe<Scalars["Float"]>;
+  initialPipelineRunDate_AVERAGE_LENGTH_GT?: InputMaybe<Scalars["Float"]>;
+  initialPipelineRunDate_AVERAGE_LENGTH_GTE?: InputMaybe<Scalars["Float"]>;
+  initialPipelineRunDate_AVERAGE_LENGTH_LT?: InputMaybe<Scalars["Float"]>;
+  initialPipelineRunDate_AVERAGE_LENGTH_LTE?: InputMaybe<Scalars["Float"]>;
+  initialPipelineRunDate_LONGEST_LENGTH_EQUAL?: InputMaybe<Scalars["Int"]>;
+  initialPipelineRunDate_LONGEST_LENGTH_GT?: InputMaybe<Scalars["Int"]>;
+  initialPipelineRunDate_LONGEST_LENGTH_GTE?: InputMaybe<Scalars["Int"]>;
+  initialPipelineRunDate_LONGEST_LENGTH_LT?: InputMaybe<Scalars["Int"]>;
+  initialPipelineRunDate_LONGEST_LENGTH_LTE?: InputMaybe<Scalars["Int"]>;
+  initialPipelineRunDate_SHORTEST_LENGTH_EQUAL?: InputMaybe<Scalars["Int"]>;
+  initialPipelineRunDate_SHORTEST_LENGTH_GT?: InputMaybe<Scalars["Int"]>;
+  initialPipelineRunDate_SHORTEST_LENGTH_GTE?: InputMaybe<Scalars["Int"]>;
+  initialPipelineRunDate_SHORTEST_LENGTH_LT?: InputMaybe<Scalars["Int"]>;
+  initialPipelineRunDate_SHORTEST_LENGTH_LTE?: InputMaybe<Scalars["Int"]>;
   smileTempoId_AVERAGE_LENGTH_EQUAL?: InputMaybe<Scalars["Float"]>;
   smileTempoId_AVERAGE_LENGTH_GT?: InputMaybe<Scalars["Float"]>;
   smileTempoId_AVERAGE_LENGTH_GTE?: InputMaybe<Scalars["Float"]>;
@@ -1363,6 +1395,7 @@ export type DashboardRecordSort = {
 
 export type DashboardRequest = {
   __typename?: "DashboardRequest";
+  _total?: Maybe<Scalars["Int"]>;
   bicAnalysis?: Maybe<Scalars["Boolean"]>;
   dataAccessEmails?: Maybe<Scalars["String"]>;
   dataAnalystEmail?: Maybe<Scalars["String"]>;
@@ -1584,6 +1617,8 @@ export type MafCompleteTempoTemposHasEventNodeAggregateSelection = {
   billedBy: StringAggregateSelection;
   costCenter: StringAggregateSelection;
   custodianInformation: StringAggregateSelection;
+  embargoDate: StringAggregateSelection;
+  initialPipelineRunDate: StringAggregateSelection;
   smileTempoId: StringAggregateSelection;
 };
 
@@ -1707,6 +1742,36 @@ export type MafCompleteTemposHasEventNodeAggregationWhereInput = {
   custodianInformation_SHORTEST_LENGTH_GTE?: InputMaybe<Scalars["Int"]>;
   custodianInformation_SHORTEST_LENGTH_LT?: InputMaybe<Scalars["Int"]>;
   custodianInformation_SHORTEST_LENGTH_LTE?: InputMaybe<Scalars["Int"]>;
+  embargoDate_AVERAGE_LENGTH_EQUAL?: InputMaybe<Scalars["Float"]>;
+  embargoDate_AVERAGE_LENGTH_GT?: InputMaybe<Scalars["Float"]>;
+  embargoDate_AVERAGE_LENGTH_GTE?: InputMaybe<Scalars["Float"]>;
+  embargoDate_AVERAGE_LENGTH_LT?: InputMaybe<Scalars["Float"]>;
+  embargoDate_AVERAGE_LENGTH_LTE?: InputMaybe<Scalars["Float"]>;
+  embargoDate_LONGEST_LENGTH_EQUAL?: InputMaybe<Scalars["Int"]>;
+  embargoDate_LONGEST_LENGTH_GT?: InputMaybe<Scalars["Int"]>;
+  embargoDate_LONGEST_LENGTH_GTE?: InputMaybe<Scalars["Int"]>;
+  embargoDate_LONGEST_LENGTH_LT?: InputMaybe<Scalars["Int"]>;
+  embargoDate_LONGEST_LENGTH_LTE?: InputMaybe<Scalars["Int"]>;
+  embargoDate_SHORTEST_LENGTH_EQUAL?: InputMaybe<Scalars["Int"]>;
+  embargoDate_SHORTEST_LENGTH_GT?: InputMaybe<Scalars["Int"]>;
+  embargoDate_SHORTEST_LENGTH_GTE?: InputMaybe<Scalars["Int"]>;
+  embargoDate_SHORTEST_LENGTH_LT?: InputMaybe<Scalars["Int"]>;
+  embargoDate_SHORTEST_LENGTH_LTE?: InputMaybe<Scalars["Int"]>;
+  initialPipelineRunDate_AVERAGE_LENGTH_EQUAL?: InputMaybe<Scalars["Float"]>;
+  initialPipelineRunDate_AVERAGE_LENGTH_GT?: InputMaybe<Scalars["Float"]>;
+  initialPipelineRunDate_AVERAGE_LENGTH_GTE?: InputMaybe<Scalars["Float"]>;
+  initialPipelineRunDate_AVERAGE_LENGTH_LT?: InputMaybe<Scalars["Float"]>;
+  initialPipelineRunDate_AVERAGE_LENGTH_LTE?: InputMaybe<Scalars["Float"]>;
+  initialPipelineRunDate_LONGEST_LENGTH_EQUAL?: InputMaybe<Scalars["Int"]>;
+  initialPipelineRunDate_LONGEST_LENGTH_GT?: InputMaybe<Scalars["Int"]>;
+  initialPipelineRunDate_LONGEST_LENGTH_GTE?: InputMaybe<Scalars["Int"]>;
+  initialPipelineRunDate_LONGEST_LENGTH_LT?: InputMaybe<Scalars["Int"]>;
+  initialPipelineRunDate_LONGEST_LENGTH_LTE?: InputMaybe<Scalars["Int"]>;
+  initialPipelineRunDate_SHORTEST_LENGTH_EQUAL?: InputMaybe<Scalars["Int"]>;
+  initialPipelineRunDate_SHORTEST_LENGTH_GT?: InputMaybe<Scalars["Int"]>;
+  initialPipelineRunDate_SHORTEST_LENGTH_GTE?: InputMaybe<Scalars["Int"]>;
+  initialPipelineRunDate_SHORTEST_LENGTH_LT?: InputMaybe<Scalars["Int"]>;
+  initialPipelineRunDate_SHORTEST_LENGTH_LTE?: InputMaybe<Scalars["Int"]>;
   smileTempoId_AVERAGE_LENGTH_EQUAL?: InputMaybe<Scalars["Float"]>;
   smileTempoId_AVERAGE_LENGTH_GT?: InputMaybe<Scalars["Float"]>;
   smileTempoId_AVERAGE_LENGTH_GTE?: InputMaybe<Scalars["Float"]>;
@@ -1984,16 +2049,28 @@ export type MutationDeleteTemposArgs = {
 };
 
 export type MutationUpdateBamCompletesArgs = {
+  connect?: InputMaybe<BamCompleteConnectInput>;
+  create?: InputMaybe<BamCompleteRelationInput>;
+  delete?: InputMaybe<BamCompleteDeleteInput>;
+  disconnect?: InputMaybe<BamCompleteDisconnectInput>;
   update?: InputMaybe<BamCompleteUpdateInput>;
   where?: InputMaybe<BamCompleteWhere>;
 };
 
 export type MutationUpdateCohortCompletesArgs = {
+  connect?: InputMaybe<CohortCompleteConnectInput>;
+  create?: InputMaybe<CohortCompleteRelationInput>;
+  delete?: InputMaybe<CohortCompleteDeleteInput>;
+  disconnect?: InputMaybe<CohortCompleteDisconnectInput>;
   update?: InputMaybe<CohortCompleteUpdateInput>;
   where?: InputMaybe<CohortCompleteWhere>;
 };
 
 export type MutationUpdateCohortsArgs = {
+  connect?: InputMaybe<CohortConnectInput>;
+  create?: InputMaybe<CohortRelationInput>;
+  delete?: InputMaybe<CohortDeleteInput>;
+  disconnect?: InputMaybe<CohortDisconnectInput>;
   update?: InputMaybe<CohortUpdateInput>;
   where?: InputMaybe<CohortWhere>;
 };
@@ -2003,61 +2080,109 @@ export type MutationUpdateDashboardSamplesArgs = {
 };
 
 export type MutationUpdateMafCompletesArgs = {
+  connect?: InputMaybe<MafCompleteConnectInput>;
+  create?: InputMaybe<MafCompleteRelationInput>;
+  delete?: InputMaybe<MafCompleteDeleteInput>;
+  disconnect?: InputMaybe<MafCompleteDisconnectInput>;
   update?: InputMaybe<MafCompleteUpdateInput>;
   where?: InputMaybe<MafCompleteWhere>;
 };
 
 export type MutationUpdatePatientAliasesArgs = {
+  connect?: InputMaybe<PatientAliasConnectInput>;
+  create?: InputMaybe<PatientAliasRelationInput>;
+  delete?: InputMaybe<PatientAliasDeleteInput>;
+  disconnect?: InputMaybe<PatientAliasDisconnectInput>;
   update?: InputMaybe<PatientAliasUpdateInput>;
   where?: InputMaybe<PatientAliasWhere>;
 };
 
 export type MutationUpdatePatientsArgs = {
+  connect?: InputMaybe<PatientConnectInput>;
+  create?: InputMaybe<PatientRelationInput>;
+  delete?: InputMaybe<PatientDeleteInput>;
+  disconnect?: InputMaybe<PatientDisconnectInput>;
   update?: InputMaybe<PatientUpdateInput>;
   where?: InputMaybe<PatientWhere>;
 };
 
 export type MutationUpdateProjectsArgs = {
+  connect?: InputMaybe<ProjectConnectInput>;
+  create?: InputMaybe<ProjectRelationInput>;
+  delete?: InputMaybe<ProjectDeleteInput>;
+  disconnect?: InputMaybe<ProjectDisconnectInput>;
   update?: InputMaybe<ProjectUpdateInput>;
   where?: InputMaybe<ProjectWhere>;
 };
 
 export type MutationUpdateQcCompletesArgs = {
+  connect?: InputMaybe<QcCompleteConnectInput>;
+  create?: InputMaybe<QcCompleteRelationInput>;
+  delete?: InputMaybe<QcCompleteDeleteInput>;
+  disconnect?: InputMaybe<QcCompleteDisconnectInput>;
   update?: InputMaybe<QcCompleteUpdateInput>;
   where?: InputMaybe<QcCompleteWhere>;
 };
 
 export type MutationUpdateRequestMetadataArgs = {
+  connect?: InputMaybe<RequestMetadataConnectInput>;
+  create?: InputMaybe<RequestMetadataRelationInput>;
+  delete?: InputMaybe<RequestMetadataDeleteInput>;
+  disconnect?: InputMaybe<RequestMetadataDisconnectInput>;
   update?: InputMaybe<RequestMetadataUpdateInput>;
   where?: InputMaybe<RequestMetadataWhere>;
 };
 
 export type MutationUpdateRequestsArgs = {
+  connect?: InputMaybe<RequestConnectInput>;
+  create?: InputMaybe<RequestRelationInput>;
+  delete?: InputMaybe<RequestDeleteInput>;
+  disconnect?: InputMaybe<RequestDisconnectInput>;
   update?: InputMaybe<RequestUpdateInput>;
   where?: InputMaybe<RequestWhere>;
 };
 
 export type MutationUpdateSampleAliasesArgs = {
+  connect?: InputMaybe<SampleAliasConnectInput>;
+  create?: InputMaybe<SampleAliasRelationInput>;
+  delete?: InputMaybe<SampleAliasDeleteInput>;
+  disconnect?: InputMaybe<SampleAliasDisconnectInput>;
   update?: InputMaybe<SampleAliasUpdateInput>;
   where?: InputMaybe<SampleAliasWhere>;
 };
 
 export type MutationUpdateSampleMetadataArgs = {
+  connect?: InputMaybe<SampleMetadataConnectInput>;
+  create?: InputMaybe<SampleMetadataRelationInput>;
+  delete?: InputMaybe<SampleMetadataDeleteInput>;
+  disconnect?: InputMaybe<SampleMetadataDisconnectInput>;
   update?: InputMaybe<SampleMetadataUpdateInput>;
   where?: InputMaybe<SampleMetadataWhere>;
 };
 
 export type MutationUpdateSamplesArgs = {
+  connect?: InputMaybe<SampleConnectInput>;
+  create?: InputMaybe<SampleRelationInput>;
+  delete?: InputMaybe<SampleDeleteInput>;
+  disconnect?: InputMaybe<SampleDisconnectInput>;
   update?: InputMaybe<SampleUpdateInput>;
   where?: InputMaybe<SampleWhere>;
 };
 
 export type MutationUpdateStatusesArgs = {
+  connect?: InputMaybe<StatusConnectInput>;
+  create?: InputMaybe<StatusRelationInput>;
+  delete?: InputMaybe<StatusDeleteInput>;
+  disconnect?: InputMaybe<StatusDisconnectInput>;
   update?: InputMaybe<StatusUpdateInput>;
   where?: InputMaybe<StatusWhere>;
 };
 
 export type MutationUpdateTemposArgs = {
+  connect?: InputMaybe<TempoConnectInput>;
+  create?: InputMaybe<TempoRelationInput>;
+  delete?: InputMaybe<TempoDeleteInput>;
+  disconnect?: InputMaybe<TempoDisconnectInput>;
   update?: InputMaybe<TempoUpdateInput>;
   where?: InputMaybe<TempoWhere>;
 };
@@ -3418,6 +3543,8 @@ export type QcCompleteTempoTemposHasEventNodeAggregateSelection = {
   billedBy: StringAggregateSelection;
   costCenter: StringAggregateSelection;
   custodianInformation: StringAggregateSelection;
+  embargoDate: StringAggregateSelection;
+  initialPipelineRunDate: StringAggregateSelection;
   smileTempoId: StringAggregateSelection;
 };
 
@@ -3541,6 +3668,36 @@ export type QcCompleteTemposHasEventNodeAggregationWhereInput = {
   custodianInformation_SHORTEST_LENGTH_GTE?: InputMaybe<Scalars["Int"]>;
   custodianInformation_SHORTEST_LENGTH_LT?: InputMaybe<Scalars["Int"]>;
   custodianInformation_SHORTEST_LENGTH_LTE?: InputMaybe<Scalars["Int"]>;
+  embargoDate_AVERAGE_LENGTH_EQUAL?: InputMaybe<Scalars["Float"]>;
+  embargoDate_AVERAGE_LENGTH_GT?: InputMaybe<Scalars["Float"]>;
+  embargoDate_AVERAGE_LENGTH_GTE?: InputMaybe<Scalars["Float"]>;
+  embargoDate_AVERAGE_LENGTH_LT?: InputMaybe<Scalars["Float"]>;
+  embargoDate_AVERAGE_LENGTH_LTE?: InputMaybe<Scalars["Float"]>;
+  embargoDate_LONGEST_LENGTH_EQUAL?: InputMaybe<Scalars["Int"]>;
+  embargoDate_LONGEST_LENGTH_GT?: InputMaybe<Scalars["Int"]>;
+  embargoDate_LONGEST_LENGTH_GTE?: InputMaybe<Scalars["Int"]>;
+  embargoDate_LONGEST_LENGTH_LT?: InputMaybe<Scalars["Int"]>;
+  embargoDate_LONGEST_LENGTH_LTE?: InputMaybe<Scalars["Int"]>;
+  embargoDate_SHORTEST_LENGTH_EQUAL?: InputMaybe<Scalars["Int"]>;
+  embargoDate_SHORTEST_LENGTH_GT?: InputMaybe<Scalars["Int"]>;
+  embargoDate_SHORTEST_LENGTH_GTE?: InputMaybe<Scalars["Int"]>;
+  embargoDate_SHORTEST_LENGTH_LT?: InputMaybe<Scalars["Int"]>;
+  embargoDate_SHORTEST_LENGTH_LTE?: InputMaybe<Scalars["Int"]>;
+  initialPipelineRunDate_AVERAGE_LENGTH_EQUAL?: InputMaybe<Scalars["Float"]>;
+  initialPipelineRunDate_AVERAGE_LENGTH_GT?: InputMaybe<Scalars["Float"]>;
+  initialPipelineRunDate_AVERAGE_LENGTH_GTE?: InputMaybe<Scalars["Float"]>;
+  initialPipelineRunDate_AVERAGE_LENGTH_LT?: InputMaybe<Scalars["Float"]>;
+  initialPipelineRunDate_AVERAGE_LENGTH_LTE?: InputMaybe<Scalars["Float"]>;
+  initialPipelineRunDate_LONGEST_LENGTH_EQUAL?: InputMaybe<Scalars["Int"]>;
+  initialPipelineRunDate_LONGEST_LENGTH_GT?: InputMaybe<Scalars["Int"]>;
+  initialPipelineRunDate_LONGEST_LENGTH_GTE?: InputMaybe<Scalars["Int"]>;
+  initialPipelineRunDate_LONGEST_LENGTH_LT?: InputMaybe<Scalars["Int"]>;
+  initialPipelineRunDate_LONGEST_LENGTH_LTE?: InputMaybe<Scalars["Int"]>;
+  initialPipelineRunDate_SHORTEST_LENGTH_EQUAL?: InputMaybe<Scalars["Int"]>;
+  initialPipelineRunDate_SHORTEST_LENGTH_GT?: InputMaybe<Scalars["Int"]>;
+  initialPipelineRunDate_SHORTEST_LENGTH_GTE?: InputMaybe<Scalars["Int"]>;
+  initialPipelineRunDate_SHORTEST_LENGTH_LT?: InputMaybe<Scalars["Int"]>;
+  initialPipelineRunDate_SHORTEST_LENGTH_LTE?: InputMaybe<Scalars["Int"]>;
   smileTempoId_AVERAGE_LENGTH_EQUAL?: InputMaybe<Scalars["Float"]>;
   smileTempoId_AVERAGE_LENGTH_GT?: InputMaybe<Scalars["Float"]>;
   smileTempoId_AVERAGE_LENGTH_GTE?: InputMaybe<Scalars["Float"]>;
@@ -3654,7 +3811,6 @@ export type Query = {
   dashboardCohorts: Array<DashboardCohort>;
   dashboardPatientCount: DashboardRecordCount;
   dashboardPatients: Array<DashboardPatient>;
-  dashboardRequestCount: DashboardRecordCount;
   dashboardRequests: Array<DashboardRequest>;
   dashboardSampleCount: DashboardRecordCount;
   dashboardSamples: Array<DashboardSample>;
@@ -3769,11 +3925,6 @@ export type QueryDashboardPatientsArgs = {
   offset: Scalars["Int"];
   searchVals?: InputMaybe<Array<Scalars["String"]>>;
   sort: DashboardRecordSort;
-};
-
-export type QueryDashboardRequestCountArgs = {
-  filters?: InputMaybe<Array<DashboardRecordFilter>>;
-  searchVals?: InputMaybe<Array<Scalars["String"]>>;
 };
 
 export type QueryDashboardRequestsArgs = {
@@ -5625,7 +5776,7 @@ export type Sample = {
   sampleAliasesIsAliasAggregate?: Maybe<SampleSampleAliasSampleAliasesIsAliasAggregationSelection>;
   sampleAliasesIsAliasConnection: SampleSampleAliasesIsAliasConnection;
   sampleCategory: Scalars["String"];
-  sampleClass: Scalars["String"];
+  sampleClass?: Maybe<Scalars["String"]>;
   smileSampleId: Scalars["String"];
 };
 
@@ -5758,7 +5909,7 @@ export type SampleAlias = {
   isAliasSamplesAggregate?: Maybe<SampleAliasSampleIsAliasSamplesAggregationSelection>;
   isAliasSamplesConnection: SampleAliasIsAliasSamplesConnection;
   namespace: Scalars["String"];
-  value: Scalars["String"];
+  value?: Maybe<Scalars["String"]>;
 };
 
 export type SampleAliasIsAliasSamplesArgs = {
@@ -5800,7 +5951,7 @@ export type SampleAliasConnectWhere = {
 export type SampleAliasCreateInput = {
   isAliasSamples?: InputMaybe<SampleAliasIsAliasSamplesFieldInput>;
   namespace: Scalars["String"];
-  value: Scalars["String"];
+  value?: InputMaybe<Scalars["String"]>;
 };
 
 export type SampleAliasDeleteInput = {
@@ -6027,7 +6178,7 @@ export type SampleAliasWhere = {
   value?: InputMaybe<Scalars["String"]>;
   value_CONTAINS?: InputMaybe<Scalars["String"]>;
   value_ENDS_WITH?: InputMaybe<Scalars["String"]>;
-  value_IN?: InputMaybe<Array<Scalars["String"]>>;
+  value_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
   value_MATCHES?: InputMaybe<Scalars["String"]>;
   value_STARTS_WITH?: InputMaybe<Scalars["String"]>;
 };
@@ -6183,7 +6334,7 @@ export type SampleCreateInput = {
   revisable?: InputMaybe<Scalars["Boolean"]>;
   sampleAliasesIsAlias?: InputMaybe<SampleSampleAliasesIsAliasFieldInput>;
   sampleCategory: Scalars["String"];
-  sampleClass: Scalars["String"];
+  sampleClass?: InputMaybe<Scalars["String"]>;
   smileSampleId: Scalars["String"];
 };
 
@@ -6828,6 +6979,36 @@ export type SampleHasTempoTemposNodeAggregationWhereInput = {
   custodianInformation_SHORTEST_LENGTH_GTE?: InputMaybe<Scalars["Int"]>;
   custodianInformation_SHORTEST_LENGTH_LT?: InputMaybe<Scalars["Int"]>;
   custodianInformation_SHORTEST_LENGTH_LTE?: InputMaybe<Scalars["Int"]>;
+  embargoDate_AVERAGE_LENGTH_EQUAL?: InputMaybe<Scalars["Float"]>;
+  embargoDate_AVERAGE_LENGTH_GT?: InputMaybe<Scalars["Float"]>;
+  embargoDate_AVERAGE_LENGTH_GTE?: InputMaybe<Scalars["Float"]>;
+  embargoDate_AVERAGE_LENGTH_LT?: InputMaybe<Scalars["Float"]>;
+  embargoDate_AVERAGE_LENGTH_LTE?: InputMaybe<Scalars["Float"]>;
+  embargoDate_LONGEST_LENGTH_EQUAL?: InputMaybe<Scalars["Int"]>;
+  embargoDate_LONGEST_LENGTH_GT?: InputMaybe<Scalars["Int"]>;
+  embargoDate_LONGEST_LENGTH_GTE?: InputMaybe<Scalars["Int"]>;
+  embargoDate_LONGEST_LENGTH_LT?: InputMaybe<Scalars["Int"]>;
+  embargoDate_LONGEST_LENGTH_LTE?: InputMaybe<Scalars["Int"]>;
+  embargoDate_SHORTEST_LENGTH_EQUAL?: InputMaybe<Scalars["Int"]>;
+  embargoDate_SHORTEST_LENGTH_GT?: InputMaybe<Scalars["Int"]>;
+  embargoDate_SHORTEST_LENGTH_GTE?: InputMaybe<Scalars["Int"]>;
+  embargoDate_SHORTEST_LENGTH_LT?: InputMaybe<Scalars["Int"]>;
+  embargoDate_SHORTEST_LENGTH_LTE?: InputMaybe<Scalars["Int"]>;
+  initialPipelineRunDate_AVERAGE_LENGTH_EQUAL?: InputMaybe<Scalars["Float"]>;
+  initialPipelineRunDate_AVERAGE_LENGTH_GT?: InputMaybe<Scalars["Float"]>;
+  initialPipelineRunDate_AVERAGE_LENGTH_GTE?: InputMaybe<Scalars["Float"]>;
+  initialPipelineRunDate_AVERAGE_LENGTH_LT?: InputMaybe<Scalars["Float"]>;
+  initialPipelineRunDate_AVERAGE_LENGTH_LTE?: InputMaybe<Scalars["Float"]>;
+  initialPipelineRunDate_LONGEST_LENGTH_EQUAL?: InputMaybe<Scalars["Int"]>;
+  initialPipelineRunDate_LONGEST_LENGTH_GT?: InputMaybe<Scalars["Int"]>;
+  initialPipelineRunDate_LONGEST_LENGTH_GTE?: InputMaybe<Scalars["Int"]>;
+  initialPipelineRunDate_LONGEST_LENGTH_LT?: InputMaybe<Scalars["Int"]>;
+  initialPipelineRunDate_LONGEST_LENGTH_LTE?: InputMaybe<Scalars["Int"]>;
+  initialPipelineRunDate_SHORTEST_LENGTH_EQUAL?: InputMaybe<Scalars["Int"]>;
+  initialPipelineRunDate_SHORTEST_LENGTH_GT?: InputMaybe<Scalars["Int"]>;
+  initialPipelineRunDate_SHORTEST_LENGTH_GTE?: InputMaybe<Scalars["Int"]>;
+  initialPipelineRunDate_SHORTEST_LENGTH_LT?: InputMaybe<Scalars["Int"]>;
+  initialPipelineRunDate_SHORTEST_LENGTH_LTE?: InputMaybe<Scalars["Int"]>;
   smileTempoId_AVERAGE_LENGTH_EQUAL?: InputMaybe<Scalars["Float"]>;
   smileTempoId_AVERAGE_LENGTH_GT?: InputMaybe<Scalars["Float"]>;
   smileTempoId_AVERAGE_LENGTH_GTE?: InputMaybe<Scalars["Float"]>;
@@ -6894,7 +7075,7 @@ export type SampleMetadata = {
   samplesHasMetadata: Array<Sample>;
   samplesHasMetadataAggregate?: Maybe<SampleMetadataSampleSamplesHasMetadataAggregationSelection>;
   samplesHasMetadataConnection: SampleMetadataSamplesHasMetadataConnection;
-  sex: Scalars["String"];
+  sex?: Maybe<Scalars["String"]>;
   species: Scalars["String"];
   tissueLocation?: Maybe<Scalars["String"]>;
   tubeId?: Maybe<Scalars["String"]>;
@@ -7015,7 +7196,7 @@ export type SampleMetadataCreateInput = {
   sampleOrigin?: InputMaybe<Scalars["String"]>;
   sampleType: Scalars["String"];
   samplesHasMetadata?: InputMaybe<SampleMetadataSamplesHasMetadataFieldInput>;
-  sex: Scalars["String"];
+  sex?: InputMaybe<Scalars["String"]>;
   species: Scalars["String"];
   tissueLocation?: InputMaybe<Scalars["String"]>;
   tubeId?: InputMaybe<Scalars["String"]>;
@@ -7575,7 +7756,7 @@ export type SampleMetadataWhere = {
   sex?: InputMaybe<Scalars["String"]>;
   sex_CONTAINS?: InputMaybe<Scalars["String"]>;
   sex_ENDS_WITH?: InputMaybe<Scalars["String"]>;
-  sex_IN?: InputMaybe<Array<Scalars["String"]>>;
+  sex_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
   sex_MATCHES?: InputMaybe<Scalars["String"]>;
   sex_STARTS_WITH?: InputMaybe<Scalars["String"]>;
   species?: InputMaybe<Scalars["String"]>;
@@ -8316,6 +8497,8 @@ export type SampleTempoHasTempoTemposNodeAggregateSelection = {
   billedBy: StringAggregateSelection;
   costCenter: StringAggregateSelection;
   custodianInformation: StringAggregateSelection;
+  embargoDate: StringAggregateSelection;
+  initialPipelineRunDate: StringAggregateSelection;
   smileTempoId: StringAggregateSelection;
 };
 
@@ -8465,7 +8648,7 @@ export type SampleWhere = {
   sampleClass?: InputMaybe<Scalars["String"]>;
   sampleClass_CONTAINS?: InputMaybe<Scalars["String"]>;
   sampleClass_ENDS_WITH?: InputMaybe<Scalars["String"]>;
-  sampleClass_IN?: InputMaybe<Array<Scalars["String"]>>;
+  sampleClass_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
   sampleClass_MATCHES?: InputMaybe<Scalars["String"]>;
   sampleClass_STARTS_WITH?: InputMaybe<Scalars["String"]>;
   smileSampleId?: InputMaybe<Scalars["String"]>;
@@ -9347,11 +9530,12 @@ export type StringAggregateSelection = {
 
 export type Tempo = {
   __typename?: "Tempo";
-  accessLevel?: Maybe<Scalars["String"]>;
+  accessLevel: Scalars["String"];
   billed?: Maybe<Scalars["Boolean"]>;
   billedBy?: Maybe<Scalars["String"]>;
   costCenter?: Maybe<Scalars["String"]>;
   custodianInformation?: Maybe<Scalars["String"]>;
+  embargoDate?: Maybe<Scalars["String"]>;
   hasEventBamCompletes: Array<BamComplete>;
   hasEventBamCompletesAggregate?: Maybe<TempoBamCompleteHasEventBamCompletesAggregationSelection>;
   hasEventBamCompletesConnection: TempoHasEventBamCompletesConnection;
@@ -9361,6 +9545,7 @@ export type Tempo = {
   hasEventQcCompletes: Array<QcComplete>;
   hasEventQcCompletesAggregate?: Maybe<TempoQcCompleteHasEventQcCompletesAggregationSelection>;
   hasEventQcCompletesConnection: TempoHasEventQcCompletesConnection;
+  initialPipelineRunDate?: Maybe<Scalars["String"]>;
   samplesHasTempo: Array<Sample>;
   samplesHasTempoAggregate?: Maybe<TempoSampleSamplesHasTempoAggregationSelection>;
   samplesHasTempoConnection: TempoSamplesHasTempoConnection;
@@ -9450,6 +9635,8 @@ export type TempoAggregateSelection = {
   costCenter: StringAggregateSelection;
   count: Scalars["Int"];
   custodianInformation: StringAggregateSelection;
+  embargoDate: StringAggregateSelection;
+  initialPipelineRunDate: StringAggregateSelection;
   smileTempoId: StringAggregateSelection;
 };
 
@@ -9483,14 +9670,16 @@ export type TempoConnectWhere = {
 };
 
 export type TempoCreateInput = {
-  accessLevel?: InputMaybe<Scalars["String"]>;
+  accessLevel: Scalars["String"];
   billed?: InputMaybe<Scalars["Boolean"]>;
   billedBy?: InputMaybe<Scalars["String"]>;
   costCenter?: InputMaybe<Scalars["String"]>;
   custodianInformation?: InputMaybe<Scalars["String"]>;
+  embargoDate?: InputMaybe<Scalars["String"]>;
   hasEventBamCompletes?: InputMaybe<TempoHasEventBamCompletesFieldInput>;
   hasEventMafCompletes?: InputMaybe<TempoHasEventMafCompletesFieldInput>;
   hasEventQcCompletes?: InputMaybe<TempoHasEventQcCompletesFieldInput>;
+  initialPipelineRunDate?: InputMaybe<Scalars["String"]>;
   samplesHasTempo?: InputMaybe<TempoSamplesHasTempoFieldInput>;
   smileTempoId: Scalars["String"];
 };
@@ -10114,6 +10303,8 @@ export type TempoSort = {
   billedBy?: InputMaybe<SortDirection>;
   costCenter?: InputMaybe<SortDirection>;
   custodianInformation?: InputMaybe<SortDirection>;
+  embargoDate?: InputMaybe<SortDirection>;
+  initialPipelineRunDate?: InputMaybe<SortDirection>;
   smileTempoId?: InputMaybe<SortDirection>;
 };
 
@@ -10123,6 +10314,7 @@ export type TempoUpdateInput = {
   billedBy?: InputMaybe<Scalars["String"]>;
   costCenter?: InputMaybe<Scalars["String"]>;
   custodianInformation?: InputMaybe<Scalars["String"]>;
+  embargoDate?: InputMaybe<Scalars["String"]>;
   hasEventBamCompletes?: InputMaybe<
     Array<TempoHasEventBamCompletesUpdateFieldInput>
   >;
@@ -10132,6 +10324,7 @@ export type TempoUpdateInput = {
   hasEventQcCompletes?: InputMaybe<
     Array<TempoHasEventQcCompletesUpdateFieldInput>
   >;
+  initialPipelineRunDate?: InputMaybe<Scalars["String"]>;
   samplesHasTempo?: InputMaybe<Array<TempoSamplesHasTempoUpdateFieldInput>>;
   smileTempoId?: InputMaybe<Scalars["String"]>;
 };
@@ -10143,7 +10336,7 @@ export type TempoWhere = {
   accessLevel?: InputMaybe<Scalars["String"]>;
   accessLevel_CONTAINS?: InputMaybe<Scalars["String"]>;
   accessLevel_ENDS_WITH?: InputMaybe<Scalars["String"]>;
-  accessLevel_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  accessLevel_IN?: InputMaybe<Array<Scalars["String"]>>;
   accessLevel_MATCHES?: InputMaybe<Scalars["String"]>;
   accessLevel_STARTS_WITH?: InputMaybe<Scalars["String"]>;
   billed?: InputMaybe<Scalars["Boolean"]>;
@@ -10165,6 +10358,12 @@ export type TempoWhere = {
   custodianInformation_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
   custodianInformation_MATCHES?: InputMaybe<Scalars["String"]>;
   custodianInformation_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  embargoDate?: InputMaybe<Scalars["String"]>;
+  embargoDate_CONTAINS?: InputMaybe<Scalars["String"]>;
+  embargoDate_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  embargoDate_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  embargoDate_MATCHES?: InputMaybe<Scalars["String"]>;
+  embargoDate_STARTS_WITH?: InputMaybe<Scalars["String"]>;
   hasEventBamCompletesAggregate?: InputMaybe<TempoHasEventBamCompletesAggregateInput>;
   /** Return Tempos where all of the related TempoHasEventBamCompletesConnections match this filter */
   hasEventBamCompletesConnection_ALL?: InputMaybe<TempoHasEventBamCompletesConnectionWhere>;
@@ -10216,6 +10415,12 @@ export type TempoWhere = {
   hasEventQcCompletes_SINGLE?: InputMaybe<QcCompleteWhere>;
   /** Return Tempos where some of the related QcCompletes match this filter */
   hasEventQcCompletes_SOME?: InputMaybe<QcCompleteWhere>;
+  initialPipelineRunDate?: InputMaybe<Scalars["String"]>;
+  initialPipelineRunDate_CONTAINS?: InputMaybe<Scalars["String"]>;
+  initialPipelineRunDate_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  initialPipelineRunDate_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  initialPipelineRunDate_MATCHES?: InputMaybe<Scalars["String"]>;
+  initialPipelineRunDate_STARTS_WITH?: InputMaybe<Scalars["String"]>;
   samplesHasTempoAggregate?: InputMaybe<TempoSamplesHasTempoAggregateInput>;
   /** Return Tempos where all of the related TempoSamplesHasTempoConnections match this filter */
   samplesHasTempoConnection_ALL?: InputMaybe<TempoSamplesHasTempoConnectionWhere>;
@@ -10359,10 +10564,6 @@ export type DashboardRequestsQueryVariables = Exact<{
 
 export type DashboardRequestsQuery = {
   __typename?: "Query";
-  dashboardRequestCount: {
-    __typename?: "DashboardRecordCount";
-    totalCount: number;
-  };
   dashboardRequests: Array<{
     __typename?: "DashboardRequest";
     igoRequestId: string;
@@ -10383,6 +10584,7 @@ export type DashboardRequestsQuery = {
     bicAnalysis?: boolean | null;
     isCmoRequest?: boolean | null;
     otherContactEmails?: string | null;
+    _total?: number | null;
   }>;
 };
 
@@ -10731,9 +10933,6 @@ export const DashboardRequestsDocument = gql`
     $limit: Int!
     $offset: Int!
   ) {
-    dashboardRequestCount(searchVals: $searchVals, filters: $filters) {
-      totalCount
-    }
     dashboardRequests(
       searchVals: $searchVals
       filters: $filters
@@ -10759,6 +10958,7 @@ export const DashboardRequestsDocument = gql`
       bicAnalysis
       isCmoRequest
       otherContactEmails
+      _total
     }
   }
 `;

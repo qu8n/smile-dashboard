@@ -5,9 +5,6 @@ query DashboardRequests(
   $limit: Int!
   $offset: Int!
 ) {
-  dashboardRequestCount(searchVals: $searchVals, filters: $filters) {
-    totalCount
-  }
   dashboardRequests(
     searchVals: $searchVals
     filters: $filters
@@ -33,6 +30,7 @@ query DashboardRequests(
     bicAnalysis
     isCmoRequest
     otherContactEmails
+    _total
   }
 }
 
