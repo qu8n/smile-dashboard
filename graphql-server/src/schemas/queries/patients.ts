@@ -17,12 +17,12 @@ export function buildPatientsQueryBody({
 
   if (searchVals?.length) {
     const fieldsToSearch = [
-      "smilePatientId",
-      "cmoPatientId",
-      "dmpPatientId",
-      "cmoSampleIds",
-      "consentPartA",
-      "consentPartC",
+      "resultz.smilePatientId",
+      "resultz.cmoPatientId",
+      "resultz.dmpPatientId",
+      "resultz.cmoSampleIds",
+      "resultz.consentPartA",
+      "resultz.consentPartC",
     ];
     const searchFilters = fieldsToSearch
       .map((field) => `${field} =~ '(?i).*(${searchVals.join("|")}).*'`)
@@ -66,57 +66,40 @@ export function buildPatientsQueryBody({
     // Get patient aliases
     OPTIONAL MATCH (p)<-[:IS_ALIAS]-(cmoPa:PatientAlias {namespace: 'cmoId'})
     OPTIONAL MATCH (p)<-[:IS_ALIAS]-(dmpPa:PatientAlias {namespace: 'dmpId'})
-
-    // Get the latest SampleMetadata of each Sample
-    OPTIONAL MATCH (p)-[:HAS_SAMPLE]->(s:Sample)-[:HAS_METADATA]->(sm:SampleMetadata)
+    OPTIONAL MATCH (p)-[:HAS_SAMPLE]->(s:Sample)
     WITH
       p,
       cmoPa,
       dmpPa,
       s,
-      collect(sm) AS allSampleMetadata,
-      max(sm.importDate) AS latestImportDate
+      COLLECT {
+      	MATCH (s)-[:HAS_METADATA]->(sm:SampleMetadata) 
+        RETURN ({primaryId: sm.primaryId, importDate: sm.importDate, consentPartA: apoc.convert.getJsonProperty(sm, "additionalProperties", "$.consent-parta"), consentPartC: apoc.convert.getJsonProperty(sm, "additionalProperties", "$.consent-partc")}) as smResult ORDER BY sm.importDate DESC LIMIT 1
+      } as smList
+    WITH 
+    	p.smilePatientId as smilePatientId, cmoPa.value AS cmoPatientId, dmpPa.value AS dmpPatientId, COUNT(s) as totalSampleCount, smList[0] AS latestSm
     WITH
-      p,
-      cmoPa,
-      dmpPa,
-      s,
-      latestImportDate,
-      [sm IN allSampleMetadata WHERE sm.importDate = latestImportDate][0] AS latestSm
-
-    // Get the CMO Sample IDs and additionalProperties JSONs from SampleMetadata
-    WITH
-      p,
-      cmoPa,
-      dmpPa,
-      s,
-      latestImportDate,
-      CASE
-        WHEN latestSm.cmoSampleName IS NOT NULL THEN latestSm.cmoSampleName
-            ELSE latestSm.primaryId
-        END AS cmoSampleId,
-      apoc.convert.fromJsonMap(latestSm.additionalProperties) AS latestSmAddlPropsJson
-
-    // Implode/aggregate the different arrays
-    WITH
-      p,
-      cmoPa,
-      dmpPa,
-      max(latestImportDate) AS latestImportDate,
-      collect(s) AS samples,
-      collect(cmoSampleId) AS cmoSampleIds,
-      collect(latestSmAddlPropsJson.\`consent-parta\`) AS consentPartAs,
-      collect(latestSmAddlPropsJson.\`consent-partc\`) AS consentPartCs
-
-    WITH
-      p.smilePatientId AS smilePatientId,
-      cmoPa.value AS cmoPatientId,
-      dmpPa.value AS dmpPatientId,
-      latestImportDate,
-      size(samples) AS totalSampleCount,
-      apoc.text.join([id IN cmoSampleIds WHERE id <> ''], ', ') AS cmoSampleIds,
-      consentPartAs[0] AS consentPartA,
-      consentPartCs[0] AS consentPartC
+      smilePatientId,
+      cmoPatientId,
+      dmpPatientId,
+      totalSampleCount,
+      latestSm
+    WITH 
+      ({
+      smilePatientId: smilePatientId,
+      cmoPatientId: cmoPatientId,
+      dmpPatientId: dmpPatientId}) as tempNode,
+      COUNT(latestSm) AS totalSampleCount,
+      apoc.text.join(COLLECT(latestSm.primaryId), ", ") as cmoSampleIds,
+      apoc.coll.max(COLLECT(latestSm.importDate)) as importDate,
+      collect(DISTINCT latestSm.consentPartA) as consentPartA,
+      collect(DISTINCT latestSm.consentPartC) as consentPartC
+    WITH 
+      tempNode{.*, totalSampleCount: totalSampleCount, cmoSampleIds: cmoSampleIds, consentPartA: consentPartA[0], consentPartC: consentPartC[0], importDate: importDate} 
+    UNWIND tempNode AS unsortedTempNode
+    WITH COUNT(unsortedTempNode) as total, COLLECT(unsortedTempNode) as results
+    UNWIND results as resultz
+    WITH resultz, total
 
     ${filtersAsCypher}
   `;
@@ -137,13 +120,7 @@ export async function queryDashboardPatients({
   const cypherQuery = `
     ${queryBody}
     RETURN
-      smilePatientId,
-      cmoPatientId,
-      dmpPatientId,
-      totalSampleCount,
-      cmoSampleIds,
-      consentPartA,
-      consentPartC
+      resultz{.*, _total: total}
     ORDER BY ${getNeo4jCustomSort(sort)}
     SKIP ${offset}
     LIMIT ${limit}
@@ -152,26 +129,10 @@ export async function queryDashboardPatients({
   const session = neo4jDriver.session();
   try {
     const result = await session.run(cypherQuery);
-    return result.records.map((record) => record.toObject());
+    return result.records.map((record) => {
+      return record.toObject().resultz;
+    });
   } catch (error) {
     console.error("Error with queryDashboardPatients:", error);
-  }
-}
-export async function queryDashboardPatientCount({
-  queryBody,
-}: {
-  queryBody: string;
-}) {
-  const cypherQuery = `
-    ${queryBody}
-    RETURN count(smilePatientId) AS totalCount
-  `;
-
-  const session = neo4jDriver.session();
-  try {
-    const result = await session.run(cypherQuery);
-    return result.records[0].toObject();
-  } catch (error) {
-    console.error("Error with queryDashboardPatientCount:", error);
   }
 }

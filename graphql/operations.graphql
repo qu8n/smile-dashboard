@@ -41,9 +41,6 @@ query DashboardPatients(
   $limit: Int!
   $offset: Int!
 ) {
-  dashboardPatientCount(searchVals: $searchVals, filters: $filters) {
-    totalCount
-  }
   dashboardPatients(
     searchVals: $searchVals
     filters: $filters
@@ -58,6 +55,7 @@ query DashboardPatients(
     cmoSampleIds
     consentPartA
     consentPartC
+    _total
   }
 }
 

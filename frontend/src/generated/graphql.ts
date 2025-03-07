@@ -1363,6 +1363,7 @@ export type DashboardCohort = {
 
 export type DashboardPatient = {
   __typename?: "DashboardPatient";
+  _total?: Maybe<Scalars["Int"]>;
   cmoPatientId?: Maybe<Scalars["String"]>;
   cmoSampleIds?: Maybe<Scalars["String"]>;
   consentPartA?: Maybe<Scalars["String"]>;
@@ -3809,7 +3810,6 @@ export type Query = {
   cohortsConnection: CohortsConnection;
   dashboardCohortCount: DashboardRecordCount;
   dashboardCohorts: Array<DashboardCohort>;
-  dashboardPatientCount: DashboardRecordCount;
   dashboardPatients: Array<DashboardPatient>;
   dashboardRequests: Array<DashboardRequest>;
   dashboardSampleCount: DashboardRecordCount;
@@ -3912,11 +3912,6 @@ export type QueryDashboardCohortsArgs = {
   offset: Scalars["Int"];
   searchVals?: InputMaybe<Array<Scalars["String"]>>;
   sort: DashboardRecordSort;
-};
-
-export type QueryDashboardPatientCountArgs = {
-  filters?: InputMaybe<Array<DashboardRecordFilter>>;
-  searchVals?: InputMaybe<Array<Scalars["String"]>>;
 };
 
 export type QueryDashboardPatientsArgs = {
@@ -5776,7 +5771,7 @@ export type Sample = {
   sampleAliasesIsAliasAggregate?: Maybe<SampleSampleAliasSampleAliasesIsAliasAggregationSelection>;
   sampleAliasesIsAliasConnection: SampleSampleAliasesIsAliasConnection;
   sampleCategory: Scalars["String"];
-  sampleClass?: Maybe<Scalars["String"]>;
+  sampleClass: Scalars["String"];
   smileSampleId: Scalars["String"];
 };
 
@@ -5909,7 +5904,7 @@ export type SampleAlias = {
   isAliasSamplesAggregate?: Maybe<SampleAliasSampleIsAliasSamplesAggregationSelection>;
   isAliasSamplesConnection: SampleAliasIsAliasSamplesConnection;
   namespace: Scalars["String"];
-  value?: Maybe<Scalars["String"]>;
+  value: Scalars["String"];
 };
 
 export type SampleAliasIsAliasSamplesArgs = {
@@ -5951,7 +5946,7 @@ export type SampleAliasConnectWhere = {
 export type SampleAliasCreateInput = {
   isAliasSamples?: InputMaybe<SampleAliasIsAliasSamplesFieldInput>;
   namespace: Scalars["String"];
-  value?: InputMaybe<Scalars["String"]>;
+  value: Scalars["String"];
 };
 
 export type SampleAliasDeleteInput = {
@@ -6178,7 +6173,7 @@ export type SampleAliasWhere = {
   value?: InputMaybe<Scalars["String"]>;
   value_CONTAINS?: InputMaybe<Scalars["String"]>;
   value_ENDS_WITH?: InputMaybe<Scalars["String"]>;
-  value_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  value_IN?: InputMaybe<Array<Scalars["String"]>>;
   value_MATCHES?: InputMaybe<Scalars["String"]>;
   value_STARTS_WITH?: InputMaybe<Scalars["String"]>;
 };
@@ -6334,7 +6329,7 @@ export type SampleCreateInput = {
   revisable?: InputMaybe<Scalars["Boolean"]>;
   sampleAliasesIsAlias?: InputMaybe<SampleSampleAliasesIsAliasFieldInput>;
   sampleCategory: Scalars["String"];
-  sampleClass?: InputMaybe<Scalars["String"]>;
+  sampleClass: Scalars["String"];
   smileSampleId: Scalars["String"];
 };
 
@@ -8648,7 +8643,7 @@ export type SampleWhere = {
   sampleClass?: InputMaybe<Scalars["String"]>;
   sampleClass_CONTAINS?: InputMaybe<Scalars["String"]>;
   sampleClass_ENDS_WITH?: InputMaybe<Scalars["String"]>;
-  sampleClass_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  sampleClass_IN?: InputMaybe<Array<Scalars["String"]>>;
   sampleClass_MATCHES?: InputMaybe<Scalars["String"]>;
   sampleClass_STARTS_WITH?: InputMaybe<Scalars["String"]>;
   smileSampleId?: InputMaybe<Scalars["String"]>;
@@ -10598,10 +10593,6 @@ export type DashboardPatientsQueryVariables = Exact<{
 
 export type DashboardPatientsQuery = {
   __typename?: "Query";
-  dashboardPatientCount: {
-    __typename?: "DashboardRecordCount";
-    totalCount: number;
-  };
   dashboardPatients: Array<{
     __typename?: "DashboardPatient";
     smilePatientId: string;
@@ -10611,6 +10602,7 @@ export type DashboardPatientsQuery = {
     cmoSampleIds?: string | null;
     consentPartA?: string | null;
     consentPartC?: string | null;
+    _total?: number | null;
   }>;
 };
 
@@ -11025,9 +11017,6 @@ export const DashboardPatientsDocument = gql`
     $limit: Int!
     $offset: Int!
   ) {
-    dashboardPatientCount(searchVals: $searchVals, filters: $filters) {
-      totalCount
-    }
     dashboardPatients(
       searchVals: $searchVals
       filters: $filters
@@ -11042,6 +11031,7 @@ export const DashboardPatientsDocument = gql`
       cmoSampleIds
       consentPartA
       consentPartC
+      _total
     }
   }
 `;

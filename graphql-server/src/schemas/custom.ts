@@ -18,7 +18,6 @@ import { connect, headers, StringCodec } from "nats";
 import { OGM } from "@neo4j/graphql-ogm";
 import {
   buildPatientsQueryBody,
-  queryDashboardPatientCount,
   queryDashboardPatients,
 } from "./queries/patients";
 import {
@@ -66,13 +65,6 @@ export async function buildCustomSchema(ogm: OGM) {
           limit,
           offset,
         });
-      },
-      async dashboardPatientCount(
-        _source: undefined,
-        { searchVals, filters }: QueryDashboardPatientCountArgs
-      ) {
-        const queryBody = buildPatientsQueryBody({ searchVals, filters });
-        return await queryDashboardPatientCount({ queryBody });
       },
 
       async dashboardCohorts(
@@ -510,6 +502,7 @@ const typeDefs = gql`
     cmoSampleIds: String
     consentPartA: String
     consentPartC: String
+    _total: Int
   }
 
   type DashboardCohort {
@@ -627,10 +620,6 @@ const typeDefs = gql`
       limit: Int!
       offset: Int!
     ): [DashboardPatient!]!
-    dashboardPatientCount(
-      searchVals: [String!]
-      filters: [DashboardRecordFilter!]
-    ): DashboardRecordCount!
 
     dashboardCohorts(
       searchVals: [String!]
