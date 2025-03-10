@@ -1349,6 +1349,7 @@ export type CreateTemposMutationResponse = {
 
 export type DashboardCohort = {
   __typename?: "DashboardCohort";
+  _total?: Maybe<Scalars["Int"]>;
   billed?: Maybe<Scalars["String"]>;
   cohortId: Scalars["String"];
   endUsers?: Maybe<Scalars["String"]>;
@@ -3808,7 +3809,6 @@ export type Query = {
   cohorts: Array<Cohort>;
   cohortsAggregate: CohortAggregateSelection;
   cohortsConnection: CohortsConnection;
-  dashboardCohortCount: DashboardRecordCount;
   dashboardCohorts: Array<DashboardCohort>;
   dashboardPatients: Array<DashboardPatient>;
   dashboardRequests: Array<DashboardRequest>;
@@ -3899,11 +3899,6 @@ export type QueryCohortsConnectionArgs = {
   first?: InputMaybe<Scalars["Int"]>;
   sort?: InputMaybe<Array<InputMaybe<CohortSort>>>;
   where?: InputMaybe<CohortWhere>;
-};
-
-export type QueryDashboardCohortCountArgs = {
-  filters?: InputMaybe<Array<DashboardRecordFilter>>;
-  searchVals?: InputMaybe<Array<Scalars["String"]>>;
 };
 
 export type QueryDashboardCohortsArgs = {
@@ -10616,11 +10611,6 @@ export type DashboardCohortsQueryVariables = Exact<{
 
 export type DashboardCohortsQuery = {
   __typename?: "Query";
-  dashboardCohortCount: {
-    __typename?: "DashboardRecordCount";
-    totalCount: number;
-    uniqueSampleCount?: number | null;
-  };
   dashboardCohorts: Array<{
     __typename?: "DashboardCohort";
     cohortId: string;
@@ -10633,6 +10623,7 @@ export type DashboardCohortsQuery = {
     projectSubtitle?: string | null;
     status?: string | null;
     type?: string | null;
+    _total?: number | null;
   }>;
 };
 
@@ -11098,10 +11089,6 @@ export const DashboardCohortsDocument = gql`
     $limit: Int!
     $offset: Int!
   ) {
-    dashboardCohortCount(searchVals: $searchVals, filters: $filters) {
-      totalCount
-      uniqueSampleCount
-    }
     dashboardCohorts(
       searchVals: $searchVals
       filters: $filters
@@ -11119,6 +11106,7 @@ export const DashboardCohortsDocument = gql`
       projectSubtitle
       status
       type
+      _total
     }
   }
 `;

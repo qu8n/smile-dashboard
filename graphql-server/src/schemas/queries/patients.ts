@@ -74,10 +74,20 @@ export function buildPatientsQueryBody({
       s,
       COLLECT {
       	MATCH (s)-[:HAS_METADATA]->(sm:SampleMetadata) 
-        RETURN ({primaryId: sm.primaryId, importDate: sm.importDate, consentPartA: apoc.convert.getJsonProperty(sm, "additionalProperties", "$.consent-parta"), consentPartC: apoc.convert.getJsonProperty(sm, "additionalProperties", "$.consent-partc")}) as smResult ORDER BY sm.importDate DESC LIMIT 1
-      } as smList
+        RETURN ({
+            primaryId: sm.primaryId, 
+            importDate: sm.importDate, 
+            consentPartA: apoc.convert.getJsonProperty(sm, "additionalProperties", "$.consent-parta"), 
+            consentPartC: apoc.convert.getJsonProperty(sm, "additionalProperties", "$.consent-partc")
+          }) 
+          AS smResult ORDER BY sm.importDate DESC LIMIT 1
+      } AS smList
     WITH 
-    	p.smilePatientId as smilePatientId, cmoPa.value AS cmoPatientId, dmpPa.value AS dmpPatientId, COUNT(s) as totalSampleCount, smList[0] AS latestSm
+        p.smilePatientId AS smilePatientId, 
+        cmoPa.value AS cmoPatientId, 
+        dmpPa.value AS dmpPatientId, 
+        COUNT(s) AS totalSampleCount, 
+        smList[0] AS latestSm
     WITH
       smilePatientId,
       cmoPatientId,
@@ -88,17 +98,17 @@ export function buildPatientsQueryBody({
       ({
       smilePatientId: smilePatientId,
       cmoPatientId: cmoPatientId,
-      dmpPatientId: dmpPatientId}) as tempNode,
+      dmpPatientId: dmpPatientId}) AS tempNode,
       COUNT(latestSm) AS totalSampleCount,
-      apoc.text.join(COLLECT(latestSm.primaryId), ", ") as cmoSampleIds,
-      apoc.coll.max(COLLECT(latestSm.importDate)) as importDate,
-      collect(DISTINCT latestSm.consentPartA) as consentPartA,
-      collect(DISTINCT latestSm.consentPartC) as consentPartC
+      apoc.text.join(COLLECT(latestSm.primaryId), ", ") AS cmoSampleIds,
+      apoc.coll.max(COLLECT(latestSm.importDate)) AS importDate,
+      collect(DISTINCT latestSm.consentPartA) AS consentPartA,
+      collect(DISTINCT latestSm.consentPartC) AS consentPartC
     WITH 
       tempNode{.*, totalSampleCount: totalSampleCount, cmoSampleIds: cmoSampleIds, consentPartA: consentPartA[0], consentPartC: consentPartC[0], importDate: importDate} 
     UNWIND tempNode AS unsortedTempNode
-    WITH COUNT(unsortedTempNode) as total, COLLECT(unsortedTempNode) as results
-    UNWIND results as resultz
+    WITH COUNT(unsortedTempNode) AS total, COLLECT(unsortedTempNode) AS results
+    UNWIND results AS resultz
     WITH resultz, total
 
     ${filtersAsCypher}

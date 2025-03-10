@@ -5,8 +5,6 @@ import {
   AgGridSortDirection,
   DashboardSampleInput,
   QueryDashboardCohortsArgs,
-  QueryDashboardCohortCountArgs,
-  QueryDashboardPatientCountArgs,
   QueryDashboardPatientsArgs,
   QueryDashboardRequestsArgs,
   QueryDashboardSampleCountArgs,
@@ -23,7 +21,6 @@ import {
 import {
   buildCohortsQueryBody,
   queryDashboardCohorts,
-  queryDashboardCohortCount,
 } from "./queries/cohorts";
 import {
   buildSamplesQueryBody,
@@ -78,13 +75,6 @@ export async function buildCustomSchema(ogm: OGM) {
           limit,
           offset,
         });
-      },
-      async dashboardCohortCount(
-        _source: undefined,
-        { searchVals, filters }: QueryDashboardCohortCountArgs
-      ) {
-        const queryBody = buildCohortsQueryBody({ searchVals, filters });
-        return await queryDashboardCohortCount({ queryBody });
       },
 
       async dashboardSamples(
@@ -516,6 +506,7 @@ const typeDefs = gql`
     projectSubtitle: String
     status: String
     type: String
+    _total: Int
   }
 
   type DashboardSample {
@@ -628,10 +619,6 @@ const typeDefs = gql`
       limit: Int!
       offset: Int!
     ): [DashboardCohort!]!
-    dashboardCohortCount(
-      searchVals: [String!]
-      filters: [DashboardRecordFilter!]
-    ): DashboardRecordCount!
 
     dashboardSamples(
       searchVals: [String!]

@@ -66,10 +66,6 @@ query DashboardCohorts(
   $limit: Int!
   $offset: Int!
 ) {
-  dashboardCohortCount(searchVals: $searchVals, filters: $filters) {
-    totalCount
-    uniqueSampleCount
-  }
   dashboardCohorts(
     searchVals: $searchVals
     filters: $filters
@@ -87,6 +83,7 @@ query DashboardCohorts(
     projectSubtitle
     status
     type
+    _total
   }
 }
 

@@ -21,15 +21,15 @@ export function buildCohortsQueryBody({
 
   if (searchVals?.length) {
     const fieldsToSearch = [
-      "cohortId",
-      "billed",
-      "initialCohortDeliveryDate",
-      "endUsers",
-      "pmUsers",
-      "projectTitle",
-      "projectSubtitle",
-      "status",
-      "type",
+      "resultz.cohortId",
+      "resultz.billed",
+      "resultz.initialCohortDeliveryDate",
+      "resultz.endUsers",
+      "resultz.pmUsers",
+      "resultz.projectTitle",
+      "resultz.projectSubtitle",
+      "resultz.status",
+      "resultz.type",
     ];
     const searchFilters = fieldsToSearch
       .map((field) => `${field} =~ '(?i).*(${searchVals.join("|")}).*'`)
@@ -66,33 +66,34 @@ export function buildCohortsQueryBody({
   const filtersAsCypher = buildFinalCypherFilter({ queryFilters });
 
   const cohortsQueryBody = `
-    MATCH (c:Cohort)-[:HAS_COHORT_COMPLETE]->(cc:CohortComplete)
+    MATCH (c:Cohort)-[:HAS_COHORT_COMPLETE]->(cc: CohortComplete)
     OPTIONAL MATCH (c)-[:HAS_COHORT_SAMPLE]->(s:Sample)-[:HAS_TEMPO]->(t:Tempo)
 
     // Aggregate Tempo and CohortComplete data
     WITH
-        c.cohortId AS cohortId,
+        c,
         s,
+		apoc.coll.min(collect(cc.date)) AS initialCohortDeliveryDate,
+        apoc.coll.max(collect(cc.date)) AS latestCohortDeliveryDate,
         count(t) AS tempoCount,
-        count(CASE WHEN t.billed = true THEN 1 END) AS billedCount,
-        collect(cc) AS cohortCompletes,
-        max(cc.date) AS latestCohortDeliveryDate,
-        min(cc.date) AS initialCohortDeliveryDate
+        count(CASE WHEN t.billed = true THEN 1 END) AS billedCount
 
     // Aggregate Sample data and get the latest CohortComplete
     WITH
+    	c,
+    	initialCohortDeliveryDate,
+    	latestCohortDeliveryDate,
         collect(s.smileSampleId) AS sampleIdsByCohort,
-        cohortId,
         size(collect(s)) AS totalSampleCount,
         tempoCount,
-        billedCount,
-        initialCohortDeliveryDate,
-        [cc IN cohortCompletes WHERE cc.date = latestCohortDeliveryDate][0] AS latestCC
-
+        billedCount
+        
     // Calculate values for the "Billed" column
     WITH
+    	c,
+    	initialCohortDeliveryDate,
+    	latestCohortDeliveryDate,
         sampleIdsByCohort,
-        cohortId,
         totalSampleCount,
         CASE totalSampleCount
             WHEN 0 THEN "Yes"
@@ -101,22 +102,39 @@ export function buildCohortsQueryBody({
                     WHEN true THEN "Yes"
                     ELSE "No"
                 END
-        END AS billed,
-        initialCohortDeliveryDate,
-        latestCC
-
+        END AS billed
+	
     WITH
-        sampleIdsByCohort,
-        cohortId,
-        totalSampleCount,
-        billed,
+        c,
         initialCohortDeliveryDate,
-        latestCC.endUsers AS endUsers,
-        latestCC.pmUsers AS pmUsers,
-        latestCC.projectTitle AS projectTitle,
-        latestCC.projectSubtitle AS projectSubtitle,
-        latestCC.status AS status,
-        latestCC.type AS type
+    	latestCohortDeliveryDate,
+        sampleIdsByCohort,
+        totalSampleCount,
+        billed
+
+    WITH ({
+    	cohortId: c.cohortId,
+    	sampleIdsByCohort: sampleIdsByCohort,
+    	totalSampleCount: totalSampleCount,
+    	billed: billed,
+    	initialCohortDeliveryDate: initialCohortDeliveryDate,
+    	latestCohortDeliveryDate: latestCohortDeliveryDate
+    }) as tempNode, 
+    COLLECT {
+    	MATCH (c)-[:HAS_COHORT_COMPLETE]->(cc: CohortComplete)
+    	RETURN cc ORDER BY cc.date DESC LIMIT 1
+    } as latestCC
+    
+    WITH 
+    	tempNode,
+    	latestCC[0] as latestCC
+    
+    WITH
+      tempNode{.*, endUsers: latestCC.endUsers, pmUsers: latestCC.pmUsers, projectTitle: latestCC.projectTitle, projectSubtitle: latestCC.projectSubtitle, status: latestCC.status, type: latestCC.type}
+    UNWIND tempNode AS unsortedTempNode
+    WITH COUNT(unsortedTempNode) AS total, COLLECT(unsortedTempNode) AS results
+    UNWIND results AS resultz
+    WITH resultz, total
 
     ${filtersAsCypher}
   `;
@@ -137,16 +155,7 @@ export async function queryDashboardCohorts({
   const cypherQuery = `
     ${queryBody}
     RETURN
-      cohortId,
-      totalSampleCount,
-      billed,
-      initialCohortDeliveryDate,
-      endUsers,
-      pmUsers,
-      projectTitle,
-      projectSubtitle,
-      status,
-      type
+      resultz{.*, _total: total}
 
     ORDER BY ${getNeo4jCustomSort(sort)}
     SKIP ${offset}
@@ -156,28 +165,10 @@ export async function queryDashboardCohorts({
   const session = neo4jDriver.session();
   try {
     const result = await session.run(cypherQuery);
-    return result.records.map((record) => record.toObject());
+    return result.records.map((record) => {
+      return record.toObject().resultz;
+    });
   } catch (error) {
     console.error("Error with queryDashboardCohorts:", error);
-  }
-}
-export async function queryDashboardCohortCount({
-  queryBody,
-}: {
-  queryBody: string;
-}) {
-  const cypherQuery = `
-    ${queryBody}
-    RETURN
-      count(cohortId) AS totalCount,
-      size(apoc.coll.toSet(apoc.coll.flatten(collect(sampleIdsByCohort)))) AS uniqueSampleCount
-  `;
-
-  const session = neo4jDriver.session();
-  try {
-    const result = await session.run(cypherQuery);
-    return result.records[0].toObject();
-  } catch (error) {
-    console.error("Error with queryDashboardCohortCount:", error);
   }
 }
