@@ -17,12 +17,12 @@ export function buildPatientsQueryBody({
 
   if (searchVals?.length) {
     const fieldsToSearch = [
-      "resultz.smilePatientId",
-      "resultz.cmoPatientId",
-      "resultz.dmpPatientId",
-      "resultz.cmoSampleIds",
-      "resultz.consentPartA",
-      "resultz.consentPartC",
+      "tempNode.smilePatientId",
+      "tempNode.cmoPatientId",
+      "tempNode.dmpPatientId",
+      "tempNode.cmoSampleIds",
+      "tempNode.consentPartA",
+      "tempNode.consentPartC",
     ];
     const searchFilters = fieldsToSearch
       .map((field) => `${field} =~ '(?i).*(${searchVals.join("|")}).*'`)
@@ -106,10 +106,6 @@ export function buildPatientsQueryBody({
       collect(DISTINCT latestSm.consentPartC) AS consentPartC
     WITH 
       tempNode{.*, totalSampleCount: totalSampleCount, cmoSampleIds: cmoSampleIds, consentPartA: consentPartA[0], consentPartC: consentPartC[0], importDate: importDate} 
-    UNWIND tempNode AS unsortedTempNode
-    WITH COUNT(unsortedTempNode) AS total, COLLECT(unsortedTempNode) AS results
-    UNWIND results AS resultz
-    WITH resultz, total
 
     ${filtersAsCypher}
   `;
@@ -129,6 +125,11 @@ export async function queryDashboardPatients({
 }) {
   const cypherQuery = `
     ${queryBody}
+    UNWIND tempNode AS unsortedTempNode
+    WITH COUNT(unsortedTempNode) AS total, COLLECT(unsortedTempNode) AS results
+    UNWIND results AS resultz
+    WITH resultz, total
+
     RETURN
       resultz{.*, _total: total}
     ORDER BY ${getNeo4jCustomSort(sort)}

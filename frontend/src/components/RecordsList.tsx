@@ -95,7 +95,7 @@ export default function RecordsList({
     0,
     -1
   )}Count`;
-  const recordCount = data?.[recordsQueryName]?._total;
+  const recordCount = data?.[recordsQueryName][0]._total;
   const uniqueSampleCount = data?.[recordsQueryName]?.uniqueSampleCount;
   console.log(data);
 
@@ -266,7 +266,7 @@ export default function RecordsList({
         setCustomSearchStates={setCustomSearchStates}
         onSearch={async (userSearchVal) => refreshData(userSearchVal)}
         matchingResultsCount={`${
-          recordCount !== undefined ? recordCount.toLocaleString() : "Loading"
+          recordCount !== undefined ? recordCount?.toLocaleString() : "Loading"
         } matching ${dataName} ${
           uniqueSampleCount
             ? `(${uniqueSampleCount.toLocaleString()} unique samples)`

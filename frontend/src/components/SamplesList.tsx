@@ -96,7 +96,7 @@ export default function SamplesList({
     });
 
   const samples = data?.dashboardSamples;
-  const sampleCount = data?.dashboardSampleCount.totalCount;
+  const sampleCount = data?.dashboardSamples[0]._total;
 
   const getServerSideDatasource = useCallback(
     ({ userSearchVal, sampleContext }) => {
@@ -135,7 +135,7 @@ export default function SamplesList({
             .then((result) => {
               params.success({
                 rowData: result.data.dashboardSamples,
-                rowCount: result.data.dashboardSampleCount.totalCount,
+                rowCount: result.data.dashboardSamples.length,
               });
             })
             .catch((error) => {
@@ -274,7 +274,7 @@ export default function SamplesList({
       getRows: (params: IServerSideGetRowsParams) => {
         params.success({
           rowData: optimisticSamples!,
-          rowCount: sampleCount,
+          rowCount: sampleCount!,
         });
       },
     };
@@ -353,7 +353,7 @@ export default function SamplesList({
         setUserSearchVal={setUserSearchVal}
         onSearch={(userSearchVal) => refreshData(userSearchVal)}
         matchingResultsCount={`${
-          sampleCount !== undefined ? sampleCount.toLocaleString() : "Loading"
+          sampleCount !== undefined ? sampleCount?.toLocaleString() : "Loading"
         } matching samples`}
         onDownload={() => {
           if (sampleCount && sampleCount > MAX_ROWS_EXPORT) {

@@ -21,23 +21,23 @@ export function buildRequestsQueryBody({
 
   if (searchVals?.length) {
     const fieldsToSearch = [
-      "resultz.igoRequestId",
-      "resultz.igoProjectId",
-      "resultz.importDate",
-      "resultz.projectManagerName",
-      "resultz.investigatorName",
-      "resultz.investigatorEmail",
-      "resultz.piEmail",
-      "resultz.dataAnalystName",
-      "resultz.dataAnalystEmail",
-      "resultz.genePanel",
-      "resultz.labHeadName",
-      "resultz.labHeadEmail",
-      "resultz.qcAccessEmails",
-      "resultz.dataAccessEmails",
-      "resultz.bicAnalysis",
-      "resultz.isCmoRequest",
-      "resultz.otherContactEmails",
+      "tempNode.igoRequestId",
+      "tempNode.igoProjectId",
+      "tempNode.importDate",
+      "tempNode.projectManagerName",
+      "tempNode.investigatorName",
+      "tempNode.investigatorEmail",
+      "tempNode.piEmail",
+      "tempNode.dataAnalystName",
+      "tempNode.dataAnalystEmail",
+      "tempNode.genePanel",
+      "tempNode.labHeadName",
+      "tempNode.labHeadEmail",
+      "tempNode.qcAccessEmails",
+      "tempNode.dataAccessEmails",
+      "tempNode.bicAnalysis",
+      "tempNode.isCmoRequest",
+      "tempNode.otherContactEmails",
     ];
     const searchFilters = fieldsToSearch
       .map((field) => `${field} =~ '(?i).*(${searchVals.join("|")}).*'`)
@@ -115,10 +115,6 @@ export function buildRequestsQueryBody({
         isCmoRequest: r.isCmoRequest,
         otherContactEmails: r.otherContactEmails}) as tempNode
     WITH tempNode
-    UNWIND tempNode AS unsortedTempNode
-    WITH COUNT(unsortedTempNode) as total, COLLECT(unsortedTempNode) as results
-    UNWIND results as resultz
-    WITH resultz, total
 
     ${filtersAsCypher}
   `;
@@ -138,6 +134,10 @@ export async function queryDashboardRequests({
 }) {
   const cypherQuery = `
     ${queryBody}
+    UNWIND tempNode AS unsortedTempNode
+    WITH COUNT(unsortedTempNode) as total, COLLECT(unsortedTempNode) as results
+    UNWIND results as resultz
+    WITH resultz, total
     RETURN
       resultz{.*, _total: total}
     ORDER BY ${getNeo4jCustomSort(sort)}

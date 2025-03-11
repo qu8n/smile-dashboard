@@ -29,25 +29,25 @@ export function buildSamplesQueryBody({
   let searchFilters = "";
   if (searchVals?.length) {
     const fieldsToSearch = [
-      "latestSm.primaryId",
-      "latestSm.cmoSampleName",
-      "latestSm.importDate",
-      "latestSm.cmoPatientId",
-      "latestSm.investigatorSampleId",
-      "latestSm.sampleType",
-      "latestSm.species",
-      "latestSm.genePanel",
-      "latestSm.baitSet",
-      "latestSm.preservation",
-      "latestSm.tumorOrNormal",
-      "latestSm.sampleClass",
-      "latestSm.oncotreeCode",
-      "latestSm.collectionYear",
-      "latestSm.sampleOrigin",
-      "latestSm.tissueLocation",
-      "latestSm.sex",
-      "latestSm.cmoSampleIdFields", // for searching recipe
-      "latestSm.additionalProperties", // for searching alt ID
+      "tempNode.primaryId",
+      "tempNode.cmoSampleName",
+      "tempNode.importDate",
+      "tempNode.cmoPatientId",
+      "tempNode.investigatorSampleId",
+      "tempNode.sampleType",
+      "tempNode.species",
+      "tempNode.genePanel",
+      "tempNode.baitSet",
+      "tempNode.preservation",
+      "tempNode.tumorOrNormal",
+      "tempNode.sampleClass",
+      "tempNode.oncotreeCode",
+      "tempNode.collectionYear",
+      "tempNode.sampleOrigin",
+      "tempNode.tissueLocation",
+      "tempNode.sex",
+      "tempNode.recipe", // for searching recipe
+      "tempNode.altId", // for searching alt ID
       "t.costCenter",
       "t.billedBy",
       "t.custodianInformation",
@@ -61,7 +61,7 @@ export function buildSamplesQueryBody({
       "latestQC.result",
       "latestQC.reason",
       "latestQC.status",
-      "historicalCmoSampleNames",
+      "tempNode.historicalCmoSampleNames",
     ];
     searchFilters += fieldsToSearch
       .map((field) => `${field} =~ '(?i).*(${searchVals.join("|")}).*'`)
@@ -190,25 +190,33 @@ export function buildSamplesQueryBody({
   // '| sm.cmoSampleName' with '| {cmoSampleName: sm.cmoSampleName, importDate: sm.importDate}'
   const samplesQueryBody = `
     // Get Sample and the most recent SampleMetadata
-    MATCH (s:Sample)-[:HAS_METADATA]->(sm:SampleMetadata)
+    MATCH (s:Sample)
     WITH
       s,
-      collect(sm) AS allSampleMetadata,
-      max(sm.importDate) AS latestImportDate
+      COLLECT {
+      	MATCH (s)-[:HAS_METADATA]->(sm:SampleMetadata)
+      	RETURN sm ORDER BY sm.importDate DESC LIMIT 1
+      } as latestSm
+    
     WITH
       s,
-      allSampleMetadata,
-      [sm IN allSampleMetadata WHERE sm.importDate = latestImportDate][0] AS latestSm
+      latestSm[0] as latestSm,
+      COLLECT {
+      	MATCH (s)-[:HAS_METADATA]->(sm:SampleMetadata)
+      	RETURN ({
+      		cmoSampleName: sm.cmoSampleName,
+      		importDate: sm.importDate
+      	})
+      } AS sampleIdsList
 
-    // Get a list of historical CMO sample labels
     WITH
       s,
       latestSm,
       apoc.text.join(
         apoc.coll.toSet(
-          [sm IN apoc.coll.sortMaps(allSampleMetadata, "importDate")
-            WHERE sm.cmoSampleName <> latestSm.cmoSampleName AND sm.cmoSampleName <> ""
-            | sm.cmoSampleName + " (" + sm.importDate + ")"
+          [sid IN apoc.coll.sortMaps(sampleIdsList, "importDate")
+            WHERE sid.cmoSampleName <> latestSm.cmoSampleName AND sid.cmoSampleName <> ""
+            | sid.cmoSampleName + " (" + sid.importDate + ")"
           ]
         ),
       ", ") AS historicalCmoSampleNames
@@ -250,78 +258,89 @@ export function buildSamplesQueryBody({
     ${billedFilter && `WHERE ${billedFilter}`}
     ${cohortDateFilters && `WHERE ${cohortDateFilters}`}
 
-    // Get the most recent BamComplete event
-    OPTIONAL MATCH (t)-[:HAS_EVENT]->(bc:BamComplete)
+    // Get the most recent Tempo events
     WITH
       s,
       latestSm,
       latestSt,
       historicalCmoSampleNames,
       t,
-      collect(bc) AS allBamCompletes,
-      max(bc.date) AS latestBCDate
-    WITH
-      s,
-      latestSm,
-      latestSt,
-      historicalCmoSampleNames,
-      t,
-      [bc IN allBamCompletes WHERE bc.date = latestBCDate][0] AS latestBC
+      COLLECT {
+        OPTIONAL MATCH (t)-[:HAS_EVENT]->(bc:BamComplete)
+        RETURN bc ORDER BY bc.date DESC LIMIT 1
+      } as latestBC,
+      COLLECT {
+        OPTIONAL MATCH (t)-[:HAS_EVENT]->(mc:MafComplete)
+        RETURN mc ORDER BY mc.date DESC LIMIT 1
+      } as latestMC,
+      COLLECT {
+        OPTIONAL MATCH (t)-[:HAS_EVENT]->(qc:QcComplete)
+        RETURN qc ORDER BY qc.date DESC LIMIT 1
+      } as latestQC
+
     ${bamCompleteDateFilter && `WHERE ${bamCompleteDateFilter}`}
-
-    // Get the most recent MafComplete event
-    OPTIONAL MATCH (t)-[:HAS_EVENT]->(mc:MafComplete)
-    WITH
-      s,
-      latestSm,
-      latestSt,
-      historicalCmoSampleNames,
-      t,
-      latestBC,
-      collect(mc) AS allMafCompletes,
-      max(mc.date) AS latestMCDate
-    WITH
-      s,
-      latestSm,
-      latestSt,
-      historicalCmoSampleNames,
-      t,
-      latestBC,
-      [mc IN allMafCompletes WHERE mc.date = latestMCDate][0] AS latestMC
     ${mafCompleteDateFilter && `WHERE ${mafCompleteDateFilter}`}
-
-    // Get the most recent QcComplete event
-    OPTIONAL MATCH (t)-[:HAS_EVENT]->(qc:QcComplete)
-    WITH
-      s,
-      latestSm,
-      latestSt,
-      historicalCmoSampleNames,
-      t,
-      latestBC,
-      latestMC,
-      collect(qc) AS allQcCompletes,
-      max(qc.date) AS latestQCDate
-    WITH
-      s,
-      latestSm,
-      latestSt,
-      historicalCmoSampleNames,
-      t,
-      latestBC,
-      latestMC,
-      [qc IN allQcCompletes WHERE qc.date = latestQCDate][0] AS latestQC
     ${qcCompleteDateFilter && `WHERE ${qcCompleteDateFilter}`}
 
     WITH
       s,
       latestSm,
-      latestSt,
       historicalCmoSampleNames,
+      latestSt,
       t,
-      latestBC,
-      latestMC,
-      latestQC
+      latestBC[0] as latestBC,
+      latestMC[0] as latestMC,
+      latestQC[0] as latestQC
+    
+    WITH
+      ({
+        smileSampleId: s.smileSampleId, 
+        revisable: s.revisable,
+        
+        primaryId: latestSm.primaryId,
+        cmoSampleName: latestSm.cmoSampleName,
+        importDate: latestSm.importDate,
+        historicalCmoSampleNames: historicalCmoSampleNames,
+        validationReport: latestSt.validationReport,
+        validationStatus: latestSt.validationStatus,
+        cmoPatientId: latestSm.cmoPatientId,
+        investigatorSampleId: latestSm.investigatorSampleId,
+        sampleType: latestSm.sampleType,
+        species: latestSm.species,
+        genePanel: latestSm.genePanel,
+        baitSet: latestSm.baitSet,
+        preservation: latestSm.preservation,
+        tumorOrNormal: latestSm.tumorOrNormal,
+        sampleClass: latestSm.sampleClass,
+        oncotreeCode: latestSm.oncotreeCode,
+        collectionYear: latestSm.collectionYear,
+        sampleOrigin: latestSm.sampleOrigin,
+        tissueLocation: latestSm.tissueLocation,
+        sex: latestSm.sex,
+        recipe: apoc.convert.fromJsonMap(latestSm.cmoSampleIdFields).recipe,
+        altId: apoc.convert.fromJsonMap(latestSm.additionalProperties).altId,
+        validationReport: latestSt.validationReport,
+        validationStatus: latestSt.validationStatus,
+        
+        smileTempoId: t.smileTempoId,
+        billed: t.billed,
+        costCenter: t.costCenter,
+        billedBy: t.billedBy,
+        custodianInformation: t.custodianInformation,
+        accessLevel: t.accessLevel,
+        initialPipelineRunDate: t.initialPipelineRunDate,
+        embargoDate: t.embargoDate,
+        bamCompleteDate: latestBC.date,
+        bamCompleteStatus: latestBC.status,
+        mafCompleteDate: latestMC.date,
+        mafCompleteNormalPrimaryId: latestMC.normalPrimaryId,
+        mafCompleteStatus: latestMC.status,
+        qcCompleteDate: latestQC.date,
+        qcCompleteResult: latestQC.result,
+        qcCompleteReason: latestQC.reason,
+        qcCompleteStatus: latestQC.status 
+        }) AS tempNode
+
     ${searchFilters && `WHERE ${searchFilters}`}
   `;
 
@@ -342,53 +361,13 @@ export async function queryDashboardSamples({
 }) {
   const cypherQuery = `
     ${queryBody}
+    UNWIND tempNode AS unsortedTempNode
+    WITH COUNT(unsortedTempNode) AS total, COLLECT(unsortedTempNode) AS results
+    UNWIND results AS resultz
+    WITH resultz, total
+
     RETURN
-      s.smileSampleId AS smileSampleId,
-      s.revisable AS revisable,
-
-      latestSm.primaryId AS primaryId,
-      latestSm.cmoSampleName AS cmoSampleName,
-      latestSm.importDate AS importDate,
-      latestSm.cmoPatientId AS cmoPatientId,
-      latestSm.investigatorSampleId AS investigatorSampleId,
-      latestSm.sampleType AS sampleType,
-      latestSm.species AS species,
-      latestSm.genePanel AS genePanel,
-      latestSm.baitSet AS baitSet,
-      latestSm.preservation AS preservation,
-      latestSm.tumorOrNormal AS tumorOrNormal,
-      latestSm.sampleClass AS sampleClass,
-      latestSm.oncotreeCode AS oncotreeCode,
-      latestSm.collectionYear AS collectionYear,
-      latestSm.sampleOrigin AS sampleOrigin,
-      latestSm.tissueLocation AS tissueLocation,
-      latestSm.sex AS sex,
-      apoc.convert.fromJsonMap(latestSm.cmoSampleIdFields).recipe AS recipe,
-      apoc.convert.fromJsonMap(latestSm.additionalProperties).altId AS altId,
-      historicalCmoSampleNames,
-      latestSt.validationReport AS validationReport,
-      latestSt.validationStatus AS validationStatus,
-
-      t.smileTempoId AS smileTempoId,
-      t.billed AS billed,
-      t.costCenter AS costCenter,
-      t.billedBy AS billedBy,
-      t.custodianInformation AS custodianInformation,
-      t.accessLevel AS accessLevel,
-      t.initialPipelineRunDate AS initialPipelineRunDate,
-      t.embargoDate AS embargoDate,
-
-      latestBC.date AS bamCompleteDate,
-      latestBC.status AS bamCompleteStatus,
-
-      latestMC.date AS mafCompleteDate,
-      latestMC.normalPrimaryId AS mafCompleteNormalPrimaryId,
-      latestMC.status AS mafCompleteStatus,
-
-      latestQC.date AS qcCompleteDate,
-      latestQC.result AS qcCompleteResult,
-      latestQC.reason AS qcCompleteReason,
-      latestQC.status AS qcCompleteStatus
+      resultz{.*, _total: total}
 
     ORDER BY ${getNeo4jCustomSort(sort)}
     SKIP ${offset}
@@ -400,7 +379,7 @@ export async function queryDashboardSamples({
     const result = await session.run(cypherQuery);
 
     return result.records.map((record) => {
-      const recordObject = record.toObject();
+      const recordObject = record.toObject().resultz;
       const otCache = recordObject.oncotreeCode
         ? (oncotreeCache.get(recordObject.oncotreeCode) as CachedOncotreeData)
         : null;
@@ -413,24 +392,5 @@ export async function queryDashboardSamples({
     });
   } catch (error) {
     console.error("Error with queryDashboardSamples:", error);
-  }
-}
-export async function queryDashboardSampleCount({
-  queryBody,
-}: {
-  queryBody: string;
-}) {
-  const cypherQuery = `
-    ${queryBody}
-    RETURN
-      count(s) AS totalCount
-  `;
-
-  const session = neo4jDriver.session();
-  try {
-    const result = await session.run(cypherQuery);
-    return result.records[0].toObject();
-  } catch (error) {
-    console.error("Error with queryDashboardSampleCount:", error);
   }
 }

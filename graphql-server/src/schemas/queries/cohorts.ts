@@ -21,15 +21,15 @@ export function buildCohortsQueryBody({
 
   if (searchVals?.length) {
     const fieldsToSearch = [
-      "resultz.cohortId",
-      "resultz.billed",
-      "resultz.initialCohortDeliveryDate",
-      "resultz.endUsers",
-      "resultz.pmUsers",
-      "resultz.projectTitle",
-      "resultz.projectSubtitle",
-      "resultz.status",
-      "resultz.type",
+      "tempNode.cohortId",
+      "tempNode.billed",
+      "tempNode.initialCohortDeliveryDate",
+      "tempNode.endUsers",
+      "tempNode.pmUsers",
+      "tempNode.projectTitle",
+      "tempNode.projectSubtitle",
+      "tempNode.status",
+      "tempNode.type",
     ];
     const searchFilters = fieldsToSearch
       .map((field) => `${field} =~ '(?i).*(${searchVals.join("|")}).*'`)
@@ -131,10 +131,6 @@ export function buildCohortsQueryBody({
     
     WITH
       tempNode{.*, endUsers: latestCC.endUsers, pmUsers: latestCC.pmUsers, projectTitle: latestCC.projectTitle, projectSubtitle: latestCC.projectSubtitle, status: latestCC.status, type: latestCC.type}
-    UNWIND tempNode AS unsortedTempNode
-    WITH COUNT(unsortedTempNode) AS total, COLLECT(unsortedTempNode) AS results
-    UNWIND results AS resultz
-    WITH resultz, total
 
     ${filtersAsCypher}
   `;
@@ -154,6 +150,11 @@ export async function queryDashboardCohorts({
 }) {
   const cypherQuery = `
     ${queryBody}
+    UNWIND tempNode AS unsortedTempNode
+    WITH COUNT(unsortedTempNode) AS total, COLLECT(unsortedTempNode) AS results
+    UNWIND results AS resultz
+    WITH resultz, total
+
     RETURN
       resultz{.*, _total: total}
 

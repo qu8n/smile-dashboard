@@ -95,13 +95,6 @@ query DashboardSamples(
   $limit: Int!
   $offset: Int!
 ) {
-  dashboardSampleCount(
-    searchVals: $searchVals
-    context: $context
-    filters: $filters
-  ) {
-    totalCount
-  }
   dashboardSamples(
     searchVals: $searchVals
     context: $context
@@ -113,6 +106,7 @@ query DashboardSamples(
     ...DashboardSampleParts
     ...DashboardSampleMetadataParts
     ...DashboardTempoParts
+    _total
   }
 }
 

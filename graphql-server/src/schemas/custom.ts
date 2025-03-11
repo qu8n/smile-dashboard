@@ -25,7 +25,6 @@ import {
 import {
   buildSamplesQueryBody,
   queryDashboardSamples,
-  queryDashboardSampleCount,
 } from "./queries/samples";
 import NodeCache from "node-cache";
 import { CachedOncotreeData } from "../utils/oncotree";
@@ -109,27 +108,6 @@ export async function buildCustomSchema(ogm: OGM) {
           oncotreeCache,
         });
       },
-      async dashboardSampleCount(
-        _source: undefined,
-        { searchVals, context, filters }: QueryDashboardSampleCountArgs,
-        { oncotreeCache }: ApolloServerContext
-      ) {
-        const addlOncotreeCodes = getAddlOtCodesMatchingCtOrCtdVals({
-          searchVals,
-          oncotreeCache,
-        });
-
-        const queryBody = buildSamplesQueryBody({
-          searchVals,
-          context,
-          filters,
-          addlOncotreeCodes,
-        });
-
-        return await queryDashboardSampleCount({
-          queryBody,
-        });
-      },
     },
 
     Mutation: {
@@ -187,9 +165,9 @@ export function buildCypherDateFilter({
     : dateVar;
 
   return `
-      apoc.date.parse(resultz.${formattedDateString}, 'ms', 'yyyy-MM-dd')
+      apoc.date.parse(${formattedDateString}, 'ms', 'yyyy-MM-dd')
         >= apoc.date.parse('${filter.dateFrom}', 'ms', 'yyyy-MM-dd HH:mm:ss') // AG Grid's provided date format
-      AND apoc.date.parse(resultz.${formattedDateString}, 'ms', 'yyyy-MM-dd')
+      AND apoc.date.parse(${formattedDateString}, 'ms', 'yyyy-MM-dd')
         <= apoc.date.parse('${filter.dateTo}', 'ms', 'yyyy-MM-dd HH:mm:ss')
     `;
 }
@@ -229,22 +207,22 @@ export function buildCypherBooleanFilter({
     const activeFilters = [];
     for (const value of filterValues) {
       if (value === "Yes") {
-        activeFilters.push(`resultz.${booleanVar} = ${formattedTrueVal}`);
+        activeFilters.push(`tempNode.${booleanVar} = ${formattedTrueVal}`);
       } else if (value === "No") {
         if (!noIncludesFalseAndNull) {
-          activeFilters.push(`resultz.${booleanVar} = ${formattedFalseVal}`);
+          activeFilters.push(`tempNode.${booleanVar} = ${formattedFalseVal}`);
         } else {
           activeFilters.push(
-            `resultz.${booleanVar} = ${formattedFalseVal} OR resultz.${booleanVar} IS NULL`
+            `tempNode.${booleanVar} = ${formattedFalseVal} OR tempNode.${booleanVar} IS NULL`
           );
         }
       } else if (value === null) {
-        activeFilters.push(`resultz.${booleanVar} IS NULL`);
+        activeFilters.push(`tempNode.${booleanVar} IS NULL`);
       }
     }
     return activeFilters.join(" OR ");
   } else {
-    return `resultz.${booleanVar} <> ${formattedTrueVal} AND resultz.${booleanVar} <> ${formattedFalseVal} AND resultz.${booleanVar} IS NOT NULL`;
+    return `tempNode.${booleanVar} <> ${formattedTrueVal} AND tempNode.${booleanVar} <> ${formattedFalseVal} AND tempNode.${booleanVar} IS NOT NULL`;
   }
 }
 
@@ -567,6 +545,9 @@ const typeDefs = gql`
     qcCompleteResult: String
     qcCompleteReason: String
     qcCompleteStatus: String
+
+    # results total
+    _total: Int
   }
 
   enum AgGridSortDirection {

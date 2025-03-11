@@ -1420,6 +1420,7 @@ export type DashboardRequest = {
 
 export type DashboardSample = {
   __typename?: "DashboardSample";
+  _total?: Maybe<Scalars["Int"]>;
   accessLevel?: Maybe<Scalars["String"]>;
   altId?: Maybe<Scalars["String"]>;
   baitSet?: Maybe<Scalars["String"]>;
@@ -10638,12 +10639,9 @@ export type DashboardSamplesQueryVariables = Exact<{
 
 export type DashboardSamplesQuery = {
   __typename?: "Query";
-  dashboardSampleCount: {
-    __typename?: "DashboardRecordCount";
-    totalCount: number;
-  };
   dashboardSamples: Array<{
     __typename?: "DashboardSample";
+    _total?: number | null;
     smileSampleId: string;
     revisable?: boolean | null;
     primaryId: string;
@@ -11174,13 +11172,6 @@ export const DashboardSamplesDocument = gql`
     $limit: Int!
     $offset: Int!
   ) {
-    dashboardSampleCount(
-      searchVals: $searchVals
-      context: $context
-      filters: $filters
-    ) {
-      totalCount
-    }
     dashboardSamples(
       searchVals: $searchVals
       context: $context
@@ -11192,6 +11183,7 @@ export const DashboardSamplesDocument = gql`
       ...DashboardSampleParts
       ...DashboardSampleMetadataParts
       ...DashboardTempoParts
+      _total
     }
   }
   ${DashboardSamplePartsFragmentDoc}
