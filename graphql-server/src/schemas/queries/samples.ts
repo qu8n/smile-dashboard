@@ -1,8 +1,5 @@
 import NodeCache from "node-cache";
-import {
-  QueryDashboardSampleCountArgs,
-  QueryDashboardSamplesArgs,
-} from "../../generated/graphql";
+import { QueryDashboardSamplesArgs } from "../../generated/graphql";
 import { CachedOncotreeData } from "../../utils/oncotree";
 import { neo4jDriver } from "../../utils/servers";
 import {
@@ -17,8 +14,8 @@ export function buildSamplesQueryBody({
   filters,
   addlOncotreeCodes,
 }: {
-  searchVals: QueryDashboardSampleCountArgs["searchVals"];
-  context?: QueryDashboardSampleCountArgs["context"];
+  searchVals: QueryDashboardSamplesArgs["searchVals"];
+  context?: QueryDashboardSamplesArgs["context"];
   filters?: QueryDashboardSamplesArgs["filters"];
   addlOncotreeCodes: string[];
 }) {
