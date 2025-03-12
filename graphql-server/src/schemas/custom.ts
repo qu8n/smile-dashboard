@@ -7,7 +7,6 @@ import {
   QueryDashboardCohortsArgs,
   QueryDashboardPatientsArgs,
   QueryDashboardRequestsArgs,
-  QueryDashboardSampleCountArgs,
   QueryDashboardSamplesArgs,
   DashboardRecordSort,
 } from "../generated/graphql";
@@ -609,11 +608,6 @@ const typeDefs = gql`
       limit: Int!
       offset: Int!
     ): [DashboardSample!]!
-    dashboardSampleCount(
-      searchVals: [String!]
-      context: DashboardRecordContext
-      filters: [DashboardRecordFilter!]
-    ): DashboardRecordCount!
   }
 
   # We have to define a separate "input" type for the mutation and can't reuse DashboardSample.

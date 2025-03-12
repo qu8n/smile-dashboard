@@ -97,7 +97,6 @@ export default function RecordsList({
   )}Count`;
   const recordCount = data?.[recordsQueryName][0]._total;
   const uniqueSampleCount = data?.[recordsQueryName]?.uniqueSampleCount;
-  console.log(data);
 
   const getServerSideDatasource = useCallback(
     ({ searchVals }) => {
@@ -138,7 +137,7 @@ export default function RecordsList({
             .then((result) => {
               params.success({
                 rowData: result.data[recordsQueryName],
-                rowCount: result.data?.[recordsQueryName].length,
+                rowCount: result.data?.[recordsQueryName]?._total,
               });
             })
             .catch((error) => {

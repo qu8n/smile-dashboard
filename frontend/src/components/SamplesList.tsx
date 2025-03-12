@@ -135,7 +135,7 @@ export default function SamplesList({
             .then((result) => {
               params.success({
                 rowData: result.data.dashboardSamples,
-                rowCount: result.data.dashboardSamples.length,
+                rowCount: result.data.dashboardSamples[0]?._total!,
               });
             })
             .catch((error) => {

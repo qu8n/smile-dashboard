@@ -46,21 +46,21 @@ export function buildSamplesQueryBody({
       "tempNode.sampleOrigin",
       "tempNode.tissueLocation",
       "tempNode.sex",
-      "tempNode.recipe", // for searching recipe
-      "tempNode.altId", // for searching alt ID
-      "t.costCenter",
-      "t.billedBy",
-      "t.custodianInformation",
-      "t.accessLevel",
-      "latestBC.date",
-      "latestBC.status",
-      "latestMC.date",
-      "latestMC.normalPrimaryId",
-      "latestMC.status",
-      "latestQC.date",
-      "latestQC.result",
-      "latestQC.reason",
-      "latestQC.status",
+      "tempNode.recipe",
+      "tempNode.altId",
+      "tempNode.costCenter",
+      "tempNode.billedBy",
+      "tempNode.custodianInformation",
+      "tempNode.accessLevel",
+      "tempNode.bamCompleteDate",
+      "tempNode.bamCompleteStatus",
+      "tempNode.mafCompleteDate",
+      "tempNode.mafCompleteNormalPrimaryId",
+      "tempNode.mafCompleteStatus",
+      "tempNode.qcCompleteDate",
+      "tempNode.qcCompleteResult",
+      "tempNode.qcCompleteReason",
+      "tempNode.qcCompleteStatus",
       "tempNode.historicalCmoSampleNames",
     ];
     searchFilters += fieldsToSearch
@@ -278,10 +278,6 @@ export function buildSamplesQueryBody({
         RETURN qc ORDER BY qc.date DESC LIMIT 1
       } as latestQC
 
-    ${bamCompleteDateFilter && `WHERE ${bamCompleteDateFilter}`}
-    ${mafCompleteDateFilter && `WHERE ${mafCompleteDateFilter}`}
-    ${qcCompleteDateFilter && `WHERE ${qcCompleteDateFilter}`}
-
     WITH
       s,
       latestSm,
@@ -291,7 +287,11 @@ export function buildSamplesQueryBody({
       latestBC[0] as latestBC,
       latestMC[0] as latestMC,
       latestQC[0] as latestQC
-    
+
+      ${bamCompleteDateFilter && `WHERE ${bamCompleteDateFilter}`}
+      ${mafCompleteDateFilter && `WHERE ${mafCompleteDateFilter}`}
+      ${qcCompleteDateFilter && `WHERE ${qcCompleteDateFilter}`}      
+      
     WITH
       ({
         smileSampleId: s.smileSampleId, 

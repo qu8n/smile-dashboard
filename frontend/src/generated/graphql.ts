@@ -3813,7 +3813,6 @@ export type Query = {
   dashboardCohorts: Array<DashboardCohort>;
   dashboardPatients: Array<DashboardPatient>;
   dashboardRequests: Array<DashboardRequest>;
-  dashboardSampleCount: DashboardRecordCount;
   dashboardSamples: Array<DashboardSample>;
   mafCompletes: Array<MafComplete>;
   mafCompletesAggregate: MafCompleteAggregateSelection;
@@ -3924,12 +3923,6 @@ export type QueryDashboardRequestsArgs = {
   offset: Scalars["Int"];
   searchVals?: InputMaybe<Array<Scalars["String"]>>;
   sort: DashboardRecordSort;
-};
-
-export type QueryDashboardSampleCountArgs = {
-  context?: InputMaybe<DashboardRecordContext>;
-  filters?: InputMaybe<Array<DashboardRecordFilter>>;
-  searchVals?: InputMaybe<Array<Scalars["String"]>>;
 };
 
 export type QueryDashboardSamplesArgs = {
