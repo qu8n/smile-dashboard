@@ -91,10 +91,6 @@ export default function RecordsList({
 
   const dataNameCapitalized = buildSentenceCaseString(dataName);
   const recordsQueryName = `dashboard${dataNameCapitalized}`;
-  const recordCountQueryName = `dashboard${dataNameCapitalized.slice(
-    0,
-    -1
-  )}Count`;
   const recordCount = data?.[recordsQueryName][0]._total;
   const uniqueSampleCount = data?.[recordsQueryName]?.uniqueSampleCount;
 
@@ -137,7 +133,7 @@ export default function RecordsList({
             .then((result) => {
               params.success({
                 rowData: result.data[recordsQueryName],
-                rowCount: result.data?.[recordsQueryName]?._total,
+                rowCount: result.data?.[recordsQueryName][0]?._total,
               });
             })
             .catch((error) => {
@@ -147,7 +143,7 @@ export default function RecordsList({
         },
       };
     },
-    [defaultSort, refetch, fetchMore, recordsQueryName, recordCountQueryName]
+    [defaultSort, refetch, fetchMore, recordsQueryName]
   );
 
   async function refreshData(userSearchVal: string) {

@@ -43,7 +43,7 @@ export function buildCohortsQueryBody({
     );
     if (billedFilterObj) {
       const billedFilter = buildCypherBooleanFilter({
-        booleanVar: "billed",
+        booleanVar: "tempNode.billed",
         filter: JSON.parse(billedFilterObj.filter),
         trueVal: "Yes",
         falseVal: "No",
@@ -56,7 +56,7 @@ export function buildCohortsQueryBody({
     );
     if (initialCohortDeliveryDateFilterObj) {
       const initialCohortDeliveryDateFilter = buildCypherDateFilter({
-        dateVar: "initialCohortDeliveryDate",
+        dateVar: "tempNode.initialCohortDeliveryDate",
         filter: JSON.parse(initialCohortDeliveryDateFilterObj.filter),
       });
       queryFilters.push(initialCohortDeliveryDateFilter);
@@ -73,26 +73,26 @@ export function buildCohortsQueryBody({
     WITH
         c,
         s,
-		apoc.coll.min(collect(cc.date)) AS initialCohortDeliveryDate,
+        apoc.coll.min(collect(cc.date)) AS initialCohortDeliveryDate,
         apoc.coll.max(collect(cc.date)) AS latestCohortDeliveryDate,
         count(t) AS tempoCount,
         count(CASE WHEN t.billed = true THEN 1 END) AS billedCount
 
     // Aggregate Sample data and get the latest CohortComplete
     WITH
-    	c,
-    	initialCohortDeliveryDate,
-    	latestCohortDeliveryDate,
-        collect(s.smileSampleId) AS sampleIdsByCohort,
-        size(collect(s)) AS totalSampleCount,
-        tempoCount,
-        billedCount
+      c,
+      initialCohortDeliveryDate,
+      latestCohortDeliveryDate,
+      collect(s.smileSampleId) AS sampleIdsByCohort,
+      size(collect(s)) AS totalSampleCount,
+      tempoCount,
+      billedCount
         
     // Calculate values for the "Billed" column
     WITH
-    	c,
-    	initialCohortDeliveryDate,
-    	latestCohortDeliveryDate,
+      c,
+      initialCohortDeliveryDate,
+      latestCohortDeliveryDate,
         sampleIdsByCohort,
         totalSampleCount,
         CASE totalSampleCount
@@ -103,34 +103,41 @@ export function buildCohortsQueryBody({
                     ELSE "No"
                 END
         END AS billed
-	
+
     WITH
         c,
         initialCohortDeliveryDate,
-    	latestCohortDeliveryDate,
+        latestCohortDeliveryDate,
         sampleIdsByCohort,
         totalSampleCount,
         billed
 
     WITH ({
-    	cohortId: c.cohortId,
-    	sampleIdsByCohort: sampleIdsByCohort,
-    	totalSampleCount: totalSampleCount,
-    	billed: billed,
-    	initialCohortDeliveryDate: initialCohortDeliveryDate,
-    	latestCohortDeliveryDate: latestCohortDeliveryDate
+      cohortId: c.cohortId,
+      sampleIdsByCohort: sampleIdsByCohort,
+      totalSampleCount: totalSampleCount,
+      billed: billed,
+      initialCohortDeliveryDate: initialCohortDeliveryDate,
+      latestCohortDeliveryDate: latestCohortDeliveryDate
     }) as tempNode, 
     COLLECT {
-    	MATCH (c)-[:HAS_COHORT_COMPLETE]->(cc: CohortComplete)
-    	RETURN cc ORDER BY cc.date DESC LIMIT 1
+      MATCH (c)-[:HAS_COHORT_COMPLETE]->(cc: CohortComplete)
+      RETURN cc ORDER BY cc.date DESC LIMIT 1
     } as latestCC
     
     WITH 
-    	tempNode,
-    	latestCC[0] as latestCC
+      tempNode,
+      latestCC[0] as latestCC
     
     WITH
-      tempNode{.*, endUsers: latestCC.endUsers, pmUsers: latestCC.pmUsers, projectTitle: latestCC.projectTitle, projectSubtitle: latestCC.projectSubtitle, status: latestCC.status, type: latestCC.type}
+      tempNode{.*, 
+        endUsers: latestCC.endUsers, 
+        pmUsers: latestCC.pmUsers, 
+        projectTitle: latestCC.projectTitle, 
+        projectSubtitle: latestCC.projectSubtitle, 
+        status: latestCC.status, 
+        type: latestCC.type
+      }
 
     ${filtersAsCypher}
   `;
@@ -151,7 +158,7 @@ export async function queryDashboardCohorts({
   const cypherQuery = `
     ${queryBody}
     UNWIND tempNode AS unsortedTempNode
-    WITH COUNT(unsortedTempNode) AS total, COLLECT(unsortedTempNode) AS results
+    WITH COUNT(DISTINCT unsortedTempNode) AS total, COLLECT(DISTINCT unsortedTempNode) AS results
     UNWIND results AS resultz
     WITH resultz, total
 

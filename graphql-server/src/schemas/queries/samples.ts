@@ -359,7 +359,7 @@ export async function queryDashboardSamples({
   const cypherQuery = `
     ${queryBody}
     UNWIND tempNode AS unsortedTempNode
-    WITH COUNT(unsortedTempNode) AS total, COLLECT(unsortedTempNode) AS results
+    WITH COUNT(DISTINCT unsortedTempNode) AS total, COLLECT(DISTINCT unsortedTempNode) AS results
     UNWIND results AS resultz
     WITH resultz, total
 
@@ -380,7 +380,6 @@ export async function queryDashboardSamples({
       const otCache = recordObject.oncotreeCode
         ? (oncotreeCache.get(recordObject.oncotreeCode) as CachedOncotreeData)
         : null;
-
       return {
         ...recordObject,
         cancerType: otCache?.mainType,

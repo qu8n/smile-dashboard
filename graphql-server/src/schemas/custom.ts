@@ -206,22 +206,22 @@ export function buildCypherBooleanFilter({
     const activeFilters = [];
     for (const value of filterValues) {
       if (value === "Yes") {
-        activeFilters.push(`tempNode.${booleanVar} = ${formattedTrueVal}`);
+        activeFilters.push(`${booleanVar} = ${formattedTrueVal}`);
       } else if (value === "No") {
         if (!noIncludesFalseAndNull) {
-          activeFilters.push(`tempNode.${booleanVar} = ${formattedFalseVal}`);
+          activeFilters.push(`${booleanVar} = ${formattedFalseVal}`);
         } else {
           activeFilters.push(
-            `tempNode.${booleanVar} = ${formattedFalseVal} OR tempNode.${booleanVar} IS NULL`
+            `${booleanVar} = ${formattedFalseVal} OR ${booleanVar} IS NULL`
           );
         }
       } else if (value === null) {
-        activeFilters.push(`tempNode.${booleanVar} IS NULL`);
+        activeFilters.push(`${booleanVar} IS NULL`);
       }
     }
     return activeFilters.join(" OR ");
   } else {
-    return `tempNode.${booleanVar} <> ${formattedTrueVal} AND tempNode.${booleanVar} <> ${formattedFalseVal} AND tempNode.${booleanVar} IS NOT NULL`;
+    return `${booleanVar} <> ${formattedTrueVal} AND ${booleanVar} <> ${formattedFalseVal} AND ${booleanVar} IS NOT NULL`;
   }
 }
 

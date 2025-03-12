@@ -36,7 +36,7 @@ export function buildPatientsQueryBody({
     );
     if (consentPartAFilterObj) {
       const consentPartAFilter = buildCypherBooleanFilter({
-        booleanVar: "consentPartA",
+        booleanVar: "tempNode.consentPartA",
         filter: JSON.parse(consentPartAFilterObj.filter),
         trueVal: "YES",
         falseVal: "NO",
@@ -49,7 +49,7 @@ export function buildPatientsQueryBody({
     );
     if (consentPartCFilterObj) {
       const consentPartCFilter = buildCypherBooleanFilter({
-        booleanVar: "consentPartC",
+        booleanVar: "tempNode.consentPartC",
         filter: JSON.parse(consentPartCFilterObj.filter),
         trueVal: "YES",
         falseVal: "NO",
@@ -105,7 +105,13 @@ export function buildPatientsQueryBody({
       collect(DISTINCT latestSm.consentPartA) AS consentPartA,
       collect(DISTINCT latestSm.consentPartC) AS consentPartC
     WITH 
-      tempNode{.*, totalSampleCount: totalSampleCount, cmoSampleIds: cmoSampleIds, consentPartA: consentPartA[0], consentPartC: consentPartC[0], importDate: importDate} 
+      tempNode{.*, 
+        totalSampleCount: totalSampleCount, 
+        cmoSampleIds: cmoSampleIds, 
+        consentPartA: consentPartA[0], 
+        consentPartC: consentPartC[0], 
+        importDate: importDate
+      } 
 
     ${filtersAsCypher}
   `;
@@ -126,7 +132,7 @@ export async function queryDashboardPatients({
   const cypherQuery = `
     ${queryBody}
     UNWIND tempNode AS unsortedTempNode
-    WITH COUNT(unsortedTempNode) AS total, COLLECT(unsortedTempNode) AS results
+    WITH COUNT(DISTINCT unsortedTempNode) AS total, COLLECT(DISTINCT unsortedTempNode) AS results
     UNWIND results AS resultz
     WITH resultz, total
 

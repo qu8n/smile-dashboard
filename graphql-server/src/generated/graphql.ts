@@ -5759,7 +5759,7 @@ export type Sample = {
   sampleAliasesIsAliasAggregate?: Maybe<SampleSampleAliasSampleAliasesIsAliasAggregationSelection>;
   sampleAliasesIsAliasConnection: SampleSampleAliasesIsAliasConnection;
   sampleCategory: Scalars["String"];
-  sampleClass: Scalars["String"];
+  sampleClass?: Maybe<Scalars["String"]>;
   smileSampleId: Scalars["String"];
 };
 
@@ -6317,7 +6317,7 @@ export type SampleCreateInput = {
   revisable?: InputMaybe<Scalars["Boolean"]>;
   sampleAliasesIsAlias?: InputMaybe<SampleSampleAliasesIsAliasFieldInput>;
   sampleCategory: Scalars["String"];
-  sampleClass: Scalars["String"];
+  sampleClass?: InputMaybe<Scalars["String"]>;
   smileSampleId: Scalars["String"];
 };
 
@@ -7037,7 +7037,7 @@ export type SampleMetadata = {
   cmoPatientId?: Maybe<Scalars["String"]>;
   cmoSampleIdFields: Scalars["String"];
   cmoSampleName?: Maybe<Scalars["String"]>;
-  collectionYear: Scalars["String"];
+  collectionYear?: Maybe<Scalars["String"]>;
   genePanel: Scalars["String"];
   hasStatusStatuses: Array<Status>;
   hasStatusStatusesAggregate?: Maybe<SampleMetadataStatusHasStatusStatusesAggregationSelection>;
@@ -7051,18 +7051,18 @@ export type SampleMetadata = {
   preservation?: Maybe<Scalars["String"]>;
   primaryId: Scalars["String"];
   qcReports: Scalars["String"];
-  sampleClass: Scalars["String"];
+  sampleClass?: Maybe<Scalars["String"]>;
   sampleName?: Maybe<Scalars["String"]>;
   sampleOrigin?: Maybe<Scalars["String"]>;
-  sampleType: Scalars["String"];
+  sampleType?: Maybe<Scalars["String"]>;
   samplesHasMetadata: Array<Sample>;
   samplesHasMetadataAggregate?: Maybe<SampleMetadataSampleSamplesHasMetadataAggregationSelection>;
   samplesHasMetadataConnection: SampleMetadataSamplesHasMetadataConnection;
   sex?: Maybe<Scalars["String"]>;
-  species: Scalars["String"];
+  species?: Maybe<Scalars["String"]>;
   tissueLocation?: Maybe<Scalars["String"]>;
   tubeId?: Maybe<Scalars["String"]>;
-  tumorOrNormal: Scalars["String"];
+  tumorOrNormal?: Maybe<Scalars["String"]>;
 };
 
 export type SampleMetadataHasStatusStatusesArgs = {
@@ -7162,7 +7162,7 @@ export type SampleMetadataCreateInput = {
   cmoPatientId?: InputMaybe<Scalars["String"]>;
   cmoSampleIdFields: Scalars["String"];
   cmoSampleName?: InputMaybe<Scalars["String"]>;
-  collectionYear: Scalars["String"];
+  collectionYear?: InputMaybe<Scalars["String"]>;
   genePanel: Scalars["String"];
   hasStatusStatuses?: InputMaybe<SampleMetadataHasStatusStatusesFieldInput>;
   igoComplete?: InputMaybe<Scalars["Boolean"]>;
@@ -7174,16 +7174,16 @@ export type SampleMetadataCreateInput = {
   preservation?: InputMaybe<Scalars["String"]>;
   primaryId: Scalars["String"];
   qcReports: Scalars["String"];
-  sampleClass: Scalars["String"];
+  sampleClass?: InputMaybe<Scalars["String"]>;
   sampleName?: InputMaybe<Scalars["String"]>;
   sampleOrigin?: InputMaybe<Scalars["String"]>;
-  sampleType: Scalars["String"];
+  sampleType?: InputMaybe<Scalars["String"]>;
   samplesHasMetadata?: InputMaybe<SampleMetadataSamplesHasMetadataFieldInput>;
   sex?: InputMaybe<Scalars["String"]>;
-  species: Scalars["String"];
+  species?: InputMaybe<Scalars["String"]>;
   tissueLocation?: InputMaybe<Scalars["String"]>;
   tubeId?: InputMaybe<Scalars["String"]>;
-  tumorOrNormal: Scalars["String"];
+  tumorOrNormal?: InputMaybe<Scalars["String"]>;
 };
 
 export type SampleMetadataDeleteInput = {
@@ -7620,7 +7620,7 @@ export type SampleMetadataWhere = {
   collectionYear?: InputMaybe<Scalars["String"]>;
   collectionYear_CONTAINS?: InputMaybe<Scalars["String"]>;
   collectionYear_ENDS_WITH?: InputMaybe<Scalars["String"]>;
-  collectionYear_IN?: InputMaybe<Array<Scalars["String"]>>;
+  collectionYear_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
   collectionYear_MATCHES?: InputMaybe<Scalars["String"]>;
   collectionYear_STARTS_WITH?: InputMaybe<Scalars["String"]>;
   genePanel?: InputMaybe<Scalars["String"]>;
@@ -7698,7 +7698,7 @@ export type SampleMetadataWhere = {
   sampleClass?: InputMaybe<Scalars["String"]>;
   sampleClass_CONTAINS?: InputMaybe<Scalars["String"]>;
   sampleClass_ENDS_WITH?: InputMaybe<Scalars["String"]>;
-  sampleClass_IN?: InputMaybe<Array<Scalars["String"]>>;
+  sampleClass_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
   sampleClass_MATCHES?: InputMaybe<Scalars["String"]>;
   sampleClass_STARTS_WITH?: InputMaybe<Scalars["String"]>;
   sampleName?: InputMaybe<Scalars["String"]>;
@@ -7716,7 +7716,7 @@ export type SampleMetadataWhere = {
   sampleType?: InputMaybe<Scalars["String"]>;
   sampleType_CONTAINS?: InputMaybe<Scalars["String"]>;
   sampleType_ENDS_WITH?: InputMaybe<Scalars["String"]>;
-  sampleType_IN?: InputMaybe<Array<Scalars["String"]>>;
+  sampleType_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
   sampleType_MATCHES?: InputMaybe<Scalars["String"]>;
   sampleType_STARTS_WITH?: InputMaybe<Scalars["String"]>;
   samplesHasMetadataAggregate?: InputMaybe<SampleMetadataSamplesHasMetadataAggregateInput>;
@@ -7745,7 +7745,7 @@ export type SampleMetadataWhere = {
   species?: InputMaybe<Scalars["String"]>;
   species_CONTAINS?: InputMaybe<Scalars["String"]>;
   species_ENDS_WITH?: InputMaybe<Scalars["String"]>;
-  species_IN?: InputMaybe<Array<Scalars["String"]>>;
+  species_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
   species_MATCHES?: InputMaybe<Scalars["String"]>;
   species_STARTS_WITH?: InputMaybe<Scalars["String"]>;
   tissueLocation?: InputMaybe<Scalars["String"]>;
@@ -7763,7 +7763,7 @@ export type SampleMetadataWhere = {
   tumorOrNormal?: InputMaybe<Scalars["String"]>;
   tumorOrNormal_CONTAINS?: InputMaybe<Scalars["String"]>;
   tumorOrNormal_ENDS_WITH?: InputMaybe<Scalars["String"]>;
-  tumorOrNormal_IN?: InputMaybe<Array<Scalars["String"]>>;
+  tumorOrNormal_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
   tumorOrNormal_MATCHES?: InputMaybe<Scalars["String"]>;
   tumorOrNormal_STARTS_WITH?: InputMaybe<Scalars["String"]>;
 };
@@ -8631,7 +8631,7 @@ export type SampleWhere = {
   sampleClass?: InputMaybe<Scalars["String"]>;
   sampleClass_CONTAINS?: InputMaybe<Scalars["String"]>;
   sampleClass_ENDS_WITH?: InputMaybe<Scalars["String"]>;
-  sampleClass_IN?: InputMaybe<Array<Scalars["String"]>>;
+  sampleClass_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
   sampleClass_MATCHES?: InputMaybe<Scalars["String"]>;
   sampleClass_STARTS_WITH?: InputMaybe<Scalars["String"]>;
   smileSampleId?: InputMaybe<Scalars["String"]>;

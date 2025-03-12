@@ -51,7 +51,7 @@ export function buildRequestsQueryBody({
     );
     if (importDateFilterObj) {
       const importDateFilter = buildCypherDateFilter({
-        dateVar: "importDate",
+        dateVar: "tempNode.importDate",
         filter: JSON.parse(importDateFilterObj.filter),
       });
       queryFilters.push(importDateFilter);
@@ -61,7 +61,7 @@ export function buildRequestsQueryBody({
     );
     if (bicAnalysisFilterObj) {
       const bicAnalysisFilter = buildCypherBooleanFilter({
-        booleanVar: "bicAnalysis",
+        booleanVar: "tempNode.bicAnalysis",
         filter: JSON.parse(bicAnalysisFilterObj.filter),
         noIncludesFalseAndNull: true,
       });
@@ -72,7 +72,7 @@ export function buildRequestsQueryBody({
     );
     if (cmoRequestFilterObj) {
       const cmoRequestFilter = buildCypherBooleanFilter({
-        booleanVar: "isCmoRequest",
+        booleanVar: "tempNode.isCmoRequest",
         filter: JSON.parse(cmoRequestFilterObj.filter),
         noIncludesFalseAndNull: true,
       });
@@ -135,9 +135,10 @@ export async function queryDashboardRequests({
   const cypherQuery = `
     ${queryBody}
     UNWIND tempNode AS unsortedTempNode
-    WITH COUNT(unsortedTempNode) as total, COLLECT(unsortedTempNode) as results
+    WITH COUNT(DISTINCT unsortedTempNode) AS total, COLLECT(DISTINCT unsortedTempNode) AS results
     UNWIND results as resultz
     WITH resultz, total
+    
     RETURN
       resultz{.*, _total: total}
     ORDER BY ${getNeo4jCustomSort(sort)}

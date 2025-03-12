@@ -274,7 +274,7 @@ export default function SamplesList({
       getRows: (params: IServerSideGetRowsParams) => {
         params.success({
           rowData: optimisticSamples!,
-          rowCount: sampleCount!,
+          rowCount: optimisticSamples[0]?._total!,
         });
       },
     };
