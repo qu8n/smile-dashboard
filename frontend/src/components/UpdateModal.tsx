@@ -59,6 +59,8 @@ export function UpdateModal({
           revisable: false,
           changedFieldNames: Object.keys(changesByPrimaryId[s.primaryId]),
         };
+        console.log(newDashboardSample);
+
         for (const [fieldName, newValue] of Object.entries(
           changesByPrimaryId[s.primaryId]
         )) {
