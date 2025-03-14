@@ -1466,6 +1466,7 @@ export type DashboardSample = {
 };
 
 export type DashboardSampleInput = {
+  _total?: InputMaybe<Scalars["Int"]>;
   accessLevel?: InputMaybe<Scalars["String"]>;
   altId?: InputMaybe<Scalars["String"]>;
   baitSet?: InputMaybe<Scalars["String"]>;

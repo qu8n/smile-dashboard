@@ -13250,6 +13250,18 @@
         "fields": null,
         "inputFields": [
           {
+            "name": "_total",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "Int",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "accessLevel",
             "description": null,
             "type": {

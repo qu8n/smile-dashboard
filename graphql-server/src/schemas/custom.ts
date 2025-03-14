@@ -616,6 +616,7 @@ const typeDefs = gql`
   # For more context, see: https://stackoverflow.com/q/41743253
   input DashboardSampleInput {
     changedFieldNames: [String!]!
+    _total: Int
 
     # (s:Sample)
     smileSampleId: String!
