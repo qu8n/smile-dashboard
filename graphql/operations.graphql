@@ -84,6 +84,7 @@ query DashboardCohorts(
     status
     type
     _total
+    _uniqueSampleCount
   }
 }
 

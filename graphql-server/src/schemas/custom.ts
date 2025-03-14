@@ -486,6 +486,7 @@ const typeDefs = gql`
     status: String
     type: String
     _total: Int
+    _uniqueSampleCount: Int
   }
 
   type DashboardSample {

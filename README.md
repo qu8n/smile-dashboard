@@ -205,6 +205,7 @@ Confirm your [application.properties](./graphql-server/src/env/application.prope
 
 Steps: 
 1. Make desired changes to [custom.ts](./graphql-server/src/schemas/custom.ts)
-2. Build the backend `yarn build:backend`
-3. Launch the backend `yarn dev:backend`
-4. Run codegen in another window `yarn run codegen`
+2. Changes to any of the schemas should also result in equivalent changes to their corresponding types defined in [operations.graphql](./graphql/operations.graphql)
+3. Build the backend `yarn build:backend`
+4. Launch the backend `yarn dev:backend`
+5. Run codegen in another window `yarn run codegen`

@@ -157,12 +157,11 @@ export async function queryDashboardCohorts({
 }) {
   const cypherQuery = `
     ${queryBody}
-    WITH COUNT(DISTINCT tempNode) AS total, COLLECT(DISTINCT tempNode) AS results
+    WITH COUNT(DISTINCT tempNode) AS total, size(apoc.coll.toSet(apoc.coll.flatten(collect(tempNode.sampleIdsByCohort)))) AS uniqueSampleCount, collect(DISTINCT tempNode) AS results
+    WITH total, uniqueSampleCount, results
     UNWIND results AS resultz
-    WITH resultz, total
-
-    RETURN
-      resultz{.*, _total: total}
+    RETURN 
+      resultz{.*, _total:total, _uniqueSampleCount: uniqueSampleCount}
 
     ORDER BY ${getNeo4jCustomSort(sort)}
     SKIP ${offset}

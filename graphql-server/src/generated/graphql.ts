@@ -1349,6 +1349,7 @@ export type CreateTemposMutationResponse = {
 export type DashboardCohort = {
   __typename?: "DashboardCohort";
   _total?: Maybe<Scalars["Int"]>;
+  _uniqueSampleCount?: Maybe<Scalars["Int"]>;
   billed?: Maybe<Scalars["String"]>;
   cohortId: Scalars["String"];
   endUsers?: Maybe<Scalars["String"]>;
@@ -10618,6 +10619,7 @@ export type DashboardCohortsQuery = {
     status?: string | null;
     type?: string | null;
     _total?: number | null;
+    _uniqueSampleCount?: number | null;
   }>;
 };
 
@@ -10996,6 +10998,7 @@ export const DashboardCohortsDocument = gql`
       status
       type
       _total
+      _uniqueSampleCount
     }
   }
 `;

@@ -92,7 +92,7 @@ export default function RecordsList({
   const dataNameCapitalized = buildSentenceCaseString(dataName);
   const recordsQueryName = `dashboard${dataNameCapitalized}`;
   const recordCount = data?.[recordsQueryName][0]._total;
-  const uniqueSampleCount = data?.[recordsQueryName]?.uniqueSampleCount;
+  const uniqueSampleCount = data?.[recordsQueryName][0]._uniqueSampleCount;
 
   const getServerSideDatasource = useCallback(
     ({ searchVals }) => {
