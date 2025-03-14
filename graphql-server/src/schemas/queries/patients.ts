@@ -131,8 +131,7 @@ export async function queryDashboardPatients({
 }) {
   const cypherQuery = `
     ${queryBody}
-    UNWIND tempNode AS unsortedTempNode
-    WITH COUNT(DISTINCT unsortedTempNode) AS total, COLLECT(DISTINCT unsortedTempNode) AS results
+    WITH COUNT(DISTINCT tempNode) AS total, COLLECT(DISTINCT tempNode) AS results
     UNWIND results AS resultz
     WITH resultz, total
 
