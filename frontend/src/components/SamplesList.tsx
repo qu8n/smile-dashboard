@@ -96,7 +96,7 @@ export default function SamplesList({
     });
 
   const samples = data?.dashboardSamples;
-  const sampleCount = data?.dashboardSamples[0]._total;
+  const sampleCount = data?.dashboardSamples[0]?._total || 0;
 
   const getServerSideDatasource = useCallback(
     ({ userSearchVal, sampleContext }) => {
@@ -135,7 +135,7 @@ export default function SamplesList({
             .then((result) => {
               params.success({
                 rowData: result.data.dashboardSamples,
-                rowCount: result.data.dashboardSamples[0]?._total!,
+                rowCount: result.data.dashboardSamples[0]?._total || 0,
               });
             })
             .catch((error) => {
@@ -274,7 +274,7 @@ export default function SamplesList({
       getRows: (params: IServerSideGetRowsParams) => {
         params.success({
           rowData: optimisticSamples!,
-          rowCount: optimisticSamples[0]?._total!,
+          rowCount: optimisticSamples[0]?._total || 0,
         });
       },
     };

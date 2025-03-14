@@ -91,8 +91,9 @@ export default function RecordsList({
 
   const dataNameCapitalized = buildSentenceCaseString(dataName);
   const recordsQueryName = `dashboard${dataNameCapitalized}`;
-  const recordCount = data?.[recordsQueryName][0]._total;
-  const uniqueSampleCount = data?.[recordsQueryName][0]._uniqueSampleCount;
+  const recordCount = data?.[recordsQueryName][0]?._total || 0;
+  const uniqueSampleCount =
+    data?.[recordsQueryName][0]?._uniqueSampleCount || 0;
 
   const getServerSideDatasource = useCallback(
     ({ searchVals }) => {
@@ -133,7 +134,7 @@ export default function RecordsList({
             .then((result) => {
               params.success({
                 rowData: result.data[recordsQueryName],
-                rowCount: result.data?.[recordsQueryName][0]?._total,
+                rowCount: result.data?.[recordsQueryName][0]?._total || 0,
               });
             })
             .catch((error) => {
