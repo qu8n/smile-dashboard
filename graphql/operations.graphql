@@ -115,6 +115,7 @@ fragment DashboardSampleParts on DashboardSample {
   # (s:Sample)
   smileSampleId
   revisable
+  sampleCategory
 }
 
 fragment DashboardSampleMetadataParts on DashboardSample {

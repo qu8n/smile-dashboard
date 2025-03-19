@@ -485,6 +485,10 @@ export const SampleMetadataDetailsColumns: ColDef[] = [
     field: "recipe",
     headerName: "Recipe",
   },
+  {
+    field: "sampleCategory",
+    headerName: "SMILE Sample Category",
+  },
 ];
 
 function createCustomHeader(icons: string) {
@@ -715,6 +719,14 @@ export const WesSampleDetailsColumns: ColDef[] = [
     headerName: "Access Level",
   },
   {
+    field: "sampleType",
+    headerName: "Sample Type",
+  },
+  {
+    field: "tumorOrNormal",
+    headerName: "Tumor Or Normal",
+  },
+  {
     field: "bamCompleteDate",
     headerName: "Latest BAM Complete Date",
     valueFormatter: (params) => formatDate(params.value) ?? "",
@@ -775,6 +787,10 @@ export const WesSampleDetailsColumns: ColDef[] = [
   {
     field: "cancerTypeDetailed",
     headerName: "Cancer Type Detailed",
+  },
+  {
+    field: "sampleCategory",
+    headerName: "SMILE Sample Category",
   },
 ];
 

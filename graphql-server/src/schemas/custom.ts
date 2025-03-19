@@ -493,6 +493,7 @@ const typeDefs = gql`
     # (s:Sample)
     smileSampleId: String!
     revisable: Boolean
+    sampleCategory: String!
 
     # (s:Sample)-[:HAS_METADATA]->(sm:SampleMetadata)
     ## Root-level fields
@@ -622,6 +623,7 @@ const typeDefs = gql`
     # (s:Sample)
     smileSampleId: String!
     revisable: Boolean
+    sampleCategory: String!
 
     # (s:Sample)-[:HAS_METADATA]->(sm:SampleMetadata)
     ## Root-level fields

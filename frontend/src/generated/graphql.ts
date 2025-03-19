@@ -1454,6 +1454,7 @@ export type DashboardSample = {
   qcCompleteStatus?: Maybe<Scalars["String"]>;
   recipe?: Maybe<Scalars["String"]>;
   revisable?: Maybe<Scalars["Boolean"]>;
+  sampleCategory: Scalars["String"];
   sampleClass?: Maybe<Scalars["String"]>;
   sampleOrigin?: Maybe<Scalars["String"]>;
   sampleType?: Maybe<Scalars["String"]>;
@@ -1501,6 +1502,7 @@ export type DashboardSampleInput = {
   qcCompleteStatus?: InputMaybe<Scalars["String"]>;
   recipe?: InputMaybe<Scalars["String"]>;
   revisable?: InputMaybe<Scalars["Boolean"]>;
+  sampleCategory: Scalars["String"];
   sampleClass?: InputMaybe<Scalars["String"]>;
   sampleOrigin?: InputMaybe<Scalars["String"]>;
   sampleType?: InputMaybe<Scalars["String"]>;
@@ -10640,6 +10642,7 @@ export type DashboardSamplesQuery = {
     _total?: number | null;
     smileSampleId: string;
     revisable?: boolean | null;
+    sampleCategory: string;
     primaryId: string;
     cmoSampleName?: string | null;
     importDate: string;
@@ -10687,6 +10690,7 @@ export type DashboardSamplePartsFragment = {
   __typename?: "DashboardSample";
   smileSampleId: string;
   revisable?: boolean | null;
+  sampleCategory: string;
 };
 
 export type DashboardSampleMetadataPartsFragment = {
@@ -10769,6 +10773,7 @@ export type UpdateDashboardSamplesMutation = {
     __typename?: "DashboardSample";
     smileSampleId: string;
     revisable?: boolean | null;
+    sampleCategory: string;
     primaryId: string;
     cmoSampleName?: string | null;
     importDate: string;
@@ -10830,6 +10835,7 @@ export const DashboardSamplePartsFragmentDoc = gql`
   fragment DashboardSampleParts on DashboardSample {
     smileSampleId
     revisable
+    sampleCategory
   }
 `;
 export const DashboardSampleMetadataPartsFragmentDoc = gql`

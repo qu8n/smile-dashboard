@@ -59,6 +59,7 @@ export function buildSamplesQueryBody({
       "tempNode.qcCompleteReason",
       "tempNode.qcCompleteStatus",
       "tempNode.historicalCmoSampleNames",
+      "tempNode.sampleCategory",
     ];
     searchFilters += fieldsToSearch
       .map((field) => `${field} =~ '(?i).*(${searchVals.join("|")}).*'`)
@@ -293,7 +294,8 @@ export function buildSamplesQueryBody({
       ({
         smileSampleId: s.smileSampleId, 
         revisable: s.revisable,
-        
+        sampleCategory: s.sampleCategory,
+
         primaryId: latestSm.primaryId,
         cmoSampleName: latestSm.cmoSampleName,
         importDate: latestSm.importDate,
