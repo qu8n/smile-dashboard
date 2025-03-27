@@ -516,7 +516,10 @@ const lockIcon =
 const toolTipIcon =
   '<svg xmlns="http://www.w3.org/2000/svg" width="16" viewBox="0 -1 25 25"> <path fill="#9c9c9c" d="M11 17h2v-6h-2zm1-8q.425 0 .713-.288T13 8t-.288-.712T12 7t-.712.288T11 8t.288.713T12 9m0 13q-2.075 0-3.9-.788t-3.175-2.137T2.788 15.9T2 12t.788-3.9t2.137-3.175T8.1 2.788T12 2t3.9.788t3.175 2.137T21.213 8.1T22 12t-.788 3.9t-2.137 3.175t-3.175 2.138T12 22m0-2q3.35 0 5.675-2.325T20 12t-2.325-5.675T12 4T6.325 6.325T4 12t2.325 5.675T12 20m0-8" /></svg>';
 
-function setupEditableSampleFields(samplesColDefs: ColDef[]) {
+function setupEditableSampleFields(
+  samplesColDefs: ColDef[],
+  editableFieldsList: String[]
+) {
   samplesColDefs.forEach((colDef) => {
     const newClassRule = {
       unsubmittedChange: (params: CellClassParams) => {
@@ -564,14 +567,14 @@ function setupEditableSampleFields(samplesColDefs: ColDef[]) {
 
     colDef.editable = (params) => {
       return (
-        editableSampleFields.includes(params.colDef.field!) &&
+        editableFieldsList.includes(params.colDef.field!) &&
         params.data?.revisable === true
       );
     };
 
     if (!("headerComponentParams" in colDef)) {
       colDef.headerComponentParams = (params: IHeaderParams) => {
-        if (!editableSampleFields.includes(params.column.getColDef().field!))
+        if (!editableFieldsList.includes(params.column.getColDef().field!))
           return createCustomHeader(lockIcon);
       };
     }
@@ -798,14 +801,6 @@ export const ReadOnlyCohortSampleDetailsColumns = _.cloneDeep(
   WesSampleDetailsColumns
 );
 
-setupEditableSampleFields(SampleMetadataDetailsColumns);
-setupEditableSampleFields(WesSampleDetailsColumns);
-
-export const combinedSampleDetailsColumns = _.uniqBy(
-  [...SampleMetadataDetailsColumns, ...ReadOnlyCohortSampleDetailsColumns],
-  "field"
-);
-
 export const defaultColDef: ColDef = {
   sortable: true,
   resizable: true,
@@ -831,6 +826,21 @@ const editableSampleFields = [
   "custodianInformation",
   "accessLevel",
 ];
+
+const editableWesSampleFields = [
+  "billed",
+  "costCenter",
+  "custodianInformation",
+  "accessLevel",
+];
+
+setupEditableSampleFields(SampleMetadataDetailsColumns, editableSampleFields);
+setupEditableSampleFields(WesSampleDetailsColumns, editableWesSampleFields);
+
+export const combinedSampleDetailsColumns = _.uniqBy(
+  [...SampleMetadataDetailsColumns, ...ReadOnlyCohortSampleDetailsColumns],
+  "field"
+);
 
 export function formatDate(date: moment.MomentInput) {
   return date ? moment(date).format("YYYY-MM-DD") : null;
