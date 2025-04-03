@@ -30,6 +30,7 @@
     "graphql": "^16.5.0",
     "graphql-middleware": "^6.1.35",
     "https": "^1.0.0",
+    "log-timestamp": "^0.3.0",
     "morgan": "^1.10.0",
     "nats": "^2.7.1",
     "neo4j-driver": "^5.8.0",

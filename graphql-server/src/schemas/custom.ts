@@ -23,10 +23,17 @@ import {
 } from "./queries/cohorts";
 import {
   buildSamplesQueryBody,
+  buildSamplesQueryFinal,
+  getAddlOtCodesMatchingCtOrCtdVals,
   queryDashboardSamples,
 } from "./queries/samples";
-import NodeCache from "node-cache";
-import { CachedOncotreeData } from "../utils/oncotree";
+import {
+  ONCOTREE_CACHE_KEY,
+  OncotreeCache,
+  SAMPLES_CACHE_KEY,
+  SamplesCache,
+  updateCacheWithNewSampleUpdates,
+} from "../utils/cache";
 import {
   buildRequestsQueryBody,
   queryDashboardRequests,
@@ -85,8 +92,15 @@ export async function buildCustomSchema(ogm: OGM) {
           limit,
           offset,
         }: QueryDashboardSamplesArgs,
-        { oncotreeCache }: ApolloServerContext
+        { inMemoryCache }: ApolloServerContext
       ) {
+        const oncotreeCache = inMemoryCache.get(
+          ONCOTREE_CACHE_KEY
+        ) as OncotreeCache;
+        const samplesCache = inMemoryCache.get(
+          SAMPLES_CACHE_KEY
+        ) as SamplesCache;
+
         const addlOncotreeCodes = getAddlOtCodesMatchingCtOrCtdVals({
           searchVals,
           oncotreeCache,
@@ -99,11 +113,19 @@ export async function buildCustomSchema(ogm: OGM) {
           addlOncotreeCodes,
         });
 
-        return await queryDashboardSamples({
+        const samplesCypherQuery = await buildSamplesQueryFinal({
           queryBody,
           sort,
           limit,
           offset,
+        });
+
+        if (samplesCache && samplesCypherQuery in samplesCache) {
+          return samplesCache[samplesCypherQuery];
+        }
+
+        return await queryDashboardSamples({
+          samplesCypherQuery,
           oncotreeCache,
         });
       },
@@ -112,9 +134,16 @@ export async function buildCustomSchema(ogm: OGM) {
     Mutation: {
       async updateDashboardSamples(
         _source: undefined,
-        { newDashboardSamples }: { newDashboardSamples: DashboardSampleInput[] }
+        {
+          newDashboardSamples,
+        }: { newDashboardSamples: DashboardSampleInput[] },
+        { inMemoryCache }: ApolloServerContext
       ) {
-        updateAllSamplesConcurrently(newDashboardSamples, ogm);
+        await updateAllSamplesConcurrently(newDashboardSamples, ogm);
+        await updateCacheWithNewSampleUpdates(
+          newDashboardSamples,
+          inMemoryCache
+        );
 
         // Here, we're returning newDashboardSamples for simplicity. However, if we were to follow
         // GraphQL's convention, we'd return the actual resulting data from the database update. This
@@ -262,8 +291,6 @@ async function updateSampleMetadata(
 
     Object.keys(newDashboardSample).forEach((key) => {
       if (key in sampleManifest) {
-        console.log(key);
-
         sampleManifest[key] =
           newDashboardSample[key as keyof DashboardSampleInput];
       }
@@ -412,32 +439,6 @@ async function publishNatsMessage(topic: string, message: string) {
       err
     );
   }
-}
-
-export function getAddlOtCodesMatchingCtOrCtdVals({
-  searchVals,
-  oncotreeCache,
-}: {
-  searchVals: QueryDashboardSamplesArgs["searchVals"];
-  oncotreeCache: NodeCache;
-}) {
-  let addlOncotreeCodes: Set<string> = new Set();
-  if (searchVals?.length) {
-    oncotreeCache.keys().forEach((code) => {
-      const { name, mainType } = (oncotreeCache.get(
-        code
-      ) as CachedOncotreeData)!;
-      searchVals.forEach((val) => {
-        if (
-          name?.toLowerCase().includes(val?.toLowerCase()) ||
-          mainType?.toLowerCase().includes(val?.toLowerCase())
-        ) {
-          addlOncotreeCodes.add(code);
-        }
-      });
-    });
-  }
-  return Array.from(addlOncotreeCodes);
 }
 
 const typeDefs = gql`

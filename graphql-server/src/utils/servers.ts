@@ -14,19 +14,17 @@ import {
 import { updateActiveUserSessions } from "./session";
 import { corsOptions } from "./constants";
 import NodeCache from "node-cache";
-import { fetchAndCacheOncotreeData } from "./oncotree";
+import { initializeInMemoryCache } from "./cache";
 import neo4j from "neo4j-driver";
 
 export function initializeHttpsServer(app: Express) {
-  const httpsServer = https.createServer(
+  return https.createServer(
     {
       key: fs.readFileSync(props.web_key_pem),
       cert: fs.readFileSync(props.web_cert_pem),
     },
     app
   );
-
-  return httpsServer;
 }
 
 export interface ApolloServerContext {
@@ -34,7 +32,7 @@ export interface ApolloServerContext {
     user: any;
     isAuthenticated: boolean;
   };
-  oncotreeCache: NodeCache;
+  inMemoryCache: NodeCache;
 }
 
 export const neo4jDriver = neo4j.driver(
@@ -47,6 +45,7 @@ export async function initializeApolloServer(
   httpsServer: https.Server,
   app: Express
 ) {
+  console.info("Building, generating, and merging schemas...");
   const { neo4jDbSchema, ogm } = await buildNeo4jDbSchema();
   const customSchema = await buildCustomSchema(ogm);
   const oracleDbSchema = await buildOracleDbSchema();
@@ -54,9 +53,7 @@ export async function initializeApolloServer(
     schemas: [neo4jDbSchema, oracleDbSchema, customSchema],
   });
 
-  const oncotreeCache = new NodeCache({ stdTTL: 86400 }); // 1 day
-  await fetchAndCacheOncotreeData(oncotreeCache);
-  oncotreeCache.on("expired", fetchAndCacheOncotreeData);
+  const inMemoryCache = await initializeInMemoryCache();
 
   const apolloServer = new ApolloServer<ApolloServerContext>({
     schema: mergedSchema,
@@ -68,7 +65,7 @@ export async function initializeApolloServer(
           user: req.user,
           isAuthenticated: req.isAuthenticated,
         },
-        oncotreeCache: oncotreeCache,
+        inMemoryCache: inMemoryCache,
       };
     },
     plugins: [
@@ -79,10 +76,7 @@ export async function initializeApolloServer(
       }),
     ],
   });
-
   await apolloServer.start();
-
   apolloServer.applyMiddleware({ app, cors: corsOptions });
-
   return apolloServer;
 }

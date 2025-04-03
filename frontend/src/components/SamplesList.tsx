@@ -44,6 +44,7 @@ import { DataName } from "../shared/types";
 import { parseUserSearchVal } from "../utils/parseSearchQueries";
 
 const POLLING_INTERVAL = 5000; // 5s
+const POLLING_PAUSE_AFTER_UPDATE = 12000; // 12s
 
 const COST_CENTER_VALIDATION_ALERT =
   "Please update your Cost Center/Fund Number input as #####/##### (5 digits, a forward slash, then 5 digits). For example: 12345/12345.";
@@ -249,6 +250,7 @@ export default function SamplesList({
   }
 
   async function handleConfirmUpdates() {
+    stopPolling();
     // Manually handle optimistic updates: refresh updated rows' UI to indicate them being updated
     // (We can't use GraphQL's optimistic response because it isn't a good fit for
     // AG Grid's Server-Side data model. e.g. GraphQL's optimistic response only returns
@@ -283,7 +285,7 @@ export default function SamplesList({
     setTimeout(async () => {
       refreshData(userSearchVal);
       startPolling(POLLING_INTERVAL);
-    }, 10000);
+    }, POLLING_PAUSE_AFTER_UPDATE);
 
     handleDiscardChanges();
   }

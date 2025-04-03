@@ -1,6 +1,8 @@
-import NodeCache from "node-cache";
-import { QueryDashboardSamplesArgs } from "../../generated/graphql";
-import { CachedOncotreeData } from "../../utils/oncotree";
+import {
+  DashboardSample,
+  QueryDashboardSamplesArgs,
+} from "../../generated/graphql";
+import { OncotreeCache } from "../../utils/cache";
 import { neo4jDriver } from "../../utils/servers";
 import {
   buildCypherDateFilter,
@@ -195,7 +197,7 @@ export function buildSamplesQueryBody({
       	MATCH (s)-[:HAS_METADATA]->(sm:SampleMetadata)
       	RETURN sm ORDER BY sm.importDate DESC LIMIT 1
       } as latestSm
-    
+
     WITH
       s,
       latestSm[0] as latestSm,
@@ -288,11 +290,11 @@ export function buildSamplesQueryBody({
 
       ${bamCompleteDateFilter && `WHERE ${bamCompleteDateFilter}`}
       ${mafCompleteDateFilter && `WHERE ${mafCompleteDateFilter}`}
-      ${qcCompleteDateFilter && `WHERE ${qcCompleteDateFilter}`}      
-      
+      ${qcCompleteDateFilter && `WHERE ${qcCompleteDateFilter}`}
+
     WITH
       ({
-        smileSampleId: s.smileSampleId, 
+        smileSampleId: s.smileSampleId,
         revisable: s.revisable,
         sampleCategory: s.sampleCategory,
 
@@ -320,7 +322,7 @@ export function buildSamplesQueryBody({
         altId: apoc.convert.fromJsonMap(latestSm.additionalProperties).altId,
         validationReport: latestSt.validationReport,
         validationStatus: latestSt.validationStatus,
-        
+
         smileTempoId: t.smileTempoId,
         billed: t.billed,
         costCenter: t.costCenter,
@@ -337,7 +339,7 @@ export function buildSamplesQueryBody({
         qcCompleteDate: latestQC.date,
         qcCompleteResult: latestQC.result,
         qcCompleteReason: latestQC.reason,
-        qcCompleteStatus: latestQC.status 
+        qcCompleteStatus: latestQC.status
         }) AS tempNode
 
     ${searchFilters && `WHERE ${searchFilters}`}
@@ -345,20 +347,19 @@ export function buildSamplesQueryBody({
 
   return samplesQueryBody;
 }
-export async function queryDashboardSamples({
+
+export async function buildSamplesQueryFinal({
   queryBody,
   sort,
   limit,
   offset,
-  oncotreeCache,
 }: {
   queryBody: string;
   sort: QueryDashboardSamplesArgs["sort"];
   limit: QueryDashboardSamplesArgs["limit"];
   offset: QueryDashboardSamplesArgs["offset"];
-  oncotreeCache: NodeCache;
 }) {
-  const cypherQuery = `
+  return `
     ${queryBody}
     WITH COUNT(DISTINCT tempNode) AS total, COLLECT(DISTINCT tempNode) AS results
     UNWIND results AS resultz
@@ -371,23 +372,118 @@ export async function queryDashboardSamples({
     SKIP ${offset}
     LIMIT ${limit}
   `;
+}
 
+export async function queryDashboardSamples({
+  samplesCypherQuery,
+  oncotreeCache,
+}: {
+  samplesCypherQuery: string;
+  oncotreeCache: OncotreeCache | undefined;
+}) {
   const session = neo4jDriver.session();
   try {
-    const result = await session.run(cypherQuery);
-
+    const result = await session.run(samplesCypherQuery);
     return result.records.map((record) => {
       const recordObject = record.toObject().resultz;
-      const otCache = recordObject.oncotreeCode
-        ? (oncotreeCache.get(recordObject.oncotreeCode) as CachedOncotreeData)
-        : null;
       return {
         ...recordObject,
-        cancerType: otCache?.mainType,
-        cancerTypeDetailed: otCache?.name,
+        cancerType: oncotreeCache?.[recordObject.oncotreeCode]?.mainType,
+        cancerTypeDetailed: oncotreeCache?.[recordObject.oncotreeCode]?.name,
       };
     });
   } catch (error) {
     console.error("Error with queryDashboardSamples:", error);
+  }
+}
+
+export function getAddlOtCodesMatchingCtOrCtdVals({
+  searchVals,
+  oncotreeCache,
+}: {
+  searchVals: QueryDashboardSamplesArgs["searchVals"];
+  oncotreeCache: OncotreeCache;
+}) {
+  let addlOncotreeCodes: Set<string> = new Set();
+  if (searchVals?.length) {
+    for (const [code, { name, mainType }] of Object.entries(oncotreeCache)) {
+      for (const val of searchVals) {
+        if (
+          name?.toLowerCase().includes(val?.toLowerCase()) ||
+          mainType?.toLowerCase().includes(val?.toLowerCase())
+        ) {
+          addlOncotreeCodes.add(code);
+        }
+      }
+    }
+  }
+  return Array.from(addlOncotreeCodes);
+}
+
+export type SampleDataForCacheUpdate = Record<
+  string,
+  Pick<
+    DashboardSample,
+    | "primaryId"
+    | "cmoSampleName"
+    | "historicalCmoSampleNames"
+    | "importDate"
+    | "revisable"
+  >
+>;
+
+export async function querySelectSampleDataForCacheUpdate(
+  primaryIds: string[]
+): Promise<SampleDataForCacheUpdate> {
+  const cypherQuery = `
+    MATCH (s:Sample)
+    WITH
+      s,
+      COLLECT {
+      	MATCH (s)-[:HAS_METADATA]->(sm:SampleMetadata)
+      	RETURN sm ORDER BY sm.importDate DESC LIMIT 1
+      } as latestSm
+    WITH
+      s,
+      latestSm[0] as latestSm,
+      COLLECT {
+      	MATCH (s)-[:HAS_METADATA]->(sm:SampleMetadata)
+      	RETURN ({
+      		cmoSampleName: sm.cmoSampleName,
+      		importDate: sm.importDate
+      	})
+      } AS sampleIdsList
+    WITH
+      s,
+      latestSm,
+      apoc.text.join(
+        apoc.coll.toSet(
+          [sid IN apoc.coll.sortMaps(sampleIdsList, "importDate")
+            WHERE sid.cmoSampleName <> latestSm.cmoSampleName AND sid.cmoSampleName <> ""
+            | sid.cmoSampleName + " (" + sid.importDate + ")"
+          ]
+        ),
+      ", ") AS historicalCmoSampleNames
+    WHERE latestSm.primaryId IN $primaryIds
+    RETURN
+      latestSm.primaryId AS primaryId,
+      latestSm.cmoSampleName AS cmoSampleName,
+      latestSm.importDate AS importDate,
+      historicalCmoSampleNames,
+      s.revisable AS revisable
+  `;
+
+  const session = neo4jDriver.session();
+  try {
+    const result = await session.run(cypherQuery, { primaryIds });
+    return result.records
+      .map((record) => record.toObject())
+      .reduce((acc, { primaryId, ...rest }) => {
+        acc[primaryId] = rest;
+        return acc;
+      }, {});
+  } catch (error) {
+    console.error("Error with querySelectSampleDataForCacheUpdate:", error);
+    return {};
   }
 }

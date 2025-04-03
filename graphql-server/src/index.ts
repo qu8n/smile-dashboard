@@ -5,6 +5,7 @@ import { configureApp } from "./middlewares/configureApp";
 import { configureSession } from "./middlewares/configureSession";
 import { configureLogging } from "./middlewares/configureLogging";
 import { configureRoutes } from "./routes";
+require("log-timestamp"); // adds a timestamp to every log statement
 
 async function main() {
   const app: Express = express();
@@ -21,7 +22,7 @@ async function main() {
     httpsServer.listen({ port: 4000 }, resolve)
   );
 
-  console.log(
+  console.info(
     `🚀 Server ready at ${REACT_APP_EXPRESS_SERVER_ORIGIN}${apolloServer.graphqlPath}`
   );
 }
