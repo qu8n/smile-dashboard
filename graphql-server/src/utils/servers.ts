@@ -57,6 +57,7 @@ export async function initializeApolloServer(
 
   const apolloServer = new ApolloServer<ApolloServerContext>({
     schema: mergedSchema,
+    cache: "bounded",
     context: async ({ req }: { req: any }) => {
       updateActiveUserSessions(req);
 

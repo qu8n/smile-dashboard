@@ -312,6 +312,7 @@ export const SampleMetadataDetailsColumns: ColDef[] = [
     headerName: "Historical CMO Sample Names",
     wrapText: true,
     autoHeight: true,
+    maxWidth: 300,
   },
   {
     field: "importDate",
@@ -860,7 +861,7 @@ export function isValidCostCenter(costCenter: string): boolean {
   return validCostCenter.test(costCenter);
 }
 
-export const CACHE_BLOCK_SIZE = 100; // number of rows to fetch at a time
+export const CACHE_BLOCK_SIZE = 500; // number of rows to fetch at a time
 
 export const MAX_ROWS_EXPORT = 10000;
 

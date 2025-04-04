@@ -348,7 +348,7 @@ export function buildSamplesQueryBody({
   return samplesQueryBody;
 }
 
-export async function buildSamplesQueryFinal({
+export function buildSamplesQueryFinal({
   queryBody,
   sort,
   limit,
@@ -380,7 +380,7 @@ export async function queryDashboardSamples({
 }: {
   samplesCypherQuery: string;
   oncotreeCache: OncotreeCache | undefined;
-}) {
+}): Promise<DashboardSample[]> {
   const session = neo4jDriver.session();
   try {
     const result = await session.run(samplesCypherQuery);
@@ -394,6 +394,9 @@ export async function queryDashboardSamples({
     });
   } catch (error) {
     console.error("Error with queryDashboardSamples:", error);
+    return [];
+  } finally {
+    await session.close();
   }
 }
 
@@ -485,5 +488,7 @@ export async function querySelectSampleDataForCacheUpdate(
   } catch (error) {
     console.error("Error with querySelectSampleDataForCacheUpdate:", error);
     return {};
+  } finally {
+    await session.close();
   }
 }

@@ -1,4 +1,7 @@
-import { QueryDashboardPatientsArgs } from "../../generated/graphql";
+import {
+  DashboardPatient,
+  QueryDashboardPatientsArgs,
+} from "../../generated/graphql";
 import { neo4jDriver } from "../../utils/servers";
 import {
   buildCypherBooleanFilter,
@@ -73,20 +76,20 @@ export function buildPatientsQueryBody({
       dmpPa,
       s,
       COLLECT {
-      	MATCH (s)-[:HAS_METADATA]->(sm:SampleMetadata) 
+      	MATCH (s)-[:HAS_METADATA]->(sm:SampleMetadata)
         RETURN ({
-            primaryId: sm.primaryId, 
-            importDate: sm.importDate, 
-            consentPartA: apoc.convert.getJsonProperty(sm, "additionalProperties", "$.consent-parta"), 
+            primaryId: sm.primaryId,
+            importDate: sm.importDate,
+            consentPartA: apoc.convert.getJsonProperty(sm, "additionalProperties", "$.consent-parta"),
             consentPartC: apoc.convert.getJsonProperty(sm, "additionalProperties", "$.consent-partc")
-          }) 
+          })
           AS smResult ORDER BY sm.importDate DESC LIMIT 1
       } AS smList
-    WITH 
-        p.smilePatientId AS smilePatientId, 
-        cmoPa.value AS cmoPatientId, 
-        dmpPa.value AS dmpPatientId, 
-        COUNT(s) AS totalSampleCount, 
+    WITH
+        p.smilePatientId AS smilePatientId,
+        cmoPa.value AS cmoPatientId,
+        dmpPa.value AS dmpPatientId,
+        COUNT(s) AS totalSampleCount,
         smList[0] AS latestSm
     WITH
       smilePatientId,
@@ -94,7 +97,7 @@ export function buildPatientsQueryBody({
       dmpPatientId,
       totalSampleCount,
       latestSm
-    WITH 
+    WITH
       ({
       smilePatientId: smilePatientId,
       cmoPatientId: cmoPatientId,
@@ -104,14 +107,14 @@ export function buildPatientsQueryBody({
       apoc.coll.max(COLLECT(latestSm.importDate)) AS importDate,
       collect(DISTINCT latestSm.consentPartA) AS consentPartA,
       collect(DISTINCT latestSm.consentPartC) AS consentPartC
-    WITH 
-      tempNode{.*, 
-        totalSampleCount: totalSampleCount, 
-        cmoSampleIds: cmoSampleIds, 
-        consentPartA: consentPartA[0], 
-        consentPartC: consentPartC[0], 
+    WITH
+      tempNode{.*,
+        totalSampleCount: totalSampleCount,
+        cmoSampleIds: cmoSampleIds,
+        consentPartA: consentPartA[0],
+        consentPartC: consentPartC[0],
         importDate: importDate
-      } 
+      }
 
     ${filtersAsCypher}
   `;
@@ -128,7 +131,7 @@ export async function queryDashboardPatients({
   sort: QueryDashboardPatientsArgs["sort"];
   limit: QueryDashboardPatientsArgs["limit"];
   offset: QueryDashboardPatientsArgs["offset"];
-}) {
+}): Promise<DashboardPatient[]> {
   const cypherQuery = `
     ${queryBody}
     WITH COUNT(DISTINCT tempNode) AS total, COLLECT(DISTINCT tempNode) AS results
@@ -150,5 +153,8 @@ export async function queryDashboardPatients({
     });
   } catch (error) {
     console.error("Error with queryDashboardPatients:", error);
+    return [];
+  } finally {
+    await session.close();
   }
 }

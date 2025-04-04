@@ -21,14 +21,12 @@ export const SAMPLES_CACHE_KEY = "samples";
 const ONCOTREE_CACHE_TTL = 86400; // 1 day
 const SAMPLES_CACHE_TTL = 3600; // 1 hour
 
-const SAMPLES_PAGES_TO_CACHE = 5; // lower this if needed during dev for faster iterations
-const CACHE_BLOCK_SIZE = 100; // keep consistent with helpers.tsx's CACHE_BLOCK_SIZE
-// Keep consistent with SamplesList.tsx's DEFAULT_SORT
+// Variables to keep in sync with the frontend
+const CACHE_BLOCK_SIZE = 500; // from helpers.tsx
 const SAMPLES_DEFAULT_SORT = {
   colId: "importDate",
   sort: "desc",
-} as DashboardRecordSort;
-// Keep consistent with SamplesPage.tsx's WES_SAMPLE_CONTEXT
+} as DashboardRecordSort; // from SamplesList.tsx
 const WES_SAMPLE_CONTEXT = {
   fieldName: "genePanel",
   values: [
@@ -40,7 +38,7 @@ const WES_SAMPLE_CONTEXT = {
     "WES_Human",
     "WholeExomeSequencing",
   ],
-};
+}; // from SamplesPage.tsx
 
 const MAX_RETRIES_UPON_FALSE_SAMPLE_STATUS = 3;
 const RETRY_INTERVAL_UPON_FALSE_SAMPLE_STATUS = 3000; // 3s
@@ -135,11 +133,10 @@ async function fetchOncotreeApiData() {
 async function getOncotreeCodesFromNeo4j() {
   const session = neo4jDriver.session();
   try {
-    const result = await session.writeTransaction((tx) =>
-      tx.run(`
-        MATCH (sm:SampleMetadata) RETURN DISTINCT sm.oncotreeCode AS oncotreeCode
-      `)
-    );
+    const result = await session.run(`
+      MATCH (sm:SampleMetadata)
+      RETURN DISTINCT sm.oncotreeCode AS oncotreeCode
+    `);
     return result.records
       .map((record) => record.get("oncotreeCode"))
       .filter(Boolean) as string[];
@@ -147,6 +144,7 @@ async function getOncotreeCodesFromNeo4j() {
     if (error instanceof Error) {
       console.error(error.message);
     }
+    return [];
   } finally {
     await session.close();
   }
@@ -171,49 +169,62 @@ async function updateSamplesCache(inMemoryCache: NodeCache) {
 
   // Run these queries concurrently to reduce server startup time
   const oncotreeCache = inMemoryCache.get(ONCOTREE_CACHE_KEY) as OncotreeCache;
-  const allSamplesQueryPromises = buildSamplesQueryPromises({
+  const allSamplesQueryPromises = buildSamplesQueryPromise({
     queryBody: allSamplesQueryBody,
     oncotreeCache,
   });
-  const wesSamplesQueryPromises = buildSamplesQueryPromises({
+  const wesSamplesQueryPromises = buildSamplesQueryPromise({
     queryBody: wesSamplesQueryBody,
     oncotreeCache,
   });
-  const queryResults = await Promise.all([
-    ...allSamplesQueryPromises,
-    ...wesSamplesQueryPromises,
-  ]);
 
-  // Add all samples query results to cache
-  const samplesCache: SamplesCache = {};
-  queryResults.forEach((result) => {
-    if (result) {
-      Object.assign(samplesCache, result);
-    }
-  });
-  inMemoryCache.set(SAMPLES_CACHE_KEY, samplesCache, SAMPLES_CACHE_TTL);
+  try {
+    const queryResults = await Promise.all([
+      allSamplesQueryPromises,
+      wesSamplesQueryPromises,
+    ]);
+
+    // Add all samples query results to cache
+    const samplesCache: SamplesCache = {};
+    queryResults.forEach((result) => {
+      if (result) {
+        Object.assign(samplesCache, result);
+      }
+    });
+
+    // Refresh the samples cache
+    inMemoryCache.set(SAMPLES_CACHE_KEY, samplesCache, SAMPLES_CACHE_TTL);
+  } catch (error) {
+    console.error(
+      "Error executing queries during the samples cache update:",
+      error
+    );
+  }
 }
 
-function buildSamplesQueryPromises({
+function buildSamplesQueryPromise({
   queryBody,
   oncotreeCache,
 }: {
   queryBody: string;
   oncotreeCache: OncotreeCache;
-}) {
-  const pageIndicesToCache = [...Array(SAMPLES_PAGES_TO_CACHE).keys()]; // [0, 1, 2, ..., n]
-  return pageIndicesToCache.map(async (pageIndex) => {
-    const samplesCypherQuery = await buildSamplesQueryFinal({
-      queryBody,
-      sort: SAMPLES_DEFAULT_SORT,
-      limit: CACHE_BLOCK_SIZE,
-      offset: CACHE_BLOCK_SIZE * pageIndex,
-    });
-    const queryResult = await queryDashboardSamples({
-      samplesCypherQuery,
-      oncotreeCache,
-    });
-    return queryResult ? { [samplesCypherQuery]: queryResult } : null;
+}): Promise<Record<string, DashboardSample[]> | null> {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const samplesCypherQuery = buildSamplesQueryFinal({
+        queryBody,
+        sort: SAMPLES_DEFAULT_SORT,
+        limit: CACHE_BLOCK_SIZE,
+        offset: 0,
+      });
+      const queryResult = await queryDashboardSamples({
+        samplesCypherQuery,
+        oncotreeCache,
+      });
+      resolve(queryResult ? { [samplesCypherQuery]: queryResult } : null);
+    } catch (error) {
+      reject(error);
+    }
   });
 }
 
@@ -245,12 +256,11 @@ export async function updateCacheWithNewSampleUpdates(
     {} as Record<string, DashboardSampleInput> // key = primaryId
   );
 
-  // Get the latest sample label and status from Neo4j to update the samples cache
+  console.info(
+    "Getting select latest data for updated samples to update the samples cache..."
+  );
   let sampleDataForCacheUpdate: SampleDataForCacheUpdate = {};
   for (let retry = 0; retry < MAX_RETRIES_UPON_FALSE_SAMPLE_STATUS; retry++) {
-    console.info(
-      "Getting the latest sample label and status for updated samples..."
-    );
     await new Promise((resolve) =>
       setTimeout(resolve, RETRY_INTERVAL_UPON_FALSE_SAMPLE_STATUS)
     );
@@ -261,7 +271,6 @@ export async function updateCacheWithNewSampleUpdates(
       ({ revisable }) => revisable === false
     );
     if (!hasFalseRevisable) {
-      console.info("No false revisable found.");
       break;
     } else {
       if (retry < MAX_RETRIES_UPON_FALSE_SAMPLE_STATUS - 1) {
@@ -279,7 +288,6 @@ export async function updateCacheWithNewSampleUpdates(
     }
   }
 
-  console.info("Updating the samples cache with dashboard updates...");
   for (const sample of cachedSamples) {
     if (newSamplesByPrimaryId.hasOwnProperty(sample.primaryId)) {
       // Update the fields of any samples in cache that were changed in newDashboardSamples
@@ -298,8 +306,18 @@ export async function updateCacheWithNewSampleUpdates(
     }
   }
 
+  // Re-sort the samples in cache to match frontend's optimistc update flow in SamplesList.tsx
+  Object.keys(samplesCache).forEach((cachedSamplesQuery) => {
+    samplesCache[cachedSamplesQuery].sort((a, b) => {
+      return (
+        new Date(b.importDate).getTime() - new Date(a.importDate).getTime()
+      );
+    });
+  });
+
   // Refresh the samples cache
   inMemoryCache.set(SAMPLES_CACHE_KEY, samplesCache, SAMPLES_CACHE_TTL);
+  console.info("Updated the samples cache with dashboard updates.");
 }
 
 function logCacheStats(inMemoryCache: NodeCache) {

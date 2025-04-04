@@ -1,4 +1,5 @@
 import {
+  DashboardCohort,
   QueryDashboardCohortsArgs,
   QueryDashboardPatientsArgs,
 } from "../../generated/graphql";
@@ -87,7 +88,7 @@ export function buildCohortsQueryBody({
       size(collect(s)) AS totalSampleCount,
       tempoCount,
       billedCount
-        
+
     // Calculate values for the "Billed" column
     WITH
       c,
@@ -119,23 +120,23 @@ export function buildCohortsQueryBody({
       billed: billed,
       initialCohortDeliveryDate: initialCohortDeliveryDate,
       latestCohortDeliveryDate: latestCohortDeliveryDate
-    }) as tempNode, 
+    }) as tempNode,
     COLLECT {
       MATCH (c)-[:HAS_COHORT_COMPLETE]->(cc: CohortComplete)
       RETURN cc ORDER BY cc.date DESC LIMIT 1
     } as latestCC
-    
-    WITH 
+
+    WITH
       tempNode,
       latestCC[0] as latestCC
-    
+
     WITH
-      tempNode{.*, 
-        endUsers: latestCC.endUsers, 
-        pmUsers: latestCC.pmUsers, 
-        projectTitle: latestCC.projectTitle, 
-        projectSubtitle: latestCC.projectSubtitle, 
-        status: latestCC.status, 
+      tempNode{.*,
+        endUsers: latestCC.endUsers,
+        pmUsers: latestCC.pmUsers,
+        projectTitle: latestCC.projectTitle,
+        projectSubtitle: latestCC.projectSubtitle,
+        status: latestCC.status,
         type: latestCC.type
       }
 
@@ -154,13 +155,13 @@ export async function queryDashboardCohorts({
   sort: QueryDashboardPatientsArgs["sort"];
   limit: QueryDashboardPatientsArgs["limit"];
   offset: QueryDashboardPatientsArgs["offset"];
-}) {
+}): Promise<DashboardCohort[]> {
   const cypherQuery = `
     ${queryBody}
     WITH COUNT(DISTINCT tempNode) AS total, size(apoc.coll.toSet(apoc.coll.flatten(collect(tempNode.sampleIdsByCohort)))) AS uniqueSampleCount, collect(DISTINCT tempNode) AS results
     WITH total, uniqueSampleCount, results
     UNWIND results AS resultz
-    RETURN 
+    RETURN
       resultz{.*, _total:total, _uniqueSampleCount: uniqueSampleCount}
 
     ORDER BY ${getNeo4jCustomSort(sort)}
@@ -176,5 +177,8 @@ export async function queryDashboardCohorts({
     });
   } catch (error) {
     console.error("Error with queryDashboardCohorts:", error);
+    return [];
+  } finally {
+    await session.close();
   }
 }

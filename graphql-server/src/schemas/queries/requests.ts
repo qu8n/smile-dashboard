@@ -96,7 +96,7 @@ export function buildRequestsQueryBody({
       totalSampleCount,
       apoc.coll.max(allImportDates) as latestImportDate
     WITH
-      ({igoRequestId: r.igoRequestId, 
+      ({igoRequestId: r.igoRequestId,
         igoProjectId: r.igoProjectId,
         importDate: latestImportDate,
         totalSampleCount: totalSampleCount,
@@ -131,13 +131,13 @@ export async function queryDashboardRequests({
   sort: QueryDashboardRequestsArgs["sort"];
   limit: QueryDashboardRequestsArgs["limit"];
   offset: QueryDashboardRequestsArgs["offset"];
-}) {
+}): Promise<DashboardRequest[]> {
   const cypherQuery = `
     ${queryBody}
     WITH COUNT(DISTINCT tempNode) AS total, COLLECT(DISTINCT tempNode) AS results
     UNWIND results as resultz
     WITH resultz, total
-    
+
     RETURN
       resultz{.*, _total: total}
     ORDER BY ${getNeo4jCustomSort(sort)}
@@ -153,5 +153,8 @@ export async function queryDashboardRequests({
     });
   } catch (error) {
     console.error("Error with queryDashboardRequests:", error);
+    return [];
+  } finally {
+    await session.close();
   }
 }
