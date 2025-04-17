@@ -1,0 +1,23 @@
+name: Build and Publish image to Docker Hub
+
+on:
+  [workflow_dispatch]
+
+jobs:
+  publish_images:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+    - name: build smile-dashboard image
+      run: docker build -f Dockerfile . -t cmometadb/smile-dashboard:${{ github.ref_name }}
+    - name: push smile-dashboard image
+      run: |
+        docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
+        docker push cmometadb/smile-dashboard:${{ github.ref_name }}
+    - name: build graphql-client image
+      run: docker build -f graphql-server/Dockerfile . -t cmometadb/graphql-client:${{ github.ref_name }}
+    - name: push graphql-client image
+      run: |
+        docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
+        docker push cmometadb/graphql-client:${{ github.ref_name }}
