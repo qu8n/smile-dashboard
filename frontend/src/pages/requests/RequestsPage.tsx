@@ -6,8 +6,8 @@ import { useState } from "react";
 import {
   MAX_ROWS_EXPORT,
   MAX_ROWS_EXPORT_WARNING,
-  RequestsListColumns,
-  SampleMetadataDetailsColumns,
+  RequestColumns,
+  SampleColumns,
 } from "../../shared/helpers";
 import { useParams } from "react-router-dom";
 import RecordsList from "../../components/RecordsList";
@@ -34,7 +34,7 @@ export default function RequestsPage() {
   return (
     <>
       <RecordsList
-        columnDefs={RequestsListColumns}
+        columnDefs={RequestColumns}
         dataName={dataName}
         defaultSort={defaultSort}
         useRecordsLazyQuery={useDashboardRequestsLazyQuery}
@@ -52,7 +52,7 @@ export default function RequestsPage() {
             setShowDownloadModal(true);
           }
         }}
-        samplesColDefs={SampleMetadataDetailsColumns}
+        samplesColDefs={SampleColumns}
         sampleContext={
           sampleQueryParamValue
             ? {

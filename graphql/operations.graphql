@@ -142,6 +142,8 @@ fragment DashboardSampleMetadataParts on DashboardSample {
   recipe
   altId
   historicalCmoSampleNames
+  instrumentModel
+  platform
   ## (sm:SampleMetadata)-[:HAS_STATUS]->(s:Status)
   validationReport
   validationStatus

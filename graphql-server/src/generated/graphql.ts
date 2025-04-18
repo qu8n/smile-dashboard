@@ -1265,6 +1265,12 @@ export type CreateCohortsMutationResponse = {
   info: CreateInfo;
 };
 
+export type CreateDbGapsMutationResponse = {
+  __typename?: "CreateDbGapsMutationResponse";
+  dbGaps: Array<DbGap>;
+  info: CreateInfo;
+};
+
 /** Information about the number of nodes and relationships created during a create mutation */
 export type CreateInfo = {
   __typename?: "CreateInfo";
@@ -1440,11 +1446,13 @@ export type DashboardSample = {
   historicalCmoSampleNames?: Maybe<Scalars["String"]>;
   importDate: Scalars["String"];
   initialPipelineRunDate?: Maybe<Scalars["String"]>;
+  instrumentModel?: Maybe<Scalars["String"]>;
   investigatorSampleId?: Maybe<Scalars["String"]>;
   mafCompleteDate?: Maybe<Scalars["String"]>;
   mafCompleteNormalPrimaryId?: Maybe<Scalars["String"]>;
   mafCompleteStatus?: Maybe<Scalars["String"]>;
   oncotreeCode?: Maybe<Scalars["String"]>;
+  platform?: Maybe<Scalars["String"]>;
   preservation?: Maybe<Scalars["String"]>;
   primaryId: Scalars["String"];
   qcCompleteDate?: Maybe<Scalars["String"]>;
@@ -1512,6 +1520,278 @@ export type DashboardSampleInput = {
   tumorOrNormal?: InputMaybe<Scalars["String"]>;
   validationReport?: InputMaybe<Scalars["String"]>;
   validationStatus?: InputMaybe<Scalars["Boolean"]>;
+};
+
+export type DbGap = {
+  __typename?: "DbGap";
+  dbGapStudy: Scalars["String"];
+  samplesHasDbgap: Array<Sample>;
+  samplesHasDbgapAggregate?: Maybe<DbGapSampleSamplesHasDbgapAggregationSelection>;
+  samplesHasDbgapConnection: DbGapSamplesHasDbgapConnection;
+};
+
+export type DbGapSamplesHasDbgapArgs = {
+  directed?: InputMaybe<Scalars["Boolean"]>;
+  options?: InputMaybe<SampleOptions>;
+  where?: InputMaybe<SampleWhere>;
+};
+
+export type DbGapSamplesHasDbgapAggregateArgs = {
+  directed?: InputMaybe<Scalars["Boolean"]>;
+  where?: InputMaybe<SampleWhere>;
+};
+
+export type DbGapSamplesHasDbgapConnectionArgs = {
+  after?: InputMaybe<Scalars["String"]>;
+  directed?: InputMaybe<Scalars["Boolean"]>;
+  first?: InputMaybe<Scalars["Int"]>;
+  sort?: InputMaybe<Array<DbGapSamplesHasDbgapConnectionSort>>;
+  where?: InputMaybe<DbGapSamplesHasDbgapConnectionWhere>;
+};
+
+export type DbGapAggregateSelection = {
+  __typename?: "DbGapAggregateSelection";
+  count: Scalars["Int"];
+  dbGapStudy: StringAggregateSelection;
+};
+
+export type DbGapConnectInput = {
+  samplesHasDbgap?: InputMaybe<Array<DbGapSamplesHasDbgapConnectFieldInput>>;
+};
+
+export type DbGapConnectWhere = {
+  node: DbGapWhere;
+};
+
+export type DbGapCreateInput = {
+  dbGapStudy: Scalars["String"];
+  samplesHasDbgap?: InputMaybe<DbGapSamplesHasDbgapFieldInput>;
+};
+
+export type DbGapDeleteInput = {
+  samplesHasDbgap?: InputMaybe<Array<DbGapSamplesHasDbgapDeleteFieldInput>>;
+};
+
+export type DbGapDisconnectInput = {
+  samplesHasDbgap?: InputMaybe<Array<DbGapSamplesHasDbgapDisconnectFieldInput>>;
+};
+
+export type DbGapEdge = {
+  __typename?: "DbGapEdge";
+  cursor: Scalars["String"];
+  node: DbGap;
+};
+
+export type DbGapOptions = {
+  limit?: InputMaybe<Scalars["Int"]>;
+  offset?: InputMaybe<Scalars["Int"]>;
+  /** Specify one or more DbGapSort objects to sort DbGaps by. The sorts will be applied in the order in which they are arranged in the array. */
+  sort?: InputMaybe<Array<DbGapSort>>;
+};
+
+export type DbGapRelationInput = {
+  samplesHasDbgap?: InputMaybe<Array<DbGapSamplesHasDbgapCreateFieldInput>>;
+};
+
+export type DbGapSampleSamplesHasDbgapAggregationSelection = {
+  __typename?: "DbGapSampleSamplesHasDbgapAggregationSelection";
+  count: Scalars["Int"];
+  node?: Maybe<DbGapSampleSamplesHasDbgapNodeAggregateSelection>;
+};
+
+export type DbGapSampleSamplesHasDbgapNodeAggregateSelection = {
+  __typename?: "DbGapSampleSamplesHasDbgapNodeAggregateSelection";
+  datasource: StringAggregateSelection;
+  sampleCategory: StringAggregateSelection;
+  sampleClass: StringAggregateSelection;
+  smileSampleId: StringAggregateSelection;
+};
+
+export type DbGapSamplesHasDbgapAggregateInput = {
+  AND?: InputMaybe<Array<DbGapSamplesHasDbgapAggregateInput>>;
+  NOT?: InputMaybe<DbGapSamplesHasDbgapAggregateInput>;
+  OR?: InputMaybe<Array<DbGapSamplesHasDbgapAggregateInput>>;
+  count?: InputMaybe<Scalars["Int"]>;
+  count_GT?: InputMaybe<Scalars["Int"]>;
+  count_GTE?: InputMaybe<Scalars["Int"]>;
+  count_LT?: InputMaybe<Scalars["Int"]>;
+  count_LTE?: InputMaybe<Scalars["Int"]>;
+  node?: InputMaybe<DbGapSamplesHasDbgapNodeAggregationWhereInput>;
+};
+
+export type DbGapSamplesHasDbgapConnectFieldInput = {
+  connect?: InputMaybe<Array<SampleConnectInput>>;
+  /** Whether or not to overwrite any matching relationship with the new properties. */
+  overwrite?: Scalars["Boolean"];
+  where?: InputMaybe<SampleConnectWhere>;
+};
+
+export type DbGapSamplesHasDbgapConnection = {
+  __typename?: "DbGapSamplesHasDbgapConnection";
+  edges: Array<DbGapSamplesHasDbgapRelationship>;
+  pageInfo: PageInfo;
+  totalCount: Scalars["Int"];
+};
+
+export type DbGapSamplesHasDbgapConnectionSort = {
+  node?: InputMaybe<SampleSort>;
+};
+
+export type DbGapSamplesHasDbgapConnectionWhere = {
+  AND?: InputMaybe<Array<DbGapSamplesHasDbgapConnectionWhere>>;
+  NOT?: InputMaybe<DbGapSamplesHasDbgapConnectionWhere>;
+  OR?: InputMaybe<Array<DbGapSamplesHasDbgapConnectionWhere>>;
+  node?: InputMaybe<SampleWhere>;
+};
+
+export type DbGapSamplesHasDbgapCreateFieldInput = {
+  node: SampleCreateInput;
+};
+
+export type DbGapSamplesHasDbgapDeleteFieldInput = {
+  delete?: InputMaybe<SampleDeleteInput>;
+  where?: InputMaybe<DbGapSamplesHasDbgapConnectionWhere>;
+};
+
+export type DbGapSamplesHasDbgapDisconnectFieldInput = {
+  disconnect?: InputMaybe<SampleDisconnectInput>;
+  where?: InputMaybe<DbGapSamplesHasDbgapConnectionWhere>;
+};
+
+export type DbGapSamplesHasDbgapFieldInput = {
+  connect?: InputMaybe<Array<DbGapSamplesHasDbgapConnectFieldInput>>;
+  create?: InputMaybe<Array<DbGapSamplesHasDbgapCreateFieldInput>>;
+};
+
+export type DbGapSamplesHasDbgapNodeAggregationWhereInput = {
+  AND?: InputMaybe<Array<DbGapSamplesHasDbgapNodeAggregationWhereInput>>;
+  NOT?: InputMaybe<DbGapSamplesHasDbgapNodeAggregationWhereInput>;
+  OR?: InputMaybe<Array<DbGapSamplesHasDbgapNodeAggregationWhereInput>>;
+  datasource_AVERAGE_LENGTH_EQUAL?: InputMaybe<Scalars["Float"]>;
+  datasource_AVERAGE_LENGTH_GT?: InputMaybe<Scalars["Float"]>;
+  datasource_AVERAGE_LENGTH_GTE?: InputMaybe<Scalars["Float"]>;
+  datasource_AVERAGE_LENGTH_LT?: InputMaybe<Scalars["Float"]>;
+  datasource_AVERAGE_LENGTH_LTE?: InputMaybe<Scalars["Float"]>;
+  datasource_LONGEST_LENGTH_EQUAL?: InputMaybe<Scalars["Int"]>;
+  datasource_LONGEST_LENGTH_GT?: InputMaybe<Scalars["Int"]>;
+  datasource_LONGEST_LENGTH_GTE?: InputMaybe<Scalars["Int"]>;
+  datasource_LONGEST_LENGTH_LT?: InputMaybe<Scalars["Int"]>;
+  datasource_LONGEST_LENGTH_LTE?: InputMaybe<Scalars["Int"]>;
+  datasource_SHORTEST_LENGTH_EQUAL?: InputMaybe<Scalars["Int"]>;
+  datasource_SHORTEST_LENGTH_GT?: InputMaybe<Scalars["Int"]>;
+  datasource_SHORTEST_LENGTH_GTE?: InputMaybe<Scalars["Int"]>;
+  datasource_SHORTEST_LENGTH_LT?: InputMaybe<Scalars["Int"]>;
+  datasource_SHORTEST_LENGTH_LTE?: InputMaybe<Scalars["Int"]>;
+  sampleCategory_AVERAGE_LENGTH_EQUAL?: InputMaybe<Scalars["Float"]>;
+  sampleCategory_AVERAGE_LENGTH_GT?: InputMaybe<Scalars["Float"]>;
+  sampleCategory_AVERAGE_LENGTH_GTE?: InputMaybe<Scalars["Float"]>;
+  sampleCategory_AVERAGE_LENGTH_LT?: InputMaybe<Scalars["Float"]>;
+  sampleCategory_AVERAGE_LENGTH_LTE?: InputMaybe<Scalars["Float"]>;
+  sampleCategory_LONGEST_LENGTH_EQUAL?: InputMaybe<Scalars["Int"]>;
+  sampleCategory_LONGEST_LENGTH_GT?: InputMaybe<Scalars["Int"]>;
+  sampleCategory_LONGEST_LENGTH_GTE?: InputMaybe<Scalars["Int"]>;
+  sampleCategory_LONGEST_LENGTH_LT?: InputMaybe<Scalars["Int"]>;
+  sampleCategory_LONGEST_LENGTH_LTE?: InputMaybe<Scalars["Int"]>;
+  sampleCategory_SHORTEST_LENGTH_EQUAL?: InputMaybe<Scalars["Int"]>;
+  sampleCategory_SHORTEST_LENGTH_GT?: InputMaybe<Scalars["Int"]>;
+  sampleCategory_SHORTEST_LENGTH_GTE?: InputMaybe<Scalars["Int"]>;
+  sampleCategory_SHORTEST_LENGTH_LT?: InputMaybe<Scalars["Int"]>;
+  sampleCategory_SHORTEST_LENGTH_LTE?: InputMaybe<Scalars["Int"]>;
+  sampleClass_AVERAGE_LENGTH_EQUAL?: InputMaybe<Scalars["Float"]>;
+  sampleClass_AVERAGE_LENGTH_GT?: InputMaybe<Scalars["Float"]>;
+  sampleClass_AVERAGE_LENGTH_GTE?: InputMaybe<Scalars["Float"]>;
+  sampleClass_AVERAGE_LENGTH_LT?: InputMaybe<Scalars["Float"]>;
+  sampleClass_AVERAGE_LENGTH_LTE?: InputMaybe<Scalars["Float"]>;
+  sampleClass_LONGEST_LENGTH_EQUAL?: InputMaybe<Scalars["Int"]>;
+  sampleClass_LONGEST_LENGTH_GT?: InputMaybe<Scalars["Int"]>;
+  sampleClass_LONGEST_LENGTH_GTE?: InputMaybe<Scalars["Int"]>;
+  sampleClass_LONGEST_LENGTH_LT?: InputMaybe<Scalars["Int"]>;
+  sampleClass_LONGEST_LENGTH_LTE?: InputMaybe<Scalars["Int"]>;
+  sampleClass_SHORTEST_LENGTH_EQUAL?: InputMaybe<Scalars["Int"]>;
+  sampleClass_SHORTEST_LENGTH_GT?: InputMaybe<Scalars["Int"]>;
+  sampleClass_SHORTEST_LENGTH_GTE?: InputMaybe<Scalars["Int"]>;
+  sampleClass_SHORTEST_LENGTH_LT?: InputMaybe<Scalars["Int"]>;
+  sampleClass_SHORTEST_LENGTH_LTE?: InputMaybe<Scalars["Int"]>;
+  smileSampleId_AVERAGE_LENGTH_EQUAL?: InputMaybe<Scalars["Float"]>;
+  smileSampleId_AVERAGE_LENGTH_GT?: InputMaybe<Scalars["Float"]>;
+  smileSampleId_AVERAGE_LENGTH_GTE?: InputMaybe<Scalars["Float"]>;
+  smileSampleId_AVERAGE_LENGTH_LT?: InputMaybe<Scalars["Float"]>;
+  smileSampleId_AVERAGE_LENGTH_LTE?: InputMaybe<Scalars["Float"]>;
+  smileSampleId_LONGEST_LENGTH_EQUAL?: InputMaybe<Scalars["Int"]>;
+  smileSampleId_LONGEST_LENGTH_GT?: InputMaybe<Scalars["Int"]>;
+  smileSampleId_LONGEST_LENGTH_GTE?: InputMaybe<Scalars["Int"]>;
+  smileSampleId_LONGEST_LENGTH_LT?: InputMaybe<Scalars["Int"]>;
+  smileSampleId_LONGEST_LENGTH_LTE?: InputMaybe<Scalars["Int"]>;
+  smileSampleId_SHORTEST_LENGTH_EQUAL?: InputMaybe<Scalars["Int"]>;
+  smileSampleId_SHORTEST_LENGTH_GT?: InputMaybe<Scalars["Int"]>;
+  smileSampleId_SHORTEST_LENGTH_GTE?: InputMaybe<Scalars["Int"]>;
+  smileSampleId_SHORTEST_LENGTH_LT?: InputMaybe<Scalars["Int"]>;
+  smileSampleId_SHORTEST_LENGTH_LTE?: InputMaybe<Scalars["Int"]>;
+};
+
+export type DbGapSamplesHasDbgapRelationship = {
+  __typename?: "DbGapSamplesHasDbgapRelationship";
+  cursor: Scalars["String"];
+  node: Sample;
+};
+
+export type DbGapSamplesHasDbgapUpdateConnectionInput = {
+  node?: InputMaybe<SampleUpdateInput>;
+};
+
+export type DbGapSamplesHasDbgapUpdateFieldInput = {
+  connect?: InputMaybe<Array<DbGapSamplesHasDbgapConnectFieldInput>>;
+  create?: InputMaybe<Array<DbGapSamplesHasDbgapCreateFieldInput>>;
+  delete?: InputMaybe<Array<DbGapSamplesHasDbgapDeleteFieldInput>>;
+  disconnect?: InputMaybe<Array<DbGapSamplesHasDbgapDisconnectFieldInput>>;
+  update?: InputMaybe<DbGapSamplesHasDbgapUpdateConnectionInput>;
+  where?: InputMaybe<DbGapSamplesHasDbgapConnectionWhere>;
+};
+
+/** Fields to sort DbGaps by. The order in which sorts are applied is not guaranteed when specifying many fields in one DbGapSort object. */
+export type DbGapSort = {
+  dbGapStudy?: InputMaybe<SortDirection>;
+};
+
+export type DbGapUpdateInput = {
+  dbGapStudy?: InputMaybe<Scalars["String"]>;
+  samplesHasDbgap?: InputMaybe<Array<DbGapSamplesHasDbgapUpdateFieldInput>>;
+};
+
+export type DbGapWhere = {
+  AND?: InputMaybe<Array<DbGapWhere>>;
+  NOT?: InputMaybe<DbGapWhere>;
+  OR?: InputMaybe<Array<DbGapWhere>>;
+  dbGapStudy?: InputMaybe<Scalars["String"]>;
+  dbGapStudy_CONTAINS?: InputMaybe<Scalars["String"]>;
+  dbGapStudy_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  dbGapStudy_IN?: InputMaybe<Array<Scalars["String"]>>;
+  dbGapStudy_MATCHES?: InputMaybe<Scalars["String"]>;
+  dbGapStudy_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  samplesHasDbgapAggregate?: InputMaybe<DbGapSamplesHasDbgapAggregateInput>;
+  /** Return DbGaps where all of the related DbGapSamplesHasDbgapConnections match this filter */
+  samplesHasDbgapConnection_ALL?: InputMaybe<DbGapSamplesHasDbgapConnectionWhere>;
+  /** Return DbGaps where none of the related DbGapSamplesHasDbgapConnections match this filter */
+  samplesHasDbgapConnection_NONE?: InputMaybe<DbGapSamplesHasDbgapConnectionWhere>;
+  /** Return DbGaps where one of the related DbGapSamplesHasDbgapConnections match this filter */
+  samplesHasDbgapConnection_SINGLE?: InputMaybe<DbGapSamplesHasDbgapConnectionWhere>;
+  /** Return DbGaps where some of the related DbGapSamplesHasDbgapConnections match this filter */
+  samplesHasDbgapConnection_SOME?: InputMaybe<DbGapSamplesHasDbgapConnectionWhere>;
+  /** Return DbGaps where all of the related Samples match this filter */
+  samplesHasDbgap_ALL?: InputMaybe<SampleWhere>;
+  /** Return DbGaps where none of the related Samples match this filter */
+  samplesHasDbgap_NONE?: InputMaybe<SampleWhere>;
+  /** Return DbGaps where one of the related Samples match this filter */
+  samplesHasDbgap_SINGLE?: InputMaybe<SampleWhere>;
+  /** Return DbGaps where some of the related Samples match this filter */
+  samplesHasDbgap_SOME?: InputMaybe<SampleWhere>;
+};
+
+export type DbGapsConnection = {
+  __typename?: "DbGapsConnection";
+  edges: Array<DbGapEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars["Int"];
 };
 
 /** Information about the number of nodes and relationships deleted during a delete mutation */
@@ -1874,6 +2154,7 @@ export type Mutation = {
   createBamCompletes: CreateBamCompletesMutationResponse;
   createCohortCompletes: CreateCohortCompletesMutationResponse;
   createCohorts: CreateCohortsMutationResponse;
+  createDbGaps: CreateDbGapsMutationResponse;
   createMafCompletes: CreateMafCompletesMutationResponse;
   createPatientAliases: CreatePatientAliasesMutationResponse;
   createPatients: CreatePatientsMutationResponse;
@@ -1889,6 +2170,7 @@ export type Mutation = {
   deleteBamCompletes: DeleteInfo;
   deleteCohortCompletes: DeleteInfo;
   deleteCohorts: DeleteInfo;
+  deleteDbGaps: DeleteInfo;
   deleteMafCompletes: DeleteInfo;
   deletePatientAliases: DeleteInfo;
   deletePatients: DeleteInfo;
@@ -1905,6 +2187,7 @@ export type Mutation = {
   updateCohortCompletes: UpdateCohortCompletesMutationResponse;
   updateCohorts: UpdateCohortsMutationResponse;
   updateDashboardSamples?: Maybe<Array<Maybe<DashboardSample>>>;
+  updateDbGaps: UpdateDbGapsMutationResponse;
   updateMafCompletes: UpdateMafCompletesMutationResponse;
   updatePatientAliases: UpdatePatientAliasesMutationResponse;
   updatePatients: UpdatePatientsMutationResponse;
@@ -1929,6 +2212,10 @@ export type MutationCreateCohortCompletesArgs = {
 
 export type MutationCreateCohortsArgs = {
   input: Array<CohortCreateInput>;
+};
+
+export type MutationCreateDbGapsArgs = {
+  input: Array<DbGapCreateInput>;
 };
 
 export type MutationCreateMafCompletesArgs = {
@@ -1994,6 +2281,11 @@ export type MutationDeleteCohortsArgs = {
   where?: InputMaybe<CohortWhere>;
 };
 
+export type MutationDeleteDbGapsArgs = {
+  delete?: InputMaybe<DbGapDeleteInput>;
+  where?: InputMaybe<DbGapWhere>;
+};
+
 export type MutationDeleteMafCompletesArgs = {
   delete?: InputMaybe<MafCompleteDeleteInput>;
   where?: InputMaybe<MafCompleteWhere>;
@@ -2055,28 +2347,16 @@ export type MutationDeleteTemposArgs = {
 };
 
 export type MutationUpdateBamCompletesArgs = {
-  connect?: InputMaybe<BamCompleteConnectInput>;
-  create?: InputMaybe<BamCompleteRelationInput>;
-  delete?: InputMaybe<BamCompleteDeleteInput>;
-  disconnect?: InputMaybe<BamCompleteDisconnectInput>;
   update?: InputMaybe<BamCompleteUpdateInput>;
   where?: InputMaybe<BamCompleteWhere>;
 };
 
 export type MutationUpdateCohortCompletesArgs = {
-  connect?: InputMaybe<CohortCompleteConnectInput>;
-  create?: InputMaybe<CohortCompleteRelationInput>;
-  delete?: InputMaybe<CohortCompleteDeleteInput>;
-  disconnect?: InputMaybe<CohortCompleteDisconnectInput>;
   update?: InputMaybe<CohortCompleteUpdateInput>;
   where?: InputMaybe<CohortCompleteWhere>;
 };
 
 export type MutationUpdateCohortsArgs = {
-  connect?: InputMaybe<CohortConnectInput>;
-  create?: InputMaybe<CohortRelationInput>;
-  delete?: InputMaybe<CohortDeleteInput>;
-  disconnect?: InputMaybe<CohortDisconnectInput>;
   update?: InputMaybe<CohortUpdateInput>;
   where?: InputMaybe<CohortWhere>;
 };
@@ -2085,110 +2365,67 @@ export type MutationUpdateDashboardSamplesArgs = {
   newDashboardSamples?: InputMaybe<Array<InputMaybe<DashboardSampleInput>>>;
 };
 
+export type MutationUpdateDbGapsArgs = {
+  update?: InputMaybe<DbGapUpdateInput>;
+  where?: InputMaybe<DbGapWhere>;
+};
+
 export type MutationUpdateMafCompletesArgs = {
-  connect?: InputMaybe<MafCompleteConnectInput>;
-  create?: InputMaybe<MafCompleteRelationInput>;
-  delete?: InputMaybe<MafCompleteDeleteInput>;
-  disconnect?: InputMaybe<MafCompleteDisconnectInput>;
   update?: InputMaybe<MafCompleteUpdateInput>;
   where?: InputMaybe<MafCompleteWhere>;
 };
 
 export type MutationUpdatePatientAliasesArgs = {
-  connect?: InputMaybe<PatientAliasConnectInput>;
-  create?: InputMaybe<PatientAliasRelationInput>;
-  delete?: InputMaybe<PatientAliasDeleteInput>;
-  disconnect?: InputMaybe<PatientAliasDisconnectInput>;
   update?: InputMaybe<PatientAliasUpdateInput>;
   where?: InputMaybe<PatientAliasWhere>;
 };
 
 export type MutationUpdatePatientsArgs = {
-  connect?: InputMaybe<PatientConnectInput>;
-  create?: InputMaybe<PatientRelationInput>;
-  delete?: InputMaybe<PatientDeleteInput>;
-  disconnect?: InputMaybe<PatientDisconnectInput>;
   update?: InputMaybe<PatientUpdateInput>;
   where?: InputMaybe<PatientWhere>;
 };
 
 export type MutationUpdateProjectsArgs = {
-  connect?: InputMaybe<ProjectConnectInput>;
-  create?: InputMaybe<ProjectRelationInput>;
-  delete?: InputMaybe<ProjectDeleteInput>;
-  disconnect?: InputMaybe<ProjectDisconnectInput>;
   update?: InputMaybe<ProjectUpdateInput>;
   where?: InputMaybe<ProjectWhere>;
 };
 
 export type MutationUpdateQcCompletesArgs = {
-  connect?: InputMaybe<QcCompleteConnectInput>;
-  create?: InputMaybe<QcCompleteRelationInput>;
-  delete?: InputMaybe<QcCompleteDeleteInput>;
-  disconnect?: InputMaybe<QcCompleteDisconnectInput>;
   update?: InputMaybe<QcCompleteUpdateInput>;
   where?: InputMaybe<QcCompleteWhere>;
 };
 
 export type MutationUpdateRequestMetadataArgs = {
-  connect?: InputMaybe<RequestMetadataConnectInput>;
-  create?: InputMaybe<RequestMetadataRelationInput>;
-  delete?: InputMaybe<RequestMetadataDeleteInput>;
-  disconnect?: InputMaybe<RequestMetadataDisconnectInput>;
   update?: InputMaybe<RequestMetadataUpdateInput>;
   where?: InputMaybe<RequestMetadataWhere>;
 };
 
 export type MutationUpdateRequestsArgs = {
-  connect?: InputMaybe<RequestConnectInput>;
-  create?: InputMaybe<RequestRelationInput>;
-  delete?: InputMaybe<RequestDeleteInput>;
-  disconnect?: InputMaybe<RequestDisconnectInput>;
   update?: InputMaybe<RequestUpdateInput>;
   where?: InputMaybe<RequestWhere>;
 };
 
 export type MutationUpdateSampleAliasesArgs = {
-  connect?: InputMaybe<SampleAliasConnectInput>;
-  create?: InputMaybe<SampleAliasRelationInput>;
-  delete?: InputMaybe<SampleAliasDeleteInput>;
-  disconnect?: InputMaybe<SampleAliasDisconnectInput>;
   update?: InputMaybe<SampleAliasUpdateInput>;
   where?: InputMaybe<SampleAliasWhere>;
 };
 
 export type MutationUpdateSampleMetadataArgs = {
-  connect?: InputMaybe<SampleMetadataConnectInput>;
-  create?: InputMaybe<SampleMetadataRelationInput>;
-  delete?: InputMaybe<SampleMetadataDeleteInput>;
-  disconnect?: InputMaybe<SampleMetadataDisconnectInput>;
   update?: InputMaybe<SampleMetadataUpdateInput>;
   where?: InputMaybe<SampleMetadataWhere>;
 };
 
 export type MutationUpdateSamplesArgs = {
-  connect?: InputMaybe<SampleConnectInput>;
-  create?: InputMaybe<SampleRelationInput>;
-  delete?: InputMaybe<SampleDeleteInput>;
-  disconnect?: InputMaybe<SampleDisconnectInput>;
   update?: InputMaybe<SampleUpdateInput>;
   where?: InputMaybe<SampleWhere>;
 };
 
 export type MutationUpdateStatusesArgs = {
-  connect?: InputMaybe<StatusConnectInput>;
-  create?: InputMaybe<StatusRelationInput>;
-  delete?: InputMaybe<StatusDeleteInput>;
-  disconnect?: InputMaybe<StatusDisconnectInput>;
   update?: InputMaybe<StatusUpdateInput>;
   where?: InputMaybe<StatusWhere>;
 };
 
 export type MutationUpdateTemposArgs = {
-  connect?: InputMaybe<TempoConnectInput>;
-  create?: InputMaybe<TempoRelationInput>;
-  delete?: InputMaybe<TempoDeleteInput>;
-  disconnect?: InputMaybe<TempoDisconnectInput>;
   update?: InputMaybe<TempoUpdateInput>;
   where?: InputMaybe<TempoWhere>;
 };
@@ -3817,6 +4054,9 @@ export type Query = {
   dashboardPatients: Array<DashboardPatient>;
   dashboardRequests: Array<DashboardRequest>;
   dashboardSamples: Array<DashboardSample>;
+  dbGaps: Array<DbGap>;
+  dbGapsAggregate: DbGapAggregateSelection;
+  dbGapsConnection: DbGapsConnection;
   mafCompletes: Array<MafComplete>;
   mafCompletesAggregate: MafCompleteAggregateSelection;
   mafCompletesConnection: MafCompletesConnection;
@@ -3935,6 +4175,22 @@ export type QueryDashboardSamplesArgs = {
   offset: Scalars["Int"];
   searchVals?: InputMaybe<Array<Scalars["String"]>>;
   sort: DashboardRecordSort;
+};
+
+export type QueryDbGapsArgs = {
+  options?: InputMaybe<DbGapOptions>;
+  where?: InputMaybe<DbGapWhere>;
+};
+
+export type QueryDbGapsAggregateArgs = {
+  where?: InputMaybe<DbGapWhere>;
+};
+
+export type QueryDbGapsConnectionArgs = {
+  after?: InputMaybe<Scalars["String"]>;
+  first?: InputMaybe<Scalars["Int"]>;
+  sort?: InputMaybe<Array<InputMaybe<DbGapSort>>>;
+  where?: InputMaybe<DbGapWhere>;
 };
 
 export type QueryMafCompletesArgs = {
@@ -5746,6 +6002,9 @@ export type Sample = {
   cohortsHasCohortSampleAggregate?: Maybe<SampleCohortCohortsHasCohortSampleAggregationSelection>;
   cohortsHasCohortSampleConnection: SampleCohortsHasCohortSampleConnection;
   datasource: Scalars["String"];
+  hasDbgapDbGaps: Array<DbGap>;
+  hasDbgapDbGapsAggregate?: Maybe<SampleDbGapHasDbgapDbGapsAggregationSelection>;
+  hasDbgapDbGapsConnection: SampleHasDbgapDbGapsConnection;
   hasMetadataSampleMetadata: Array<SampleMetadata>;
   hasMetadataSampleMetadataAggregate?: Maybe<SampleSampleMetadataHasMetadataSampleMetadataAggregationSelection>;
   hasMetadataSampleMetadataConnection: SampleHasMetadataSampleMetadataConnection;
@@ -5784,6 +6043,25 @@ export type SampleCohortsHasCohortSampleConnectionArgs = {
   first?: InputMaybe<Scalars["Int"]>;
   sort?: InputMaybe<Array<SampleCohortsHasCohortSampleConnectionSort>>;
   where?: InputMaybe<SampleCohortsHasCohortSampleConnectionWhere>;
+};
+
+export type SampleHasDbgapDbGapsArgs = {
+  directed?: InputMaybe<Scalars["Boolean"]>;
+  options?: InputMaybe<DbGapOptions>;
+  where?: InputMaybe<DbGapWhere>;
+};
+
+export type SampleHasDbgapDbGapsAggregateArgs = {
+  directed?: InputMaybe<Scalars["Boolean"]>;
+  where?: InputMaybe<DbGapWhere>;
+};
+
+export type SampleHasDbgapDbGapsConnectionArgs = {
+  after?: InputMaybe<Scalars["String"]>;
+  directed?: InputMaybe<Scalars["Boolean"]>;
+  first?: InputMaybe<Scalars["Int"]>;
+  sort?: InputMaybe<Array<SampleHasDbgapDbGapsConnectionSort>>;
+  where?: InputMaybe<SampleHasDbgapDbGapsConnectionWhere>;
 };
 
 export type SampleHasMetadataSampleMetadataArgs = {
@@ -6292,6 +6570,7 @@ export type SampleConnectInput = {
   cohortsHasCohortSample?: InputMaybe<
     Array<SampleCohortsHasCohortSampleConnectFieldInput>
   >;
+  hasDbgapDbGaps?: InputMaybe<Array<SampleHasDbgapDbGapsConnectFieldInput>>;
   hasMetadataSampleMetadata?: InputMaybe<
     Array<SampleHasMetadataSampleMetadataConnectFieldInput>
   >;
@@ -6314,6 +6593,7 @@ export type SampleConnectWhere = {
 export type SampleCreateInput = {
   cohortsHasCohortSample?: InputMaybe<SampleCohortsHasCohortSampleFieldInput>;
   datasource: Scalars["String"];
+  hasDbgapDbGaps?: InputMaybe<SampleHasDbgapDbGapsFieldInput>;
   hasMetadataSampleMetadata?: InputMaybe<SampleHasMetadataSampleMetadataFieldInput>;
   hasTempoTempos?: InputMaybe<SampleHasTempoTemposFieldInput>;
   patientsHasSample?: InputMaybe<SamplePatientsHasSampleFieldInput>;
@@ -6325,10 +6605,22 @@ export type SampleCreateInput = {
   smileSampleId: Scalars["String"];
 };
 
+export type SampleDbGapHasDbgapDbGapsAggregationSelection = {
+  __typename?: "SampleDbGapHasDbgapDbGapsAggregationSelection";
+  count: Scalars["Int"];
+  node?: Maybe<SampleDbGapHasDbgapDbGapsNodeAggregateSelection>;
+};
+
+export type SampleDbGapHasDbgapDbGapsNodeAggregateSelection = {
+  __typename?: "SampleDbGapHasDbgapDbGapsNodeAggregateSelection";
+  dbGapStudy: StringAggregateSelection;
+};
+
 export type SampleDeleteInput = {
   cohortsHasCohortSample?: InputMaybe<
     Array<SampleCohortsHasCohortSampleDeleteFieldInput>
   >;
+  hasDbgapDbGaps?: InputMaybe<Array<SampleHasDbgapDbGapsDeleteFieldInput>>;
   hasMetadataSampleMetadata?: InputMaybe<
     Array<SampleHasMetadataSampleMetadataDeleteFieldInput>
   >;
@@ -6348,6 +6640,7 @@ export type SampleDisconnectInput = {
   cohortsHasCohortSample?: InputMaybe<
     Array<SampleCohortsHasCohortSampleDisconnectFieldInput>
   >;
+  hasDbgapDbGaps?: InputMaybe<Array<SampleHasDbgapDbGapsDisconnectFieldInput>>;
   hasMetadataSampleMetadata?: InputMaybe<
     Array<SampleHasMetadataSampleMetadataDisconnectFieldInput>
   >;
@@ -6367,6 +6660,102 @@ export type SampleEdge = {
   __typename?: "SampleEdge";
   cursor: Scalars["String"];
   node: Sample;
+};
+
+export type SampleHasDbgapDbGapsAggregateInput = {
+  AND?: InputMaybe<Array<SampleHasDbgapDbGapsAggregateInput>>;
+  NOT?: InputMaybe<SampleHasDbgapDbGapsAggregateInput>;
+  OR?: InputMaybe<Array<SampleHasDbgapDbGapsAggregateInput>>;
+  count?: InputMaybe<Scalars["Int"]>;
+  count_GT?: InputMaybe<Scalars["Int"]>;
+  count_GTE?: InputMaybe<Scalars["Int"]>;
+  count_LT?: InputMaybe<Scalars["Int"]>;
+  count_LTE?: InputMaybe<Scalars["Int"]>;
+  node?: InputMaybe<SampleHasDbgapDbGapsNodeAggregationWhereInput>;
+};
+
+export type SampleHasDbgapDbGapsConnectFieldInput = {
+  connect?: InputMaybe<Array<DbGapConnectInput>>;
+  /** Whether or not to overwrite any matching relationship with the new properties. */
+  overwrite?: Scalars["Boolean"];
+  where?: InputMaybe<DbGapConnectWhere>;
+};
+
+export type SampleHasDbgapDbGapsConnection = {
+  __typename?: "SampleHasDbgapDbGapsConnection";
+  edges: Array<SampleHasDbgapDbGapsRelationship>;
+  pageInfo: PageInfo;
+  totalCount: Scalars["Int"];
+};
+
+export type SampleHasDbgapDbGapsConnectionSort = {
+  node?: InputMaybe<DbGapSort>;
+};
+
+export type SampleHasDbgapDbGapsConnectionWhere = {
+  AND?: InputMaybe<Array<SampleHasDbgapDbGapsConnectionWhere>>;
+  NOT?: InputMaybe<SampleHasDbgapDbGapsConnectionWhere>;
+  OR?: InputMaybe<Array<SampleHasDbgapDbGapsConnectionWhere>>;
+  node?: InputMaybe<DbGapWhere>;
+};
+
+export type SampleHasDbgapDbGapsCreateFieldInput = {
+  node: DbGapCreateInput;
+};
+
+export type SampleHasDbgapDbGapsDeleteFieldInput = {
+  delete?: InputMaybe<DbGapDeleteInput>;
+  where?: InputMaybe<SampleHasDbgapDbGapsConnectionWhere>;
+};
+
+export type SampleHasDbgapDbGapsDisconnectFieldInput = {
+  disconnect?: InputMaybe<DbGapDisconnectInput>;
+  where?: InputMaybe<SampleHasDbgapDbGapsConnectionWhere>;
+};
+
+export type SampleHasDbgapDbGapsFieldInput = {
+  connect?: InputMaybe<Array<SampleHasDbgapDbGapsConnectFieldInput>>;
+  create?: InputMaybe<Array<SampleHasDbgapDbGapsCreateFieldInput>>;
+};
+
+export type SampleHasDbgapDbGapsNodeAggregationWhereInput = {
+  AND?: InputMaybe<Array<SampleHasDbgapDbGapsNodeAggregationWhereInput>>;
+  NOT?: InputMaybe<SampleHasDbgapDbGapsNodeAggregationWhereInput>;
+  OR?: InputMaybe<Array<SampleHasDbgapDbGapsNodeAggregationWhereInput>>;
+  dbGapStudy_AVERAGE_LENGTH_EQUAL?: InputMaybe<Scalars["Float"]>;
+  dbGapStudy_AVERAGE_LENGTH_GT?: InputMaybe<Scalars["Float"]>;
+  dbGapStudy_AVERAGE_LENGTH_GTE?: InputMaybe<Scalars["Float"]>;
+  dbGapStudy_AVERAGE_LENGTH_LT?: InputMaybe<Scalars["Float"]>;
+  dbGapStudy_AVERAGE_LENGTH_LTE?: InputMaybe<Scalars["Float"]>;
+  dbGapStudy_LONGEST_LENGTH_EQUAL?: InputMaybe<Scalars["Int"]>;
+  dbGapStudy_LONGEST_LENGTH_GT?: InputMaybe<Scalars["Int"]>;
+  dbGapStudy_LONGEST_LENGTH_GTE?: InputMaybe<Scalars["Int"]>;
+  dbGapStudy_LONGEST_LENGTH_LT?: InputMaybe<Scalars["Int"]>;
+  dbGapStudy_LONGEST_LENGTH_LTE?: InputMaybe<Scalars["Int"]>;
+  dbGapStudy_SHORTEST_LENGTH_EQUAL?: InputMaybe<Scalars["Int"]>;
+  dbGapStudy_SHORTEST_LENGTH_GT?: InputMaybe<Scalars["Int"]>;
+  dbGapStudy_SHORTEST_LENGTH_GTE?: InputMaybe<Scalars["Int"]>;
+  dbGapStudy_SHORTEST_LENGTH_LT?: InputMaybe<Scalars["Int"]>;
+  dbGapStudy_SHORTEST_LENGTH_LTE?: InputMaybe<Scalars["Int"]>;
+};
+
+export type SampleHasDbgapDbGapsRelationship = {
+  __typename?: "SampleHasDbgapDbGapsRelationship";
+  cursor: Scalars["String"];
+  node: DbGap;
+};
+
+export type SampleHasDbgapDbGapsUpdateConnectionInput = {
+  node?: InputMaybe<DbGapUpdateInput>;
+};
+
+export type SampleHasDbgapDbGapsUpdateFieldInput = {
+  connect?: InputMaybe<Array<SampleHasDbgapDbGapsConnectFieldInput>>;
+  create?: InputMaybe<Array<SampleHasDbgapDbGapsCreateFieldInput>>;
+  delete?: InputMaybe<Array<SampleHasDbgapDbGapsDeleteFieldInput>>;
+  disconnect?: InputMaybe<Array<SampleHasDbgapDbGapsDisconnectFieldInput>>;
+  update?: InputMaybe<SampleHasDbgapDbGapsUpdateConnectionInput>;
+  where?: InputMaybe<SampleHasDbgapDbGapsConnectionWhere>;
 };
 
 export type SampleHasMetadataSampleMetadataAggregateInput = {
@@ -7890,6 +8279,7 @@ export type SampleRelationInput = {
   cohortsHasCohortSample?: InputMaybe<
     Array<SampleCohortsHasCohortSampleCreateFieldInput>
   >;
+  hasDbgapDbGaps?: InputMaybe<Array<SampleHasDbgapDbGapsCreateFieldInput>>;
   hasMetadataSampleMetadata?: InputMaybe<
     Array<SampleHasMetadataSampleMetadataCreateFieldInput>
   >;
@@ -8494,6 +8884,7 @@ export type SampleUpdateInput = {
     Array<SampleCohortsHasCohortSampleUpdateFieldInput>
   >;
   datasource?: InputMaybe<Scalars["String"]>;
+  hasDbgapDbGaps?: InputMaybe<Array<SampleHasDbgapDbGapsUpdateFieldInput>>;
   hasMetadataSampleMetadata?: InputMaybe<
     Array<SampleHasMetadataSampleMetadataUpdateFieldInput>
   >;
@@ -8540,6 +8931,23 @@ export type SampleWhere = {
   datasource_IN?: InputMaybe<Array<Scalars["String"]>>;
   datasource_MATCHES?: InputMaybe<Scalars["String"]>;
   datasource_STARTS_WITH?: InputMaybe<Scalars["String"]>;
+  hasDbgapDbGapsAggregate?: InputMaybe<SampleHasDbgapDbGapsAggregateInput>;
+  /** Return Samples where all of the related SampleHasDbgapDbGapsConnections match this filter */
+  hasDbgapDbGapsConnection_ALL?: InputMaybe<SampleHasDbgapDbGapsConnectionWhere>;
+  /** Return Samples where none of the related SampleHasDbgapDbGapsConnections match this filter */
+  hasDbgapDbGapsConnection_NONE?: InputMaybe<SampleHasDbgapDbGapsConnectionWhere>;
+  /** Return Samples where one of the related SampleHasDbgapDbGapsConnections match this filter */
+  hasDbgapDbGapsConnection_SINGLE?: InputMaybe<SampleHasDbgapDbGapsConnectionWhere>;
+  /** Return Samples where some of the related SampleHasDbgapDbGapsConnections match this filter */
+  hasDbgapDbGapsConnection_SOME?: InputMaybe<SampleHasDbgapDbGapsConnectionWhere>;
+  /** Return Samples where all of the related DbGaps match this filter */
+  hasDbgapDbGaps_ALL?: InputMaybe<DbGapWhere>;
+  /** Return Samples where none of the related DbGaps match this filter */
+  hasDbgapDbGaps_NONE?: InputMaybe<DbGapWhere>;
+  /** Return Samples where one of the related DbGaps match this filter */
+  hasDbgapDbGaps_SINGLE?: InputMaybe<DbGapWhere>;
+  /** Return Samples where some of the related DbGaps match this filter */
+  hasDbgapDbGaps_SOME?: InputMaybe<DbGapWhere>;
   hasMetadataSampleMetadataAggregate?: InputMaybe<SampleHasMetadataSampleMetadataAggregateInput>;
   /** Return Samples where all of the related SampleHasMetadataSampleMetadataConnections match this filter */
   hasMetadataSampleMetadataConnection_ALL?: InputMaybe<SampleHasMetadataSampleMetadataConnectionWhere>;
@@ -10458,6 +10866,12 @@ export type UpdateCohortsMutationResponse = {
   info: UpdateInfo;
 };
 
+export type UpdateDbGapsMutationResponse = {
+  __typename?: "UpdateDbGapsMutationResponse";
+  dbGaps: Array<DbGap>;
+  info: UpdateInfo;
+};
+
 /** Information about the number of nodes and relationships created and deleted during an update mutation */
 export type UpdateInfo = {
   __typename?: "UpdateInfo";
@@ -10662,6 +11076,8 @@ export type DashboardSamplesQuery = {
     recipe?: string | null;
     altId?: string | null;
     historicalCmoSampleNames?: string | null;
+    instrumentModel?: string | null;
+    platform?: string | null;
     validationReport?: string | null;
     validationStatus?: boolean | null;
     cancerType?: string | null;
@@ -10714,6 +11130,8 @@ export type DashboardSampleMetadataPartsFragment = {
   recipe?: string | null;
   altId?: string | null;
   historicalCmoSampleNames?: string | null;
+  instrumentModel?: string | null;
+  platform?: string | null;
   validationReport?: string | null;
   validationStatus?: boolean | null;
   cancerType?: string | null;
@@ -10793,6 +11211,8 @@ export type UpdateDashboardSamplesMutation = {
     recipe?: string | null;
     altId?: string | null;
     historicalCmoSampleNames?: string | null;
+    instrumentModel?: string | null;
+    platform?: string | null;
     validationReport?: string | null;
     validationStatus?: boolean | null;
     cancerType?: string | null;
@@ -10859,6 +11279,8 @@ export const DashboardSampleMetadataPartsFragmentDoc = gql`
     recipe
     altId
     historicalCmoSampleNames
+    instrumentModel
+    platform
     validationReport
     validationStatus
     cancerType

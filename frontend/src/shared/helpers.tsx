@@ -73,7 +73,7 @@ function getAgGridBooleanValueFormatter({
   };
 }
 
-export const RequestsListColumns: ColDef[] = [
+export const RequestColumns: ColDef[] = [
   {
     headerName: "View Samples",
     cellRenderer: (params: ICellRendererParams) => {
@@ -186,7 +186,7 @@ export const RequestsListColumns: ColDef[] = [
   },
 ];
 
-export const PatientsListColumns: ColDef[] = [
+export const PatientColumns: ColDef[] = [
   {
     headerName: "View Samples",
     cellRenderer: (params: ICellRendererParams) => {
@@ -273,7 +273,7 @@ const ONCOTREE_CODE_NA_TOOLTIP =
   "This code might have been remapped (renamed) between different versions of the Oncotree API. " +
   "For remapping details, visit the docs at https://oncotree.mskcc.org/#/home?tab=mapping";
 
-export const SampleMetadataDetailsColumns: ColDef[] = [
+export const SampleColumns: ColDef[] = [
   {
     field: "primaryId",
     headerName: "Primary ID",
@@ -589,7 +589,7 @@ function setupEditableSampleFields(
   });
 }
 
-export const CohortsListColumns: ColDef[] = [
+export const CohortColumns: ColDef[] = [
   {
     headerName: "View Samples",
     cellRenderer: (params: ICellRendererParams) => {
@@ -656,7 +656,7 @@ export const CohortsListColumns: ColDef[] = [
   },
 ];
 
-export const WesSampleDetailsColumns: ColDef[] = [
+export const WesSampleColumns: ColDef[] = [
   {
     field: "primaryId",
     headerName: "Primary ID",
@@ -805,9 +805,7 @@ export const WesSampleDetailsColumns: ColDef[] = [
   },
 ];
 
-export const ReadOnlyCohortSampleDetailsColumns = _.cloneDeep(
-  WesSampleDetailsColumns
-);
+export const ReadOnlyCohortSampleDetailsColumns = _.cloneDeep(WesSampleColumns);
 
 export const defaultColDef: ColDef = {
   sortable: true,
@@ -842,11 +840,11 @@ const editableWesSampleFields = [
   "accessLevel",
 ];
 
-setupEditableSampleFields(SampleMetadataDetailsColumns, editableSampleFields);
-setupEditableSampleFields(WesSampleDetailsColumns, editableWesSampleFields);
+setupEditableSampleFields(SampleColumns, editableSampleFields);
+setupEditableSampleFields(WesSampleColumns, editableWesSampleFields);
 
 export const combinedSampleDetailsColumns = _.uniqBy(
-  [...SampleMetadataDetailsColumns, ...ReadOnlyCohortSampleDetailsColumns],
+  [...SampleColumns, ...ReadOnlyCohortSampleDetailsColumns],
   "field"
 );
 
