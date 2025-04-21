@@ -180,7 +180,7 @@ fragment DashboardTempoParts on DashboardSample {
 }
 
 fragment DashboardDbGapParts on DashboardSample {
-  # (s:Sample)-[:HAS_DB_GAP]->(d:DbGap)
+  # (s:Sample)-[:HAS_DBGAP]->(d:DbGap)
   dbGapStudy
 }
 

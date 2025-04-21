@@ -13,6 +13,7 @@ nats_filter_subject=
 [topics]
 pub_validate_igo_sample_update=
 pub_tempo_sample_billing=
+pub_dbgap_sample_update=
 
 [db]
 neo4j_username=

@@ -835,6 +835,7 @@ const editableSampleFields = [
   "costCenter",
   "custodianInformation",
   "accessLevel",
+  "dbGapStudy",
 ];
 
 const editableWesSampleFields = [

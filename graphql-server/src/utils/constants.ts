@@ -22,6 +22,7 @@ export const props = {
     "topics.pub_validate_igo_sample_update"
   ),
   pub_tempo_sample_billing: properties.get("topics.pub_tempo_sample_billing"),
+  pub_dbgap_sample_update: properties.get("topics.pub_dbgap_sample_update"),
 
   oracle_user: properties.get("crdb.oracle_user"),
   oracle_password: properties.get("crdb.oracle_password"),

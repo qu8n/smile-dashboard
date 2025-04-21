@@ -277,7 +277,7 @@ export function getNeo4jCustomSort(sort: DashboardRecordSort) {
     : `resultz.${sort.colId}='' ASC, resultz.${sort.colId} ASC`;
 }
 
-async function updateSampleMetadata(
+async function updateSampleMetadataPromise(
   newDashboardSample: DashboardSampleInput,
   ogm: OGM
 ) {
@@ -332,7 +332,7 @@ async function updateSampleMetadata(
   });
 }
 
-async function updateTempo(newDashboardSample: DashboardSampleInput) {
+async function updateTempoPromise(newDashboardSample: DashboardSampleInput) {
   return new Promise((resolve) => {
     const dataForTempoBillingUpdate = {
       primaryId: newDashboardSample.primaryId,
@@ -352,7 +352,23 @@ async function updateTempo(newDashboardSample: DashboardSampleInput) {
   });
 }
 
-const editableSampleMetadataFields = new Set([
+async function updateDbGapPromise(newDashboardSample: DashboardSampleInput) {
+  return new Promise((resolve) => {
+    const dataForDbGapUpdate = {
+      primaryId: newDashboardSample.primaryId,
+      dbGapStudy: newDashboardSample.dbGapStudy,
+    };
+
+    publishNatsMessage(
+      props.pub_dbgap_sample_update,
+      JSON.stringify(dataForDbGapUpdate)
+    );
+
+    resolve(null);
+  });
+}
+
+const EDITABLE_SAMPLEMETADATA_FIELDS = new Set([
   "cmoPatientId",
   "investigatorSampleId",
   "sampleType",
@@ -365,7 +381,7 @@ const editableSampleMetadataFields = new Set([
   "tissueLocation",
 ]);
 
-const editableTempoFields = new Set([
+const EDITABLE_TEMPO_FIELDS = new Set([
   "billed",
   "costCenter",
   "billedBy",
@@ -373,25 +389,35 @@ const editableTempoFields = new Set([
   "accessLevel",
 ]);
 
+const EDITABLE_DBGAP_FIELDS = new Set(["dbGapStudy"]);
+
 async function updateAllSamplesConcurrently(
   newDashboardSamples: DashboardSampleInput[],
   ogm: OGM
 ) {
   const allPromises = newDashboardSamples.map(async (dashboardSample) => {
     try {
-      const metadataChanged = dashboardSample.changedFieldNames.some((field) =>
-        editableSampleMetadataFields.has(field)
+      const { changedFieldNames } = dashboardSample;
+
+      const metadataChanged = changedFieldNames.some((field) =>
+        EDITABLE_SAMPLEMETADATA_FIELDS.has(field)
       );
-      const tempoChanged = dashboardSample.changedFieldNames.some((field) =>
-        editableTempoFields.has(field)
+      const tempoChanged = changedFieldNames.some((field) =>
+        EDITABLE_TEMPO_FIELDS.has(field)
+      );
+      const dbGapChanged = changedFieldNames.some((field) =>
+        EDITABLE_DBGAP_FIELDS.has(field)
       );
 
       const promises = [];
       if (metadataChanged) {
-        promises.push(updateSampleMetadata(dashboardSample, ogm));
+        promises.push(updateSampleMetadataPromise(dashboardSample, ogm));
       }
       if (tempoChanged) {
-        promises.push(updateTempo(dashboardSample));
+        promises.push(updateTempoPromise(dashboardSample));
+      }
+      if (dbGapChanged) {
+        promises.push(updateDbGapPromise(dashboardSample));
       }
 
       return Promise.all(promises);
