@@ -491,6 +491,10 @@ export const SampleColumns: ColDef[] = [
     field: "sampleCategory",
     headerName: "SMILE Sample Category",
   },
+  {
+    field: "dbGapStudy",
+    headerName: "dbGaP Study ID",
+  },
 ];
 
 function createCustomHeader(icons: string) {

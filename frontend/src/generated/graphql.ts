@@ -1386,12 +1386,6 @@ export type DashboardRecordContext = {
   values: Array<Scalars["String"]>;
 };
 
-export type DashboardRecordCount = {
-  __typename?: "DashboardRecordCount";
-  totalCount: Scalars["Int"];
-  uniqueSampleCount?: Maybe<Scalars["Int"]>;
-};
-
 export type DashboardRecordFilter = {
   field: Scalars["String"];
   filter: Scalars["String"];
@@ -1442,6 +1436,7 @@ export type DashboardSample = {
   collectionYear?: Maybe<Scalars["String"]>;
   costCenter?: Maybe<Scalars["String"]>;
   custodianInformation?: Maybe<Scalars["String"]>;
+  dbGapStudy?: Maybe<Scalars["String"]>;
   embargoDate?: Maybe<Scalars["String"]>;
   genePanel?: Maybe<Scalars["String"]>;
   historicalCmoSampleNames?: Maybe<Scalars["String"]>;
@@ -1492,16 +1487,19 @@ export type DashboardSampleInput = {
   collectionYear?: InputMaybe<Scalars["String"]>;
   costCenter?: InputMaybe<Scalars["String"]>;
   custodianInformation?: InputMaybe<Scalars["String"]>;
+  dbGapStudy?: InputMaybe<Scalars["String"]>;
   embargoDate?: InputMaybe<Scalars["String"]>;
   genePanel?: InputMaybe<Scalars["String"]>;
   historicalCmoSampleNames?: InputMaybe<Scalars["String"]>;
   importDate: Scalars["String"];
   initialPipelineRunDate?: InputMaybe<Scalars["String"]>;
+  instrumentModel?: InputMaybe<Scalars["String"]>;
   investigatorSampleId?: InputMaybe<Scalars["String"]>;
   mafCompleteDate?: InputMaybe<Scalars["String"]>;
   mafCompleteNormalPrimaryId?: InputMaybe<Scalars["String"]>;
   mafCompleteStatus?: InputMaybe<Scalars["String"]>;
   oncotreeCode?: InputMaybe<Scalars["String"]>;
+  platform?: InputMaybe<Scalars["String"]>;
   preservation?: InputMaybe<Scalars["String"]>;
   primaryId: Scalars["String"];
   qcCompleteDate?: InputMaybe<Scalars["String"]>;
@@ -1529,6 +1527,7 @@ export type DbGap = {
   samplesHasDbgap: Array<Sample>;
   samplesHasDbgapAggregate?: Maybe<DbGapSampleSamplesHasDbgapAggregationSelection>;
   samplesHasDbgapConnection: DbGapSamplesHasDbgapConnection;
+  smileDbGapId: Scalars["String"];
 };
 
 export type DbGapSamplesHasDbgapArgs = {
@@ -1554,6 +1553,7 @@ export type DbGapAggregateSelection = {
   __typename?: "DbGapAggregateSelection";
   count: Scalars["Int"];
   dbGapStudy: StringAggregateSelection;
+  smileDbGapId: StringAggregateSelection;
 };
 
 export type DbGapConnectInput = {
@@ -1567,6 +1567,7 @@ export type DbGapConnectWhere = {
 export type DbGapCreateInput = {
   dbGapStudy: Scalars["String"];
   samplesHasDbgap?: InputMaybe<DbGapSamplesHasDbgapFieldInput>;
+  smileDbGapId: Scalars["String"];
 };
 
 export type DbGapDeleteInput = {
@@ -1752,11 +1753,13 @@ export type DbGapSamplesHasDbgapUpdateFieldInput = {
 /** Fields to sort DbGaps by. The order in which sorts are applied is not guaranteed when specifying many fields in one DbGapSort object. */
 export type DbGapSort = {
   dbGapStudy?: InputMaybe<SortDirection>;
+  smileDbGapId?: InputMaybe<SortDirection>;
 };
 
 export type DbGapUpdateInput = {
   dbGapStudy?: InputMaybe<Scalars["String"]>;
   samplesHasDbgap?: InputMaybe<Array<DbGapSamplesHasDbgapUpdateFieldInput>>;
+  smileDbGapId?: InputMaybe<Scalars["String"]>;
 };
 
 export type DbGapWhere = {
@@ -1786,6 +1789,12 @@ export type DbGapWhere = {
   samplesHasDbgap_SINGLE?: InputMaybe<SampleWhere>;
   /** Return DbGaps where some of the related Samples match this filter */
   samplesHasDbgap_SOME?: InputMaybe<SampleWhere>;
+  smileDbGapId?: InputMaybe<Scalars["String"]>;
+  smileDbGapId_CONTAINS?: InputMaybe<Scalars["String"]>;
+  smileDbGapId_ENDS_WITH?: InputMaybe<Scalars["String"]>;
+  smileDbGapId_IN?: InputMaybe<Array<Scalars["String"]>>;
+  smileDbGapId_MATCHES?: InputMaybe<Scalars["String"]>;
+  smileDbGapId_STARTS_WITH?: InputMaybe<Scalars["String"]>;
 };
 
 export type DbGapsConnection = {
@@ -6615,6 +6624,7 @@ export type SampleDbGapHasDbgapDbGapsAggregationSelection = {
 export type SampleDbGapHasDbgapDbGapsNodeAggregateSelection = {
   __typename?: "SampleDbGapHasDbgapDbGapsNodeAggregateSelection";
   dbGapStudy: StringAggregateSelection;
+  smileDbGapId: StringAggregateSelection;
 };
 
 export type SampleDeleteInput = {
@@ -6738,6 +6748,21 @@ export type SampleHasDbgapDbGapsNodeAggregationWhereInput = {
   dbGapStudy_SHORTEST_LENGTH_GTE?: InputMaybe<Scalars["Int"]>;
   dbGapStudy_SHORTEST_LENGTH_LT?: InputMaybe<Scalars["Int"]>;
   dbGapStudy_SHORTEST_LENGTH_LTE?: InputMaybe<Scalars["Int"]>;
+  smileDbGapId_AVERAGE_LENGTH_EQUAL?: InputMaybe<Scalars["Float"]>;
+  smileDbGapId_AVERAGE_LENGTH_GT?: InputMaybe<Scalars["Float"]>;
+  smileDbGapId_AVERAGE_LENGTH_GTE?: InputMaybe<Scalars["Float"]>;
+  smileDbGapId_AVERAGE_LENGTH_LT?: InputMaybe<Scalars["Float"]>;
+  smileDbGapId_AVERAGE_LENGTH_LTE?: InputMaybe<Scalars["Float"]>;
+  smileDbGapId_LONGEST_LENGTH_EQUAL?: InputMaybe<Scalars["Int"]>;
+  smileDbGapId_LONGEST_LENGTH_GT?: InputMaybe<Scalars["Int"]>;
+  smileDbGapId_LONGEST_LENGTH_GTE?: InputMaybe<Scalars["Int"]>;
+  smileDbGapId_LONGEST_LENGTH_LT?: InputMaybe<Scalars["Int"]>;
+  smileDbGapId_LONGEST_LENGTH_LTE?: InputMaybe<Scalars["Int"]>;
+  smileDbGapId_SHORTEST_LENGTH_EQUAL?: InputMaybe<Scalars["Int"]>;
+  smileDbGapId_SHORTEST_LENGTH_GT?: InputMaybe<Scalars["Int"]>;
+  smileDbGapId_SHORTEST_LENGTH_GTE?: InputMaybe<Scalars["Int"]>;
+  smileDbGapId_SHORTEST_LENGTH_LT?: InputMaybe<Scalars["Int"]>;
+  smileDbGapId_SHORTEST_LENGTH_LTE?: InputMaybe<Scalars["Int"]>;
 };
 
 export type SampleHasDbgapDbGapsRelationship = {
@@ -11099,6 +11124,7 @@ export type DashboardSamplesQuery = {
     qcCompleteResult?: string | null;
     qcCompleteReason?: string | null;
     qcCompleteStatus?: string | null;
+    dbGapStudy?: string | null;
   }>;
 };
 
@@ -11157,6 +11183,11 @@ export type DashboardTempoPartsFragment = {
   qcCompleteResult?: string | null;
   qcCompleteReason?: string | null;
   qcCompleteStatus?: string | null;
+};
+
+export type DashboardDbGapPartsFragment = {
+  __typename?: "DashboardSample";
+  dbGapStudy?: string | null;
 };
 
 export type RequestPartsFragment = {
@@ -11234,6 +11265,7 @@ export type UpdateDashboardSamplesMutation = {
     qcCompleteResult?: string | null;
     qcCompleteReason?: string | null;
     qcCompleteStatus?: string | null;
+    dbGapStudy?: string | null;
   } | null> | null;
 };
 
@@ -11306,6 +11338,11 @@ export const DashboardTempoPartsFragmentDoc = gql`
     qcCompleteResult
     qcCompleteReason
     qcCompleteStatus
+  }
+`;
+export const DashboardDbGapPartsFragmentDoc = gql`
+  fragment DashboardDbGapParts on DashboardSample {
+    dbGapStudy
   }
 `;
 export const RequestPartsFragmentDoc = gql`
@@ -11608,12 +11645,14 @@ export const DashboardSamplesDocument = gql`
       ...DashboardSampleParts
       ...DashboardSampleMetadataParts
       ...DashboardTempoParts
+      ...DashboardDbGapParts
       _total
     }
   }
   ${DashboardSamplePartsFragmentDoc}
   ${DashboardSampleMetadataPartsFragmentDoc}
   ${DashboardTempoPartsFragmentDoc}
+  ${DashboardDbGapPartsFragmentDoc}
 `;
 
 /**
@@ -11679,11 +11718,13 @@ export const UpdateDashboardSamplesDocument = gql`
       ...DashboardSampleParts
       ...DashboardSampleMetadataParts
       ...DashboardTempoParts
+      ...DashboardDbGapParts
     }
   }
   ${DashboardSamplePartsFragmentDoc}
   ${DashboardSampleMetadataPartsFragmentDoc}
   ${DashboardTempoPartsFragmentDoc}
+  ${DashboardDbGapPartsFragmentDoc}
 `;
 export type UpdateDashboardSamplesMutationFn = Apollo.MutationFunction<
   UpdateDashboardSamplesMutation,

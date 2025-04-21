@@ -294,6 +294,9 @@ export function buildSamplesQueryBody({
       ${mafCompleteDateFilter && `WHERE ${mafCompleteDateFilter}`}
       ${qcCompleteDateFilter && `WHERE ${qcCompleteDateFilter}`}
 
+    // Get DbGap data
+    OPTIONAL MATCH (s)-[:HAS_DBGAP]->(d:DbGap)
+
     WITH
       ({
         smileSampleId: s.smileSampleId,
@@ -342,7 +345,9 @@ export function buildSamplesQueryBody({
         qcCompleteDate: latestQC.date,
         qcCompleteResult: latestQC.result,
         qcCompleteReason: latestQC.reason,
-        qcCompleteStatus: latestQC.status
+        qcCompleteStatus: latestQC.status,
+
+        dbGapStudy: d.dbGapStudy
       }) AS tempNode
 
     ${searchFilters && `WHERE ${searchFilters}`}

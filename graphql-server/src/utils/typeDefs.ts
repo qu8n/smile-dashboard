@@ -62,7 +62,7 @@ const SAMPLE_FIELDS = `
   cancerType: String
   cancerTypeDetailed: String
 
-  ## (s:Sample)-[:HAS_TEMPO]->(t:Tempo)
+  # (s:Sample)-[:HAS_TEMPO]->(t:Tempo)
   ## Root-level fields
   billed: Boolean
   costCenter: String
@@ -84,6 +84,9 @@ const SAMPLE_FIELDS = `
   qcCompleteResult: String
   qcCompleteReason: String
   qcCompleteStatus: String
+
+  # (s:Sample)-[:HAS_DBGAP]->(d:DbGap)
+  dbGapStudy: String
 
   # results total
   _total: Int

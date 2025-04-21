@@ -107,6 +107,7 @@ query DashboardSamples(
     ...DashboardSampleParts
     ...DashboardSampleMetadataParts
     ...DashboardTempoParts
+    ...DashboardDbGapParts
     _total
   }
 }
@@ -178,6 +179,11 @@ fragment DashboardTempoParts on DashboardSample {
   qcCompleteStatus
 }
 
+fragment DashboardDbGapParts on DashboardSample {
+  # (s:Sample)-[:HAS_DB_GAP]->(d:DbGap)
+  dbGapStudy
+}
+
 fragment RequestParts on Request {
   igoRequestId
   igoProjectId
@@ -206,6 +212,7 @@ mutation UpdateDashboardSamples(
     ...DashboardSampleParts
     ...DashboardSampleMetadataParts
     ...DashboardTempoParts
+    ...DashboardDbGapParts
   }
 }
 
