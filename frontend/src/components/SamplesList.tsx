@@ -62,6 +62,10 @@ interface ISampleListProps {
   userEmail?: string | null;
   setUserEmail?: Dispatch<SetStateAction<string | null>>;
   customToolbarUI?: JSX.Element;
+  exportDropdownItems?: Array<{
+    title: string;
+    colDefs: ColDef[];
+  }>;
 }
 
 export default function SamplesList({
@@ -72,6 +76,7 @@ export default function SamplesList({
   userEmail,
   setUserEmail,
   customToolbarUI,
+  exportDropdownItems,
 }: ISampleListProps) {
   const [userSearchVal, setUserSearchVal] = useState<string>("");
   const [changes, setChanges] = useState<SampleChange[]>([]);
@@ -376,7 +381,6 @@ export default function SamplesList({
                     gridRef.current?.api?.redrawRows({
                       rowNodes: changes.map((c) => c.rowNode),
                     });
-
                     handleDiscardChanges();
                   }}
                   size={"sm"}
@@ -405,6 +409,7 @@ export default function SamplesList({
             </>
           ) : undefined
         }
+        exportDropdownItems={exportDropdownItems}
       />
 
       <AutoSizer>

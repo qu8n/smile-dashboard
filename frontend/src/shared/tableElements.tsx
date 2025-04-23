@@ -1,11 +1,12 @@
 import { ApolloError } from "@apollo/client";
 import classNames from "classnames";
-import { Button, Col, Form, Row } from "react-bootstrap";
+import { Button, ButtonGroup, Dropdown, Col, Form, Row } from "react-bootstrap";
 import Spinner from "react-spinkit";
 import { DataName } from "./types";
 import { Dispatch, SetStateAction } from "react";
 import { InfoToolTip } from "./components/InfoToolTip";
 import { PatientIdsTriplet } from "../generated/graphql";
+import { ColDef } from "ag-grid-community";
 
 export function LoadingSpinner() {
   return (
@@ -33,6 +34,10 @@ interface IToolbarProps {
   onDownload: () => void;
   customUILeft?: JSX.Element;
   customUIRight?: JSX.Element;
+  exportDropdownItems?: Array<{
+    title: string;
+    colDefs: ColDef[];
+  }>;
 }
 
 export function Toolbar({
@@ -45,6 +50,7 @@ export function Toolbar({
   onDownload,
   customUILeft,
   customUIRight,
+  exportDropdownItems,
 }: IToolbarProps) {
   return (
     <Row className={classNames("d-flex align-items-center tableControlsRow")}>
@@ -99,9 +105,24 @@ export function Toolbar({
       {customUIRight}
 
       <Col className={"text-end"}>
-        <Button onClick={onDownload} size={"sm"}>
-          Generate report
-        </Button>
+        <Dropdown as={ButtonGroup}>
+          <Button onClick={onDownload} size={"sm"}>
+            Generate report
+          </Button>
+          {exportDropdownItems?.length && (
+            <>
+              <Dropdown.Toggle size="sm" split id="dropdown-split-basic" />
+              {exportDropdownItems.map((item) => (
+                <Dropdown.Menu>
+                  {/* TODO: make onDownload customizable */}
+                  <Dropdown.Item as={Button} onClick={onDownload}>
+                    {item.title}
+                  </Dropdown.Item>
+                </Dropdown.Menu>
+              ))}
+            </>
+          )}
+        </Dropdown>
       </Col>
     </Row>
   );
