@@ -523,12 +523,10 @@ export const DbGapPhenotypeColumns: ColDef[] = [
     headerName: "BODY_SITE",
   },
   {
-    // TODO: return from samples query
     field: "analyteType",
     headerName: "ANALYTE_TYPE",
   },
   {
-    // TODO: do PMs need this to be boolean?
     field: "tumorOrNormal",
     headerName: "IS_TUMOR",
   },

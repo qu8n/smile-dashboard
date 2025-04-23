@@ -142,6 +142,7 @@ fragment DashboardSampleMetadataParts on DashboardSample {
   ## Custom fields
   recipe
   altId
+  analyteType
   historicalCmoSampleNames
   instrumentModel
   platform

@@ -288,7 +288,8 @@ export function buildSamplesQueryBody({
       t,
       latestBC[0] AS latestBC,
       latestMC[0] AS latestMC,
-      latestQC[0] AS latestQC
+      latestQC[0] AS latestQC,
+      apoc.convert.fromJsonMap(latestSm.cmoSampleIdFields) AS cmoSampleIdFields
 
       ${bamCompleteDateFilter && `WHERE ${bamCompleteDateFilter}`}
       ${mafCompleteDateFilter && `WHERE ${mafCompleteDateFilter}`}
@@ -324,7 +325,8 @@ export function buildSamplesQueryBody({
         tissueLocation: latestSm.tissueLocation,
         sex: latestSm.sex,
         libraries: latestSm.libraries,
-        recipe: apoc.convert.fromJsonMap(latestSm.cmoSampleIdFields).recipe,
+        recipe: cmoSampleIdFields.recipe,
+        analyteType: cmoSampleIdFields.naToExtract,
         altId: apoc.convert.fromJsonMap(latestSm.additionalProperties).altId,
         validationReport: latestSt.validationReport,
         validationStatus: latestSt.validationStatus,

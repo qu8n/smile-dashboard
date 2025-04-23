@@ -51,6 +51,7 @@ const SAMPLE_FIELDS = `
   ## Custom fields
   recipe: String
   altId: String
+  analyteType: String
   historicalCmoSampleNames: String
   instrumentModel: String
   platform: String

@@ -1424,6 +1424,7 @@ export type DashboardSample = {
   _total?: Maybe<Scalars["Int"]>;
   accessLevel?: Maybe<Scalars["String"]>;
   altId?: Maybe<Scalars["String"]>;
+  analyteType?: Maybe<Scalars["String"]>;
   baitSet?: Maybe<Scalars["String"]>;
   bamCompleteDate?: Maybe<Scalars["String"]>;
   bamCompleteStatus?: Maybe<Scalars["String"]>;
@@ -1474,6 +1475,7 @@ export type DashboardSampleInput = {
   _total?: InputMaybe<Scalars["Int"]>;
   accessLevel?: InputMaybe<Scalars["String"]>;
   altId?: InputMaybe<Scalars["String"]>;
+  analyteType?: InputMaybe<Scalars["String"]>;
   baitSet?: InputMaybe<Scalars["String"]>;
   bamCompleteDate?: InputMaybe<Scalars["String"]>;
   bamCompleteStatus?: InputMaybe<Scalars["String"]>;
@@ -1527,7 +1529,7 @@ export type DbGap = {
   samplesHasDbgap: Array<Sample>;
   samplesHasDbgapAggregate?: Maybe<DbGapSampleSamplesHasDbgapAggregationSelection>;
   samplesHasDbgapConnection: DbGapSamplesHasDbgapConnection;
-  smileDbGapId: Scalars["String"];
+  smileDbGapId?: Maybe<Scalars["String"]>;
 };
 
 export type DbGapSamplesHasDbgapArgs = {
@@ -1567,7 +1569,7 @@ export type DbGapConnectWhere = {
 export type DbGapCreateInput = {
   dbGapStudy: Scalars["String"];
   samplesHasDbgap?: InputMaybe<DbGapSamplesHasDbgapFieldInput>;
-  smileDbGapId: Scalars["String"];
+  smileDbGapId?: InputMaybe<Scalars["String"]>;
 };
 
 export type DbGapDeleteInput = {
@@ -1792,7 +1794,7 @@ export type DbGapWhere = {
   smileDbGapId?: InputMaybe<Scalars["String"]>;
   smileDbGapId_CONTAINS?: InputMaybe<Scalars["String"]>;
   smileDbGapId_ENDS_WITH?: InputMaybe<Scalars["String"]>;
-  smileDbGapId_IN?: InputMaybe<Array<Scalars["String"]>>;
+  smileDbGapId_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
   smileDbGapId_MATCHES?: InputMaybe<Scalars["String"]>;
   smileDbGapId_STARTS_WITH?: InputMaybe<Scalars["String"]>;
 };
@@ -11101,6 +11103,7 @@ export type DashboardSamplesQuery = {
     sex?: string | null;
     recipe?: string | null;
     altId?: string | null;
+    analyteType?: string | null;
     historicalCmoSampleNames?: string | null;
     instrumentModel?: string | null;
     platform?: string | null;
@@ -11156,6 +11159,7 @@ export type DashboardSampleMetadataPartsFragment = {
   sex?: string | null;
   recipe?: string | null;
   altId?: string | null;
+  analyteType?: string | null;
   historicalCmoSampleNames?: string | null;
   instrumentModel?: string | null;
   platform?: string | null;
@@ -11242,6 +11246,7 @@ export type UpdateDashboardSamplesMutation = {
     sex?: string | null;
     recipe?: string | null;
     altId?: string | null;
+    analyteType?: string | null;
     historicalCmoSampleNames?: string | null;
     instrumentModel?: string | null;
     platform?: string | null;
@@ -11311,6 +11316,7 @@ export const DashboardSampleMetadataPartsFragmentDoc = gql`
     sex
     recipe
     altId
+    analyteType
     historicalCmoSampleNames
     instrumentModel
     platform
