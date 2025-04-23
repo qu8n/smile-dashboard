@@ -35,9 +35,10 @@ interface IToolbarProps {
   customUILeft?: JSX.Element;
   customUIRight?: JSX.Element;
   exportDropdownItems?: Array<{
-    title: string;
-    colDefs: ColDef[];
+    label: string;
+    columnDefs: ColDef[];
   }>;
+  setColumnDefsForExport?: Dispatch<SetStateAction<ColDef[]>>;
 }
 
 export function Toolbar({
@@ -51,6 +52,7 @@ export function Toolbar({
   customUILeft,
   customUIRight,
   exportDropdownItems,
+  setColumnDefsForExport,
 }: IToolbarProps) {
   return (
     <Row className={classNames("d-flex align-items-center tableControlsRow")}>
@@ -109,14 +111,19 @@ export function Toolbar({
           <Button onClick={onDownload} size={"sm"}>
             Generate report
           </Button>
-          {exportDropdownItems?.length && (
+          {exportDropdownItems?.length && setColumnDefsForExport && (
             <>
               <Dropdown.Toggle size="sm" split id="dropdown-split-basic" />
               {exportDropdownItems.map((item) => (
                 <Dropdown.Menu>
-                  {/* TODO: make onDownload customizable */}
-                  <Dropdown.Item as={Button} onClick={onDownload}>
-                    {item.title}
+                  <Dropdown.Item
+                    as="button"
+                    onClick={() => {
+                      setColumnDefsForExport(item.columnDefs);
+                      onDownload();
+                    }}
+                  >
+                    {item.label}
                   </Dropdown.Item>
                 </Dropdown.Menu>
               ))}

@@ -63,8 +63,8 @@ interface ISampleListProps {
   setUserEmail?: Dispatch<SetStateAction<string | null>>;
   customToolbarUI?: JSX.Element;
   exportDropdownItems?: Array<{
-    title: string;
-    colDefs: ColDef[];
+    label: string;
+    columnDefs: ColDef[];
   }>;
 }
 
@@ -84,6 +84,8 @@ export default function SamplesList({
   const [showDownloadModal, setShowDownloadModal] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [alertContent, setAlertContent] = useState<string | null>(null);
+  const [columnDefsForExport, setColumnDefsForExport] =
+    useState<ColDef[]>(columnDefs);
 
   const gridRef = useRef<AgGridReactType>(null);
   const params = useParams();
@@ -322,11 +324,14 @@ export default function SamplesList({
             });
             return buildTsvString(
               data.dashboardSamples,
-              columnDefs,
+              columnDefsForExport,
               gridRef.current?.columnApi?.getAllGridColumns()
             );
           }}
-          onComplete={() => setShowDownloadModal(false)}
+          onComplete={() => {
+            setShowDownloadModal(false);
+            setColumnDefsForExport(columnDefs);
+          }}
           exportFileName={[
             parentDataName?.slice(0, -1),
             Object.values(params)?.[0],
@@ -365,6 +370,7 @@ export default function SamplesList({
         onDownload={() => {
           if (sampleCount && sampleCount > MAX_ROWS_EXPORT) {
             setAlertContent(MAX_ROWS_EXPORT_WARNING.content);
+            setColumnDefsForExport(columnDefs);
           } else {
             setShowDownloadModal(true);
           }
@@ -410,6 +416,7 @@ export default function SamplesList({
           ) : undefined
         }
         exportDropdownItems={exportDropdownItems}
+        setColumnDefsForExport={setColumnDefsForExport}
       />
 
       <AutoSizer>

@@ -63,8 +63,8 @@ export default function SamplesPage() {
       }
       exportDropdownItems={[
         {
-          title: "Generate phenotype report",
-          colDefs: ReadOnlyCohortSampleDetailsColumns, // TODO: replace this with the correct columnDefs
+          label: "Generate phenotype report",
+          columnDefs: ReadOnlyCohortSampleDetailsColumns, // TODO: replace this with the correct columnDefs
         },
       ]}
     />
