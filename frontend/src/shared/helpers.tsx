@@ -497,6 +497,67 @@ export const SampleColumns: ColDef[] = [
   },
 ];
 
+export const DbGapPhenotypeColumns: ColDef[] = [
+  {
+    field: "cmoPatientId",
+    headerName: "SUBJECT_ID",
+  },
+  {
+    field: "cmoSampleName",
+    headerName: "SAMPLE_ID",
+  },
+  {
+    field: "sex",
+    headerName: "SEX",
+  },
+  {
+    // To be left empty for now as we don't have this data yet
+    headerName: "RACE",
+  },
+  {
+    field: "cancerType",
+    headerName: "CANCER_TYPE",
+  },
+  {
+    field: "tissueLocation",
+    headerName: "BODY_SITE",
+  },
+  {
+    // TODO: return from samples query
+    field: "analyteType",
+    headerName: "ANALYTE_TYPE",
+  },
+  {
+    // TODO: do PMs need this to be boolean?
+    field: "tumorOrNormal",
+    headerName: "IS_TUMOR",
+  },
+  {
+    field: "sampleType",
+    headerName: "SAMPLE_TYPE",
+  },
+  {
+    field: "cancerType",
+    headerName: "HISTOLOGICAL_TYPE",
+  },
+  {
+    field: "cancerTypeDetailed",
+    headerName: "HISTOLOGICAL_SUBTYPE",
+  },
+  {
+    field: "genePanel",
+    headerName: "SEQUENCING_PANEL",
+  },
+  {
+    field: "platform",
+    headerName: "PLATFORM",
+  },
+  {
+    field: "instrumentModel",
+    headerName: "INSTRUMENT_MODEL",
+  },
+];
+
 function createCustomHeader(icons: string) {
   return {
     template: `

@@ -1,5 +1,6 @@
 import SamplesList from "../../components/SamplesList";
 import {
+  DbGapPhenotypeColumns,
   ReadOnlyCohortSampleDetailsColumns,
   combinedSampleDetailsColumns,
 } from "../../shared/helpers";
@@ -63,8 +64,8 @@ export default function SamplesPage() {
       }
       exportDropdownItems={[
         {
-          label: "Generate phenotype report",
-          columnDefs: ReadOnlyCohortSampleDetailsColumns, // TODO: replace this with the correct columnDefs
+          label: "Generate Phenotype files for dbGaP",
+          columnDefs: DbGapPhenotypeColumns,
         },
       ]}
     />
