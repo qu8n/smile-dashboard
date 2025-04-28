@@ -73,7 +73,7 @@ function getAgGridBooleanValueFormatter({
   };
 }
 
-export const RequestColumns: ColDef[] = [
+export const requestColDefs: ColDef[] = [
   {
     headerName: "View Samples",
     cellRenderer: (params: ICellRendererParams) => {
@@ -186,7 +186,7 @@ export const RequestColumns: ColDef[] = [
   },
 ];
 
-export const PatientColumns: ColDef[] = [
+export const patientColDefs: ColDef[] = [
   {
     headerName: "View Samples",
     cellRenderer: (params: ICellRendererParams) => {
@@ -273,7 +273,7 @@ const ONCOTREE_CODE_NA_TOOLTIP =
   "This code might have been remapped (renamed) between different versions of the Oncotree API. " +
   "For remapping details, visit the docs at https://oncotree.mskcc.org/#/home?tab=mapping";
 
-export const SampleColumns: ColDef[] = [
+export const sampleColDefs: ColDef[] = [
   {
     field: "primaryId",
     headerName: "Primary ID",
@@ -287,7 +287,8 @@ export const SampleColumns: ColDef[] = [
     headerName: "Status",
     cellRenderer: (params: ICellRendererParams) => {
       if (params.data?.revisable === true) {
-        return params.data?.validationStatus === false ? (
+        return params.data?.validationStatus === false ||
+          params.data?.validationStatus === null ? (
           <WarningIcon />
         ) : (
           <CheckIcon />
@@ -299,9 +300,10 @@ export const SampleColumns: ColDef[] = [
       return null;
     },
     tooltipComponent: StatusTooltip,
-    // This prop is required for tooltip to appear even though we're not using it
-    // (We're overriding this prop with the custom tooltip component)
-    tooltipField: "validationReport",
+    // This prop is required for tooltip to appear even though it's being overridden with the tooltipComponent.
+    // We're using the "primaryId" field because it's always present in the data. Using "validationReport" would
+    // make the tooltip not appear for rows where the Sample is missing a corresponding Status in the database.
+    tooltipField: "primaryId",
   },
   {
     field: "cmoSampleName",
@@ -652,7 +654,7 @@ function setupEditableSampleFields(
   });
 }
 
-export const CohortColumns: ColDef[] = [
+export const cohortColDefs: ColDef[] = [
   {
     headerName: "View Samples",
     cellRenderer: (params: ICellRendererParams) => {
@@ -719,7 +721,7 @@ export const CohortColumns: ColDef[] = [
   },
 ];
 
-export const WesSampleColumns: ColDef[] = [
+export const wesSampleColDefs: ColDef[] = [
   {
     field: "primaryId",
     headerName: "Primary ID",
@@ -868,7 +870,7 @@ export const WesSampleColumns: ColDef[] = [
   },
 ];
 
-export const ReadOnlyCohortSampleDetailsColumns = _.cloneDeep(WesSampleColumns);
+export const ReadOnlyCohortSampleDetailsColumns = _.cloneDeep(wesSampleColDefs);
 
 export const defaultColDef: ColDef = {
   sortable: true,
@@ -904,11 +906,11 @@ const editableWesSampleFields = [
   "accessLevel",
 ];
 
-setupEditableSampleFields(SampleColumns, editableSampleFields);
-setupEditableSampleFields(WesSampleColumns, editableWesSampleFields);
+setupEditableSampleFields(sampleColDefs, editableSampleFields);
+setupEditableSampleFields(wesSampleColDefs, editableWesSampleFields);
 
 export const combinedSampleDetailsColumns = _.uniqBy(
-  [...SampleColumns, ...ReadOnlyCohortSampleDetailsColumns],
+  [...sampleColDefs, ...ReadOnlyCohortSampleDetailsColumns],
   "field"
 );
 

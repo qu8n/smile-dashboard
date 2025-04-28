@@ -6,8 +6,8 @@ import { Dispatch, SetStateAction, useState } from "react";
 import {
   MAX_ROWS_EXPORT,
   MAX_ROWS_EXPORT_WARNING,
-  WesSampleColumns,
-  CohortColumns,
+  wesSampleColDefs,
+  cohortColDefs,
 } from "../../shared/helpers";
 import { useParams } from "react-router-dom";
 import RecordsList from "../../components/RecordsList";
@@ -42,7 +42,7 @@ export default function CohortsPage({
   return (
     <>
       <RecordsList
-        columnDefs={CohortColumns}
+        columnDefs={cohortColDefs}
         dataName={dataName}
         defaultSort={defaultSort}
         useRecordsLazyQuery={useDashboardCohortsLazyQuery}
@@ -60,7 +60,7 @@ export default function CohortsPage({
             setShowDownloadModal(true);
           }
         }}
-        samplesColDefs={WesSampleColumns}
+        samplesColDefs={wesSampleColDefs}
         sampleContext={
           sampleQueryParamValue
             ? {

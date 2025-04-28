@@ -454,7 +454,7 @@ export default function SamplesList({
                   return (
                     params.data?.revisable === true &&
                     (params.data?.validationStatus === false ||
-                      params.data?.validationStatus === undefined)
+                      params.data?.validationStatus === null)
                   );
                 },
               }}

@@ -15,8 +15,8 @@ import { parseUserSearchVal } from "../../utils/parseSearchQueries";
 import {
   MAX_ROWS_EXPORT,
   MAX_ROWS_EXPORT_WARNING,
-  PatientColumns,
-  SampleColumns,
+  patientColDefs,
+  sampleColDefs,
 } from "../../shared/helpers";
 import { getUserEmail } from "../../utils/getUserEmail";
 import { openLoginPopup } from "../../utils/openLoginPopup";
@@ -160,7 +160,7 @@ export default function PatientsPage({
   }, [phiEnabled]);
 
   const ActivePatientsListColumns = useMemo(() => {
-    return PatientColumns.map((column) => {
+    return patientColDefs.map((column) => {
       if (
         column.headerName === "Patient MRN" &&
         phiEnabled &&
@@ -233,7 +233,7 @@ export default function PatientsPage({
             setShowDownloadModal(true);
           }
         }}
-        samplesColDefs={SampleColumns}
+        samplesColDefs={sampleColDefs}
         sampleContext={
           sampleQueryParamValue
             ? {
