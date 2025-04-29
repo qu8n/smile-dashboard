@@ -62,6 +62,7 @@ export function buildSamplesQueryBody({
       "qcCompleteStatus",
       "historicalCmoSampleNames",
       "sampleCategory",
+      "dbGapStudy",
     ];
     searchFilters += fieldsToSearch
       .map(
