@@ -171,7 +171,8 @@ export function StatusTooltip({ data }: ITooltipParams<DashboardSample>) {
     return null;
   }
 
-  const { primaryId, validationReport, validationStatus } = data;
+  const { primaryId, validationReport, validationStatus, sampleCategory } =
+    data;
   const validationDataForAgGrid: SampleStatusItem[] = [];
 
   // Populate the validationDataForAgGrid with the validation report data
@@ -183,7 +184,7 @@ export function StatusTooltip({ data }: ITooltipParams<DashboardSample>) {
       }))
     );
     // Handle the case where a Sample is missing a corresponding Status in the database
-  } else if (validationStatus === null) {
+  } else if (validationStatus === null && sampleCategory !== "clinical") {
     validationDataForAgGrid.push(...MISSING_SAMPLE_STATUS);
   }
 

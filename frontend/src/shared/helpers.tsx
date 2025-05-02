@@ -288,7 +288,8 @@ export const sampleColDefs: ColDef[] = [
     cellRenderer: (params: ICellRendererParams) => {
       if (params.data?.revisable === true) {
         return params.data?.validationStatus === false ||
-          params.data?.validationStatus === null ? (
+          (params.data?.validationStatus === null &&
+            params.data?.sampleCategory !== "clinical") ? (
           <WarningIcon />
         ) : (
           <CheckIcon />
