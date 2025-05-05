@@ -736,8 +736,19 @@ export const wesSampleColDefs: ColDef[] = [
     headerName: "CMO Sample Name",
   },
   {
+    field: "historicalCmoSampleNames",
+    headerName: "Historical CMO Sample Names",
+    wrapText: true,
+    autoHeight: true,
+    maxWidth: 300,
+  },
+  {
     field: "investigatorSampleId",
     headerName: "Investigator Sample ID",
+  },
+  {
+    field: "dbGapStudy",
+    headerName: "dbGaP Study ID",
   },
   {
     field: "initialPipelineRunDate",
