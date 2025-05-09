@@ -244,12 +244,24 @@ export const patientColDefs: ColDef[] = [
     }),
   },
   {
+    field: "inDbGap",
+    headerName: "dbGaP",
+    ...getAgGridBooleanFilterConfigs({
+      showBlanksFilterOption: false,
+    }),
+    ...getAgGridBooleanValueFormatter({
+      trueVal: true,
+      falseVal: false,
+    }),
+  },
+  {
     field: "totalSampleCount",
     headerName: "# Samples",
   },
   {
     field: "cmoSampleIds",
     headerName: "Sample IDs",
+    maxWidth: 300,
   },
   {
     field: "smilePatientId",

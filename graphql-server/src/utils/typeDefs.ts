@@ -124,6 +124,7 @@ const QUERY_RESULT_TYPEDEFS = gql`
     cmoSampleIds: String
     consentPartA: String
     consentPartC: String
+    inDbGap: Boolean
     _total: Int
   }
 

@@ -55,6 +55,7 @@ query DashboardPatients(
     cmoSampleIds
     consentPartA
     consentPartC
+    inDbGap
     _total
   }
 }

@@ -20,15 +20,15 @@ export function buildPatientsQueryBody({
 
   if (searchVals?.length) {
     const fieldsToSearch = [
-      "tempNode.smilePatientId",
-      "tempNode.cmoPatientId",
-      "tempNode.dmpPatientId",
-      "tempNode.cmoSampleIds",
-      "tempNode.consentPartA",
-      "tempNode.consentPartC",
+      "smilePatientId",
+      "cmoPatientId",
+      "dmpPatientId",
+      "cmoSampleIds",
     ];
     const searchFilters = fieldsToSearch
-      .map((field) => `${field} =~ '(?i).*(${searchVals.join("|")}).*'`)
+      .map(
+        (field) => `tempNode.${field} =~ '(?i).*(${searchVals.join("|")}).*'`
+      )
       .join(" OR ");
     queryFilters.push(searchFilters);
   }
@@ -59,6 +59,19 @@ export function buildPatientsQueryBody({
       });
       queryFilters.push(consentPartCFilter);
     }
+
+    const inDbGapFilterObj = filters?.find(
+      (filter) => filter.field === "inDbGap"
+    );
+    if (inDbGapFilterObj) {
+      const inDbGapFilter = buildCypherBooleanFilter({
+        booleanVar: "tempNode.inDbGap",
+        filter: JSON.parse(inDbGapFilterObj.filter),
+        trueVal: true,
+        falseVal: false,
+      });
+      queryFilters.push(inDbGapFilter);
+    }
   }
 
   const filtersAsCypher = buildFinalCypherFilter({ queryFilters });
@@ -69,12 +82,25 @@ export function buildPatientsQueryBody({
     // Get patient aliases
     OPTIONAL MATCH (p)<-[:IS_ALIAS]-(cmoPa:PatientAlias {namespace: 'cmoId'})
     OPTIONAL MATCH (p)<-[:IS_ALIAS]-(dmpPa:PatientAlias {namespace: 'dmpId'})
+
     OPTIONAL MATCH (p)-[:HAS_SAMPLE]->(s:Sample)
+
     WITH
       p,
       cmoPa,
       dmpPa,
       s,
+      EXISTS {
+        MATCH (p)-[:HAS_SAMPLE]->(anyS:Sample)-[:HAS_DBGAP]->(d:DbGap)
+        WHERE d.dbGapStudy IS NOT NULL AND d.dbGapStudy <> ""
+      } AS inDbGap
+
+    WITH
+      p,
+      cmoPa,
+      dmpPa,
+      s,
+      inDbGap,
       COLLECT {
       	MATCH (s)-[:HAS_METADATA]->(sm:SampleMetadata)
         RETURN ({
@@ -85,28 +111,36 @@ export function buildPatientsQueryBody({
           })
           AS smResult ORDER BY sm.importDate DESC LIMIT 1
       } AS smList
+
     WITH
-        p.smilePatientId AS smilePatientId,
-        cmoPa.value AS cmoPatientId,
-        dmpPa.value AS dmpPatientId,
-        COUNT(s) AS totalSampleCount,
-        smList[0] AS latestSm
+      p.smilePatientId AS smilePatientId,
+      cmoPa.value AS cmoPatientId,
+      dmpPa.value AS dmpPatientId,
+      COUNT(s) AS totalSampleCount,
+      smList[0] AS latestSm,
+      inDbGap
+
     WITH
       smilePatientId,
       cmoPatientId,
       dmpPatientId,
       totalSampleCount,
-      latestSm
+      latestSm,
+      inDbGap
+
     WITH
       ({
-      smilePatientId: smilePatientId,
-      cmoPatientId: cmoPatientId,
-      dmpPatientId: dmpPatientId}) AS tempNode,
+        smilePatientId: smilePatientId,
+        cmoPatientId: cmoPatientId,
+        dmpPatientId: dmpPatientId,
+        inDbGap: inDbGap
+      }) AS tempNode,
       COUNT(latestSm) AS totalSampleCount,
       apoc.text.join(COLLECT(latestSm.primaryId), ", ") AS cmoSampleIds,
       apoc.coll.max(COLLECT(latestSm.importDate)) AS importDate,
       collect(DISTINCT latestSm.consentPartA) AS consentPartA,
       collect(DISTINCT latestSm.consentPartC) AS consentPartC
+
     WITH
       tempNode{.*,
         totalSampleCount: totalSampleCount,

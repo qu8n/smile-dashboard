@@ -1376,6 +1376,7 @@ export type DashboardPatient = {
   consentPartA?: Maybe<Scalars["String"]>;
   consentPartC?: Maybe<Scalars["String"]>;
   dmpPatientId?: Maybe<Scalars["String"]>;
+  inDbGap?: Maybe<Scalars["Boolean"]>;
   smilePatientId: Scalars["String"];
   totalSampleCount?: Maybe<Scalars["Int"]>;
 };
@@ -1528,7 +1529,7 @@ export type DbGap = {
   samplesHasDbgap: Array<Sample>;
   samplesHasDbgapAggregate?: Maybe<DbGapSampleSamplesHasDbgapAggregationSelection>;
   samplesHasDbgapConnection: DbGapSamplesHasDbgapConnection;
-  smileDbGapId?: Maybe<Scalars["String"]>;
+  smileDbGapId: Scalars["String"];
 };
 
 export type DbGapSamplesHasDbgapArgs = {
@@ -1568,7 +1569,7 @@ export type DbGapConnectWhere = {
 export type DbGapCreateInput = {
   dbGapStudy: Scalars["String"];
   samplesHasDbgap?: InputMaybe<DbGapSamplesHasDbgapFieldInput>;
-  smileDbGapId?: InputMaybe<Scalars["String"]>;
+  smileDbGapId: Scalars["String"];
 };
 
 export type DbGapDeleteInput = {
@@ -1793,7 +1794,7 @@ export type DbGapWhere = {
   smileDbGapId?: InputMaybe<Scalars["String"]>;
   smileDbGapId_CONTAINS?: InputMaybe<Scalars["String"]>;
   smileDbGapId_ENDS_WITH?: InputMaybe<Scalars["String"]>;
-  smileDbGapId_IN?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  smileDbGapId_IN?: InputMaybe<Array<Scalars["String"]>>;
   smileDbGapId_MATCHES?: InputMaybe<Scalars["String"]>;
   smileDbGapId_STARTS_WITH?: InputMaybe<Scalars["String"]>;
 };
@@ -11035,6 +11036,7 @@ export type DashboardPatientsQuery = {
     cmoSampleIds?: string | null;
     consentPartA?: string | null;
     consentPartC?: string | null;
+    inDbGap?: boolean | null;
     _total?: number | null;
   }>;
 };
@@ -11435,6 +11437,7 @@ export const DashboardPatientsDocument = gql`
       cmoSampleIds
       consentPartA
       consentPartC
+      inDbGap
       _total
     }
   }
