@@ -450,14 +450,6 @@ export default function SamplesList({
                 locked: function (params) {
                   return params.data?.revisable === false;
                 },
-                "validation-error": function (params) {
-                  return (
-                    params.data?.revisable === true &&
-                    (params.data?.validationStatus === false ||
-                      (params.data?.validationStatus === null &&
-                        params.data?.sampleCategory !== "clinical"))
-                  );
-                },
               }}
               onCellEditRequest={onCellValueChanged}
               readOnlyEdit={true}

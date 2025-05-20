@@ -4,9 +4,10 @@ import { Button, ButtonGroup, Dropdown, Col, Form, Row } from "react-bootstrap";
 import Spinner from "react-spinkit";
 import { DataName } from "./types";
 import { Dispatch, SetStateAction } from "react";
-import { InfoToolTip } from "./components/InfoToolTip";
+import { CustomTooltip } from "./components/CustomToolTip";
 import { PatientIdsTriplet } from "../generated/graphql";
 import { ColDef } from "ag-grid-community";
+import InfoIcon from "@material-ui/icons/InfoOutlined";
 
 export function LoadingSpinner() {
   return (
@@ -83,13 +84,15 @@ export function Toolbar({
       </Col>
 
       <Col md="auto" style={{ marginLeft: -15 }}>
-        <InfoToolTip>
+        <CustomTooltip
+          icon={<InfoIcon style={{ fontSize: 18, color: "grey" }} />}
+        >
           Click on "Search" or press "Enter" to start searching. To bulk search,
           input a list of values separated by spaces or commas (example:{" "}
           <code>value1 value2 value3</code>). To include multiple words in a
           single search term, enclose them in single or double quotes (example:{" "}
           <code>"Bone Cancer"</code>).
-        </InfoToolTip>
+        </CustomTooltip>
       </Col>
 
       <Col md="auto" style={{ marginLeft: -15 }}>

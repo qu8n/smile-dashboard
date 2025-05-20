@@ -97,6 +97,8 @@ const QUERY_RESULT_TYPEDEFS = gql`
   type DashboardRequest {
     igoRequestId: String!
     igoProjectId: String
+    validationReport: String
+    validationStatus: Boolean
     importDate: String
     totalSampleCount: Int
     projectManagerName: String

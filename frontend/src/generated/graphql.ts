@@ -1418,6 +1418,8 @@ export type DashboardRequest = {
   projectManagerName?: Maybe<Scalars["String"]>;
   qcAccessEmails?: Maybe<Scalars["String"]>;
   totalSampleCount?: Maybe<Scalars["Int"]>;
+  validationReport?: Maybe<Scalars["String"]>;
+  validationStatus?: Maybe<Scalars["Boolean"]>;
 };
 
 export type DashboardSample = {
@@ -10998,6 +11000,8 @@ export type DashboardRequestsQuery = {
     __typename?: "DashboardRequest";
     igoRequestId: string;
     igoProjectId?: string | null;
+    validationReport?: string | null;
+    validationStatus?: boolean | null;
     importDate?: string | null;
     totalSampleCount?: number | null;
     projectManagerName?: string | null;
@@ -11392,6 +11396,8 @@ export const DashboardRequestsDocument = gql`
     ) {
       igoRequestId
       igoProjectId
+      validationReport
+      validationStatus
       importDate
       totalSampleCount
       projectManagerName

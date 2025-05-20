@@ -7,7 +7,8 @@ import {
 import { useState } from "react";
 import { Button } from "react-bootstrap";
 import _ from "lodash";
-import { InfoToolTip } from "../../shared/components/InfoToolTip";
+import { CustomTooltip } from "../../shared/components/CustomToolTip";
+import InfoIcon from "@material-ui/icons/InfoOutlined";
 
 const WES_SAMPLE_CONTEXT = {
   fieldName: "genePanel",
@@ -35,11 +36,13 @@ export default function SamplesPage() {
       sampleContext={sampleContext}
       customToolbarUI={
         <>
-          <InfoToolTip>
+          <CustomTooltip
+            icon={<InfoIcon style={{ fontSize: 18, color: "grey" }} />}
+          >
             These tabs change the data displayed in the table. "View all
             samples" shows all data and columns, including those of
             SampleMetadata and WES samples.
-          </InfoToolTip>{" "}
+          </CustomTooltip>{" "}
           <Button
             onClick={() => {
               setColumnDefs(combinedSampleDetailsColumns);

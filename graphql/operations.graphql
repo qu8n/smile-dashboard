@@ -14,6 +14,8 @@ query DashboardRequests(
   ) {
     igoRequestId
     igoProjectId
+    validationReport
+    validationStatus
     importDate
     totalSampleCount
     projectManagerName

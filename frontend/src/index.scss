@@ -52,10 +52,6 @@ $standardMargin: 10px;
   background: #fffcc9 !important;
 }
 
-.validation-error {
-  background: #ffcccb !important;
-}
-
 .costCenter-validation-error {
   color: #fa0400 !important;
 }
@@ -111,4 +107,19 @@ $standardMargin: 10px;
 
 .ag-rich-select-list {
   height: auto !important;
+}
+
+.check-icon {
+  margin-bottom: 5px;
+}
+
+.warning-icon:hover {
+  background-color: rgba(0, 0, 0, 0.15);
+}
+
+.warning-icon {
+  margin-bottom: 5px;
+  padding: 2px;
+  cursor: pointer;
+  border-radius: 4px;
 }

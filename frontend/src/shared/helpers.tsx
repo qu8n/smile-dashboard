@@ -9,11 +9,15 @@ import {
 } from "ag-grid-community";
 import { Button } from "react-bootstrap";
 import "ag-grid-enterprise";
-import WarningIcon from "@material-ui/icons/Warning";
 import CheckIcon from "@material-ui/icons/Check";
-import { StatusTooltip } from "./components/StatusToolTip";
 import moment from "moment";
 import _ from "lodash";
+import { RecordValidation } from "../components/RecordValidation";
+import { DashboardRequest, DashboardSample } from "../generated/graphql";
+import {
+  REQUEST_STATUS_MAP,
+  SAMPLE_STATUS_MAP,
+} from "../configs/recordValidationMaps";
 
 export type SampleChange = {
   primaryId: string;
@@ -78,19 +82,39 @@ export const requestColDefs: ColDef[] = [
     headerName: "View Samples",
     cellRenderer: (params: ICellRendererParams) => {
       return (
-        <Button
-          variant="outline-secondary"
-          size="sm"
-          onClick={() => {
-            if (params.data.igoRequestId !== undefined) {
-              params.context.navigateFunction(
-                `/requests/${params.data.igoRequestId}`
-              );
-            }
-          }}
-        >
-          View
-        </Button>
+        <div style={{ display: "flex", alignItems: "center", height: "100%" }}>
+          <Button
+            variant="outline-secondary"
+            size="sm"
+            onClick={() => {
+              if (params.data.igoRequestId !== undefined) {
+                params.context.navigateFunction(
+                  `/requests/${params.data.igoRequestId}`
+                );
+              }
+            }}
+          >
+            View
+          </Button>
+        </div>
+      );
+    },
+    sortable: false,
+  },
+  {
+    headerName: "Status",
+    cellRenderer: (params: ICellRendererParams<DashboardRequest>) => {
+      if (!params.data) return null;
+      const { igoRequestId, validationStatus, validationReport } = params.data;
+      return validationReport !== null && validationReport !== "{}" ? (
+        <RecordValidation
+          validationStatus={validationStatus}
+          validationReport={validationReport}
+          modalTitle={`Error report for request ${igoRequestId}`}
+          recordStatusMap={REQUEST_STATUS_MAP}
+        />
+      ) : (
+        <CheckIcon className="check-icon" />
       );
     },
     sortable: false,
@@ -295,28 +319,34 @@ export const sampleColDefs: ColDef[] = [
     headerName: "Alt ID",
   },
   {
-    field: "revisable",
     headerName: "Status",
-    cellRenderer: (params: ICellRendererParams) => {
-      if (params.data?.revisable === true) {
-        return params.data?.validationStatus === false ||
-          (params.data?.validationStatus === null &&
-            params.data?.sampleCategory !== "clinical") ? (
-          <WarningIcon />
+    cellRenderer: (params: ICellRendererParams<DashboardSample>) => {
+      if (!params.data) return null;
+      const {
+        revisable,
+        validationStatus,
+        validationReport,
+        sampleCategory,
+        primaryId,
+      } = params.data;
+
+      if (revisable === true) {
+        return validationStatus === false ||
+          (validationStatus === null && sampleCategory !== "clinical") ? (
+          <RecordValidation
+            validationStatus={validationStatus}
+            validationReport={validationReport}
+            modalTitle={`Error report for sample ${primaryId}`}
+            recordStatusMap={SAMPLE_STATUS_MAP}
+          />
         ) : (
           <CheckIcon />
         );
-      }
-      if (params.data?.revisable === false) {
+      } else {
         return <LoadingIcon />;
       }
-      return null;
     },
-    tooltipComponent: StatusTooltip,
-    // This prop is required for tooltip to appear even though it's being overridden with the tooltipComponent.
-    // We're using the "primaryId" field because it's always present in the data. Using "validationReport" would
-    // make the tooltip not appear for rows where the Sample is missing a corresponding Status in the database.
-    tooltipField: "primaryId",
+    sortable: false,
   },
   {
     field: "cmoSampleName",

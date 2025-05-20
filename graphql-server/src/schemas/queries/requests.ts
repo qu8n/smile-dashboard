@@ -21,26 +21,28 @@ export function buildRequestsQueryBody({
 
   if (searchVals?.length) {
     const fieldsToSearch = [
-      "tempNode.igoRequestId",
-      "tempNode.igoProjectId",
-      "tempNode.importDate",
-      "tempNode.projectManagerName",
-      "tempNode.investigatorName",
-      "tempNode.investigatorEmail",
-      "tempNode.piEmail",
-      "tempNode.dataAnalystName",
-      "tempNode.dataAnalystEmail",
-      "tempNode.genePanel",
-      "tempNode.labHeadName",
-      "tempNode.labHeadEmail",
-      "tempNode.qcAccessEmails",
-      "tempNode.dataAccessEmails",
-      "tempNode.bicAnalysis",
-      "tempNode.isCmoRequest",
-      "tempNode.otherContactEmails",
+      "igoRequestId",
+      "igoProjectId",
+      "importDate",
+      "projectManagerName",
+      "investigatorName",
+      "investigatorEmail",
+      "piEmail",
+      "dataAnalystName",
+      "dataAnalystEmail",
+      "genePanel",
+      "labHeadName",
+      "labHeadEmail",
+      "qcAccessEmails",
+      "dataAccessEmails",
+      "bicAnalysis",
+      "isCmoRequest",
+      "otherContactEmails",
     ];
     const searchFilters = fieldsToSearch
-      .map((field) => `${field} =~ '(?i).*(${searchVals.join("|")}).*'`)
+      .map(
+        (field) => `tempNode.${field} =~ '(?i).*(${searchVals.join("|")}).*'`
+      )
       .join(" OR ");
     queryFilters.push(searchFilters);
   }
@@ -82,22 +84,41 @@ export function buildRequestsQueryBody({
 
   const filtersAsCypher = buildFinalCypherFilter({ queryFilters });
 
+  // TODO: when done, compare the request page results before vs after to ensure consistency
   const requestsQueryBody = `
-    MATCH (r:Request)-[:HAS_METADATA]->(rm:RequestMetadata)
+    MATCH (r:Request)
 
-    // Get the latest SampleMetadata of each Sample
+    WITH
+      r,
+      COLLECT {
+        MATCH (r)-[:HAS_METADATA]->(rm:RequestMetadata)-[:HAS_STATUS]->(st:Status)
+      	RETURN { rm: rm, st: st }
+        ORDER BY rm.importDate DESC
+        LIMIT 1
+      } AS latestRm
+
     OPTIONAL MATCH (r)-[:HAS_SAMPLE]->(s:Sample)-[:HAS_METADATA]->(sm:SampleMetadata)
+
     WITH
       r,
-      count(DISTINCT s.smileSampleId) AS totalSampleCount,
-      collect(distinct sm.importDate) + collect(distinct rm.importDate) as allImportDates
+      latestRm[0].st AS latestStatus,
+      COUNT(DISTINCT s.smileSampleId) AS totalSampleCount,
+      apoc.coll.max(
+        COLLECT(latestRm[0].rm.importDate) +
+        COLLECT(DISTINCT sm.importDate)
+      ) AS latestImportDate
+
     WITH
       r,
+      latestStatus,
       totalSampleCount,
-      apoc.coll.max(allImportDates) as latestImportDate
+      latestImportDate
+
     WITH
       ({igoRequestId: r.igoRequestId,
         igoProjectId: r.igoProjectId,
+        validationReport: latestStatus.validationReport,
+        validationStatus: latestStatus.validationStatus,
         importDate: latestImportDate,
         totalSampleCount: totalSampleCount,
         projectManagerName: r.projectManagerName,
