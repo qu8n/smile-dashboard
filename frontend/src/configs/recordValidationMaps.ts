@@ -132,7 +132,7 @@ export const REQUEST_STATUS_MAP: StatusMap = {
       actionItem: getActionItemForMissingIgoField("samples"),
       responsibleParty: "IGO",
     },
-  "samples (failed) some request samples failed validation": {
+  "samples (failed) Some request samples failed validation": {
     item: "samples (failed)",
     description: "Some request samples failed validation",
     actionItem:
@@ -140,7 +140,7 @@ export const REQUEST_STATUS_MAP: StatusMap = {
       " contact the SMILE team.",
     responsibleParty: "",
   },
-  "samples (failed) all request samples failed validation": {
+  "samples (failed) All request samples failed validation": {
     item: "samples (failed)",
     description: "All request samples failed validation",
     actionItem:
