@@ -23,6 +23,7 @@ import {
   REQUEST_STATUS_MAP,
   SAMPLE_STATUS_MAP,
 } from "../configs/recordValidationMaps";
+import { Link } from "react-router-dom";
 
 export type SampleChange = {
   primaryId: string;
@@ -375,6 +376,16 @@ export const sampleColDefs: ColDef<DashboardSample>[] = [
   {
     field: "cmoPatientId",
     headerName: "CMO Patient ID",
+    cellRenderer: (params: any) => {
+      return (
+        <Link
+          to={`/patients/${params.value}`}
+          style={{ color: "black", textDecoration: "none" }}
+        >
+          {params.value}
+        </Link>
+      );
+    },
   },
   {
     field: "investigatorSampleId",
