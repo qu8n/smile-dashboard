@@ -93,7 +93,7 @@ query DashboardCohorts(
 
 query DashboardSamples(
   $searchVals: [String!]
-  $context: DashboardRecordContext
+  $contexts: [DashboardRecordContext]
   $sort: DashboardRecordSort!
   $filters: [DashboardRecordFilter!]
   $limit: Int!
@@ -101,7 +101,7 @@ query DashboardSamples(
 ) {
   dashboardSamples(
     searchVals: $searchVals
-    context: $context
+    contexts: $contexts
     sort: $sort
     filters: $filters
     limit: $limit
@@ -111,6 +111,7 @@ query DashboardSamples(
     ...DashboardSampleMetadataParts
     ...DashboardTempoParts
     ...DashboardDbGapParts
+    ...DashboardPatientParts
     _total
   }
 }
@@ -142,6 +143,7 @@ fragment DashboardSampleMetadataParts on DashboardSample {
   sampleOrigin
   tissueLocation
   sex
+  cfDNA2dBarcode
   ## Custom fields
   recipe
   altId
@@ -186,6 +188,12 @@ fragment DashboardTempoParts on DashboardSample {
 fragment DashboardDbGapParts on DashboardSample {
   # (s:Sample)-[:HAS_DBGAP]->(d:DbGap)
   dbGapStudy
+}
+
+fragment DashboardPatientParts on DashboardSample {
+  # (s:Sample)<-[:HAS_SAMPLE]-(p:Patient)<-[:IS_ALIAS]-(pa:PatientAlias)
+  ## Custom fields
+  dmpPatientAlias
 }
 
 fragment RequestParts on Request {

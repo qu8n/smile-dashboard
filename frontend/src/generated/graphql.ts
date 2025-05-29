@@ -1435,12 +1435,14 @@ export type DashboardSample = {
   billedBy?: Maybe<Scalars["String"]>;
   cancerType?: Maybe<Scalars["String"]>;
   cancerTypeDetailed?: Maybe<Scalars["String"]>;
+  cfDNA2dBarcode?: Maybe<Scalars["String"]>;
   cmoPatientId?: Maybe<Scalars["String"]>;
   cmoSampleName?: Maybe<Scalars["String"]>;
   collectionYear?: Maybe<Scalars["String"]>;
   costCenter?: Maybe<Scalars["String"]>;
   custodianInformation?: Maybe<Scalars["String"]>;
   dbGapStudy?: Maybe<Scalars["String"]>;
+  dmpPatientAlias?: Maybe<Scalars["String"]>;
   embargoDate?: Maybe<Scalars["String"]>;
   genePanel?: Maybe<Scalars["String"]>;
   historicalCmoSampleNames?: Maybe<Scalars["String"]>;
@@ -1486,6 +1488,7 @@ export type DashboardSampleInput = {
   billedBy?: InputMaybe<Scalars["String"]>;
   cancerType?: InputMaybe<Scalars["String"]>;
   cancerTypeDetailed?: InputMaybe<Scalars["String"]>;
+  cfDNA2dBarcode?: InputMaybe<Scalars["String"]>;
   changedFieldNames: Array<Scalars["String"]>;
   cmoPatientId?: InputMaybe<Scalars["String"]>;
   cmoSampleName?: InputMaybe<Scalars["String"]>;
@@ -1493,6 +1496,7 @@ export type DashboardSampleInput = {
   costCenter?: InputMaybe<Scalars["String"]>;
   custodianInformation?: InputMaybe<Scalars["String"]>;
   dbGapStudy?: InputMaybe<Scalars["String"]>;
+  dmpPatientAlias?: InputMaybe<Scalars["String"]>;
   embargoDate?: InputMaybe<Scalars["String"]>;
   genePanel?: InputMaybe<Scalars["String"]>;
   historicalCmoSampleNames?: InputMaybe<Scalars["String"]>;
@@ -4184,7 +4188,7 @@ export type QueryDashboardRequestsArgs = {
 };
 
 export type QueryDashboardSamplesArgs = {
-  context?: InputMaybe<DashboardRecordContext>;
+  contexts?: InputMaybe<Array<InputMaybe<DashboardRecordContext>>>;
   filters?: InputMaybe<Array<DashboardRecordFilter>>;
   limit: Scalars["Int"];
   offset: Scalars["Int"];
@@ -11075,7 +11079,10 @@ export type DashboardCohortsQuery = {
 
 export type DashboardSamplesQueryVariables = Exact<{
   searchVals?: InputMaybe<Array<Scalars["String"]> | Scalars["String"]>;
-  context?: InputMaybe<DashboardRecordContext>;
+  contexts?: InputMaybe<
+    | Array<InputMaybe<DashboardRecordContext>>
+    | InputMaybe<DashboardRecordContext>
+  >;
   sort: DashboardRecordSort;
   filters?: InputMaybe<Array<DashboardRecordFilter> | DashboardRecordFilter>;
   limit: Scalars["Int"];
@@ -11107,6 +11114,7 @@ export type DashboardSamplesQuery = {
     sampleOrigin?: string | null;
     tissueLocation?: string | null;
     sex?: string | null;
+    cfDNA2dBarcode?: string | null;
     recipe?: string | null;
     altId?: string | null;
     analyteType?: string | null;
@@ -11134,6 +11142,7 @@ export type DashboardSamplesQuery = {
     qcCompleteReason?: string | null;
     qcCompleteStatus?: string | null;
     dbGapStudy?: string | null;
+    dmpPatientAlias?: string | null;
   }>;
 };
 
@@ -11163,6 +11172,7 @@ export type DashboardSampleMetadataPartsFragment = {
   sampleOrigin?: string | null;
   tissueLocation?: string | null;
   sex?: string | null;
+  cfDNA2dBarcode?: string | null;
   recipe?: string | null;
   altId?: string | null;
   analyteType?: string | null;
@@ -11198,6 +11208,11 @@ export type DashboardTempoPartsFragment = {
 export type DashboardDbGapPartsFragment = {
   __typename?: "DashboardSample";
   dbGapStudy?: string | null;
+};
+
+export type DashboardPatientPartsFragment = {
+  __typename?: "DashboardSample";
+  dmpPatientAlias?: string | null;
 };
 
 export type RequestPartsFragment = {
@@ -11250,6 +11265,7 @@ export type UpdateDashboardSamplesMutation = {
     sampleOrigin?: string | null;
     tissueLocation?: string | null;
     sex?: string | null;
+    cfDNA2dBarcode?: string | null;
     recipe?: string | null;
     altId?: string | null;
     analyteType?: string | null;
@@ -11320,6 +11336,7 @@ export const DashboardSampleMetadataPartsFragmentDoc = gql`
     sampleOrigin
     tissueLocation
     sex
+    cfDNA2dBarcode
     recipe
     altId
     analyteType
@@ -11355,6 +11372,11 @@ export const DashboardTempoPartsFragmentDoc = gql`
 export const DashboardDbGapPartsFragmentDoc = gql`
   fragment DashboardDbGapParts on DashboardSample {
     dbGapStudy
+  }
+`;
+export const DashboardPatientPartsFragmentDoc = gql`
+  fragment DashboardPatientParts on DashboardSample {
+    dmpPatientAlias
   }
 `;
 export const RequestPartsFragmentDoc = gql`
@@ -11643,7 +11665,7 @@ export type DashboardCohortsQueryResult = Apollo.QueryResult<
 export const DashboardSamplesDocument = gql`
   query DashboardSamples(
     $searchVals: [String!]
-    $context: DashboardRecordContext
+    $contexts: [DashboardRecordContext]
     $sort: DashboardRecordSort!
     $filters: [DashboardRecordFilter!]
     $limit: Int!
@@ -11651,7 +11673,7 @@ export const DashboardSamplesDocument = gql`
   ) {
     dashboardSamples(
       searchVals: $searchVals
-      context: $context
+      contexts: $contexts
       sort: $sort
       filters: $filters
       limit: $limit
@@ -11661,6 +11683,7 @@ export const DashboardSamplesDocument = gql`
       ...DashboardSampleMetadataParts
       ...DashboardTempoParts
       ...DashboardDbGapParts
+      ...DashboardPatientParts
       _total
     }
   }
@@ -11668,6 +11691,7 @@ export const DashboardSamplesDocument = gql`
   ${DashboardSampleMetadataPartsFragmentDoc}
   ${DashboardTempoPartsFragmentDoc}
   ${DashboardDbGapPartsFragmentDoc}
+  ${DashboardPatientPartsFragmentDoc}
 `;
 
 /**
@@ -11683,7 +11707,7 @@ export const DashboardSamplesDocument = gql`
  * const { data, loading, error } = useDashboardSamplesQuery({
  *   variables: {
  *      searchVals: // value for 'searchVals'
- *      context: // value for 'context'
+ *      contexts: // value for 'contexts'
  *      sort: // value for 'sort'
  *      filters: // value for 'filters'
  *      limit: // value for 'limit'

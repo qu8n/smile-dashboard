@@ -53,12 +53,14 @@ export default function RequestsPage() {
           }
         }}
         samplesColDefs={sampleColDefs}
-        sampleContext={
+        sampleContexts={
           sampleQueryParamValue
-            ? {
-                fieldName: sampleQueryParamFieldName,
-                values: [sampleQueryParamValue],
-              }
+            ? [
+                {
+                  fieldName: sampleQueryParamFieldName,
+                  values: [sampleQueryParamValue],
+                },
+              ]
             : undefined
         }
       />

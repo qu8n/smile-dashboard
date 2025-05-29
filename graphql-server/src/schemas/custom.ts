@@ -86,7 +86,7 @@ export async function buildCustomSchema(ogm: OGM) {
         _source: undefined,
         {
           searchVals,
-          context,
+          contexts,
           sort,
           filters,
           limit,
@@ -108,7 +108,7 @@ export async function buildCustomSchema(ogm: OGM) {
 
         const queryBody = buildSamplesQueryBody({
           searchVals,
-          context,
+          contexts,
           filters,
           addlOncotreeCodes,
         });

@@ -13,7 +13,12 @@ import CheckIcon from "@material-ui/icons/Check";
 import moment from "moment";
 import _ from "lodash";
 import { RecordValidation } from "../components/RecordValidation";
-import { DashboardRequest, DashboardSample } from "../generated/graphql";
+import {
+  DashboardCohort,
+  DashboardPatient,
+  DashboardRequest,
+  DashboardSample,
+} from "../generated/graphql";
 import {
   REQUEST_STATUS_MAP,
   SAMPLE_STATUS_MAP,
@@ -77,7 +82,17 @@ function getAgGridBooleanValueFormatter({
   };
 }
 
-export const requestColDefs: ColDef[] = [
+export const multiLineColDef: ColDef = {
+  wrapText: true,
+  autoHeight: true,
+  cellStyle: {
+    wordBreak: "break-word",
+    lineHeight: "1.25",
+    padding: "6px 18px",
+  },
+};
+
+export const requestColDefs: ColDef<DashboardRequest>[] = [
   {
     headerName: "View Samples",
     cellRenderer: (params: ICellRendererParams) => {
@@ -135,12 +150,6 @@ export const requestColDefs: ColDef[] = [
   {
     field: "totalSampleCount",
     headerName: "# Samples",
-    cellClass: (params) => {
-      if (params.data.revisable === false) {
-        return "pendingCell";
-      }
-      return undefined;
-    },
   },
   {
     field: "projectManagerName",
@@ -210,7 +219,7 @@ export const requestColDefs: ColDef[] = [
   },
 ];
 
-export const patientColDefs: ColDef[] = [
+export const patientColDefs: ColDef<DashboardPatient>[] = [
   {
     headerName: "View Samples",
     cellRenderer: (params: ICellRendererParams) => {
@@ -309,7 +318,7 @@ const ONCOTREE_CODE_NA_TOOLTIP =
   "This code might have been remapped (renamed) between different versions of the Oncotree API. " +
   "For remapping details, visit the docs at https://oncotree.mskcc.org/#/home?tab=mapping";
 
-export const sampleColDefs: ColDef[] = [
+export const sampleColDefs: ColDef<DashboardSample>[] = [
   {
     field: "primaryId",
     headerName: "Primary ID",
@@ -355,9 +364,8 @@ export const sampleColDefs: ColDef[] = [
   {
     field: "historicalCmoSampleNames",
     headerName: "Historical CMO Sample Names",
-    wrapText: true,
-    autoHeight: true,
     maxWidth: 300,
+    ...multiLineColDef,
   },
   {
     field: "importDate",
@@ -548,7 +556,7 @@ export const sampleColDefs: ColDef[] = [
   },
 ];
 
-export const DbGapPhenotypeColumns: ColDef[] = [
+export const DbGapPhenotypeColumns: ColDef<DashboardSample>[] = [
   {
     field: "cmoPatientId",
     headerName: "SUBJECT_ID",
@@ -703,7 +711,7 @@ function setupEditableSampleFields(
   });
 }
 
-export const cohortColDefs: ColDef[] = [
+export const cohortColDefs: ColDef<DashboardCohort>[] = [
   {
     headerName: "View Samples",
     cellRenderer: (params: ICellRendererParams) => {
@@ -770,7 +778,7 @@ export const cohortColDefs: ColDef[] = [
   },
 ];
 
-export const wesSampleColDefs: ColDef[] = [
+export const wesSampleColDefs: ColDef<DashboardSample>[] = [
   {
     field: "primaryId",
     headerName: "Primary ID",
@@ -786,9 +794,8 @@ export const wesSampleColDefs: ColDef[] = [
   {
     field: "historicalCmoSampleNames",
     headerName: "Historical CMO Sample Names",
-    wrapText: true,
-    autoHeight: true,
     maxWidth: 300,
+    ...multiLineColDef,
   },
   {
     field: "investigatorSampleId",
@@ -930,7 +937,144 @@ export const wesSampleColDefs: ColDef[] = [
   },
 ];
 
-export const ReadOnlyCohortSampleDetailsColumns = _.cloneDeep(wesSampleColDefs);
+export const accessSampleColDefs: ColDef<DashboardSample>[] = [
+  {
+    field: "primaryId",
+    headerName: "Primary ID",
+  },
+  {
+    field: "altId",
+    headerName: "Alt ID",
+  },
+  {
+    headerName: "Status",
+    cellRenderer: (params: ICellRendererParams<DashboardSample>) => {
+      if (!params.data) return null;
+      const {
+        revisable,
+        validationStatus,
+        validationReport,
+        sampleCategory,
+        primaryId,
+      } = params.data;
+
+      if (revisable === true) {
+        return validationStatus === false ||
+          (validationStatus === null && sampleCategory !== "clinical") ? (
+          <RecordValidation
+            validationStatus={validationStatus}
+            validationReport={validationReport}
+            modalTitle={`Error report for sample ${primaryId}`}
+            recordStatusMap={SAMPLE_STATUS_MAP}
+          />
+        ) : (
+          <CheckIcon />
+        );
+      } else {
+        return <LoadingIcon />;
+      }
+    },
+    sortable: false,
+  },
+  {
+    field: "cmoSampleName",
+    headerName: "CMO Sample Name",
+  },
+  {
+    field: "historicalCmoSampleNames",
+    headerName: "Historical CMO Sample Names",
+    maxWidth: 300,
+    ...multiLineColDef,
+  },
+  {
+    field: "importDate",
+    headerName: "Last Updated",
+    ...getAgGridDateFilterConfigs(),
+  },
+  {
+    field: "cmoPatientId",
+    headerName: "CMO Patient ID",
+  },
+  {
+    field: "investigatorSampleId",
+    headerName: "Investigator Sample ID",
+  },
+  {
+    field: "sampleType",
+    headerName: "Sample Type",
+  },
+  {
+    field: "species",
+    headerName: "Species",
+  },
+  {
+    field: "genePanel",
+    headerName: "Gene Panel",
+  },
+  {
+    field: "baitSet",
+    headerName: "Bait Set",
+  },
+  {
+    field: "preservation",
+    headerName: "Preservation",
+  },
+  {
+    field: "tumorOrNormal",
+    headerName: "Tumor Or Normal",
+  },
+  {
+    field: "sampleClass",
+    headerName: "Sample Class",
+  },
+  {
+    field: "oncotreeCode",
+    headerName: "Oncotree Code",
+  },
+  {
+    field: "cancerType",
+    headerName: "Cancer Type",
+  },
+  {
+    field: "cancerTypeDetailed",
+    headerName: "Cancer Type Detailed",
+  },
+  {
+    field: "collectionYear",
+    headerName: "Collection Year",
+  },
+  {
+    field: "sampleOrigin",
+    headerName: "Sample Origin",
+  },
+  {
+    field: "tissueLocation",
+    headerName: "Tissue Location",
+  },
+  {
+    field: "sex",
+    headerName: "Sex",
+  },
+  {
+    field: "recipe",
+    headerName: "Recipe",
+  },
+  {
+    field: "sampleCategory",
+    headerName: "SMILE Sample Category",
+  },
+  {
+    field: "cfDNA2dBarcode",
+    headerName: "2D Barcode",
+  },
+  {
+    field: "dmpPatientAlias",
+    headerName: "DMP Patient Alias",
+  },
+];
+
+export const readOnlyWesSampleColDefs = _.cloneDeep(wesSampleColDefs);
+export const readOnlyAccessSampleColDefs = _.cloneDeep(accessSampleColDefs);
 
 export const defaultColDef: ColDef = {
   sortable: true,
@@ -969,8 +1113,12 @@ const editableWesSampleFields = [
 setupEditableSampleFields(sampleColDefs, editableSampleFields);
 setupEditableSampleFields(wesSampleColDefs, editableWesSampleFields);
 
-export const combinedSampleDetailsColumns = _.uniqBy(
-  [...sampleColDefs, ...ReadOnlyCohortSampleDetailsColumns],
+export const combinedSampleColDefs = _.uniqBy(
+  [
+    ...sampleColDefs,
+    ...readOnlyWesSampleColDefs,
+    ...readOnlyAccessSampleColDefs,
+  ],
   "field"
 );
 

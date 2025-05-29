@@ -12,12 +12,12 @@ import {
 
 export function buildSamplesQueryBody({
   searchVals,
-  context,
+  contexts,
   filters,
   addlOncotreeCodes,
 }: {
   searchVals: QueryDashboardSamplesArgs["searchVals"];
-  context?: QueryDashboardSamplesArgs["context"];
+  contexts?: QueryDashboardSamplesArgs["contexts"];
   filters?: QueryDashboardSamplesArgs["filters"];
   addlOncotreeCodes: string[];
 }) {
@@ -76,29 +76,46 @@ export function buildSamplesQueryBody({
     }
   }
 
-  // Filter for WES samples on click on the Samples page
-  const wesContext =
-    context?.fieldName === "genePanel"
-      ? `latestSm.genePanel =~ '(?i).*(${context.values.join("|")}).*'`
-      : "";
+  // Filter for the WES samples on the Samples page
+  const genePanelContextObj = contexts?.find(
+    (ctx) => ctx?.fieldName === "genePanel"
+  );
+  const genePanelContext = genePanelContextObj
+    ? `latestSm.genePanel =~ '(?i).*(${genePanelContextObj.values.join(
+        "|"
+      )}).*'`
+    : "";
+
+  const baitSetContextObj = contexts?.find(
+    (ctx) => ctx?.fieldName === "baitSet"
+  );
+  const baitSetContext = baitSetContextObj
+    ? `latestSm.baitSet =~ '(?i).*(${baitSetContextObj.values.join("|")}).*'`
+    : "";
 
   // Filter for the current request in the Request Samples view
-  const requestContext =
-    context?.fieldName === "igoRequestId"
-      ? `latestSm.igoRequestId = '${context.values[0]}'`
-      : "";
+  const requestContextObj = contexts?.find(
+    (ctx) => ctx?.fieldName === "igoRequestId"
+  );
+  const requestContext = requestContextObj
+    ? `latestSm.igoRequestId = '${requestContextObj.values[0]}'`
+    : "";
 
   // Filter for the current patient for the Patient Samples view
-  const patientContext =
-    context?.fieldName === "patientId"
-      ? `pa.value = '${context.values[0]}'`
-      : "";
+  const patientContextObj = contexts?.find(
+    (ctx) => ctx?.fieldName === "patientId"
+  );
+  const patientContext = patientContextObj
+    ? `pa.value = '${patientContextObj.values[0]}'`
+    : "";
 
   // Filter for the current cohort for the Cohort Samples view
-  const cohortContext =
-    context?.fieldName === "cohortId"
-      ? `c.cohortId = '${context.values[0]}'`
-      : "";
+  const cohortContextObj = contexts?.find(
+    (ctx) => ctx?.fieldName === "cohortId"
+  );
+  const cohortContext = cohortContextObj
+    ? `c.cohortId = '${cohortContextObj.values[0]}'`
+    : "";
 
   // "Last Updated" column filter in the Samples Metadata view
   let importDateFilter = "";
@@ -225,7 +242,9 @@ export function buildSamplesQueryBody({
       ", ") AS historicalCmoSampleNames
 
     // Filters for either the WES Samples or Request Samples view, if applicable
-    ${wesContext && `WHERE ${wesContext}`}
+    ${genePanelContext && `WHERE ${genePanelContext}`} ${
+    baitSetContext && `OR ${baitSetContext}`
+  }
     ${requestContext && `WHERE ${requestContext}`}
 
     // Get SampleMetadata's Status
@@ -239,9 +258,15 @@ export function buildSamplesQueryBody({
 
     // Filters for Patient Samples view, if applicable
     ${
-      patientContext &&
-      `MATCH (s)<-[:HAS_SAMPLE]-(p:Patient)<-[:IS_ALIAS]-(pa:PatientAlias) WHERE ${patientContext}`
-    }
+      patientContext ? "" : "OPTIONAL "
+    }MATCH (s)<-[:HAS_SAMPLE]-(p:Patient)<-[:IS_ALIAS]-(pa:PatientAlias)
+    ${patientContext && `WHERE ${patientContext}`}
+    WITH
+      s,
+      latestSm,
+      historicalCmoSampleNames,
+      latestSt,
+      head([pa IN collect(pa) WHERE pa.namespace = 'dmpId' | pa.value]) AS dmpPatientAlias
 
     // Filters for Cohort Samples view, if applicable
     ${
@@ -255,8 +280,9 @@ export function buildSamplesQueryBody({
     WITH
       s,
       latestSm,
-      latestSt,
       historicalCmoSampleNames,
+      latestSt,
+      dmpPatientAlias,
       t
     ${billedFilter && `WHERE ${billedFilter}`}
     ${cohortDateFilters && `WHERE ${cohortDateFilters}`}
@@ -265,8 +291,9 @@ export function buildSamplesQueryBody({
     WITH
       s,
       latestSm,
-      latestSt,
       historicalCmoSampleNames,
+      latestSt,
+      dmpPatientAlias,
       t,
       COLLECT {
         OPTIONAL MATCH (t)-[:HAS_EVENT]->(bc:BamComplete)
@@ -286,6 +313,7 @@ export function buildSamplesQueryBody({
       latestSm,
       historicalCmoSampleNames,
       latestSt,
+      dmpPatientAlias,
       t,
       latestBC[0] AS latestBC,
       latestMC[0] AS latestMC,
@@ -325,6 +353,7 @@ export function buildSamplesQueryBody({
         sampleOrigin: latestSm.sampleOrigin,
         tissueLocation: latestSm.tissueLocation,
         sex: latestSm.sex,
+        cfDNA2dBarcode: latestSm.cfDNA2dBarcode,
         libraries: latestSm.libraries,
         recipe: cmoSampleIdFields.recipe,
         analyteType: cmoSampleIdFields.naToExtract,
@@ -350,7 +379,9 @@ export function buildSamplesQueryBody({
         qcCompleteReason: latestQC.reason,
         qcCompleteStatus: latestQC.status,
 
-        dbGapStudy: d.dbGapStudy
+        dbGapStudy: d.dbGapStudy,
+
+        dmpPatientAlias: dmpPatientAlias
       }) AS tempNode
 
     ${searchFilters && `WHERE ${searchFilters}`}

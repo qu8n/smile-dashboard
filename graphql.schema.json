@@ -12902,6 +12902,18 @@
             "deprecationReason": null
           },
           {
+            "name": "cfDNA2dBarcode",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "cmoPatientId",
             "description": null,
             "args": [],
@@ -12963,6 +12975,18 @@
           },
           {
             "name": "dbGapStudy",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "dmpPatientAlias",
             "description": null,
             "args": [],
             "type": {
@@ -13506,6 +13530,18 @@
             "deprecationReason": null
           },
           {
+            "name": "cfDNA2dBarcode",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "changedFieldNames",
             "description": null,
             "type": {
@@ -13591,6 +13627,18 @@
           },
           {
             "name": "dbGapStudy",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "dmpPatientAlias",
             "description": null,
             "type": {
               "kind": "SCALAR",
@@ -38393,12 +38441,16 @@
             "description": null,
             "args": [
               {
-                "name": "context",
+                "name": "contexts",
                 "description": null,
                 "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "DashboardRecordContext",
-                  "ofType": null
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "DashboardRecordContext",
+                    "ofType": null
+                  }
                 },
                 "defaultValue": null,
                 "isDeprecated": false,

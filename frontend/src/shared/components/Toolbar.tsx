@@ -2,10 +2,10 @@ import { ApolloError } from "@apollo/client";
 import classNames from "classnames";
 import { Button, ButtonGroup, Dropdown, Col, Form, Row } from "react-bootstrap";
 import Spinner from "react-spinkit";
-import { DataName } from "./types";
+import { DataName } from "../types";
 import { Dispatch, SetStateAction } from "react";
-import { CustomTooltip } from "./components/CustomToolTip";
-import { PatientIdsTriplet } from "../generated/graphql";
+import { CustomTooltip } from "./CustomToolTip";
+import { PatientIdsTriplet } from "../../generated/graphql";
 import { ColDef } from "ag-grid-community";
 import InfoIcon from "@material-ui/icons/InfoOutlined";
 
@@ -60,6 +60,18 @@ export function Toolbar({
       <Col>{customUILeft}</Col>
 
       <Col md="auto">
+        <CustomTooltip
+          icon={
+            <InfoIcon style={{ fontSize: 18, color: "grey", marginRight: 5 }} />
+          }
+        >
+          Click on "Search" or press "Enter" to start searching. To bulk search,
+          input a list of values separated by spaces or commas (example:{" "}
+          <code>value1 value2 value3</code>). To include multiple words in a
+          single search term, enclose them in single or double quotes (example:{" "}
+          <code>"Bone Cancer"</code>).
+        </CustomTooltip>
+
         <Form.Control
           className={"d-inline-block"}
           style={{ width: "300px" }}
@@ -84,18 +96,6 @@ export function Toolbar({
       </Col>
 
       <Col md="auto" style={{ marginLeft: -15 }}>
-        <CustomTooltip
-          icon={<InfoIcon style={{ fontSize: 18, color: "grey" }} />}
-        >
-          Click on "Search" or press "Enter" to start searching. To bulk search,
-          input a list of values separated by spaces or commas (example:{" "}
-          <code>value1 value2 value3</code>). To include multiple words in a
-          single search term, enclose them in single or double quotes (example:{" "}
-          <code>"Bone Cancer"</code>).
-        </CustomTooltip>
-      </Col>
-
-      <Col md="auto" style={{ marginLeft: -15 }}>
         <Button
           onClick={() => onSearch(userSearchVal)}
           className={"btn btn-secondary"}
@@ -112,13 +112,16 @@ export function Toolbar({
       <Col className={"text-end"}>
         <Dropdown as={ButtonGroup}>
           <Button onClick={onDownload} size={"sm"}>
-            Generate report
+            Export as TSV
           </Button>
           {exportDropdownItems?.length && setColumnDefsForExport && (
             <>
               <Dropdown.Toggle size="sm" split id="dropdown-split-basic" />
-              {exportDropdownItems.map((item) => (
-                <Dropdown.Menu>
+              <Dropdown.Menu>
+                <Dropdown.Item as="button" onClick={onDownload}>
+                  Export as TSV
+                </Dropdown.Item>
+                {exportDropdownItems.map((item) => (
                   <Dropdown.Item
                     as="button"
                     onClick={() => {
@@ -128,8 +131,8 @@ export function Toolbar({
                   >
                     {item.label}
                   </Dropdown.Item>
-                </Dropdown.Menu>
-              ))}
+                ))}
+              </Dropdown.Menu>
             </>
           )}
         </Dropdown>

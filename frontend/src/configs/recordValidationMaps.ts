@@ -136,8 +136,8 @@ export const REQUEST_STATUS_MAP: StatusMap = {
     item: "samples (failed)",
     description: "Some request samples failed validation",
     actionItem:
-      "Review each sample's validation error below. If sample-level errors are missing or incorrect, please" +
-      " contact the SMILE team.",
+      "Sample validation errors of critically failed samples are listed below. See the Request Samples view" +
+      " for errors of tolerable failures. If anything is missing or incorrect, please contact the SMILE team.",
     responsibleParty: "",
   },
   "samples (failed) All request samples failed validation": {

@@ -1,73 +1,134 @@
 import SamplesList from "../../components/SamplesList";
 import {
   DbGapPhenotypeColumns,
-  ReadOnlyCohortSampleDetailsColumns,
-  combinedSampleDetailsColumns,
+  readOnlyAccessSampleColDefs,
+  readOnlyWesSampleColDefs,
+  combinedSampleColDefs,
 } from "../../shared/helpers";
 import { useState } from "react";
-import { Button } from "react-bootstrap";
-import _ from "lodash";
+import { Button, ButtonGroup } from "react-bootstrap";
 import { CustomTooltip } from "../../shared/components/CustomToolTip";
 import InfoIcon from "@material-ui/icons/InfoOutlined";
+import { ColDef } from "ag-grid-community";
+import { DashboardRecordContext } from "../../generated/graphql";
 
-const WES_SAMPLE_CONTEXT = {
-  fieldName: "genePanel",
-  values: [
-    "Agilent_51MB",
-    "Agilent_v4_51MB_Human",
-    "CustomCapture",
-    "IDT_Exome_v1_FP",
-    "IDT_Exome_V1_IMPACT468",
-    "WES_Human",
-    "WholeExomeSequencing",
+const WES_SAMPLE_CONTEXT = [
+  {
+    fieldName: "genePanel",
+    values: [
+      "Agilent_51MB",
+      "Agilent_v4_51MB_Human",
+      "CustomCapture",
+      "IDT_Exome_v1_FP",
+      "IDT_Exome_V1_IMPACT468",
+      "WES_Human",
+      "WholeExomeSequencing",
+    ],
+  },
+];
+
+const ACCESS_SAMPLE_CONTEXT = [
+  {
+    fieldName: "genePanel",
+    values: [
+      "ACCESS129",
+      "ACCESS146",
+      "ACCESS148",
+      "ACCESS-Heme",
+      "ACCESS-HEME-115",
+      "HC_ACCESS",
+      "HC_Custom",
+      "MSK-ACCESS_v1",
+      "MSK-ACCESS_v2",
+      "HC_CMOCH",
+      "CMO-CH",
+    ],
+  },
+  {
+    fieldName: "baitSet",
+    values: [
+      "MSK-ACCESS-v1_0-probesAllwFP",
+      "MSK-ACCESS-v1_0-probesAllwFP_GRCh38",
+      "MSK-ACCESS-v1_0-probesAllwFP_hg19_sort_BAITS",
+      "MSK-ACCESS-v1_0-probesAllwFP_hg37_sort-BAITS",
+      "MSK-ACCESS-v2_0-probesAllwFP",
+      "ACCESS_HEME_MN1",
+      "ACCESS129",
+      "ACCESS146",
+      "ACCESS148",
+      "ACCESS-HEME-115",
+      "CMO-CH",
+      "MSK-CH",
+    ],
+  },
+];
+
+const tabSettings = new Map<
+  string,
+  {
+    columnDefs: ColDef[];
+    sampleContexts?: DashboardRecordContext[];
+  }
+>([
+  [
+    "All",
+    {
+      columnDefs: combinedSampleColDefs,
+      sampleContexts: undefined,
+    },
   ],
-};
+  [
+    "WES",
+    {
+      columnDefs: readOnlyWesSampleColDefs,
+      sampleContexts: WES_SAMPLE_CONTEXT,
+    },
+  ],
+  [
+    "ACCESS/CMO-CH",
+    {
+      columnDefs: readOnlyAccessSampleColDefs,
+      sampleContexts: ACCESS_SAMPLE_CONTEXT,
+    },
+  ],
+]);
 
 export default function SamplesPage() {
-  const [columnDefs, setColumnDefs] = useState(combinedSampleDetailsColumns);
-
-  const sampleContext = _.isEqual(columnDefs, combinedSampleDetailsColumns)
-    ? undefined
-    : WES_SAMPLE_CONTEXT;
+  const [filteredTabKey, setFilteredTabKey] = useState("All");
 
   return (
     <SamplesList
-      columnDefs={columnDefs}
-      sampleContext={sampleContext}
+      columnDefs={
+        tabSettings.get(filteredTabKey)?.columnDefs ?? combinedSampleColDefs
+      }
+      sampleContexts={tabSettings.get(filteredTabKey)?.sampleContexts}
       customToolbarUI={
         <>
           <CustomTooltip
             icon={<InfoIcon style={{ fontSize: 18, color: "grey" }} />}
           >
-            These tabs change the data displayed in the table. "View all
-            samples" shows all data and columns, including those of
-            SampleMetadata and WES samples.
+            These tabs filter the data and relevant columns displayed in the
+            table. "All" shows all samples, whereas "WES" and "ACCESS/CMO-CH"
+            show only whole exome and MSK-ACCESS/CMO-CH samples, respectively.
           </CustomTooltip>{" "}
-          <Button
-            onClick={() => {
-              setColumnDefs(combinedSampleDetailsColumns);
-            }}
-            size="sm"
-            variant="outline-secondary"
-            active={_.isEqual(columnDefs, combinedSampleDetailsColumns)}
-          >
-            View all samples
-          </Button>{" "}
-          <Button
-            onClick={() => {
-              setColumnDefs(ReadOnlyCohortSampleDetailsColumns);
-            }}
-            size="sm"
-            variant="outline-secondary"
-            active={_.isEqual(columnDefs, ReadOnlyCohortSampleDetailsColumns)}
-          >
-            View WES samples
-          </Button>
+          <ButtonGroup>
+            {Array.from(tabSettings.keys()).map((tabKey) => (
+              <Button
+                key={tabKey}
+                onClick={() => setFilteredTabKey(tabKey)}
+                size="sm"
+                variant="outline-secondary"
+                active={filteredTabKey === tabKey}
+              >
+                {tabKey}
+              </Button>
+            ))}
+          </ButtonGroup>
         </>
       }
       exportDropdownItems={[
         {
-          label: "Generate Phenotype files for dbGaP",
+          label: "Export in Phenotype format for dbGaP",
           columnDefs: DbGapPhenotypeColumns,
         },
       ]}

@@ -12,6 +12,7 @@ import {
   StatusItem,
   StatusMap,
 } from "../configs/recordValidationMaps";
+import { multiLineColDef } from "../shared/helpers";
 
 type ModalTitle = `Error report for ${string}`;
 
@@ -77,16 +78,6 @@ const validationColDefs: ColDef<StatusItem>[] = [
   },
 ];
 
-const defaultColDef: ColDef = {
-  wrapText: true,
-  autoHeight: true,
-  cellStyle: {
-    wordBreak: "break-word",
-    lineHeight: "1.25",
-    padding: "6px 18px",
-  },
-};
-
 function ErrorReportModal({
   show,
   onHide,
@@ -150,7 +141,7 @@ function ErrorReportModal({
             groupDisplayType="groupRows"
             rowData={validationDataForAgGrid}
             columnDefs={validationColDefs}
-            defaultColDef={defaultColDef}
+            defaultColDef={multiLineColDef}
             onGridReady={(params) => params.api.sizeColumnsToFit()}
           />
         </div>

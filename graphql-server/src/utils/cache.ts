@@ -27,18 +27,20 @@ const SAMPLES_DEFAULT_SORT = {
   colId: "importDate",
   sort: "desc",
 } as DashboardRecordSort; // from SamplesList.tsx
-const WES_SAMPLE_CONTEXT = {
-  fieldName: "genePanel",
-  values: [
-    "Agilent_51MB",
-    "Agilent_v4_51MB_Human",
-    "CustomCapture",
-    "IDT_Exome_v1_FP",
-    "IDT_Exome_V1_IMPACT468",
-    "WES_Human",
-    "WholeExomeSequencing",
-  ],
-}; // from SamplesPage.tsx
+const WES_SAMPLE_CONTEXT = [
+  {
+    fieldName: "genePanel",
+    values: [
+      "Agilent_51MB",
+      "Agilent_v4_51MB_Human",
+      "CustomCapture",
+      "IDT_Exome_v1_FP",
+      "IDT_Exome_V1_IMPACT468",
+      "WES_Human",
+      "WholeExomeSequencing",
+    ],
+  },
+]; // from SamplesPage.tsx
 
 const MAX_RETRIES_UPON_FALSE_SAMPLE_STATUS = 3;
 const RETRY_INTERVAL_UPON_FALSE_SAMPLE_STATUS = 3000; // 3s
@@ -156,13 +158,13 @@ async function updateSamplesCache(inMemoryCache: NodeCache) {
   // Build query bodies for all samples and WES samples queries of Samples page
   const allSamplesQueryBody = buildSamplesQueryBody({
     searchVals: [],
-    context: undefined,
+    contexts: undefined,
     filters: undefined,
     addlOncotreeCodes: [],
   });
   const wesSamplesQueryBody = buildSamplesQueryBody({
     searchVals: [],
-    context: WES_SAMPLE_CONTEXT,
+    contexts: WES_SAMPLE_CONTEXT,
     filters: undefined,
     addlOncotreeCodes: [],
   });

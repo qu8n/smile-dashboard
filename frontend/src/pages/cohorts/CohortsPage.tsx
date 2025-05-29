@@ -61,12 +61,14 @@ export default function CohortsPage({
           }
         }}
         samplesColDefs={wesSampleColDefs}
-        sampleContext={
+        sampleContexts={
           sampleQueryParamValue
-            ? {
-                fieldName: sampleQueryParamFieldName,
-                values: [sampleQueryParamValue],
-              }
+            ? [
+                {
+                  fieldName: sampleQueryParamFieldName,
+                  values: [sampleQueryParamValue],
+                },
+              ]
             : undefined
         }
         userEmail={userEmail}

@@ -234,12 +234,14 @@ export default function PatientsPage({
           }
         }}
         samplesColDefs={sampleColDefs}
-        sampleContext={
+        sampleContexts={
           sampleQueryParamValue
-            ? {
-                fieldName: sampleQueryParamFieldName,
-                values: [sampleQueryParamValue],
-              }
+            ? [
+                {
+                  fieldName: sampleQueryParamFieldName,
+                  values: [sampleQueryParamValue],
+                },
+              ]
             : undefined
         }
         customToolbarUI={

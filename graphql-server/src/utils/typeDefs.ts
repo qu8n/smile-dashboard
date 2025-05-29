@@ -48,6 +48,7 @@ const SAMPLE_FIELDS = `
   sampleOrigin: String
   tissueLocation: String
   sex: String
+  cfDNA2dBarcode: String
   ## Custom fields
   recipe: String
   altId: String
@@ -88,6 +89,10 @@ const SAMPLE_FIELDS = `
 
   # (s:Sample)-[:HAS_DBGAP]->(d:DbGap)
   dbGapStudy: String
+
+  # (s:Sample)<-[:HAS_SAMPLE]-(p:Patient)<-[:IS_ALIAS]-(pa:PatientAlias)
+  ## Custom fields
+  dmpPatientAlias: String
 
   # results total
   _total: Int
@@ -178,7 +183,7 @@ const QUERY_TYPEDEFS = gql`
 
     dashboardSamples(
       searchVals: [String!]
-      context: DashboardRecordContext
+      contexts: [DashboardRecordContext]
       filters: [DashboardRecordFilter!]
       sort: DashboardRecordSort!
       limit: Int!
