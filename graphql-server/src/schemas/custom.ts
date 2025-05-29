@@ -277,11 +277,12 @@ export function getNeo4jCustomSort(sort: DashboardRecordSort) {
     : `resultz.${sort.colId}='' ASC, resultz.${sort.colId} ASC`;
 }
 
-async function updateSampleMetadataPromise(
-  newDashboardSample: DashboardSampleInput,
+async function updateSampleMetadataPromises(
+  newDashboardSamples: Array<DashboardSampleInput>,
   ogm: OGM
 ) {
-  return new Promise(async (resolve) => {
+  const sampleManifests: any[] = [];
+  for (const newDashboardSample of newDashboardSamples) {
     const sampleManifest = await request(
       props.smile_sample_endpoint + newDashboardSample.primaryId,
       {
@@ -318,16 +319,19 @@ async function updateSampleMetadataPromise(
       }
     }
 
-    publishNatsMessage(
-      props.pub_validate_sample_update,
-      JSON.stringify(sampleManifest)
-    );
-
     await ogm.model("Sample").update({
       where: { smileSampleId: sampleManifest.smileSampleId },
       update: { revisable: false },
     });
 
+    sampleManifests.push(sampleManifest);
+  }
+
+  return new Promise(async (resolve) => {
+    publishNatsMessage(
+      props.pub_validate_sample_update,
+      JSON.stringify(sampleManifests)
+    );
     resolve(null);
   });
 }
@@ -395,7 +399,11 @@ async function updateAllSamplesConcurrently(
   newDashboardSamples: DashboardSampleInput[],
   ogm: OGM
 ) {
-  const allPromises = newDashboardSamples.map(async (dashboardSample) => {
+  const samplesWithMetadataUpdates = [];
+  const tempoUpdatePromises = [];
+  const dbGapUpdatePromises = [];
+
+  for (const dashboardSample of newDashboardSamples) {
     try {
       const { changedFieldNames } = dashboardSample;
 
@@ -409,18 +417,15 @@ async function updateAllSamplesConcurrently(
         EDITABLE_DBGAP_FIELDS.has(field)
       );
 
-      const promises = [];
       if (metadataChanged) {
-        promises.push(updateSampleMetadataPromise(dashboardSample, ogm));
+        samplesWithMetadataUpdates.push(dashboardSample);
       }
       if (tempoChanged) {
-        promises.push(updateTempoPromise(dashboardSample));
+        tempoUpdatePromises.push(updateTempoPromise(dashboardSample));
       }
       if (dbGapChanged) {
-        promises.push(updateDbGapPromise(dashboardSample));
+        dbGapUpdatePromises.push(updateTempoPromise(dashboardSample));
       }
-
-      return Promise.all(promises);
     } catch (error) {
       console.error(
         `Failed to update sample with primaryId ${dashboardSample.primaryId}. Error:`,
@@ -428,8 +433,13 @@ async function updateAllSamplesConcurrently(
       );
       throw error; // ensure Promise.allSettled captures the error
     }
-  });
-
+  }
+  const allPromises = [...tempoUpdatePromises, ...dbGapUpdatePromises];
+  if (samplesWithMetadataUpdates.length > 0) {
+    allPromises.push(
+      updateSampleMetadataPromises(samplesWithMetadataUpdates, ogm)
+    );
+  }
   await Promise.allSettled(allPromises);
 }
 
