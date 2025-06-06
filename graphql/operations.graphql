@@ -33,6 +33,11 @@ query DashboardRequests(
     isCmoRequest
     otherContactEmails
     _total
+    toleratedSampleErrors {
+      primaryId
+      validationStatus
+      validationReport
+    }
   }
 }
 

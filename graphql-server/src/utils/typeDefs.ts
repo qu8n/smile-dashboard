@@ -121,6 +121,13 @@ const QUERY_RESULT_TYPEDEFS = gql`
     isCmoRequest: Boolean
     otherContactEmails: String
     _total: Int
+    toleratedSampleErrors: [ToleratedSampleValidationError]
+  }
+
+  type ToleratedSampleValidationError {
+    primaryId: String!
+    validationStatus: Boolean
+    validationReport: String
   }
 
   type DashboardPatient {

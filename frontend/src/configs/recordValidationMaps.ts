@@ -2,12 +2,15 @@
  * Row-level data type for the validation report modal of a Sample/Request.
  */
 export type StatusItem = {
+  requestLevelValidationHeader?: string; // for grouping by request-level errors
   item: string;
   description: string;
   actionItem: string;
   responsibleParty: string;
   sampleLevelValidationHeader?: string; // for request validation only
   igoId?: string; // for request validation only
+  primaryId?: string; // sample validation rendering in request validation popup
+  toleratedSampleLevelValidationHeader?: string; // sample validation rendering in request validation popup
 };
 
 /**
@@ -124,30 +127,6 @@ export const REQUEST_STATUS_MAP: StatusMap = {
       actionItem: getActionItemForMissingIgoField("cmoRequest"),
       responsibleParty: "IGO",
     },
-  "samples (missing) Request JSON is missing 'samples' or 'samples' is an empty list.":
-    {
-      item: "samples (missing)",
-      description:
-        "Request JSON from IGO LIMS REST API is missing 'samples' or 'samples' is an empty list.",
-      actionItem: getActionItemForMissingIgoField("samples"),
-      responsibleParty: "IGO",
-    },
-  "samples (failed) Some request samples failed validation": {
-    item: "samples (failed)",
-    description: "Some request samples failed validation",
-    actionItem:
-      "Sample validation errors of critically failed samples are listed below. See the Request Samples view" +
-      " for errors of tolerable failures. If anything is missing or incorrect, please contact the SMILE team.",
-    responsibleParty: "",
-  },
-  "samples (failed) All request samples failed validation": {
-    item: "samples (failed)",
-    description: "All request samples failed validation",
-    actionItem:
-      "Review each sample's validation error below. If sample-level errors are missing or incorrect, please" +
-      " contact the SMILE team.",
-    responsibleParty: "",
-  },
 };
 
 /**

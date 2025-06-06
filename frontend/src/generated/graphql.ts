@@ -1417,6 +1417,7 @@ export type DashboardRequest = {
   piEmail?: Maybe<Scalars["String"]>;
   projectManagerName?: Maybe<Scalars["String"]>;
   qcAccessEmails?: Maybe<Scalars["String"]>;
+  toleratedSampleErrors?: Maybe<Array<Maybe<ToleratedSampleValidationError>>>;
   totalSampleCount?: Maybe<Scalars["Int"]>;
   validationReport?: Maybe<Scalars["String"]>;
   validationStatus?: Maybe<Scalars["Boolean"]>;
@@ -10883,6 +10884,13 @@ export type TemposConnection = {
   totalCount: Scalars["Int"];
 };
 
+export type ToleratedSampleValidationError = {
+  __typename?: "ToleratedSampleValidationError";
+  primaryId: Scalars["String"];
+  validationReport?: Maybe<Scalars["String"]>;
+  validationStatus?: Maybe<Scalars["Boolean"]>;
+};
+
 export type UpdateBamCompletesMutationResponse = {
   __typename?: "UpdateBamCompletesMutationResponse";
   bamCompletes: Array<BamComplete>;
@@ -11023,6 +11031,12 @@ export type DashboardRequestsQuery = {
     isCmoRequest?: boolean | null;
     otherContactEmails?: string | null;
     _total?: number | null;
+    toleratedSampleErrors?: Array<{
+      __typename?: "ToleratedSampleValidationError";
+      primaryId: string;
+      validationStatus?: boolean | null;
+      validationReport?: string | null;
+    } | null> | null;
   }>;
 };
 
@@ -11437,6 +11451,11 @@ export const DashboardRequestsDocument = gql`
       isCmoRequest
       otherContactEmails
       _total
+      toleratedSampleErrors {
+        primaryId
+        validationStatus
+        validationReport
+      }
     }
   }
 `;

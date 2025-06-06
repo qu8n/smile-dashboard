@@ -92,9 +92,7 @@ export function buildRequestsQueryBody({
       r,
       COLLECT {
         MATCH (r)-[:HAS_METADATA]->(rm:RequestMetadata)-[:HAS_STATUS]->(st:Status)
-      	RETURN { rm: rm, st: st }
-        ORDER BY rm.importDate DESC
-        LIMIT 1
+        RETURN { rm: rm, st: st } ORDER BY rm.importDate DESC LIMIT 1
       } AS latestRm
 
     OPTIONAL MATCH (r)-[:HAS_SAMPLE]->(s:Sample)-[:HAS_METADATA]->(sm:SampleMetadata)
@@ -108,33 +106,59 @@ export function buildRequestsQueryBody({
         COLLECT(DISTINCT sm.importDate)
       ) AS latestImportDate
 
-    WITH
+    OPTIONAL MATCH (r)-[:HAS_SAMPLE]->(s:Sample)
+
+    WITH 
+      r,
+      latestStatus, 
+      totalSampleCount,
+      latestImportDate,
+      s,
+      COLLECT {
+        MATCH (s)-[:HAS_METADATA]->(sm:SampleMetadata)-[:HAS_STATUS]->(ss:Status) 
+        RETURN {primaryId: sm.primaryId, validationStatus: ss.validationStatus, validationReport: ss.validationReport} 
+        ORDER BY sm.importDate DESC LIMIT 1
+      } as latestSampleData
+      
+    WITH 
       r,
       latestStatus,
       totalSampleCount,
-      latestImportDate
-
+      latestImportDate,
+      latestSampleData[0] as latestSampleData 
+      
+    WHERE latestSampleData.validationStatus = false
+      
+      
+    WITH 
+      r,
+      latestStatus,
+      totalSampleCount,
+      latestImportDate,
+      COLLECT(latestSampleData) as toleratedSampleErrors
+      
     WITH
       ({igoRequestId: r.igoRequestId,
-        igoProjectId: r.igoProjectId,
-        validationReport: latestStatus.validationReport,
-        validationStatus: latestStatus.validationStatus,
-        importDate: latestImportDate,
-        totalSampleCount: totalSampleCount,
-        projectManagerName: r.projectManagerName,
-        investigatorName: r.investigatorName,
-        investigatorEmail: r.investigatorEmail,
-        piEmail: r.piEmail,
-        dataAnalystName: r.dataAnalystName,
-        dataAnalystEmail: r.dataAnalystEmail,
-        genePanel: r.genePanel,
-        labHeadName: r.labHeadName,
-        labHeadEmail: r.labHeadEmail,
-        qcAccessEmails: r.qcAccessEmails,
-        dataAccessEmails: r.dataAccessEmails,
-        bicAnalysis: r.bicAnalysis,
-        isCmoRequest: r.isCmoRequest,
-        otherContactEmails: r.otherContactEmails}) as tempNode
+      igoProjectId: r.igoProjectId,
+      validationReport: latestStatus.validationReport,
+      validationStatus: latestStatus.validationStatus,
+      importDate: latestImportDate,
+      totalSampleCount: totalSampleCount,
+      projectManagerName: r.projectManagerName,
+      investigatorName: r.investigatorName,
+      investigatorEmail: r.investigatorEmail,
+      piEmail: r.piEmail,
+      dataAnalystName: r.dataAnalystName,
+      dataAnalystEmail: r.dataAnalystEmail,
+      genePanel: r.genePanel,
+      labHeadName: r.labHeadName,
+      labHeadEmail: r.labHeadEmail,
+      qcAccessEmails: r.qcAccessEmails,
+      dataAccessEmails: r.dataAccessEmails,
+      bicAnalysis: r.bicAnalysis,
+      isCmoRequest: r.isCmoRequest,
+      otherContactEmails: r.otherContactEmails,
+      toleratedSampleErrors: toleratedSampleErrors}) as tempNode
     WITH tempNode
 
     ${filtersAsCypher}

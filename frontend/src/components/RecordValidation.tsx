@@ -8,6 +8,7 @@ import { ColDef } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
 import {
   MISSING_STATUS,
+  REQUEST_STATUS_MAP,
   SAMPLE_STATUS_MAP,
   StatusItem,
   StatusMap,
@@ -19,11 +20,13 @@ type ModalTitle = `Error report for ${string}`;
 export function RecordValidation({
   validationStatus,
   validationReport,
+  toleratedSampleErrors,
   modalTitle,
   recordStatusMap,
 }: {
   validationStatus: DashboardRequest["validationStatus"];
   validationReport: DashboardRequest["validationReport"];
+  toleratedSampleErrors?: DashboardRequest["toleratedSampleErrors"];
   modalTitle: ModalTitle;
   recordStatusMap: StatusMap;
 }) {
@@ -37,6 +40,7 @@ export function RecordValidation({
           onHide={() => setModalShow(false)}
           validationStatus={validationStatus}
           validationReport={validationReport}
+          toleratedSampleErrors={toleratedSampleErrors}
           title={modalTitle}
           recordStatusMap={recordStatusMap}
         />
@@ -46,6 +50,11 @@ export function RecordValidation({
 }
 
 const validationColDefs: ColDef<StatusItem>[] = [
+  {
+    field: "requestLevelValidationHeader",
+    hide: true,
+    rowGroup: true,
+  },
   {
     field: "item",
     headerName: "Item",
@@ -76,6 +85,18 @@ const validationColDefs: ColDef<StatusItem>[] = [
     hide: true,
     rowGroup: true,
   },
+  // For tolerated sample validation errors in request validation popup
+  {
+    field: "toleratedSampleLevelValidationHeader",
+    hide: true,
+    rowGroup: true,
+  },
+  // For tolerated sample validation errors in request validation popup
+  {
+    field: "primaryId",
+    hide: true,
+    rowGroup: true,
+  },
 ];
 
 function ErrorReportModal({
@@ -83,6 +104,7 @@ function ErrorReportModal({
   onHide,
   validationStatus,
   validationReport,
+  toleratedSampleErrors,
   title,
   recordStatusMap,
 }: {
@@ -90,6 +112,7 @@ function ErrorReportModal({
   onHide: () => void;
   validationStatus: DashboardRequest["validationStatus"];
   validationReport: DashboardRequest["validationReport"];
+  toleratedSampleErrors: DashboardRequest["toleratedSampleErrors"];
   title: ModalTitle;
   recordStatusMap: StatusMap;
 }) {
@@ -99,12 +122,36 @@ function ErrorReportModal({
   if (validationReport) {
     // Parse the validation report string and handle the `samples` field separately if applicable
     const validationReportMap = parseValidationReport(validationReport);
-    validationDataForAgGrid.push(
-      ...Array.from(validationReportMap, ([fieldName, report]) => {
-        const statusItem = recordStatusMap[`${fieldName} ${report}`];
-        return statusItem || null;
-      }).filter((item) => item !== null)
-    );
+    // toleratedSampleErrors is undefined if it's a validation report of anything other than request-level
+    if (typeof toleratedSampleErrors === "undefined") {
+      validationDataForAgGrid.push(
+        ...Array.from(validationReportMap, ([fieldName, report]) => {
+          const statusItem = recordStatusMap[`${fieldName} ${report}`];
+          return statusItem || null;
+        }).filter((item) => item !== null)
+      );
+    } else {
+      const requestErrors: Array<[string, keyof typeof REQUEST_STATUS_MAP]> =
+        [];
+      validationReportMap.forEach((value, key) => {
+        requestErrors.push([
+          "request",
+          `${key} ${value}` as keyof typeof REQUEST_STATUS_MAP,
+        ]);
+      });
+
+      if (requestErrors.length > 0) {
+        requestErrors.forEach(([requestId, statusMapKey]) => {
+          const statusItem = REQUEST_STATUS_MAP[statusMapKey];
+          if (statusItem) {
+            validationDataForAgGrid.push({
+              requestLevelValidationHeader: "Request-level validation errors",
+              ...statusItem,
+            });
+          }
+        });
+      }
+    }
 
     // For request-level validation, validation reports of failed samples are nested inside the request's
     // Status > validationReport > samples > an individual sample's status > validationReport
@@ -122,6 +169,31 @@ function ErrorReportModal({
         }
       });
     }
+
+    // for samples with tolerated import errors or warnings to display in the request validation report popup
+    if (toleratedSampleErrors && toleratedSampleErrors?.length > 0) {
+      const result: Array<[string, keyof typeof SAMPLE_STATUS_MAP]> = [];
+      toleratedSampleErrors.forEach((sample) => {
+        const primaryId = sample?.primaryId!;
+        const reportMap = parseValidationReport(sample?.validationReport!);
+        // console.log(reportMap)
+        reportMap.forEach((value, key) => {
+          const statusItem =
+            SAMPLE_STATUS_MAP[
+              `${key} ${value}` as keyof typeof SAMPLE_STATUS_MAP
+            ];
+          if (statusItem) {
+            validationDataForAgGrid.push({
+              toleratedSampleLevelValidationHeader:
+                "Sample-level validation warnings",
+              primaryId,
+              ...statusItem,
+            });
+          }
+        });
+      });
+    }
+
     // When a record's validationStatus is missing, display a note to the user
   } else if (validationStatus === null) {
     validationDataForAgGrid.push(...MISSING_STATUS);
@@ -130,6 +202,7 @@ function ErrorReportModal({
   if (validationDataForAgGrid.length === 0) {
     return null;
   }
+
   return (
     <Modal dialogClassName="modal-90w" show={show} onHide={onHide}>
       <Modal.Header closeButton>
