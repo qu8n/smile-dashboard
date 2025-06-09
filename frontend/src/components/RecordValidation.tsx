@@ -174,23 +174,24 @@ function ErrorReportModal({
     if (toleratedSampleErrors && toleratedSampleErrors?.length > 0) {
       const result: Array<[string, keyof typeof SAMPLE_STATUS_MAP]> = [];
       toleratedSampleErrors.forEach((sample) => {
-        const primaryId = sample?.primaryId!;
-        const reportMap = parseValidationReport(sample?.validationReport!);
-        // console.log(reportMap)
-        reportMap.forEach((value, key) => {
-          const statusItem =
-            SAMPLE_STATUS_MAP[
-              `${key} ${value}` as keyof typeof SAMPLE_STATUS_MAP
-            ];
-          if (statusItem) {
-            validationDataForAgGrid.push({
-              toleratedSampleLevelValidationHeader:
-                "Sample-level validation warnings",
-              primaryId,
-              ...statusItem,
-            });
-          }
-        });
+        if (sample?.validationStatus === false) {
+          const primaryId = sample?.primaryId!;
+          const reportMap = parseValidationReport(sample?.validationReport!);
+          reportMap.forEach((value, key) => {
+            const statusItem =
+              SAMPLE_STATUS_MAP[
+                `${key} ${value}` as keyof typeof SAMPLE_STATUS_MAP
+              ];
+            if (statusItem) {
+              validationDataForAgGrid.push({
+                toleratedSampleLevelValidationHeader:
+                  "Sample-level validation warnings",
+                primaryId,
+                ...statusItem,
+              });
+            }
+          });
+        }
       });
     }
 

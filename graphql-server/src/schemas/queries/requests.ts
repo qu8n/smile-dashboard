@@ -119,17 +119,14 @@ export function buildRequestsQueryBody({
         RETURN {primaryId: sm.primaryId, validationStatus: ss.validationStatus, validationReport: ss.validationReport} 
         ORDER BY sm.importDate DESC LIMIT 1
       } as latestSampleData
-      
+
     WITH 
       r,
       latestStatus,
       totalSampleCount,
       latestImportDate,
-      latestSampleData[0] as latestSampleData 
-      
-    WHERE latestSampleData.validationStatus = false
-      
-      
+      latestSampleData[0] as latestSampleData
+
     WITH 
       r,
       latestStatus,
