@@ -389,6 +389,7 @@ export const sampleColDefs: ColDef<DashboardSample>[] = [
         <Link
           to={`/patients/${params.value}`}
           style={{ color: "black", textDecoration: "none" }}
+          target="_blank"
         >
           {params.value}
         </Link>
