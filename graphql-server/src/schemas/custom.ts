@@ -383,6 +383,7 @@ const EDITABLE_SAMPLEMETADATA_FIELDS = new Set([
   "collectionYear",
   "sampleOrigin",
   "tissueLocation",
+  "sex",
 ]);
 
 const EDITABLE_TEMPO_FIELDS = new Set([
