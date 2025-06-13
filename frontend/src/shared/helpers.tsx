@@ -6,10 +6,11 @@ import {
   ITooltipParams,
   CellClassParams,
   IFilterDef,
+  EditableCallback,
 } from "ag-grid-community";
 import { Button } from "react-bootstrap";
 import "ag-grid-enterprise";
-import CheckIcon from "@material-ui/icons/Check";
+import { Check as CheckIcon, Launch as LaunchIcon } from "@material-ui/icons";
 import moment from "moment";
 import _ from "lodash";
 import { RecordValidation } from "../components/RecordValidation";
@@ -386,13 +387,17 @@ export const sampleColDefs: ColDef<DashboardSample>[] = [
     headerName: "CMO Patient ID",
     cellRenderer: (params: any) => {
       return (
-        <Link
-          to={`/patients/${params.value}`}
-          style={{ color: "black", textDecoration: "none" }}
-          target="_blank"
-        >
+        <>
           {params.value}
-        </Link>
+          {"   "}
+          <Link
+            to={`/patients/${params.value}`}
+            style={{ color: "black", textDecoration: "none" }}
+            target="_blank"
+          >
+            <LaunchIcon style={{ height: "16px", width: "16px" }} />
+          </Link>
+        </>
       );
     },
   },
@@ -682,7 +687,14 @@ function setupEditableSampleFields(
         });
         return changedValue !== undefined;
       },
+      cursorNotAllowed: (params: CellClassParams) => {
+        return (
+          params.data?.sampleCategory === "clinical" ||
+          !editableFieldsList.includes(params.colDef.field!)
+        );
+      },
     };
+
     if (colDef.cellClassRules) {
       colDef.cellClassRules = {
         ...colDef.cellClassRules,
@@ -717,6 +729,7 @@ function setupEditableSampleFields(
 
     colDef.editable = (params) => {
       return (
+        params.data?.sampleCategory !== "clinical" &&
         editableFieldsList.includes(params.colDef.field!) &&
         params.data?.revisable === true
       );
