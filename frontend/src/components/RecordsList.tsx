@@ -17,7 +17,6 @@ import { ColDef, IServerSideGetRowsParams } from "ag-grid-community";
 import { DataName, useHookLazyGeneric } from "../shared/types";
 import SamplesList from "./SamplesList";
 import {
-  DashboardRecordFilter,
   DashboardRecordSort,
   DashboardSamplesQueryVariables,
   PatientIdsTriplet,
@@ -28,6 +27,7 @@ import {
 import {
   CACHE_BLOCK_SIZE,
   defaultColDef,
+  getColumnFilters,
   MAX_ROWS_EXPORT,
 } from "../shared/helpers";
 import { ErrorMessage, Toolbar } from "../shared/components/Toolbar";
@@ -99,23 +99,10 @@ export default function RecordsList({
     ({ searchVals }) => {
       return {
         getRows: async (params: IServerSideGetRowsParams) => {
-          let filters: DashboardRecordFilter[] | undefined;
-          const filterModel = params.request.filterModel;
-          if (filterModel && Object.keys(filterModel).length > 0) {
-            filters = Object.entries(filterModel).map(([key, value]) => ({
-              field: key,
-              // Flexibly handle AG Grid's `any` type for filter settings by JSON.parse() this string value,
-              // then check the field name before consuming it at the GraphQL server (see https://stackoverflow.com/a/45601881)
-              filter: JSON.stringify(value),
-            }));
-          } else {
-            filters = undefined; // all filter values are selected
-          }
-
           const fetchInput = {
             searchVals,
             sort: params.request.sortModel[0] || defaultSort,
-            filters,
+            columnFilters: getColumnFilters(params),
             offset: params.request.startRow ?? 0,
             limit: CACHE_BLOCK_SIZE,
           } as

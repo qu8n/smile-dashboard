@@ -1,13 +1,13 @@
 query DashboardRequests(
   $searchVals: [String!]
-  $filters: [DashboardRecordFilter!]
+  $columnFilters: [DashboardRecordColumnFilter!]
   $sort: DashboardRecordSort!
   $limit: Int!
   $offset: Int!
 ) {
   dashboardRequests(
     searchVals: $searchVals
-    filters: $filters
+    columnFilters: $columnFilters
     sort: $sort
     limit: $limit
     offset: $offset
@@ -43,14 +43,14 @@ query DashboardRequests(
 
 query DashboardPatients(
   $searchVals: [String!]
-  $filters: [DashboardRecordFilter!]
+  $columnFilters: [DashboardRecordColumnFilter!]
   $sort: DashboardRecordSort!
   $limit: Int!
   $offset: Int!
 ) {
   dashboardPatients(
     searchVals: $searchVals
-    filters: $filters
+    columnFilters: $columnFilters
     sort: $sort
     limit: $limit
     offset: $offset
@@ -69,14 +69,14 @@ query DashboardPatients(
 
 query DashboardCohorts(
   $searchVals: [String!]
-  $filters: [DashboardRecordFilter!]
+  $columnFilters: [DashboardRecordColumnFilter!]
   $sort: DashboardRecordSort!
   $limit: Int!
   $offset: Int!
 ) {
   dashboardCohorts(
     searchVals: $searchVals
-    filters: $filters
+    columnFilters: $columnFilters
     sort: $sort
     limit: $limit
     offset: $offset
@@ -100,7 +100,7 @@ query DashboardSamples(
   $searchVals: [String!]
   $contexts: [DashboardRecordContext]
   $sort: DashboardRecordSort!
-  $filters: [DashboardRecordFilter!]
+  $columnFilters: [DashboardRecordColumnFilter!]
   $limit: Int!
   $offset: Int!
 ) {
@@ -108,7 +108,7 @@ query DashboardSamples(
     searchVals: $searchVals
     contexts: $contexts
     sort: $sort
-    filters: $filters
+    columnFilters: $columnFilters
     limit: $limit
     offset: $offset
   ) {

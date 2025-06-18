@@ -21,8 +21,6 @@ export function parseUserSearchVal(userSearchVal: string): string[] {
         if (isNumber) {
           return val.padStart(5, "0");
         }
-        // Remove single/double quotes from quoted strings
-        val = val.replace(/^['"]|['"]$/g, "");
         return val;
       })
       .value()

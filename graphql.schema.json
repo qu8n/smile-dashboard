@@ -12366,6 +12366,49 @@
       },
       {
         "kind": "INPUT_OBJECT",
+        "name": "DashboardRecordColumnFilter",
+        "description": null,
+        "fields": null,
+        "inputFields": [
+          {
+            "name": "field",
+            "description": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "filter",
+            "description": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "INPUT_OBJECT",
         "name": "DashboardRecordContext",
         "description": null,
         "fields": null,
@@ -12400,49 +12443,6 @@
                     "ofType": null
                   }
                 }
-              }
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          }
-        ],
-        "interfaces": null,
-        "enumValues": null,
-        "possibleTypes": null
-      },
-      {
-        "kind": "INPUT_OBJECT",
-        "name": "DashboardRecordFilter",
-        "description": null,
-        "fields": null,
-        "inputFields": [
-          {
-            "name": "field",
-            "description": null,
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              }
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "filter",
-            "description": null,
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
               }
             },
             "defaultValue": null,
@@ -38118,7 +38118,7 @@
             "description": null,
             "args": [
               {
-                "name": "filters",
+                "name": "columnFilters",
                 "description": null,
                 "type": {
                   "kind": "LIST",
@@ -38128,7 +38128,7 @@
                     "name": null,
                     "ofType": {
                       "kind": "INPUT_OBJECT",
-                      "name": "DashboardRecordFilter",
+                      "name": "DashboardRecordColumnFilter",
                       "ofType": null
                     }
                   }
@@ -38231,7 +38231,7 @@
             "description": null,
             "args": [
               {
-                "name": "filters",
+                "name": "columnFilters",
                 "description": null,
                 "type": {
                   "kind": "LIST",
@@ -38241,7 +38241,7 @@
                     "name": null,
                     "ofType": {
                       "kind": "INPUT_OBJECT",
-                      "name": "DashboardRecordFilter",
+                      "name": "DashboardRecordColumnFilter",
                       "ofType": null
                     }
                   }
@@ -38344,7 +38344,7 @@
             "description": null,
             "args": [
               {
-                "name": "filters",
+                "name": "columnFilters",
                 "description": null,
                 "type": {
                   "kind": "LIST",
@@ -38354,7 +38354,7 @@
                     "name": null,
                     "ofType": {
                       "kind": "INPUT_OBJECT",
-                      "name": "DashboardRecordFilter",
+                      "name": "DashboardRecordColumnFilter",
                       "ofType": null
                     }
                   }
@@ -38457,23 +38457,7 @@
             "description": null,
             "args": [
               {
-                "name": "contexts",
-                "description": null,
-                "type": {
-                  "kind": "LIST",
-                  "name": null,
-                  "ofType": {
-                    "kind": "INPUT_OBJECT",
-                    "name": "DashboardRecordContext",
-                    "ofType": null
-                  }
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
-                "name": "filters",
+                "name": "columnFilters",
                 "description": null,
                 "type": {
                   "kind": "LIST",
@@ -38483,9 +38467,25 @@
                     "name": null,
                     "ofType": {
                       "kind": "INPUT_OBJECT",
-                      "name": "DashboardRecordFilter",
+                      "name": "DashboardRecordColumnFilter",
                       "ofType": null
                     }
+                  }
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              },
+              {
+                "name": "contexts",
+                "description": null,
+                "type": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "DashboardRecordContext",
+                    "ofType": null
                   }
                 },
                 "defaultValue": null,

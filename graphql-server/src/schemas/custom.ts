@@ -1,13 +1,11 @@
 import { makeExecutableSchema } from "@graphql-tools/schema";
 import { ApolloServerContext } from "../utils/servers";
 import {
-  AgGridSortDirection,
   DashboardSampleInput,
   QueryDashboardCohortsArgs,
   QueryDashboardPatientsArgs,
   QueryDashboardRequestsArgs,
   QueryDashboardSamplesArgs,
-  DashboardRecordSort,
 } from "../generated/graphql";
 import { props } from "../utils/constants";
 import { connect, headers, StringCodec } from "nats";
@@ -45,9 +43,15 @@ export async function buildCustomSchema(ogm: OGM) {
     Query: {
       async dashboardRequests(
         _source: undefined,
-        { searchVals, filters, sort, limit, offset }: QueryDashboardRequestsArgs
+        {
+          searchVals,
+          columnFilters,
+          sort,
+          limit,
+          offset,
+        }: QueryDashboardRequestsArgs
       ) {
-        const queryBody = buildRequestsQueryBody({ searchVals, filters });
+        const queryBody = buildRequestsQueryBody({ searchVals, columnFilters });
         return await queryDashboardRequests({
           queryBody,
           sort,
@@ -58,9 +62,15 @@ export async function buildCustomSchema(ogm: OGM) {
 
       async dashboardPatients(
         _source: undefined,
-        { searchVals, filters, sort, limit, offset }: QueryDashboardPatientsArgs
+        {
+          searchVals,
+          columnFilters,
+          sort,
+          limit,
+          offset,
+        }: QueryDashboardPatientsArgs
       ) {
-        const queryBody = buildPatientsQueryBody({ searchVals, filters });
+        const queryBody = buildPatientsQueryBody({ searchVals, columnFilters });
         return await queryDashboardPatients({
           queryBody,
           sort,
@@ -71,9 +81,15 @@ export async function buildCustomSchema(ogm: OGM) {
 
       async dashboardCohorts(
         _source: undefined,
-        { searchVals, filters, sort, limit, offset }: QueryDashboardCohortsArgs
+        {
+          searchVals,
+          columnFilters,
+          sort,
+          limit,
+          offset,
+        }: QueryDashboardCohortsArgs
       ) {
-        const queryBody = buildCohortsQueryBody({ searchVals, filters });
+        const queryBody = buildCohortsQueryBody({ searchVals, columnFilters });
         return await queryDashboardCohorts({
           queryBody,
           sort,
@@ -88,7 +104,7 @@ export async function buildCustomSchema(ogm: OGM) {
           searchVals,
           contexts,
           sort,
-          filters,
+          columnFilters,
           limit,
           offset,
         }: QueryDashboardSamplesArgs,
@@ -109,7 +125,7 @@ export async function buildCustomSchema(ogm: OGM) {
         const queryBody = buildSamplesQueryBody({
           searchVals,
           contexts,
-          filters,
+          columnFilters,
           addlOncotreeCodes,
         });
 
@@ -159,122 +175,6 @@ export async function buildCustomSchema(ogm: OGM) {
     typeDefs: typeDefs,
     resolvers: resolvers,
   });
-}
-
-/**
- * Build "from" and "to" date predicates to be used in a WHERE clause in Cypher.
- *
- * This function can also handle unsafe date values like Tempo event dates, which can come in a variety of formats
- * such as date values in "yyyy-MM-dd" or "yyyy-MM-dd HH:mm" or "yyyy-MM-dd HH:mm:ss.SSSSSS", empty strings, or "FAILED".
- *
- * @param dateVar The date variable in the current Cypher context e.g. `bc.date` from `MATCH (bc:BamComplete) RETURN bc.date`
- * @param filter The filter object type from AG Grid's `agDateColumnFilter`
- * @param safelyHandleDateString Set this to true when working with date values that are unpredictable/non-standardized
- *
- */
-export function buildCypherDateFilter({
-  dateVar,
-  filter,
-  safelyHandleDateString = false,
-}: {
-  dateVar: string;
-  safelyHandleDateString?: boolean;
-  filter: {
-    dateFrom: string;
-    dateTo: string;
-  };
-}) {
-  const formattedDateString = safelyHandleDateString
-    ? `
-    CASE
-      WHEN size(${dateVar}) >= 10 THEN left(${dateVar}, 10) // trims date formats more granular than yyyy-MM-dd
-      ELSE '1900-01-01' // excludes record from the result
-    END`
-    : dateVar;
-
-  return `
-      apoc.date.parse(${formattedDateString}, 'ms', 'yyyy-MM-dd')
-        >= apoc.date.parse('${filter.dateFrom}', 'ms', 'yyyy-MM-dd HH:mm:ss') // AG Grid's provided date format
-      AND apoc.date.parse(${formattedDateString}, 'ms', 'yyyy-MM-dd')
-        <= apoc.date.parse('${filter.dateTo}', 'ms', 'yyyy-MM-dd HH:mm:ss')
-    `;
-}
-
-/**
- * Build boolean predicates to be used in a WHERE clause in Cypher.
- *
- * @param booleanVar The boolean variable in the current Cypher context e.g. `t.billed` from `MATCH (t:Tempo) RETURN t.billed`
- * @param filter The filter object type from AG Grid's `agSetColumnFilter`
- * @param noIncludesFalseAndNull Set this to true if we want the user's filter selection of "No" to include both false and null values
- * @param trueVal The true value that appears in the database for a given field (e.g. "Yes", true)
- * @param falseVal The false value that appears in the database for a given field (e.g. "No", false)
- *
- */
-export function buildCypherBooleanFilter({
-  booleanVar,
-  filter,
-  noIncludesFalseAndNull = false,
-  trueVal = true,
-  falseVal = false,
-}: {
-  booleanVar: string;
-  filter: {
-    values: string[];
-  };
-  noIncludesFalseAndNull?: boolean;
-  trueVal?: string | boolean;
-  falseVal?: string | boolean;
-}) {
-  const formattedTrueVal =
-    typeof trueVal === "string" ? `'${trueVal}'` : trueVal;
-  const formattedFalseVal =
-    typeof falseVal === "string" ? `'${falseVal}'` : falseVal;
-
-  const filterValues = filter.values;
-  if (filterValues?.length > 0) {
-    const activeFilters = [];
-    for (const value of filterValues) {
-      if (value === "Yes") {
-        activeFilters.push(`${booleanVar} = ${formattedTrueVal}`);
-      } else if (value === "No") {
-        if (!noIncludesFalseAndNull) {
-          activeFilters.push(`${booleanVar} = ${formattedFalseVal}`);
-        } else {
-          activeFilters.push(
-            `${booleanVar} = ${formattedFalseVal} OR ${booleanVar} IS NULL`
-          );
-        }
-      } else if (value === null) {
-        activeFilters.push(`${booleanVar} IS NULL`);
-      }
-    }
-    return activeFilters.join(" OR ");
-  } else {
-    return `${booleanVar} <> ${formattedTrueVal} AND ${booleanVar} <> ${formattedFalseVal} AND ${booleanVar} IS NOT NULL`;
-  }
-}
-
-export function buildFinalCypherFilter({
-  queryFilters,
-}: {
-  queryFilters: string[];
-}) {
-  const combinedPredicates = queryFilters
-    .filter(Boolean)
-    .map((queryFilter) => `(${queryFilter})`)
-    .join(" AND ");
-
-  return combinedPredicates ? "WHERE " + combinedPredicates : "";
-}
-
-/**
- * Disable Neo4j's defaults of showing nulls first for DESC sorting
- * and empty strings first for ASC sorting
- */
-export function getNeo4jCustomSort(sort: DashboardRecordSort) {
-  return sort.sort === AgGridSortDirection.Desc
-    ? `COALESCE(resultz.${sort.colId}, '') DESC`
-    : `resultz.${sort.colId}='' ASC, resultz.${sort.colId} ASC`;
 }
 
 async function updateSampleMetadataPromises(
@@ -425,7 +325,7 @@ async function updateAllSamplesConcurrently(
         tempoUpdatePromises.push(updateTempoPromise(dashboardSample));
       }
       if (dbGapChanged) {
-        dbGapUpdatePromises.push(updateTempoPromise(dashboardSample));
+        dbGapUpdatePromises.push(updateDbGapPromise(dashboardSample));
       }
     } catch (error) {
       console.error(

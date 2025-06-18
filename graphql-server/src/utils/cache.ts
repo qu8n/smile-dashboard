@@ -159,13 +159,13 @@ async function updateSamplesCache(inMemoryCache: NodeCache) {
   const allSamplesQueryBody = buildSamplesQueryBody({
     searchVals: [],
     contexts: undefined,
-    filters: undefined,
+    columnFilters: undefined,
     addlOncotreeCodes: [],
   });
   const wesSamplesQueryBody = buildSamplesQueryBody({
     searchVals: [],
     contexts: WES_SAMPLE_CONTEXT,
-    filters: undefined,
+    columnFilters: undefined,
     addlOncotreeCodes: [],
   });
 

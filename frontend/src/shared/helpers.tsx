@@ -6,7 +6,7 @@ import {
   ITooltipParams,
   CellClassParams,
   IFilterDef,
-  EditableCallback,
+  IServerSideGetRowsParams,
 } from "ag-grid-community";
 import { Button } from "react-bootstrap";
 import "ag-grid-enterprise";
@@ -17,6 +17,7 @@ import { RecordValidation } from "../components/RecordValidation";
 import {
   DashboardCohort,
   DashboardPatient,
+  DashboardRecordColumnFilter,
   DashboardRequest,
   DashboardSample,
 } from "../generated/graphql";
@@ -34,7 +35,7 @@ export type SampleChange = {
   rowNode: RowNode;
 };
 
-function getAgGridDateFilterConfigs({
+function getAgGridDateColFilterConfigs({
   maxValidYear = new Date().getFullYear(),
 }: { maxValidYear?: number } = {}): IFilterDef {
   return {
@@ -50,7 +51,7 @@ function getAgGridDateFilterConfigs({
   };
 }
 
-function getAgGridBooleanFilterConfigs({
+function getAgGridBooleanColFilterConfigs({
   showBlanksFilterOption = false,
 }: { showBlanksFilterOption?: Boolean } = {}): IFilterDef {
   return {
@@ -155,7 +156,7 @@ export const requestColDefs: ColDef<DashboardRequest>[] = [
   {
     field: "importDate",
     headerName: "Import Date",
-    ...getAgGridDateFilterConfigs(),
+    ...getAgGridDateColFilterConfigs(),
   },
   {
     field: "totalSampleCount",
@@ -208,7 +209,7 @@ export const requestColDefs: ColDef<DashboardRequest>[] = [
   {
     field: "bicAnalysis",
     headerName: "BIC Analysis",
-    ...getAgGridBooleanFilterConfigs(),
+    ...getAgGridBooleanColFilterConfigs(),
     ...getAgGridBooleanValueFormatter({
       trueVal: true,
       falseVal: false,
@@ -217,7 +218,7 @@ export const requestColDefs: ColDef<DashboardRequest>[] = [
   {
     field: "isCmoRequest",
     headerName: "CMO Request?",
-    ...getAgGridBooleanFilterConfigs(),
+    ...getAgGridBooleanColFilterConfigs(),
     ...getAgGridBooleanValueFormatter({
       trueVal: true,
       falseVal: false,
@@ -267,7 +268,7 @@ export const patientColDefs: ColDef<DashboardPatient>[] = [
   {
     field: "consentPartA",
     headerName: "12-245 Part A",
-    ...getAgGridBooleanFilterConfigs({
+    ...getAgGridBooleanColFilterConfigs({
       showBlanksFilterOption: true,
     }),
     ...getAgGridBooleanValueFormatter({
@@ -278,7 +279,7 @@ export const patientColDefs: ColDef<DashboardPatient>[] = [
   {
     field: "consentPartC",
     headerName: "12-245 Part C",
-    ...getAgGridBooleanFilterConfigs({
+    ...getAgGridBooleanColFilterConfigs({
       showBlanksFilterOption: true,
     }),
     ...getAgGridBooleanValueFormatter({
@@ -289,7 +290,7 @@ export const patientColDefs: ColDef<DashboardPatient>[] = [
   {
     field: "inDbGap",
     headerName: "dbGaP",
-    ...getAgGridBooleanFilterConfigs({
+    ...getAgGridBooleanColFilterConfigs({
       showBlanksFilterOption: false,
     }),
     ...getAgGridBooleanValueFormatter({
@@ -380,7 +381,7 @@ export const sampleColDefs: ColDef<DashboardSample>[] = [
   {
     field: "importDate",
     headerName: "Last Updated",
-    ...getAgGridDateFilterConfigs(),
+    ...getAgGridDateColFilterConfigs(),
   },
   {
     field: "cmoPatientId",
@@ -777,13 +778,13 @@ export const cohortColDefs: ColDef<DashboardCohort>[] = [
   {
     field: "billed",
     headerName: "Billed",
-    ...getAgGridBooleanFilterConfigs(),
+    ...getAgGridBooleanColFilterConfigs(),
   },
   {
     field: "initialCohortDeliveryDate",
     headerName: "Initial Cohort Delivery Date",
     valueFormatter: (params) => formatDate(params.value) ?? "",
-    ...getAgGridDateFilterConfigs(),
+    ...getAgGridDateColFilterConfigs(),
   },
   {
     field: "endUsers",
@@ -842,13 +843,13 @@ export const wesSampleColDefs: ColDef<DashboardSample>[] = [
     field: "initialPipelineRunDate",
     headerName: "Initial Pipeline Run Date",
     valueFormatter: (params) => formatDate(params.value) ?? "",
-    ...getAgGridDateFilterConfigs(),
+    ...getAgGridDateColFilterConfigs(),
   },
   {
     field: "embargoDate",
     headerName: "Embargo Date",
     valueFormatter: (params) => formatDate(params.value) ?? "",
-    ...getAgGridDateFilterConfigs({
+    ...getAgGridDateColFilterConfigs({
       // embargoDate is 18 months ahead of initialPipelineRunDate
       maxValidYear: new Date().getFullYear() + 2,
     }),
@@ -862,7 +863,7 @@ export const wesSampleColDefs: ColDef<DashboardSample>[] = [
     cellEditorParams: {
       values: [true, false],
     },
-    ...getAgGridBooleanFilterConfigs(),
+    ...getAgGridBooleanColFilterConfigs(),
     ...getAgGridBooleanValueFormatter({
       trueVal: true,
       falseVal: false,
@@ -906,7 +907,7 @@ export const wesSampleColDefs: ColDef<DashboardSample>[] = [
     field: "bamCompleteDate",
     headerName: "Latest BAM Complete Date",
     valueFormatter: (params) => formatDate(params.value) ?? "",
-    ...getAgGridDateFilterConfigs(),
+    ...getAgGridDateColFilterConfigs(),
   },
   {
     field: "bamCompleteStatus",
@@ -916,7 +917,7 @@ export const wesSampleColDefs: ColDef<DashboardSample>[] = [
     field: "mafCompleteDate",
     headerName: "Latest MAF Complete Date",
     valueFormatter: (params) => formatDate(params.value) ?? "",
-    ...getAgGridDateFilterConfigs(),
+    ...getAgGridDateColFilterConfigs(),
   },
   {
     field: "mafCompleteNormalPrimaryId",
@@ -930,7 +931,7 @@ export const wesSampleColDefs: ColDef<DashboardSample>[] = [
     field: "qcCompleteDate",
     headerName: "Latest QC Complete Date",
     valueFormatter: (params) => formatDate(params.value) ?? "",
-    ...getAgGridDateFilterConfigs(),
+    ...getAgGridDateColFilterConfigs(),
   },
   {
     field: "qcCompleteResult",
@@ -1022,7 +1023,7 @@ export const accessSampleColDefs: ColDef<DashboardSample>[] = [
   {
     field: "importDate",
     headerName: "Last Updated",
-    ...getAgGridDateFilterConfigs(),
+    ...getAgGridDateColFilterConfigs(),
   },
   {
     field: "cmoPatientId",
@@ -1164,6 +1165,23 @@ export function isValidCostCenter(costCenter: string): boolean {
   if (costCenter.length !== 11) return false;
   const validCostCenter = new RegExp("^\\d{5}/\\d{5}$");
   return validCostCenter.test(costCenter);
+}
+
+export function getColumnFilters(
+  params: IServerSideGetRowsParams
+): DashboardRecordColumnFilter[] | undefined {
+  const filterModel = params.request.filterModel;
+  if (!filterModel || Object.keys(filterModel).length === 0) {
+    // All filter values are selected
+    return undefined;
+  }
+
+  return Object.entries(filterModel).map(([field, value]) => ({
+    field,
+    // Flexibly handle AG Grid's `any` type for filter settings by JSON.parse() this string value,
+    // then check the field name before consuming it at the GraphQL server (see https://stackoverflow.com/a/45601881)
+    filter: JSON.stringify(value),
+  }));
 }
 
 export const CACHE_BLOCK_SIZE = 500; // number of rows to fetch at a time

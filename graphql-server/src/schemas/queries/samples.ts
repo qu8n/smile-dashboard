@@ -1,213 +1,171 @@
 import {
+  DashboardRecordContext,
   DashboardSample,
+  InputMaybe,
   QueryDashboardSamplesArgs,
 } from "../../generated/graphql";
 import { OncotreeCache } from "../../utils/cache";
 import { neo4jDriver } from "../../utils/servers";
 import {
-  buildCypherDateFilter,
-  buildCypherBooleanFilter,
-  getNeo4jCustomSort,
-} from "../custom";
+  buildCypherPredicateFromDateColFilter,
+  buildCypherPredicateFromBooleanColFilter,
+  getCypherCustomOrderBy,
+  buildCypherPredicatesFromSearchVals,
+  isQuotedString,
+} from "../../utils/cypher";
+
+const FIELDS_TO_SEARCH = [
+  "primaryId",
+  "cmoSampleName",
+  "importDate",
+  "cmoPatientId",
+  "investigatorSampleId",
+  "sampleType",
+  "species",
+  "genePanel",
+  "baitSet",
+  "preservation",
+  "tumorOrNormal",
+  "sampleClass",
+  "oncotreeCode",
+  "collectionYear",
+  "sampleOrigin",
+  "tissueLocation",
+  "sex",
+  "recipe",
+  "altId",
+  "costCenter",
+  "billedBy",
+  "custodianInformation",
+  "accessLevel",
+  "bamCompleteDate",
+  "bamCompleteStatus",
+  "mafCompleteDate",
+  "mafCompleteNormalPrimaryId",
+  "mafCompleteStatus",
+  "qcCompleteDate",
+  "qcCompleteResult",
+  "qcCompleteReason",
+  "qcCompleteStatus",
+  "historicalCmoSampleNames",
+  "sampleCategory",
+  "dbGapStudy",
+];
 
 export function buildSamplesQueryBody({
   searchVals,
   contexts,
-  filters,
+  columnFilters,
   addlOncotreeCodes,
 }: {
   searchVals: QueryDashboardSamplesArgs["searchVals"];
   contexts?: QueryDashboardSamplesArgs["contexts"];
-  filters?: QueryDashboardSamplesArgs["filters"];
+  columnFilters?: QueryDashboardSamplesArgs["columnFilters"];
   addlOncotreeCodes: string[];
 }) {
   // Because the samples query is more complex than other queries (e.g. requests), we improve its performance
   // by building WHERE clauses and injecting them into the query as early as possible and when convenient.
   // This contrasts with our approach in other query builders, where we combine all predicates into a single
   // WHERE clause and injecting that at the end (right before the RETURN statement).
-  let searchFilters = "";
+
+  let searchPredicates = "";
   if (searchVals?.length) {
-    const fieldsToSearch = [
-      "primaryId",
-      "cmoSampleName",
-      "importDate",
-      "cmoPatientId",
-      "investigatorSampleId",
-      "sampleType",
-      "species",
-      "genePanel",
-      "baitSet",
-      "preservation",
-      "tumorOrNormal",
-      "sampleClass",
-      "oncotreeCode",
-      "collectionYear",
-      "sampleOrigin",
-      "tissueLocation",
-      "sex",
-      "recipe",
-      "altId",
-      "costCenter",
-      "billedBy",
-      "custodianInformation",
-      "accessLevel",
-      "bamCompleteDate",
-      "bamCompleteStatus",
-      "mafCompleteDate",
-      "mafCompleteNormalPrimaryId",
-      "mafCompleteStatus",
-      "qcCompleteDate",
-      "qcCompleteResult",
-      "qcCompleteReason",
-      "qcCompleteStatus",
-      "historicalCmoSampleNames",
-      "sampleCategory",
-      "dbGapStudy",
-    ];
-    searchFilters += fieldsToSearch
-      .map(
-        (field) => `tempNode.${field} =~ '(?i).*(${searchVals.join("|")}).*'`
-      )
-      .join(" OR ");
+    searchPredicates = buildCypherPredicatesFromSearchVals({
+      searchVals,
+      fieldsToSearch: FIELDS_TO_SEARCH,
+    });
     if (addlOncotreeCodes.length) {
-      searchFilters += ` OR latestSm.oncotreeCode =~ '^(${addlOncotreeCodes.join(
+      searchPredicates += ` OR tempNode.oncotreeCode =~ '^(${addlOncotreeCodes.join(
         "|"
       )})'`;
     }
   }
 
-  // Filter for the WES samples on the Samples page
-  const genePanelContextObj = contexts?.find(
-    (ctx) => ctx?.fieldName === "genePanel"
-  );
-  const genePanelContext = genePanelContextObj
-    ? `latestSm.genePanel =~ '(?i).*(${genePanelContextObj.values.join(
-        "|"
-      )}).*'`
-    : "";
-
-  const baitSetContextObj = contexts?.find(
-    (ctx) => ctx?.fieldName === "baitSet"
-  );
-  const baitSetContext = baitSetContextObj
-    ? `latestSm.baitSet =~ '(?i).*(${baitSetContextObj.values.join("|")}).*'`
-    : "";
+  // Filters for WES samples on the Samples page
+  const genePanelContext = buildCypherPredicateFromContext({
+    contexts,
+    contextField: "genePanel",
+    predicateField: "latestSm.genePanel",
+  });
+  const baitSetContext = buildCypherPredicateFromContext({
+    contexts,
+    contextField: "baitSet",
+    predicateField: "latestSm.baitSet",
+  });
 
   // Filter for the current request in the Request Samples view
-  const requestContextObj = contexts?.find(
-    (ctx) => ctx?.fieldName === "igoRequestId"
-  );
-  const requestContext = requestContextObj
-    ? `latestSm.igoRequestId = '${requestContextObj.values[0]}'`
-    : "";
+  const requestContext = buildCypherPredicateFromContext({
+    contexts,
+    contextField: "igoRequestId",
+    predicateField: "latestSm.igoRequestId",
+  });
 
-  // Filter for the current patient for the Patient Samples view
-  const patientContextObj = contexts?.find(
-    (ctx) => ctx?.fieldName === "patientId"
-  );
-  const patientContext = patientContextObj
-    ? `pa.value = '${patientContextObj.values[0]}'`
-    : "";
+  // Filter for the current patient in the Patient Samples view
+  const patientContext = buildCypherPredicateFromContext({
+    contexts,
+    contextField: "patientId",
+    predicateField: "pa.value",
+  });
 
-  // Filter for the current cohort for the Cohort Samples view
-  const cohortContextObj = contexts?.find(
-    (ctx) => ctx?.fieldName === "cohortId"
-  );
-  const cohortContext = cohortContextObj
-    ? `c.cohortId = '${cohortContextObj.values[0]}'`
-    : "";
+  // Filter for the current cohort in the Cohort Samples view
+  const cohortContext = buildCypherPredicateFromContext({
+    contexts,
+    contextField: "cohortId",
+    predicateField: "c.cohortId",
+  });
 
-  // "Last Updated" column filter in the Samples Metadata view
-  let importDateFilter = "";
-  const importDateFilterObj = filters?.find(
-    (filter) => filter.field === "importDate"
-  );
-  if (importDateFilterObj) {
-    importDateFilter = buildCypherDateFilter({
-      dateVar: "latestSm.importDate",
-      filter: JSON.parse(importDateFilterObj.filter),
-    });
-  }
+  // Column filters in the Samples Metadata view
+  const importDateColFilter = buildCypherPredicateFromDateColFilter({
+    columnFilters,
+    colFilterField: "importDate",
+    dateVar: "latestSm.importDate",
+  });
 
-  // "Billed" column filter for the Cohort Samples view
-  let billedFilter = "";
-  const billedFilterObj = filters?.find((filter) => filter.field === "billed");
-  if (billedFilterObj) {
-    billedFilter = buildCypherBooleanFilter({
-      booleanVar: "t.billed",
-      filter: JSON.parse(billedFilterObj.filter),
-      noIncludesFalseAndNull: true,
-    });
-  }
-
-  // "Initial Pipeline Run Date" column filter in the Cohort Samples view
-  let initialPipelineRunDateFilter = "";
-  const initialPipelineRunDateFilterObj = filters?.find(
-    (filter) => filter.field === "initialPipelineRunDate"
-  );
-  if (initialPipelineRunDateFilterObj) {
-    initialPipelineRunDateFilter = buildCypherDateFilter({
+  // Column filters in the Cohort Samples view
+  const billedColFilter = buildCypherPredicateFromBooleanColFilter({
+    columnFilters,
+    colFilterField: "billed",
+    booleanVar: "t.billed",
+    noIncludesFalseAndNull: true,
+  });
+  const initialPipelineRunDateColFilter = buildCypherPredicateFromDateColFilter(
+    {
+      columnFilters,
+      colFilterField: "initialPipelineRunDate",
       dateVar: "t.initialPipelineRunDate",
-      filter: JSON.parse(initialPipelineRunDateFilterObj.filter),
-    });
-  }
-  // Embargo Date" column filter in the Cohort Samples view
-  let embargoDateFilter = "";
-  const embargoDateFilterObj = filters?.find(
-    (filter) => filter.field === "embargoDate"
+    }
   );
-  if (embargoDateFilterObj) {
-    embargoDateFilter = buildCypherDateFilter({
-      dateVar: "t.embargoDate",
-      filter: JSON.parse(embargoDateFilterObj.filter),
-    });
-  }
-  const cohortDateFilters = [initialPipelineRunDateFilter, embargoDateFilter]
+  const embargoDateColFilter = buildCypherPredicateFromDateColFilter({
+    columnFilters,
+    colFilterField: "embargoDate",
+    dateVar: "t.embargoDate",
+  });
+  const cohortDateColFilters = [
+    initialPipelineRunDateColFilter,
+    embargoDateColFilter,
+  ]
     .filter(Boolean)
     .map((filter) => `(${filter})`)
     .join(" AND ");
+  const bamCompleteDateColFilter = buildCypherPredicateFromDateColFilter({
+    columnFilters,
+    colFilterField: "bamCompleteDate",
+    dateVar: "latestBC.date",
+    safelyHandleDateString: true,
+  });
+  const mafCompleteDateColFilter = buildCypherPredicateFromDateColFilter({
+    columnFilters,
+    colFilterField: "mafCompleteDate",
+    dateVar: "latestMC.date",
+    safelyHandleDateString: true,
+  });
+  const qcCompleteDateColFilter = buildCypherPredicateFromDateColFilter({
+    columnFilters,
+    colFilterField: "qcCompleteDate",
+    dateVar: "latestQC.date",
+    safelyHandleDateString: true,
+  });
 
-  // "Latest BAM Complete Date" column filter in the Cohort Samples view
-  let bamCompleteDateFilter = "";
-  const bamCompleteDateFilterObj = filters?.find(
-    (filter) => filter.field === "bamCompleteDate"
-  );
-  if (bamCompleteDateFilterObj) {
-    bamCompleteDateFilter = buildCypherDateFilter({
-      dateVar: "latestBC.date",
-      safelyHandleDateString: true,
-      filter: JSON.parse(bamCompleteDateFilterObj.filter),
-    });
-  }
-
-  // "Latest MAF Complete Date" column filter in the Cohort Samples view
-  let mafCompleteDateFilter = "";
-  const mafCompleteDateFilterObj = filters?.find(
-    (filter) => filter.field === "mafCompleteDate"
-  );
-  if (mafCompleteDateFilterObj) {
-    mafCompleteDateFilter = buildCypherDateFilter({
-      dateVar: "latestMC.date",
-      safelyHandleDateString: true,
-      filter: JSON.parse(mafCompleteDateFilterObj.filter),
-    });
-  }
-
-  // "Latest QC Complete Date" column filter in the Cohort Samples view
-  let qcCompleteDateFilter = "";
-  const qcCompleteDateFilterObj = filters?.find(
-    (filter) => filter.field === "qcCompleteDate"
-  );
-  if (qcCompleteDateFilterObj) {
-    qcCompleteDateFilter = buildCypherDateFilter({
-      dateVar: "latestQC.date",
-      safelyHandleDateString: true,
-      filter: JSON.parse(qcCompleteDateFilterObj.filter),
-    });
-  }
-
-  // NOTE: For future reference, we can get a list of historical CMO labels and import dates by replacing
-  // '| sm.cmoSampleName' with '| {cmoSampleName: sm.cmoSampleName, importDate: sm.importDate}'
   const samplesQueryBody = `
     // Get Sample and the most recent SampleMetadata
     MATCH (s:Sample)
@@ -242,9 +200,9 @@ export function buildSamplesQueryBody({
       ", ") AS historicalCmoSampleNames
 
     // Filters for either the WES Samples or Request Samples view, if applicable
-    ${genePanelContext && `WHERE ${genePanelContext}`} ${
-    baitSetContext && `OR ${baitSetContext}`
-  }
+    ${genePanelContext && `WHERE ${genePanelContext}`}
+    ${baitSetContext && `OR ${baitSetContext}`}
+
     ${requestContext && `WHERE ${requestContext}`}
 
     // Get SampleMetadata's Status
@@ -254,7 +212,7 @@ export function buildSamplesQueryBody({
       latestSm,
       historicalCmoSampleNames,
       st AS latestSt
-    ${importDateFilter && `WHERE ${importDateFilter}`}
+    ${importDateColFilter && `WHERE ${importDateColFilter}`}
 
     // Filters for Patient Samples view, if applicable
     ${
@@ -284,8 +242,8 @@ export function buildSamplesQueryBody({
       latestSt,
       dmpPatientAlias,
       t
-    ${billedFilter && `WHERE ${billedFilter}`}
-    ${cohortDateFilters && `WHERE ${cohortDateFilters}`}
+    ${billedColFilter && `WHERE ${billedColFilter}`}
+    ${cohortDateColFilters && `WHERE ${cohortDateColFilters}`}
 
     // Get the most recent Tempo events
     WITH
@@ -320,9 +278,9 @@ export function buildSamplesQueryBody({
       latestQC[0] AS latestQC,
       apoc.convert.fromJsonMap(latestSm.cmoSampleIdFields) AS cmoSampleIdFields
 
-      ${bamCompleteDateFilter && `WHERE ${bamCompleteDateFilter}`}
-      ${mafCompleteDateFilter && `WHERE ${mafCompleteDateFilter}`}
-      ${qcCompleteDateFilter && `WHERE ${qcCompleteDateFilter}`}
+      ${bamCompleteDateColFilter && `WHERE ${bamCompleteDateColFilter}`}
+      ${mafCompleteDateColFilter && `WHERE ${mafCompleteDateColFilter}`}
+      ${qcCompleteDateColFilter && `WHERE ${qcCompleteDateColFilter}`}
 
     // Get DbGap data
     OPTIONAL MATCH (s)-[:HAS_DBGAP]->(d:DbGap)
@@ -384,10 +342,30 @@ export function buildSamplesQueryBody({
         dmpPatientAlias: dmpPatientAlias
       }) AS tempNode
 
-    ${searchFilters && `WHERE ${searchFilters}`}
+    ${searchPredicates && `WHERE ${searchPredicates}`}
   `;
 
   return samplesQueryBody;
+}
+
+function buildCypherPredicateFromContext({
+  contexts,
+  contextField,
+  predicateField,
+}: {
+  contexts: InputMaybe<InputMaybe<DashboardRecordContext>[]> | undefined;
+  contextField: DashboardRecordContext["fieldName"];
+  /** Left-hand side of the Cypher predicate (e.g. latestSm.baitSet) */
+  predicateField: string;
+}): string {
+  const contextObj = contexts?.find((ctx) => ctx?.fieldName === contextField);
+  if (!contextObj || !contextObj.values || contextObj.values.length === 0)
+    return "";
+  if (contextObj.values.length > 1) {
+    return `${predicateField} =~ '(?i).*(${contextObj.values.join("|")}).*'`;
+  } else {
+    return `${predicateField} = '${contextObj.values[0]}'`;
+  }
 }
 
 export function buildSamplesQueryFinal({
@@ -410,7 +388,7 @@ export function buildSamplesQueryFinal({
     RETURN
       resultz{.*, _total: total}
 
-    ORDER BY ${getNeo4jCustomSort(sort)}
+    ORDER BY ${getCypherCustomOrderBy(sort)}
     SKIP ${offset}
     LIMIT ${limit}
   `;
@@ -458,9 +436,10 @@ export function getAddlOtCodesMatchingCtOrCtdVals({
   if (searchVals?.length) {
     for (const [code, { name, mainType }] of Object.entries(oncotreeCache)) {
       for (const val of searchVals) {
+        const valWithoutQuotes = isQuotedString(val) ? val.slice(1, -1) : val;
         if (
-          name?.toLowerCase().includes(val?.toLowerCase()) ||
-          mainType?.toLowerCase().includes(val?.toLowerCase())
+          name?.toLowerCase().includes(valWithoutQuotes.toLowerCase()) ||
+          mainType?.toLowerCase().includes(valWithoutQuotes.toLowerCase())
         ) {
           addlOncotreeCodes.add(code);
         }

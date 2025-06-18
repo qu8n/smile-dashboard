@@ -4,87 +4,73 @@ import {
 } from "../../generated/graphql";
 import { neo4jDriver } from "../../utils/servers";
 import {
-  buildFinalCypherFilter,
-  getNeo4jCustomSort,
-  buildCypherDateFilter,
-  buildCypherBooleanFilter,
-} from "../custom";
+  buildCypherWhereClause,
+  getCypherCustomOrderBy,
+  buildCypherPredicateFromDateColFilter,
+  buildCypherPredicateFromBooleanColFilter,
+  buildCypherPredicatesFromSearchVals,
+} from "../../utils/cypher";
+
+const FIELDS_TO_SEARCH = [
+  "igoRequestId",
+  "igoProjectId",
+  "importDate",
+  "projectManagerName",
+  "investigatorName",
+  "investigatorEmail",
+  "piEmail",
+  "dataAnalystName",
+  "dataAnalystEmail",
+  "genePanel",
+  "labHeadName",
+  "labHeadEmail",
+  "qcAccessEmails",
+  "dataAccessEmails",
+  "bicAnalysis",
+  "isCmoRequest",
+  "otherContactEmails",
+];
 
 export function buildRequestsQueryBody({
   searchVals,
-  filters,
+  columnFilters,
 }: {
   searchVals: QueryDashboardRequestsArgs["searchVals"];
-  filters?: QueryDashboardRequestsArgs["filters"];
+  columnFilters?: QueryDashboardRequestsArgs["columnFilters"];
 }) {
-  const queryFilters = [];
+  const queryPredicates = [];
 
-  if (searchVals?.length) {
-    const fieldsToSearch = [
-      "igoRequestId",
-      "igoProjectId",
-      "importDate",
-      "projectManagerName",
-      "investigatorName",
-      "investigatorEmail",
-      "piEmail",
-      "dataAnalystName",
-      "dataAnalystEmail",
-      "genePanel",
-      "labHeadName",
-      "labHeadEmail",
-      "qcAccessEmails",
-      "dataAccessEmails",
-      "bicAnalysis",
-      "isCmoRequest",
-      "otherContactEmails",
-    ];
-    const searchFilters = fieldsToSearch
-      .map(
-        (field) => `tempNode.${field} =~ '(?i).*(${searchVals.join("|")}).*'`
-      )
-      .join(" OR ");
-    queryFilters.push(searchFilters);
-  }
+  const searchPredicates = buildCypherPredicatesFromSearchVals({
+    searchVals,
+    fieldsToSearch: FIELDS_TO_SEARCH,
+  });
+  if (searchPredicates) queryPredicates.push(searchPredicates);
 
-  if (filters) {
-    const importDateFilterObj = filters?.find(
-      (filter) => filter.field === "importDate"
-    );
-    if (importDateFilterObj) {
-      const importDateFilter = buildCypherDateFilter({
-        dateVar: "tempNode.importDate",
-        filter: JSON.parse(importDateFilterObj.filter),
-      });
-      queryFilters.push(importDateFilter);
-    }
-    const bicAnalysisFilterObj = filters?.find(
-      (filter) => filter.field === "bicAnalysis"
-    );
-    if (bicAnalysisFilterObj) {
-      const bicAnalysisFilter = buildCypherBooleanFilter({
-        booleanVar: "tempNode.bicAnalysis",
-        filter: JSON.parse(bicAnalysisFilterObj.filter),
-        noIncludesFalseAndNull: true,
-      });
-      queryFilters.push(bicAnalysisFilter);
-    }
-    const cmoRequestFilterObj = filters?.find(
-      (filter) => filter.field === "isCmoRequest"
-    );
-    if (cmoRequestFilterObj) {
-      const cmoRequestFilter = buildCypherBooleanFilter({
-        booleanVar: "tempNode.isCmoRequest",
-        filter: JSON.parse(cmoRequestFilterObj.filter),
-        noIncludesFalseAndNull: true,
-      });
-      queryFilters.push(cmoRequestFilter);
-    }
-  }
+  const importDateColFilter = buildCypherPredicateFromDateColFilter({
+    columnFilters,
+    colFilterField: "importDate",
+    dateVar: "tempNode.importDate",
+  });
+  if (importDateColFilter) queryPredicates.push(importDateColFilter);
 
-  const filtersAsCypher = buildFinalCypherFilter({ queryFilters });
+  const bicAnalysisColFilter = buildCypherPredicateFromBooleanColFilter({
+    columnFilters,
+    colFilterField: "bicAnalysis",
+    booleanVar: "tempNode.bicAnalysis",
+    noIncludesFalseAndNull: true,
+  });
+  if (bicAnalysisColFilter) queryPredicates.push(bicAnalysisColFilter);
 
-  // TODO: when done, compare the request page results before vs after to ensure consistency
+  const cmoRequestColFilter = buildCypherPredicateFromBooleanColFilter({
+    columnFilters,
+    colFilterField: "isCmoRequest",
+    booleanVar: "tempNode.isCmoRequest",
+    noIncludesFalseAndNull: true,
+  });
+  if (cmoRequestColFilter) queryPredicates.push(cmoRequestColFilter);
+
+  const cypherWhereClause = buildCypherWhereClause(queryPredicates);
+
   const requestsQueryBody = `
     MATCH (r:Request)
 
@@ -108,32 +94,32 @@ export function buildRequestsQueryBody({
 
     OPTIONAL MATCH (r)-[:HAS_SAMPLE]->(s:Sample)
 
-    WITH 
+    WITH
       r,
-      latestStatus, 
+      latestStatus,
       totalSampleCount,
       latestImportDate,
       s,
       COLLECT {
-        MATCH (s)-[:HAS_METADATA]->(sm:SampleMetadata)-[:HAS_STATUS]->(ss:Status) 
-        RETURN {primaryId: sm.primaryId, validationStatus: ss.validationStatus, validationReport: ss.validationReport} 
+        MATCH (s)-[:HAS_METADATA]->(sm:SampleMetadata)-[:HAS_STATUS]->(ss:Status)
+        RETURN {primaryId: sm.primaryId, validationStatus: ss.validationStatus, validationReport: ss.validationReport}
         ORDER BY sm.importDate DESC LIMIT 1
       } as latestSampleData
 
-    WITH 
+    WITH
       r,
       latestStatus,
       totalSampleCount,
       latestImportDate,
       latestSampleData[0] as latestSampleData
 
-    WITH 
+    WITH
       r,
       latestStatus,
       totalSampleCount,
       latestImportDate,
       COLLECT(latestSampleData) as toleratedSampleErrors
-      
+
     WITH
       ({igoRequestId: r.igoRequestId,
       igoProjectId: r.igoProjectId,
@@ -158,7 +144,7 @@ export function buildRequestsQueryBody({
       toleratedSampleErrors: toleratedSampleErrors}) as tempNode
     WITH tempNode
 
-    ${filtersAsCypher}
+    ${cypherWhereClause}
   `;
 
   return requestsQueryBody;
@@ -182,7 +168,7 @@ export async function queryDashboardRequests({
 
     RETURN
       resultz{.*, _total: total}
-    ORDER BY ${getNeo4jCustomSort(sort)}
+    ORDER BY ${getCypherCustomOrderBy(sort)}
     SKIP ${offset}
     LIMIT ${limit}
   `;

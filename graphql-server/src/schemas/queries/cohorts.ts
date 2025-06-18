@@ -5,66 +5,59 @@ import {
 } from "../../generated/graphql";
 import { neo4jDriver } from "../../utils/servers";
 import {
-  buildCypherBooleanFilter,
-  buildCypherDateFilter,
-  buildFinalCypherFilter,
-  getNeo4jCustomSort,
-} from "../custom";
+  buildCypherPredicateFromBooleanColFilter,
+  buildCypherPredicateFromDateColFilter,
+  buildCypherPredicatesFromSearchVals,
+  buildCypherWhereClause,
+  getCypherCustomOrderBy,
+} from "../../utils/cypher";
+
+const FIELDS_TO_SEARCH = [
+  "cohortId",
+  "billed",
+  "initialCohortDeliveryDate",
+  "endUsers",
+  "pmUsers",
+  "projectTitle",
+  "projectSubtitle",
+  "status",
+  "type",
+];
 
 export function buildCohortsQueryBody({
   searchVals,
-  filters,
+  columnFilters,
 }: {
   searchVals: QueryDashboardCohortsArgs["searchVals"];
-  filters?: QueryDashboardCohortsArgs["filters"];
+  columnFilters?: QueryDashboardCohortsArgs["columnFilters"];
 }) {
-  const queryFilters = [];
+  const queryPredicates = [];
 
-  if (searchVals?.length) {
-    const fieldsToSearch = [
-      "tempNode.cohortId",
-      "tempNode.billed",
-      "tempNode.initialCohortDeliveryDate",
-      "tempNode.endUsers",
-      "tempNode.pmUsers",
-      "tempNode.projectTitle",
-      "tempNode.projectSubtitle",
-      "tempNode.status",
-      "tempNode.type",
-    ];
-    const searchFilters = fieldsToSearch
-      .map((field) => `${field} =~ '(?i).*(${searchVals.join("|")}).*'`)
-      .join(" OR ");
-    queryFilters.push(searchFilters);
-  }
+  const searchPredicates = buildCypherPredicatesFromSearchVals({
+    searchVals,
+    fieldsToSearch: FIELDS_TO_SEARCH,
+  });
+  if (searchPredicates) queryPredicates.push(searchPredicates);
 
-  if (filters) {
-    const billedFilterObj = filters?.find(
-      (filter) => filter.field === "billed"
-    );
-    if (billedFilterObj) {
-      const billedFilter = buildCypherBooleanFilter({
-        booleanVar: "tempNode.billed",
-        filter: JSON.parse(billedFilterObj.filter),
-        trueVal: "Yes",
-        falseVal: "No",
-      });
-      queryFilters.push(billedFilter);
-    }
+  const billedColFilter = buildCypherPredicateFromBooleanColFilter({
+    columnFilters,
+    colFilterField: "billed",
+    booleanVar: "tempNode.billed",
+    trueVal: "Yes",
+    falseVal: "No",
+  });
+  if (billedColFilter) queryPredicates.push(billedColFilter);
 
-    const initialCohortDeliveryDateFilterObj = filters?.find(
-      (filter) => filter.field === "initialCohortDeliveryDate"
-    );
-    if (initialCohortDeliveryDateFilterObj) {
-      const initialCohortDeliveryDateFilter = buildCypherDateFilter({
-        dateVar: "tempNode.initialCohortDeliveryDate",
-        filter: JSON.parse(initialCohortDeliveryDateFilterObj.filter),
-      });
-      queryFilters.push(initialCohortDeliveryDateFilter);
-    }
-  }
+  const initialCohortDeliveryDateColFilter =
+    buildCypherPredicateFromDateColFilter({
+      columnFilters,
+      colFilterField: "initialCohortDeliveryDate",
+      dateVar: "tempNode.initialCohortDeliveryDate",
+    });
+  if (initialCohortDeliveryDateColFilter)
+    queryPredicates.push(initialCohortDeliveryDateColFilter);
 
-  const filtersAsCypher = buildFinalCypherFilter({ queryFilters });
+  const cypherWhereClause = buildCypherWhereClause(queryPredicates);
 
   const cohortsQueryBody = `
     MATCH (c:Cohort)-[:HAS_COHORT_COMPLETE]->(cc: CohortComplete)
@@ -140,7 +133,7 @@ export function buildCohortsQueryBody({
         type: latestCC.type
       }
 
-    ${filtersAsCypher}
+    ${cypherWhereClause}
   `;
 
   return cohortsQueryBody;
@@ -164,7 +157,7 @@ export async function queryDashboardCohorts({
     RETURN
       resultz{.*, _total:total, _uniqueSampleCount: uniqueSampleCount}
 
-    ORDER BY ${getNeo4jCustomSort(sort)}
+    ORDER BY ${getCypherCustomOrderBy(sort)}
     SKIP ${offset}
     LIMIT ${limit}
   `;

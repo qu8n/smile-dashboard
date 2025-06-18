@@ -1381,14 +1381,14 @@ export type DashboardPatient = {
   totalSampleCount?: Maybe<Scalars["Int"]>;
 };
 
+export type DashboardRecordColumnFilter = {
+  field: Scalars["String"];
+  filter: Scalars["String"];
+};
+
 export type DashboardRecordContext = {
   fieldName?: InputMaybe<Scalars["String"]>;
   values: Array<Scalars["String"]>;
-};
-
-export type DashboardRecordFilter = {
-  field: Scalars["String"];
-  filter: Scalars["String"];
 };
 
 export type DashboardRecordSort = {
@@ -4164,7 +4164,7 @@ export type QueryCohortsConnectionArgs = {
 };
 
 export type QueryDashboardCohortsArgs = {
-  filters?: InputMaybe<Array<DashboardRecordFilter>>;
+  columnFilters?: InputMaybe<Array<DashboardRecordColumnFilter>>;
   limit: Scalars["Int"];
   offset: Scalars["Int"];
   searchVals?: InputMaybe<Array<Scalars["String"]>>;
@@ -4172,7 +4172,7 @@ export type QueryDashboardCohortsArgs = {
 };
 
 export type QueryDashboardPatientsArgs = {
-  filters?: InputMaybe<Array<DashboardRecordFilter>>;
+  columnFilters?: InputMaybe<Array<DashboardRecordColumnFilter>>;
   limit: Scalars["Int"];
   offset: Scalars["Int"];
   searchVals?: InputMaybe<Array<Scalars["String"]>>;
@@ -4180,7 +4180,7 @@ export type QueryDashboardPatientsArgs = {
 };
 
 export type QueryDashboardRequestsArgs = {
-  filters?: InputMaybe<Array<DashboardRecordFilter>>;
+  columnFilters?: InputMaybe<Array<DashboardRecordColumnFilter>>;
   limit: Scalars["Int"];
   offset: Scalars["Int"];
   searchVals?: InputMaybe<Array<Scalars["String"]>>;
@@ -4188,8 +4188,8 @@ export type QueryDashboardRequestsArgs = {
 };
 
 export type QueryDashboardSamplesArgs = {
+  columnFilters?: InputMaybe<Array<DashboardRecordColumnFilter>>;
   contexts?: InputMaybe<Array<InputMaybe<DashboardRecordContext>>>;
-  filters?: InputMaybe<Array<DashboardRecordFilter>>;
   limit: Scalars["Int"];
   offset: Scalars["Int"];
   searchVals?: InputMaybe<Array<Scalars["String"]>>;
@@ -10999,7 +10999,9 @@ export type UpdateTemposMutationResponse = {
 
 export type DashboardRequestsQueryVariables = Exact<{
   searchVals?: InputMaybe<Array<Scalars["String"]> | Scalars["String"]>;
-  filters?: InputMaybe<Array<DashboardRecordFilter> | DashboardRecordFilter>;
+  columnFilters?: InputMaybe<
+    Array<DashboardRecordColumnFilter> | DashboardRecordColumnFilter
+  >;
   sort: DashboardRecordSort;
   limit: Scalars["Int"];
   offset: Scalars["Int"];
@@ -11041,7 +11043,9 @@ export type DashboardRequestsQuery = {
 
 export type DashboardPatientsQueryVariables = Exact<{
   searchVals?: InputMaybe<Array<Scalars["String"]> | Scalars["String"]>;
-  filters?: InputMaybe<Array<DashboardRecordFilter> | DashboardRecordFilter>;
+  columnFilters?: InputMaybe<
+    Array<DashboardRecordColumnFilter> | DashboardRecordColumnFilter
+  >;
   sort: DashboardRecordSort;
   limit: Scalars["Int"];
   offset: Scalars["Int"];
@@ -11065,7 +11069,9 @@ export type DashboardPatientsQuery = {
 
 export type DashboardCohortsQueryVariables = Exact<{
   searchVals?: InputMaybe<Array<Scalars["String"]> | Scalars["String"]>;
-  filters?: InputMaybe<Array<DashboardRecordFilter> | DashboardRecordFilter>;
+  columnFilters?: InputMaybe<
+    Array<DashboardRecordColumnFilter> | DashboardRecordColumnFilter
+  >;
   sort: DashboardRecordSort;
   limit: Scalars["Int"];
   offset: Scalars["Int"];
@@ -11097,7 +11103,9 @@ export type DashboardSamplesQueryVariables = Exact<{
     | InputMaybe<DashboardRecordContext>
   >;
   sort: DashboardRecordSort;
-  filters?: InputMaybe<Array<DashboardRecordFilter> | DashboardRecordFilter>;
+  columnFilters?: InputMaybe<
+    Array<DashboardRecordColumnFilter> | DashboardRecordColumnFilter
+  >;
   limit: Scalars["Int"];
   offset: Scalars["Int"];
 }>;
@@ -11417,14 +11425,14 @@ export const RequestPartsFragmentDoc = gql`
 export const DashboardRequestsDocument = gql`
   query DashboardRequests(
     $searchVals: [String!]
-    $filters: [DashboardRecordFilter!]
+    $columnFilters: [DashboardRecordColumnFilter!]
     $sort: DashboardRecordSort!
     $limit: Int!
     $offset: Int!
   ) {
     dashboardRequests(
       searchVals: $searchVals
-      filters: $filters
+      columnFilters: $columnFilters
       sort: $sort
       limit: $limit
       offset: $offset
@@ -11465,14 +11473,14 @@ export type DashboardRequestsQueryResult = Apollo.QueryResult<
 export const DashboardPatientsDocument = gql`
   query DashboardPatients(
     $searchVals: [String!]
-    $filters: [DashboardRecordFilter!]
+    $columnFilters: [DashboardRecordColumnFilter!]
     $sort: DashboardRecordSort!
     $limit: Int!
     $offset: Int!
   ) {
     dashboardPatients(
       searchVals: $searchVals
-      filters: $filters
+      columnFilters: $columnFilters
       sort: $sort
       limit: $limit
       offset: $offset
@@ -11496,14 +11504,14 @@ export type DashboardPatientsQueryResult = Apollo.QueryResult<
 export const DashboardCohortsDocument = gql`
   query DashboardCohorts(
     $searchVals: [String!]
-    $filters: [DashboardRecordFilter!]
+    $columnFilters: [DashboardRecordColumnFilter!]
     $sort: DashboardRecordSort!
     $limit: Int!
     $offset: Int!
   ) {
     dashboardCohorts(
       searchVals: $searchVals
-      filters: $filters
+      columnFilters: $columnFilters
       sort: $sort
       limit: $limit
       offset: $offset
@@ -11532,7 +11540,7 @@ export const DashboardSamplesDocument = gql`
     $searchVals: [String!]
     $contexts: [DashboardRecordContext]
     $sort: DashboardRecordSort!
-    $filters: [DashboardRecordFilter!]
+    $columnFilters: [DashboardRecordColumnFilter!]
     $limit: Int!
     $offset: Int!
   ) {
@@ -11540,7 +11548,7 @@ export const DashboardSamplesDocument = gql`
       searchVals: $searchVals
       contexts: $contexts
       sort: $sort
-      filters: $filters
+      columnFilters: $columnFilters
       limit: $limit
       offset: $offset
     ) {

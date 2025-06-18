@@ -1,6 +1,5 @@
 import {
   AgGridSortDirection,
-  DashboardRecordFilter,
   DashboardRecordSort,
   DashboardSamplesQueryVariables,
   QueryDashboardSamplesArgs,
@@ -20,6 +19,7 @@ import {
   SampleChange,
   defaultColDef,
   formatDate,
+  getColumnFilters,
   isValidCostCenter,
 } from "../shared/helpers";
 import { AgGridReact } from "ag-grid-react";
@@ -110,24 +110,11 @@ export default function SamplesList({
     ({ userSearchVal, sampleContexts }) => {
       return {
         getRows: async (params: IServerSideGetRowsParams) => {
-          let filters: DashboardRecordFilter[] | undefined;
-          const filterModel = params.request.filterModel;
-          if (filterModel && Object.keys(filterModel).length > 0) {
-            filters = Object.entries(filterModel).map(([key, value]) => ({
-              field: key,
-              // Flexibly handle AG Grid's `any` type for filter settings by JSON.parse() this string value,
-              // then check the field name before consuming it at the GraphQL server (see https://stackoverflow.com/a/45601881)
-              filter: JSON.stringify(value),
-            }));
-          } else {
-            filters = undefined; // all filter values are selected
-          }
-
           const fetchInput = {
             searchVals: parseUserSearchVal(userSearchVal),
             contexts: sampleContexts,
             sort: params.request.sortModel[0] || DEFAULT_SORT,
-            filters,
+            columnFilters: getColumnFilters(params),
             offset: params.request.startRow ?? 0,
             limit: CACHE_BLOCK_SIZE,
           } as QueryDashboardSamplesArgs;

@@ -4,77 +4,62 @@ import {
 } from "../../generated/graphql";
 import { neo4jDriver } from "../../utils/servers";
 import {
-  buildCypherBooleanFilter,
-  buildFinalCypherFilter,
-  getNeo4jCustomSort,
-} from "../custom";
+  buildCypherPredicateFromBooleanColFilter,
+  buildCypherPredicatesFromSearchVals,
+  buildCypherWhereClause,
+  getCypherCustomOrderBy,
+} from "../../utils/cypher";
+
+const FIELDS_TO_SEARCH = [
+  "smilePatientId",
+  "cmoPatientId",
+  "dmpPatientId",
+  "cmoSampleIds",
+];
 
 export function buildPatientsQueryBody({
   searchVals,
-  filters,
+  columnFilters,
 }: {
   searchVals: QueryDashboardPatientsArgs["searchVals"];
-  filters?: QueryDashboardPatientsArgs["filters"];
+  columnFilters?: QueryDashboardPatientsArgs["columnFilters"];
 }) {
-  const queryFilters = [];
+  const queryPredicates = [];
 
-  if (searchVals?.length) {
-    const fieldsToSearch = [
-      "smilePatientId",
-      "cmoPatientId",
-      "dmpPatientId",
-      "cmoSampleIds",
-    ];
-    const searchFilters = fieldsToSearch
-      .map(
-        (field) => `tempNode.${field} =~ '(?i).*(${searchVals.join("|")}).*'`
-      )
-      .join(" OR ");
-    queryFilters.push(searchFilters);
-  }
+  const searchPredicates = buildCypherPredicatesFromSearchVals({
+    searchVals,
+    fieldsToSearch: FIELDS_TO_SEARCH,
+  });
+  if (searchPredicates) queryPredicates.push(searchPredicates);
 
-  if (filters) {
-    const consentPartAFilterObj = filters?.find(
-      (filter) => filter.field === "consentPartA"
-    );
-    if (consentPartAFilterObj) {
-      const consentPartAFilter = buildCypherBooleanFilter({
-        booleanVar: "tempNode.consentPartA",
-        filter: JSON.parse(consentPartAFilterObj.filter),
-        trueVal: "YES",
-        falseVal: "NO",
-      });
-      queryFilters.push(consentPartAFilter);
-    }
+  const consentPartAColFilter = buildCypherPredicateFromBooleanColFilter({
+    columnFilters,
+    colFilterField: "consentPartA",
+    booleanVar: "tempNode.consentPartA",
+    trueVal: "YES",
+    falseVal: "NO",
+  });
+  if (consentPartAColFilter) queryPredicates.push(consentPartAColFilter);
 
-    const consentPartCFilterObj = filters?.find(
-      (filter) => filter.field === "consentPartC"
-    );
-    if (consentPartCFilterObj) {
-      const consentPartCFilter = buildCypherBooleanFilter({
-        booleanVar: "tempNode.consentPartC",
-        filter: JSON.parse(consentPartCFilterObj.filter),
-        trueVal: "YES",
-        falseVal: "NO",
-      });
-      queryFilters.push(consentPartCFilter);
-    }
+  const consentPartCColFilter = buildCypherPredicateFromBooleanColFilter({
+    columnFilters,
+    colFilterField: "consentPartC",
+    booleanVar: "tempNode.consentPartC",
+    trueVal: "YES",
+    falseVal: "NO",
+  });
+  if (consentPartCColFilter) queryPredicates.push(consentPartCColFilter);
 
-    const inDbGapFilterObj = filters?.find(
-      (filter) => filter.field === "inDbGap"
-    );
-    if (inDbGapFilterObj) {
-      const inDbGapFilter = buildCypherBooleanFilter({
-        booleanVar: "tempNode.inDbGap",
-        filter: JSON.parse(inDbGapFilterObj.filter),
-        trueVal: true,
-        falseVal: false,
-      });
-      queryFilters.push(inDbGapFilter);
-    }
-  }
+  const inDbGapColFilter = buildCypherPredicateFromBooleanColFilter({
+    columnFilters,
+    colFilterField: "inDbGap",
+    booleanVar: "tempNode.inDbGap",
+    trueVal: true,
+    falseVal: false,
+  });
+  if (inDbGapColFilter) queryPredicates.push(inDbGapColFilter);
 
-  const filtersAsCypher = buildFinalCypherFilter({ queryFilters });
+  const cypherWhereClause = buildCypherWhereClause(queryPredicates);
 
   const patientsQueryBody = `
     MATCH (p:Patient)
@@ -150,7 +135,7 @@ export function buildPatientsQueryBody({
         importDate: importDate
       }
 
-    ${filtersAsCypher}
+    ${cypherWhereClause}
   `;
 
   return patientsQueryBody;
@@ -174,7 +159,7 @@ export async function queryDashboardPatients({
 
     RETURN
       resultz{.*, _total: total}
-    ORDER BY ${getNeo4jCustomSort(sort)}
+    ORDER BY ${getCypherCustomOrderBy(sort)}
     SKIP ${offset}
     LIMIT ${limit}
   `;

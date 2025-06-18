@@ -17,8 +17,10 @@ const GENERIC_TYPEDEFS = gql`
     sort: AgGridSortDirection!
   }
 
-  input DashboardRecordFilter {
+  input DashboardRecordColumnFilter {
+    # The field to filter on, e.g. "smileSampleId", "cmoPatientId", etc.
     field: String!
+    # Can be a single value or an array of values to filter on. Comes from AG Grid's filter model object
     filter: String!
   }
 `;
@@ -166,7 +168,7 @@ const QUERY_TYPEDEFS = gql`
   type Query {
     dashboardRequests(
       searchVals: [String!]
-      filters: [DashboardRecordFilter!]
+      columnFilters: [DashboardRecordColumnFilter!]
       sort: DashboardRecordSort!
       limit: Int!
       offset: Int!
@@ -174,7 +176,7 @@ const QUERY_TYPEDEFS = gql`
 
     dashboardPatients(
       searchVals: [String!]
-      filters: [DashboardRecordFilter!]
+      columnFilters: [DashboardRecordColumnFilter!]
       sort: DashboardRecordSort!
       limit: Int!
       offset: Int!
@@ -182,7 +184,7 @@ const QUERY_TYPEDEFS = gql`
 
     dashboardCohorts(
       searchVals: [String!]
-      filters: [DashboardRecordFilter!]
+      columnFilters: [DashboardRecordColumnFilter!]
       sort: DashboardRecordSort!
       limit: Int!
       offset: Int!
@@ -191,7 +193,7 @@ const QUERY_TYPEDEFS = gql`
     dashboardSamples(
       searchVals: [String!]
       contexts: [DashboardRecordContext]
-      filters: [DashboardRecordFilter!]
+      columnFilters: [DashboardRecordColumnFilter!]
       sort: DashboardRecordSort!
       limit: Int!
       offset: Int!
