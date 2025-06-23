@@ -325,10 +325,6 @@ function LoadingIcon() {
   );
 }
 
-const ONCOTREE_CODE_NA_TOOLTIP =
-  "This code might have been remapped (renamed) between different versions of the Oncotree API. " +
-  "For remapping details, visit the docs at https://oncotree.mskcc.org/#/home?tab=mapping";
-
 export const sampleColDefs: ColDef<DashboardSample>[] = [
   {
     field: "primaryId",
@@ -494,11 +490,6 @@ export const sampleColDefs: ColDef<DashboardSample>[] = [
         )}
       </>
     ),
-    tooltipValueGetter: (params: ITooltipParams) => {
-      if (params.value === "N/A") {
-        return ONCOTREE_CODE_NA_TOOLTIP;
-      }
-    },
     sortable: false,
   },
   {
@@ -512,11 +503,6 @@ export const sampleColDefs: ColDef<DashboardSample>[] = [
         )}
       </>
     ),
-    tooltipValueGetter: (params: ITooltipParams) => {
-      if (params.value === "N/A") {
-        return ONCOTREE_CODE_NA_TOOLTIP;
-      }
-    },
     sortable: false,
   },
   {
@@ -674,7 +660,7 @@ const toolTipIcon =
 
 function setupEditableSampleFields(
   samplesColDefs: ColDef[],
-  editableFieldsList: String[]
+  editableFieldsList: Set<string>
 ) {
   samplesColDefs.forEach((colDef) => {
     const newClassRule = {
@@ -691,7 +677,7 @@ function setupEditableSampleFields(
       cursorNotAllowed: (params: CellClassParams) => {
         return (
           params.data?.sampleCategory === "clinical" ||
-          !editableFieldsList.includes(params.colDef.field!)
+          !editableFieldsList.has(params.colDef.field!)
         );
       },
     };
@@ -731,14 +717,14 @@ function setupEditableSampleFields(
     colDef.editable = (params) => {
       return (
         params.data?.sampleCategory !== "clinical" &&
-        editableFieldsList.includes(params.colDef.field!) &&
+        editableFieldsList.has(params.colDef.field!) &&
         params.data?.revisable === true
       );
     };
 
     if (!("headerComponentParams" in colDef)) {
       colDef.headerComponentParams = (params: IHeaderParams) => {
-        if (!editableFieldsList.includes(params.column.getColDef().field!))
+        if (!editableFieldsList.has(params.column.getColDef().field!))
           return createCustomHeader(lockIcon);
       };
     }
@@ -1110,15 +1096,7 @@ export const accessSampleColDefs: ColDef<DashboardSample>[] = [
 export const readOnlyWesSampleColDefs = _.cloneDeep(wesSampleColDefs);
 export const readOnlyAccessSampleColDefs = _.cloneDeep(accessSampleColDefs);
 
-export const defaultColDef: ColDef = {
-  sortable: true,
-  resizable: true,
-  editable: false,
-  headerComponentParams: createCustomHeader(lockIcon),
-  valueFormatter: (params) => (params.value === "null" ? "" : params.value),
-};
-
-const editableSampleFields = [
+const editableSampleFields = new Set([
   "cmoPatientId",
   "investigatorSampleId",
   "sampleType",
@@ -1135,14 +1113,18 @@ const editableSampleFields = [
   "custodianInformation",
   "accessLevel",
   "dbGapStudy",
-];
+]);
 
-const editableWesSampleFields = [
+const editableWesSampleFields = new Set([
   "billed",
   "costCenter",
   "custodianInformation",
   "accessLevel",
-];
+]);
+
+const allEditableFields = new Set(
+  Array.from(editableSampleFields).concat(Array.from(editableWesSampleFields))
+);
 
 setupEditableSampleFields(sampleColDefs, editableSampleFields);
 setupEditableSampleFields(wesSampleColDefs, editableWesSampleFields);
@@ -1155,6 +1137,38 @@ export const combinedSampleColDefs = _.uniqBy(
   ],
   "field"
 );
+
+function getTooltipValue(params: ITooltipParams) {
+  if (!params.colDef || !("field" in params.colDef)) return undefined;
+  const field = params.colDef.field;
+  if (
+    (field === "cancerType" || field === "cancerTypeDetailed") &&
+    params.value === "N/A"
+  ) {
+    return (
+      "This code might have changed between different versions of the Oncotree API. " +
+      "For more details, visit oncotree.mskcc.org/mapping"
+    );
+  }
+  if (
+    allEditableFields.has(field!) &&
+    params.data?.sampleCategory === "clinical"
+  ) {
+    return "Clinical samples are not editable";
+  }
+  if (!allEditableFields.has(field!)) {
+    return "This column is read-only";
+  }
+}
+
+export const defaultColDef: ColDef = {
+  sortable: true,
+  resizable: true,
+  editable: false,
+  headerComponentParams: createCustomHeader(lockIcon),
+  valueFormatter: (params) => (params.value === "null" ? "" : params.value),
+  tooltipValueGetter: (params: ITooltipParams) => getTooltipValue(params),
+};
 
 export function formatDate(date: moment.MomentInput) {
   return date ? moment(date).format("YYYY-MM-DD") : null;

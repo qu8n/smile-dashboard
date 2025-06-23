@@ -56,6 +56,11 @@ $standardMargin: 10px;
   cursor: not-allowed;
 }
 
+/* Prevent overlapping with the 🚫 icon */
+.ag-tooltip {
+  transform: translate(15px, -40px);
+}
+
 .costCenter-validation-error {
   color: #fa0400 !important;
 }

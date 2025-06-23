@@ -442,6 +442,7 @@ export default function SamplesList({
               readOnlyEdit={true}
               tooltipShowDelay={0}
               tooltipHideDelay={60000}
+              tooltipMouseTrack={true}
             />
           </div>
         )}
