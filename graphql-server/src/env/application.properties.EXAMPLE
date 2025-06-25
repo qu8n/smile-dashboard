@@ -23,11 +23,6 @@ neo4j_graphql_uri=
 [smile]
 smile_sample_endpoint=
 
-[crdb]
-oracle_user=
-oracle_password=
-oracle_connect_string=
-
 [auth]
 keycloak_client_id=
 keycloak_client_secret=
@@ -43,3 +38,8 @@ web_cert_pem=
 
 [oncotree]
 oncotree_api=
+
+[databricks]
+databricks_server_hostname=
+databricks_http_path=
+databricks_token=

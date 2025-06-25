@@ -24,10 +24,6 @@ export const props = {
   pub_tempo_sample_billing: properties.get("topics.pub_tempo_sample_billing"),
   pub_dbgap_sample_update: properties.get("topics.pub_dbgap_sample_update"),
 
-  oracle_user: properties.get("crdb.oracle_user"),
-  oracle_password: properties.get("crdb.oracle_password"),
-  oracle_connect_string: properties.get("crdb.oracle_connect_string"),
-
   keycloak_client_id: properties.get("auth.keycloak_client_id"),
   keycloak_client_secret: properties.get("auth.keycloak_client_secret"),
   keycloak_server_uri: properties.get("auth.keycloak_server_uri"),
@@ -39,6 +35,12 @@ export const props = {
   web_cert_pem: properties.get("web.web_cert_pem"),
 
   oncotree_api: properties.get("oncotree.oncotree_api"),
+
+  databricks_server_hostname: properties.get(
+    "databricks.databricks_server_hostname"
+  ),
+  databricks_http_path: properties.get("databricks.databricks_http_path"),
+  databricks_token: properties.get("databricks.databricks_token"),
 };
 
 export const REACT_APP_EXPRESS_SERVER_ORIGIN =

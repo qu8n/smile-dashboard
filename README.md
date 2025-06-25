@@ -24,22 +24,6 @@ If running into build issues, try purging existing contents from all `/node_modu
 rm -rf ./node_modules frontend/node_modules graphql-server/node_modules
 ```
 
-### Download the Oracle Instant Client
-
-> **Note:** Skip this step if you are using a MacBook machine with an M1 chip or newer. Visit [this link](https://www.oracle.com/database/technologies/instant-client/downloads.html) for the latest supported systems.
-
-The Oracle Instant Client allows us to connect to an Oracle database (CRDB) for MRN-CMO-DMP data. This enables the searching of PHI data on the Patients page of the dashboard.
-
-Download the Oracle Instant Client from [here](https://www.oracle.com/database/technologies/instant-client/downloads.html).
-
-Select the version corresponding to your operating system and download the latest version's `Basic Package` zip file.
-
-Unzip and copy the entire directory to `/graphql-server/opt/oracle` or your preferred location.
-
-#### Why can't we just use the Nodejs' `oracledb` package?
-
-By default, `node-oracledb` runs in [Thin mode (vs. Thick mode)](https://node-oracledb.readthedocs.io/en/latest/user_guide/appendix_a.html). The CRDB uses a password verifier type (`0x939`) that is not supported by Thin mode. Pairing the Oracle Instant Client with `node-oracledb` allows us enables Thick mode and allows us to connect to the CRDB.
-
 ### Dashboard Backend
 
 The backend for the dashboard is under `./graphql-server`.

@@ -5,6 +5,7 @@ import { configureApp } from "./middlewares/configureApp";
 import { configureSession } from "./middlewares/configureSession";
 import { configureLogging } from "./middlewares/configureLogging";
 import { configureRoutes } from "./routes";
+import { queryDatabricks } from "./utils/databricks";
 require("log-timestamp"); // adds a timestamp to every log statement
 
 async function main() {

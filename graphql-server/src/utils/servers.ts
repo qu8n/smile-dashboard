@@ -5,7 +5,7 @@ import { props } from "./constants";
 import { buildNeo4jDbSchema } from "../schemas/neo4j";
 import { buildCustomSchema } from "../schemas/custom";
 import { mergeSchemas } from "@graphql-tools/schema";
-import { buildOracleDbSchema } from "../schemas/oracle";
+import { buildDatabricksSchema } from "../schemas/databricks";
 import { ApolloServer } from "apollo-server-express";
 import {
   ApolloServerPluginDrainHttpServer,
@@ -48,9 +48,9 @@ export async function initializeApolloServer(
   console.info("Building, generating, and merging schemas...");
   const { neo4jDbSchema, ogm } = await buildNeo4jDbSchema();
   const customSchema = await buildCustomSchema(ogm);
-  const oracleDbSchema = await buildOracleDbSchema();
+  const databricksSchema = await buildDatabricksSchema();
   const mergedSchema = mergeSchemas({
-    schemas: [neo4jDbSchema, oracleDbSchema, customSchema],
+    schemas: [neo4jDbSchema, databricksSchema, customSchema],
   });
 
   const inMemoryCache = await initializeInMemoryCache();
