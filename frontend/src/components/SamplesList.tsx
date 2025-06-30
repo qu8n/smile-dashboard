@@ -29,7 +29,7 @@ import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import "ag-grid-enterprise";
 import {
-  CellValueChangedEvent,
+  CellEditRequestEvent,
   ColDef,
   IServerSideGetRowsParams,
 } from "ag-grid-community";
@@ -42,6 +42,7 @@ import { BreadCrumb } from "../shared/components/BreadCrumb";
 import { useParams } from "react-router-dom";
 import { DataName } from "../shared/types";
 import { parseUserSearchVal } from "../utils/parseSearchQueries";
+import { handleAgGridPaste } from "../utils/handleAgGridPaste";
 
 const POLLING_INTERVAL = 5000; // 5s
 const POLLING_PAUSE_AFTER_UPDATE = 12000; // 12s
@@ -153,7 +154,7 @@ export default function SamplesList({
 
   if (error) return <ErrorMessage error={error} />;
 
-  async function onCellValueChanged(params: CellValueChangedEvent) {
+  async function handleCellEditRequest(params: CellEditRequestEvent) {
     const primaryId = params.data.primaryId;
     const fieldName = params.colDef.field!;
     const { oldValue, newValue, node: rowNode } = params;
@@ -162,12 +163,14 @@ export default function SamplesList({
     const noChangeInVal = rowNode.data[fieldName] === newValue;
     const noChangeInEmptyCell = !rowNode.data[fieldName] && !newValue;
     if (noChangeInVal || noChangeInEmptyCell) {
-      const updatedChanges = changes.filter(
-        (c) => !(c.primaryId === primaryId && c.fieldName === fieldName)
-      );
-      setChanges(updatedChanges);
-      if (updatedChanges.length === 0) setUnsavedChanges?.(false);
-      gridRef.current?.api?.refreshCells({ rowNodes: [rowNode] });
+      setChanges((changes) => {
+        const updatedChanges = changes.filter(
+          (c) => !(c.primaryId === primaryId && c.fieldName === fieldName)
+        );
+        if (updatedChanges.length === 0) setUnsavedChanges?.(false);
+        return updatedChanges;
+      });
+      gridRef.current?.api?.redrawRows({ rowNodes: [rowNode] });
       return;
     }
 
@@ -235,7 +238,7 @@ export default function SamplesList({
     }
 
     setUnsavedChanges?.(true);
-    gridRef.current?.api?.refreshCells({ rowNodes: [rowNode] });
+    gridRef.current?.api?.redrawRows({ rowNodes: [rowNode] });
   }
 
   async function handleDiscardChanges() {
@@ -407,45 +410,55 @@ export default function SamplesList({
       />
 
       <AutoSizer>
-        {({ width }) => (
-          <div
-            className={`ag-theme-alpine ${
-              hasParams ? styles.popupTableHeight : styles.tableHeight
-            }`}
-            style={{ width: width }}
-          >
-            <AgGridReact
-              ref={gridRef}
-              rowModelType="serverSide"
-              serverSideInfiniteScroll={true}
-              cacheBlockSize={CACHE_BLOCK_SIZE}
-              columnDefs={columnDefs}
-              defaultColDef={defaultColDef}
-              enableRangeSelection={true}
-              onGridReady={(params) => params.api.sizeColumnsToFit()}
-              onFirstDataRendered={(params) =>
-                params.columnApi.autoSizeAllColumns()
+        {({ width }) => {
+          return (
+            <div
+              className={`ag-theme-alpine ${
+                hasParams ? styles.popupTableHeight : styles.tableHeight
+              }`}
+              style={{ width: width }}
+              onPaste={(e) =>
+                handleAgGridPaste({
+                  e,
+                  gridRef,
+                  onCellEditRequest: handleCellEditRequest,
+                })
               }
-              onGridColumnsChanged={() => refreshData(userSearchVal)}
-              context={{
-                getChanges: () => changes,
-              }}
-              rowClassRules={{
-                unlocked: function (params) {
-                  return params.data?.revisable === true;
-                },
-                locked: function (params) {
-                  return params.data?.revisable === false;
-                },
-              }}
-              onCellEditRequest={onCellValueChanged}
-              readOnlyEdit={true}
-              tooltipShowDelay={0}
-              tooltipHideDelay={60000}
-              tooltipMouseTrack={true}
-            />
-          </div>
-        )}
+            >
+              <AgGridReact
+                ref={gridRef}
+                rowModelType="serverSide"
+                serverSideInfiniteScroll={true}
+                cacheBlockSize={CACHE_BLOCK_SIZE}
+                columnDefs={columnDefs}
+                defaultColDef={defaultColDef}
+                enableRangeSelection={true}
+                onGridReady={(params) => params.api.sizeColumnsToFit()}
+                onFirstDataRendered={(params) =>
+                  params.columnApi.autoSizeAllColumns()
+                }
+                onGridColumnsChanged={() => refreshData(userSearchVal)}
+                context={{
+                  getChanges: () => changes,
+                }}
+                rowClassRules={{
+                  unlocked: function (params) {
+                    return params.data?.revisable === true;
+                  },
+                  locked: function (params) {
+                    return params.data?.revisable === false;
+                  },
+                }}
+                onCellEditRequest={handleCellEditRequest}
+                readOnlyEdit={true}
+                tooltipShowDelay={0}
+                tooltipHideDelay={60000}
+                tooltipMouseTrack={true}
+                suppressClipboardPaste={true}
+              />
+            </div>
+          );
+        }}
       </AutoSizer>
     </>
   );
