@@ -50,6 +50,7 @@ const FIELDS_TO_SEARCH = [
   "historicalCmoSampleNames",
   "sampleCategory",
   "dbGapStudy",
+  "cfDNA2dBarcode",
 ];
 
 export function buildSamplesQueryBody({
