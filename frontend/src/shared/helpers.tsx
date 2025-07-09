@@ -383,19 +383,23 @@ export const sampleColDefs: ColDef<DashboardSample>[] = [
     field: "cmoPatientId",
     headerName: "CMO Patient ID",
     cellRenderer: (params: any) => {
-      return (
-        <>
-          {params.value}
-          {"   "}
-          <Link
-            to={`/patients/${params.value}`}
-            style={{ color: "black", textDecoration: "none" }}
-            target="_blank"
-          >
-            <LaunchIcon style={{ height: "16px", width: "16px" }} />
-          </Link>
-        </>
-      );
+      if (params.value) {
+        return (
+          <>
+            {params.value}
+            {"   "}
+            <Link
+              to={`/patients/${params.value}`}
+              style={{ color: "black", textDecoration: "none" }}
+              target="_blank"
+            >
+              <LaunchIcon style={{ height: "16px", width: "16px" }} />
+            </Link>
+          </>
+        );
+      } else {
+        return <></>;
+      }
     },
   },
   {
