@@ -182,9 +182,12 @@ export function buildSamplesQueryBody({
       latestSm[0] AS latestSm,
       COLLECT {
       	MATCH (s)-[:HAS_METADATA]->(sm:SampleMetadata)
+        WITH 
+          sm.cmoSampleName as cmoSampleName,
+          apoc.coll.sort(COLLECT(sm.importDate)) as orderedImportDates
       	RETURN ({
-      		cmoSampleName: sm.cmoSampleName,
-      		importDate: sm.importDate
+      		cmoSampleName: cmoSampleName,
+      		importDate: orderedImportDates[0]
       	})
       } AS sampleIdsList
 
