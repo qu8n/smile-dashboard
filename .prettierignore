@@ -30,7 +30,7 @@
 LICENSE
 packages/**/dist/**
 yarn.lock
-
+.env.example
 frontend/public/**
 generated/**
 *html

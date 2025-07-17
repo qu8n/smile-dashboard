@@ -5,7 +5,6 @@ import Spinner from "react-spinkit";
 import { DataName } from "../types";
 import { Dispatch, SetStateAction } from "react";
 import { CustomTooltip } from "./CustomToolTip";
-import { PatientIdsTriplet } from "../../generated/graphql";
 import { ColDef } from "ag-grid-community";
 import InfoIcon from "@material-ui/icons/InfoOutlined";
 
@@ -29,7 +28,6 @@ interface IToolbarProps {
   dataName: DataName;
   userSearchVal: string;
   setUserSearchVal: Dispatch<SetStateAction<string>>;
-  setCustomSearchStates?: Dispatch<SetStateAction<PatientIdsTriplet[]>>;
   onSearch: (userSearchVal: string) => void;
   matchingResultsCount: string;
   onDownload: () => void;
@@ -46,7 +44,6 @@ export function Toolbar({
   dataName,
   userSearchVal,
   setUserSearchVal,
-  setCustomSearchStates,
   onSearch,
   matchingResultsCount,
   onDownload,
@@ -87,10 +84,7 @@ export function Toolbar({
           onInput={(event) => {
             const userSearchVal = event.currentTarget.value;
             setUserSearchVal(userSearchVal);
-            if (userSearchVal === "") {
-              setCustomSearchStates && setCustomSearchStates([]);
-              onSearch("");
-            }
+            if (userSearchVal === "") onSearch("");
           }}
         />
       </Col>

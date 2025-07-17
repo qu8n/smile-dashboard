@@ -41,6 +41,12 @@ export const props = {
   ),
   databricks_http_path: properties.get("databricks.databricks_http_path"),
   databricks_token: properties.get("databricks.databricks_token"),
+  databricks_phi_id_mapping_table: properties.get(
+    "databricks.databricks_phi_id_mapping_table"
+  ),
+  databricks_seq_dates_by_patient_table: properties.get(
+    "databricks.databricks_seq_dates_by_patient_table"
+  ),
 };
 
 export const REACT_APP_EXPRESS_SERVER_ORIGIN =

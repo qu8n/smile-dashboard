@@ -43,3 +43,5 @@ oncotree_api=
 databricks_server_hostname=
 databricks_http_path=
 databricks_token=
+databricks_phi_id_mapping_table=
+databricks_seq_dates_by_patient_table=

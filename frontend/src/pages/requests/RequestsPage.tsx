@@ -44,10 +44,7 @@ export default function RequestsPage() {
         setShowDownloadModal={setShowDownloadModal}
         handleDownload={(recordCount: number) => {
           if (recordCount && recordCount > MAX_ROWS_EXPORT) {
-            setAlertModal({
-              show: true,
-              ...MAX_ROWS_EXPORT_WARNING,
-            });
+            setAlertModal({ show: true, ...MAX_ROWS_EXPORT_WARNING });
           } else {
             setShowDownloadModal(true);
           }

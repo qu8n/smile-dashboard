@@ -1,9 +1,7 @@
-import { REACT_APP_EXPRESS_SERVER_ORIGIN } from "../shared/constants";
-
 export async function getUserEmail() {
   try {
     const response = await fetch(
-      `${REACT_APP_EXPRESS_SERVER_ORIGIN}/auth/get-user-email`,
+      `${process.env.REACT_APP_EXPRESS_SERVER_ORIGIN}/auth/get-user-email`,
       {
         credentials: "include",
       }

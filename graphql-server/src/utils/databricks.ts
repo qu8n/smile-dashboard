@@ -19,17 +19,12 @@ const connectOptions = {
 const logger = new DBSQLLogger({ level: LogLevel.error });
 const client = new DBSQLClient({ logger: logger });
 
-export async function queryDatabricks({
-  query,
-  queryOptions,
-}: {
-  query: string;
-  queryOptions?: ExecuteStatementOptions;
-}) {
+export async function queryDatabricks<T>(query: string): Promise<Array<T>> {
   try {
     await client.connect(connectOptions);
     const session = await client.openSession();
 
+    const queryOptions = { runAsync: true } as ExecuteStatementOptions;
     const queryOperation = await session.executeStatement(query, queryOptions);
     const result = await queryOperation.fetchAll();
 
@@ -37,11 +32,12 @@ export async function queryDatabricks({
     await session.close();
     await client.close();
 
-    return result;
+    return result as Array<T>;
   } catch (error) {
     await client.close();
     if (error instanceof Error) {
       throw new Error("Error executing query on Databricks: " + error.message);
     }
+    return [];
   }
 }

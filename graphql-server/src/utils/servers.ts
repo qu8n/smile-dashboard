@@ -5,7 +5,6 @@ import { props } from "./constants";
 import { buildNeo4jDbSchema } from "../schemas/neo4j";
 import { buildCustomSchema } from "../schemas/custom";
 import { mergeSchemas } from "@graphql-tools/schema";
-import { buildDatabricksSchema } from "../schemas/databricks";
 import { ApolloServer } from "apollo-server-express";
 import {
   ApolloServerPluginDrainHttpServer,
@@ -29,8 +28,14 @@ export function initializeHttpsServer(app: Express) {
 
 export interface ApolloServerContext {
   req: {
-    user: any;
-    isAuthenticated: boolean;
+    user: {
+      email: string;
+      sub: string; // Keycloak user ID
+      groups: Array<string>; // Keycloak user groups
+    };
+    isAuthenticated: () => boolean;
+    logOut: (error: any) => void;
+    app: Express;
   };
   inMemoryCache: NodeCache;
 }
@@ -48,9 +53,8 @@ export async function initializeApolloServer(
   console.info("Building, generating, and merging schemas...");
   const { neo4jDbSchema, ogm } = await buildNeo4jDbSchema();
   const customSchema = await buildCustomSchema(ogm);
-  const databricksSchema = await buildDatabricksSchema();
   const mergedSchema = mergeSchemas({
-    schemas: [neo4jDbSchema, databricksSchema, customSchema],
+    schemas: [neo4jDbSchema, customSchema],
   });
 
   const inMemoryCache = await initializeInMemoryCache();
@@ -58,7 +62,7 @@ export async function initializeApolloServer(
   const apolloServer = new ApolloServer<ApolloServerContext>({
     schema: mergedSchema,
     cache: "bounded",
-    context: async ({ req }: { req: any }) => {
+    context: async ({ req }: { req: ApolloServerContext["req"] }) => {
       updateActiveUserSessions(req);
 
       return {

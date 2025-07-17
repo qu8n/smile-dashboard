@@ -5,7 +5,7 @@ import fs from "fs";
 import { props } from "../utils/constants";
 
 /**
- * Log only GetPatientIdsTriplets queries from logged in users
+ * Log only PHI queries from logged in users
  */
 export function configureLogging(app: Express) {
   const logDir = path.join(process.env.SMILE_DATA_HOME!, props.log_dir);
@@ -30,7 +30,11 @@ export function configureLogging(app: Express) {
       {
         stream: accessLogStream,
         skip: (req: any) => {
-          if (req.user && req.body.operationName === "GetPatientIdsTriplets") {
+          if (
+            req.user &&
+            req.body.operationName === "DashboardPatients" &&
+            req.body.variables.phiEnabled === true
+          ) {
             return false;
           }
           return true;

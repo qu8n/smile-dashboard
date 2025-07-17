@@ -26,6 +26,13 @@ export enum AgGridSortDirection {
   Desc = "desc",
 }
 
+export type AnchorSeqDateByPatientId = {
+  __typename?: "AnchorSeqDateByPatientId";
+  ANCHOR_SEQUENCING_DATE: Scalars["String"];
+  DMP_PATIENT_ID: Scalars["String"];
+  MRN: Scalars["String"];
+};
+
 export type BamComplete = {
   __typename?: "BamComplete";
   date: Scalars["String"];
@@ -1372,12 +1379,14 @@ export type DashboardCohort = {
 export type DashboardPatient = {
   __typename?: "DashboardPatient";
   _total?: Maybe<Scalars["Int"]>;
+  anchorSequencingDate?: Maybe<Scalars["String"]>;
   cmoPatientId?: Maybe<Scalars["String"]>;
   cmoSampleIds?: Maybe<Scalars["String"]>;
   consentPartA?: Maybe<Scalars["String"]>;
   consentPartC?: Maybe<Scalars["String"]>;
   dmpPatientId?: Maybe<Scalars["String"]>;
   inDbGap?: Maybe<Scalars["Boolean"]>;
+  mrn?: Maybe<Scalars["String"]>;
   smilePatientId: Scalars["String"];
   totalSampleCount?: Maybe<Scalars["Int"]>;
 };
@@ -2945,9 +2954,9 @@ export type PatientHasSampleSamplesUpdateFieldInput = {
 
 export type PatientIdsTriplet = {
   __typename?: "PatientIdsTriplet";
-  CMO_ID: Scalars["String"];
-  DMP_ID?: Maybe<Scalars["String"]>;
-  PT_MRN: Scalars["String"];
+  CMO_PATIENT_ID: Scalars["String"];
+  DMP_PATIENT_ID?: Maybe<Scalars["String"]>;
+  MRN: Scalars["String"];
 };
 
 export type PatientOptions = {
@@ -4083,7 +4092,6 @@ export type Query = {
   patientAliases: Array<PatientAlias>;
   patientAliasesAggregate: PatientAliasAggregateSelection;
   patientAliasesConnection: PatientAliasesConnection;
-  patientIdsTriplets?: Maybe<Array<Maybe<PatientIdsTriplet>>>;
   patients: Array<Patient>;
   patientsAggregate: PatientAggregateSelection;
   patientsConnection: PatientsConnection;
@@ -4176,6 +4184,7 @@ export type QueryDashboardPatientsArgs = {
   columnFilters?: InputMaybe<Array<DashboardRecordColumnFilter>>;
   limit: Scalars["Int"];
   offset: Scalars["Int"];
+  phiEnabled?: InputMaybe<Scalars["Boolean"]>;
   searchVals?: InputMaybe<Array<Scalars["String"]>>;
   sort: DashboardRecordSort;
 };
@@ -4243,10 +4252,6 @@ export type QueryPatientAliasesConnectionArgs = {
   first?: InputMaybe<Scalars["Int"]>;
   sort?: InputMaybe<Array<InputMaybe<PatientAliasSort>>>;
   where?: InputMaybe<PatientAliasWhere>;
-};
-
-export type QueryPatientIdsTripletsArgs = {
-  patientIds: Array<Scalars["String"]>;
 };
 
 export type QueryPatientsArgs = {
@@ -11050,6 +11055,7 @@ export type DashboardPatientsQueryVariables = Exact<{
   sort: DashboardRecordSort;
   limit: Scalars["Int"];
   offset: Scalars["Int"];
+  phiEnabled?: InputMaybe<Scalars["Boolean"]>;
 }>;
 
 export type DashboardPatientsQuery = {
@@ -11064,6 +11070,8 @@ export type DashboardPatientsQuery = {
     consentPartA?: string | null;
     consentPartC?: string | null;
     inDbGap?: boolean | null;
+    mrn?: string | null;
+    anchorSequencingDate?: string | null;
     _total?: number | null;
   }>;
 };
@@ -11318,20 +11326,6 @@ export type UpdateDashboardSamplesMutation = {
   } | null> | null;
 };
 
-export type GetPatientIdsTripletsQueryVariables = Exact<{
-  patientIds: Array<Scalars["String"]> | Scalars["String"];
-}>;
-
-export type GetPatientIdsTripletsQuery = {
-  __typename?: "Query";
-  patientIdsTriplets?: Array<{
-    __typename?: "PatientIdsTriplet";
-    CMO_ID: string;
-    DMP_ID?: string | null;
-    PT_MRN: string;
-  } | null> | null;
-};
-
 export const DashboardSamplePartsFragmentDoc = gql`
   fragment DashboardSampleParts on DashboardSample {
     smileSampleId
@@ -11529,6 +11523,7 @@ export const DashboardPatientsDocument = gql`
     $sort: DashboardRecordSort!
     $limit: Int!
     $offset: Int!
+    $phiEnabled: Boolean = false
   ) {
     dashboardPatients(
       searchVals: $searchVals
@@ -11536,6 +11531,7 @@ export const DashboardPatientsDocument = gql`
       sort: $sort
       limit: $limit
       offset: $offset
+      phiEnabled: $phiEnabled
     ) {
       smilePatientId
       cmoPatientId
@@ -11545,6 +11541,8 @@ export const DashboardPatientsDocument = gql`
       consentPartA
       consentPartC
       inDbGap
+      mrn
+      anchorSequencingDate
       _total
     }
   }
@@ -11567,6 +11565,7 @@ export const DashboardPatientsDocument = gql`
  *      sort: // value for 'sort'
  *      limit: // value for 'limit'
  *      offset: // value for 'offset'
+ *      phiEnabled: // value for 'phiEnabled'
  *   },
  * });
  */
@@ -11834,64 +11833,4 @@ export type UpdateDashboardSamplesMutationResult =
 export type UpdateDashboardSamplesMutationOptions = Apollo.BaseMutationOptions<
   UpdateDashboardSamplesMutation,
   UpdateDashboardSamplesMutationVariables
->;
-export const GetPatientIdsTripletsDocument = gql`
-  query GetPatientIdsTriplets($patientIds: [String!]!) {
-    patientIdsTriplets(patientIds: $patientIds) {
-      CMO_ID
-      DMP_ID
-      PT_MRN
-    }
-  }
-`;
-
-/**
- * __useGetPatientIdsTripletsQuery__
- *
- * To run a query within a React component, call `useGetPatientIdsTripletsQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetPatientIdsTripletsQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetPatientIdsTripletsQuery({
- *   variables: {
- *      patientIds: // value for 'patientIds'
- *   },
- * });
- */
-export function useGetPatientIdsTripletsQuery(
-  baseOptions: Apollo.QueryHookOptions<
-    GetPatientIdsTripletsQuery,
-    GetPatientIdsTripletsQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<
-    GetPatientIdsTripletsQuery,
-    GetPatientIdsTripletsQueryVariables
-  >(GetPatientIdsTripletsDocument, options);
-}
-export function useGetPatientIdsTripletsLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<
-    GetPatientIdsTripletsQuery,
-    GetPatientIdsTripletsQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<
-    GetPatientIdsTripletsQuery,
-    GetPatientIdsTripletsQueryVariables
-  >(GetPatientIdsTripletsDocument, options);
-}
-export type GetPatientIdsTripletsQueryHookResult = ReturnType<
-  typeof useGetPatientIdsTripletsQuery
->;
-export type GetPatientIdsTripletsLazyQueryHookResult = ReturnType<
-  typeof useGetPatientIdsTripletsLazyQuery
->;
-export type GetPatientIdsTripletsQueryResult = Apollo.QueryResult<
-  GetPatientIdsTripletsQuery,
-  GetPatientIdsTripletsQueryVariables
 >;

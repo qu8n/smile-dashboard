@@ -47,6 +47,7 @@ query DashboardPatients(
   $sort: DashboardRecordSort!
   $limit: Int!
   $offset: Int!
+  $phiEnabled: Boolean = false
 ) {
   dashboardPatients(
     searchVals: $searchVals
@@ -54,6 +55,7 @@ query DashboardPatients(
     sort: $sort
     limit: $limit
     offset: $offset
+    phiEnabled: $phiEnabled
   ) {
     smilePatientId
     cmoPatientId
@@ -63,6 +65,8 @@ query DashboardPatients(
     consentPartA
     consentPartC
     inDbGap
+    mrn
+    anchorSequencingDate
     _total
   }
 }
@@ -230,13 +234,5 @@ mutation UpdateDashboardSamples(
     ...DashboardSampleMetadataParts
     ...DashboardTempoParts
     ...DashboardDbGapParts
-  }
-}
-
-query GetPatientIdsTriplets($patientIds: [String!]!) {
-  patientIdsTriplets(patientIds: $patientIds) {
-    CMO_ID
-    DMP_ID
-    PT_MRN
   }
 }

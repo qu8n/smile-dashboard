@@ -141,7 +141,7 @@ function ErrorReportModal({
       });
 
       if (requestErrors.length > 0) {
-        requestErrors.forEach(([requestId, statusMapKey]) => {
+        requestErrors.forEach(([_, statusMapKey]) => {
           const statusItem = REQUEST_STATUS_MAP[statusMapKey];
           if (statusItem) {
             validationDataForAgGrid.push({
@@ -172,7 +172,6 @@ function ErrorReportModal({
 
     // for samples with tolerated import errors or warnings to display in the request validation report popup
     if (toleratedSampleErrors && toleratedSampleErrors?.length > 0) {
-      const result: Array<[string, keyof typeof SAMPLE_STATUS_MAP]> = [];
       toleratedSampleErrors.forEach((sample) => {
         if (sample?.validationStatus === false) {
           const primaryId = sample?.primaryId!;

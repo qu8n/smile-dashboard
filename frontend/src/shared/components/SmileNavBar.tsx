@@ -1,5 +1,4 @@
 import { Nav, NavLink } from "react-bootstrap";
-import { REACT_APP_EXPRESS_SERVER_ORIGIN } from "../constants";
 import { Dispatch, SetStateAction } from "react";
 
 export default function SmileNavBar({
@@ -10,7 +9,7 @@ export default function SmileNavBar({
   setUserEmail: Dispatch<SetStateAction<string | null>>;
 }) {
   function handleLogout() {
-    fetch(`${REACT_APP_EXPRESS_SERVER_ORIGIN}/auth/logout`, {
+    fetch(`${process.env.REACT_APP_EXPRESS_SERVER_ORIGIN}/auth/logout`, {
       method: "POST",
       credentials: "include",
       mode: "no-cors",

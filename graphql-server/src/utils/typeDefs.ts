@@ -141,6 +141,8 @@ const QUERY_RESULT_TYPEDEFS = gql`
     consentPartA: String
     consentPartC: String
     inDbGap: Boolean
+    mrn: String
+    anchorSequencingDate: String
     _total: Int
   }
 
@@ -162,6 +164,18 @@ const QUERY_RESULT_TYPEDEFS = gql`
   type DashboardSample {
     ${SAMPLE_FIELDS}
   }
+
+  type PatientIdsTriplet {
+    CMO_PATIENT_ID: String!
+    DMP_PATIENT_ID: String
+    MRN: String!
+  }
+
+  type AnchorSeqDateByPatientId {
+    MRN: String!
+    DMP_PATIENT_ID: String!
+    ANCHOR_SEQUENCING_DATE: String!
+  }
 `;
 
 const QUERY_TYPEDEFS = gql`
@@ -180,6 +194,7 @@ const QUERY_TYPEDEFS = gql`
       sort: DashboardRecordSort!
       limit: Int!
       offset: Int!
+      phiEnabled: Boolean
     ): [DashboardPatient!]!
 
     dashboardCohorts(

@@ -12,7 +12,11 @@ import { connect, headers, StringCodec } from "nats";
 import { OGM } from "@neo4j/graphql-ogm";
 import {
   buildPatientsQueryBody,
+  buildPatientsQueryFinal,
+  mapPhiToPatientsData,
+  queryAnchorSeqDatesByPatientId,
   queryDashboardPatients,
+  queryPatientIdsTriplets,
 } from "./queries/patients";
 import {
   buildCohortsQueryBody,
@@ -37,8 +41,83 @@ import {
 } from "./queries/requests";
 import { typeDefs } from "../utils/typeDefs";
 const request = require("request-promise-native");
+import { AuthenticationError, ForbiddenError } from "apollo-server-express";
+import { applyMiddleware } from "graphql-middleware";
+import { IMiddlewareResolver } from "graphql-middleware/dist/types";
+
+const KEYCLOAK_PHI_ACCESS_GROUP = "mrn-search";
+
+type AuthMiddleware = {
+  Query: {
+    dashboardPatients: IMiddlewareResolver;
+  };
+};
+
+/**
+ * Search values are required for PHI searching to restrict PHI data to specific patients searched
+ * for by users
+ */
+function canSearchPhiData({
+  phiEnabled,
+  searchVals,
+}: {
+  phiEnabled?: boolean | null;
+  searchVals?: string[] | null;
+}) {
+  return phiEnabled && Array.isArray(searchVals) && searchVals.length > 0;
+}
 
 export async function buildCustomSchema(ogm: OGM) {
+  const authenticationMiddleware: AuthMiddleware = {
+    Query: {
+      dashboardPatients: async (
+        resolve,
+        parent,
+        args: QueryDashboardPatientsArgs,
+        context: ApolloServerContext,
+        info
+      ) => {
+        if (
+          canSearchPhiData({
+            phiEnabled: args.phiEnabled,
+            searchVals: args.searchVals,
+          }) &&
+          !context.req.isAuthenticated()
+        ) {
+          throw new AuthenticationError(
+            "You must be logged in to access this resource."
+          );
+        }
+        return await resolve(parent, args, context, info);
+      },
+    },
+  };
+
+  const authorizationMiddleware: AuthMiddleware = {
+    Query: {
+      dashboardPatients: async (
+        resolve,
+        parent,
+        args: QueryDashboardPatientsArgs,
+        context: ApolloServerContext,
+        info
+      ) => {
+        if (
+          canSearchPhiData({
+            phiEnabled: args.phiEnabled,
+            searchVals: args.searchVals,
+          }) &&
+          !context.req.user.groups.includes(KEYCLOAK_PHI_ACCESS_GROUP)
+        ) {
+          throw new ForbiddenError(
+            "You do not have permission to access this resource. Please contact the SMILE team for assistance."
+          );
+        }
+        return await resolve(parent, args, context, info);
+      },
+    },
+  };
+
   const resolvers = {
     Query: {
       async dashboardRequests(
@@ -68,14 +147,34 @@ export async function buildCustomSchema(ogm: OGM) {
           sort,
           limit,
           offset,
+          phiEnabled,
         }: QueryDashboardPatientsArgs
       ) {
         const queryBody = buildPatientsQueryBody({ searchVals, columnFilters });
-        return await queryDashboardPatients({
+        const queryFinal = buildPatientsQueryFinal({
           queryBody,
           sort,
           limit,
           offset,
+        });
+        const patientsDataPromise = queryDashboardPatients(queryFinal);
+        if (!searchVals || !canSearchPhiData({ phiEnabled, searchVals })) {
+          return await patientsDataPromise;
+        }
+        const [patientsData, patientIdsTriplets] = await Promise.all([
+          patientsDataPromise,
+          queryPatientIdsTriplets(searchVals),
+        ]);
+        const mrnsAndDmpPatientIds = patientIdsTriplets
+          .flatMap((triplet) => [triplet.MRN, triplet.DMP_PATIENT_ID])
+          .filter((id): id is string => !!id);
+        const anchorSeqDatesByPatientId = await queryAnchorSeqDatesByPatientId(
+          mrnsAndDmpPatientIds
+        );
+        return mapPhiToPatientsData({
+          patientsData,
+          patientIdsTriplets,
+          anchorSeqDatesByPatientId,
         });
       },
 
@@ -171,10 +270,16 @@ export async function buildCustomSchema(ogm: OGM) {
     },
   };
 
-  return makeExecutableSchema({
+  const executableSchema = makeExecutableSchema({
     typeDefs: typeDefs,
     resolvers: resolvers,
   });
+
+  return applyMiddleware(
+    executableSchema,
+    authenticationMiddleware,
+    authorizationMiddleware
+  );
 }
 
 async function updateSampleMetadataPromises(

@@ -54,13 +54,13 @@ If successful, the graphql client should be available at `https://localhost:4000
 
 ### Dashboard App
 
-Set the following environment variables to point the web app to the React frontend and the Express backend, respectively.
+Copy `./frontend/.env.example` to `./frontend/.env` and fill in any missing values if available.
 
-Example:
+Update these URLs to the secure versions (HTTPS) if certificates are available:
 
 ```
-export REACT_APP_REACT_SERVER_ORIGIN=https://localhost:3006
-export REACT_APP_EXPRESS_SERVER_ORIGIN=https://localhost:4000
+REACT_APP_REACT_SERVER_ORIGIN=http://localhost:3006
+REACT_APP_EXPRESS_SERVER_ORIGIN=http://localhost:4000
 ```
 
 To run the frontend:
