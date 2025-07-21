@@ -51,6 +51,7 @@ const FIELDS_TO_SEARCH = [
   "sampleCategory",
   "dbGapStudy",
   "cfDNA2dBarcode",
+  "sampleCohortIds",
 ];
 
 export function buildSamplesQueryBody({
@@ -268,7 +269,11 @@ export function buildSamplesQueryBody({
       COLLECT {
         OPTIONAL MATCH (t)-[:HAS_EVENT]->(qc:QcComplete)
         RETURN qc ORDER BY qc.date DESC LIMIT 1
-      } AS latestQC
+      } AS latestQC,
+      COLLECT {
+        OPTIONAL MATCH (s)<-[:HAS_COHORT_SAMPLE]-(c:Cohort) 
+        RETURN DISTINCT c.cohortId
+      } AS sampleCohortIds
 
     WITH
       s,
@@ -280,6 +285,7 @@ export function buildSamplesQueryBody({
       latestBC[0] AS latestBC,
       latestMC[0] AS latestMC,
       latestQC[0] AS latestQC,
+      apoc.text.join(sampleCohortIds, ", ") AS sampleCohortIds,
       apoc.convert.fromJsonMap(latestSm.cmoSampleIdFields) AS cmoSampleIdFields
 
       ${bamCompleteDateColFilter && `WHERE ${bamCompleteDateColFilter}`}
@@ -340,6 +346,7 @@ export function buildSamplesQueryBody({
         qcCompleteResult: latestQC.result,
         qcCompleteReason: latestQC.reason,
         qcCompleteStatus: latestQC.status,
+        sampleCohortIds: sampleCohortIds,
 
         dbGapStudy: d.dbGapStudy,
 

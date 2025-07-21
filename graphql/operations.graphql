@@ -192,6 +192,7 @@ fragment DashboardTempoParts on DashboardSample {
   qcCompleteResult
   qcCompleteReason
   qcCompleteStatus
+  sampleCohortIds
 }
 
 fragment DashboardDbGapParts on DashboardSample {

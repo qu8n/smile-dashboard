@@ -581,6 +581,10 @@ export const sampleColDefs: ColDef<DashboardSample>[] = [
     field: "dbGapStudy",
     headerName: "dbGaP Study ID",
   },
+  {
+    field: "sampleCohortIds",
+    headerName: "Sample Cohort IDs",
+  },
 ];
 
 export const DbGapPhenotypeColumns: ColDef<DashboardSample>[] = [

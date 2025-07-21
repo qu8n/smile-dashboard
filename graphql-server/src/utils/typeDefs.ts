@@ -88,6 +88,8 @@ const SAMPLE_FIELDS = `
   qcCompleteResult: String
   qcCompleteReason: String
   qcCompleteStatus: String
+  # (s:Sample)<-[:HAS_COHORT_SAMPLE]-(c:Cohort)
+  sampleCohortIds: String
 
   # (s:Sample)-[:HAS_DBGAP]->(d:DbGap)
   dbGapStudy: String

@@ -13373,6 +13373,18 @@
             "deprecationReason": null
           },
           {
+            "name": "sampleCohortIds",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "sampleOrigin",
             "description": null,
             "args": [],
@@ -14014,6 +14026,18 @@
           },
           {
             "name": "sampleClass",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "sampleCohortIds",
             "description": null,
             "type": {
               "kind": "SCALAR",

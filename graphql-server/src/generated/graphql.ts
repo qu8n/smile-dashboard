@@ -1474,6 +1474,7 @@ export type DashboardSample = {
   revisable?: Maybe<Scalars["Boolean"]>;
   sampleCategory: Scalars["String"];
   sampleClass?: Maybe<Scalars["String"]>;
+  sampleCohortIds?: Maybe<Scalars["String"]>;
   sampleOrigin?: Maybe<Scalars["String"]>;
   sampleType?: Maybe<Scalars["String"]>;
   sex?: Maybe<Scalars["String"]>;
@@ -1528,6 +1529,7 @@ export type DashboardSampleInput = {
   revisable?: InputMaybe<Scalars["Boolean"]>;
   sampleCategory: Scalars["String"];
   sampleClass?: InputMaybe<Scalars["String"]>;
+  sampleCohortIds?: InputMaybe<Scalars["String"]>;
   sampleOrigin?: InputMaybe<Scalars["String"]>;
   sampleType?: InputMaybe<Scalars["String"]>;
   sex?: InputMaybe<Scalars["String"]>;
@@ -11170,6 +11172,7 @@ export type DashboardSamplesQuery = {
     qcCompleteResult?: string | null;
     qcCompleteReason?: string | null;
     qcCompleteStatus?: string | null;
+    sampleCohortIds?: string | null;
     dbGapStudy?: string | null;
     dmpPatientAlias?: string | null;
   }>;
@@ -11232,6 +11235,7 @@ export type DashboardTempoPartsFragment = {
   qcCompleteResult?: string | null;
   qcCompleteReason?: string | null;
   qcCompleteStatus?: string | null;
+  sampleCohortIds?: string | null;
 };
 
 export type DashboardDbGapPartsFragment = {
@@ -11321,6 +11325,7 @@ export type UpdateDashboardSamplesMutation = {
     qcCompleteResult?: string | null;
     qcCompleteReason?: string | null;
     qcCompleteStatus?: string | null;
+    sampleCohortIds?: string | null;
     dbGapStudy?: string | null;
   } | null> | null;
 };
@@ -11382,6 +11387,7 @@ export const DashboardTempoPartsFragmentDoc = gql`
     qcCompleteResult
     qcCompleteReason
     qcCompleteStatus
+    sampleCohortIds
   }
 `;
 export const DashboardDbGapPartsFragmentDoc = gql`
