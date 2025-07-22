@@ -417,13 +417,21 @@ export default function SamplesList({
                 hasParams ? styles.popupTableHeight : styles.tableHeight
               }`}
               style={{ width: width }}
-              onPaste={(e) =>
-                handleAgGridPaste({
-                  e,
-                  gridRef,
-                  onCellEditRequest: handleCellEditRequest,
-                })
-              }
+              onPaste={async (e) => {
+                try {
+                  await handleAgGridPaste({
+                    e,
+                    gridRef,
+                    handleCellEditRequest,
+                  });
+                } catch (error) {
+                  if (error instanceof Error) {
+                    setAlertContent(error.message);
+                  } else {
+                    console.error("Unexpected error during paste:", error);
+                  }
+                }
+              }}
             >
               <AgGridReact
                 ref={gridRef}
