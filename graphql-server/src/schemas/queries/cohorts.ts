@@ -22,6 +22,7 @@ const FIELDS_TO_SEARCH = [
   "projectSubtitle",
   "status",
   "type",
+  "searchableSampleIds", // hidden searchable field
 ];
 
 export function buildCohortsQueryBody({
@@ -67,6 +68,10 @@ export function buildCohortsQueryBody({
     WITH
         c,
         s,
+        COLLECT {
+          MATCH (s)-[:HAS_METADATA]->(sm:SampleMetadata)
+          RETURN sm ORDER BY sm.importDate DESC LIMIT 1
+        } AS latestSm,
         apoc.coll.min(collect(cc.date)) AS initialCohortDeliveryDate,
         apoc.coll.max(collect(cc.date)) AS latestCohortDeliveryDate,
         count(t) AS tempoCount,
@@ -80,36 +85,43 @@ export function buildCohortsQueryBody({
       collect(s.smileSampleId) AS sampleIdsByCohort,
       size(collect(s)) AS totalSampleCount,
       tempoCount,
-      billedCount
+      billedCount,
+      apoc.coll.toSet(
+        COLLECT(DISTINCT latestSm[0].cmoSampleName) +
+        COLLECT(DISTINCT latestSm[0].primaryId)
+      ) AS searchableSampleIds
 
     // Calculate values for the "Billed" column
     WITH
       c,
       initialCohortDeliveryDate,
       latestCohortDeliveryDate,
-        sampleIdsByCohort,
-        totalSampleCount,
-        CASE totalSampleCount
-            WHEN 0 THEN "Yes"
-            ELSE
-                CASE (billedCount = tempoCount)
-                    WHEN true THEN "Yes"
-                    ELSE "No"
-                END
-        END AS billed
+      sampleIdsByCohort,
+      totalSampleCount,
+      CASE totalSampleCount
+          WHEN 0 THEN "Yes"
+          ELSE
+              CASE (billedCount = tempoCount)
+                  WHEN true THEN "Yes"
+                  ELSE "No"
+              END
+      END AS billed,
+      searchableSampleIds
 
     WITH
-        c,
-        initialCohortDeliveryDate,
-        latestCohortDeliveryDate,
-        sampleIdsByCohort,
-        totalSampleCount,
-        billed
+      c,
+      initialCohortDeliveryDate,
+      latestCohortDeliveryDate,
+      sampleIdsByCohort,
+      totalSampleCount,
+      billed,
+      searchableSampleIds
 
     WITH ({
       cohortId: c.cohortId,
       sampleIdsByCohort: sampleIdsByCohort,
       totalSampleCount: totalSampleCount,
+      searchableSampleIds: apoc.text.join(searchableSampleIds, ","),
       billed: billed,
       initialCohortDeliveryDate: initialCohortDeliveryDate,
       latestCohortDeliveryDate: latestCohortDeliveryDate

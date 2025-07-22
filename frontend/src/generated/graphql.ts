@@ -1371,6 +1371,7 @@ export type DashboardCohort = {
   pmUsers?: Maybe<Scalars["String"]>;
   projectSubtitle?: Maybe<Scalars["String"]>;
   projectTitle?: Maybe<Scalars["String"]>;
+  searchableSampleIds?: Maybe<Scalars["String"]>;
   status?: Maybe<Scalars["String"]>;
   totalSampleCount?: Maybe<Scalars["Int"]>;
   type?: Maybe<Scalars["String"]>;
@@ -11102,6 +11103,7 @@ export type DashboardCohortsQuery = {
     projectSubtitle?: string | null;
     status?: string | null;
     type?: string | null;
+    searchableSampleIds?: string | null;
     _total?: number | null;
     _uniqueSampleCount?: number | null;
   }>;
@@ -11634,6 +11636,7 @@ export const DashboardCohortsDocument = gql`
       projectSubtitle
       status
       type
+      searchableSampleIds
       _total
       _uniqueSampleCount
     }

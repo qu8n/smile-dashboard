@@ -95,6 +95,7 @@ query DashboardCohorts(
     projectSubtitle
     status
     type
+    searchableSampleIds
     _total
     _uniqueSampleCount
   }

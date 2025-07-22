@@ -159,6 +159,7 @@ const QUERY_RESULT_TYPEDEFS = gql`
     projectSubtitle: String
     status: String
     type: String
+    searchableSampleIds: String
     _total: Int
     _uniqueSampleCount: Int
   }
