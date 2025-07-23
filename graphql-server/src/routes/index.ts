@@ -7,11 +7,12 @@ import {
   updateActiveUserSessions,
 } from "../utils/session";
 import { logOutRoute } from "./auth/logout";
+import { warmUpDatabricks } from "../utils/databricks";
 
 export function configureRoutes(app: Express) {
   app.get("/", (_, res) => res.sendStatus(200)); // health check
 
-  app.get("/auth/login", logInRoute);
+  app.get("/auth/login", warmUpDatabricks, logInRoute);
 
   app.get("/auth/callback", callbackRoute);
 

@@ -36,6 +36,10 @@ export interface ApolloServerContext {
     isAuthenticated: () => boolean;
     logOut: (error: any) => void;
     app: Express;
+    body: {
+      operationName: string; // GraphQL query name
+      variables?: any; // GraphQL query variables
+    };
   };
   inMemoryCache: NodeCache;
 }

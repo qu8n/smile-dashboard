@@ -3,6 +3,7 @@ import path from "path";
 const morgan = require("morgan");
 import fs from "fs";
 import { props } from "../utils/constants";
+import { ApolloServerContext } from "../utils/servers";
 
 /**
  * Log only PHI queries from logged in users
@@ -15,11 +16,11 @@ export function configureLogging(app: Express) {
     flags: "a+",
   });
 
-  morgan.token("keycloak-user-id", (req: any) => {
+  morgan.token("keycloak-user-id", (req: ApolloServerContext["req"]) => {
     return `Keycloak user ID: ${req.user?.sub || "N/A"}`;
   });
 
-  morgan.token("graphql-query", (req: any) => {
+  morgan.token("graphql-query", (req: ApolloServerContext["req"]) => {
     const { operationName } = req.body;
     return `GraphQL query: ${operationName || "N/A"}`;
   });
@@ -29,7 +30,7 @@ export function configureLogging(app: Express) {
       ":method :url :status - :date[iso] - :keycloak-user-id - :graphql-query",
       {
         stream: accessLogStream,
-        skip: (req: any) => {
+        skip: (req: ApolloServerContext["req"]) => {
           if (
             req.user &&
             req.body.operationName === "DashboardPatients" &&

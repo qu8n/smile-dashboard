@@ -2,6 +2,7 @@ import { Issuer } from "openid-client";
 import { props } from "../utils/constants";
 import { REACT_APP_EXPRESS_SERVER_ORIGIN } from "./constants";
 import { logOutRoute } from "../routes/auth/logout";
+import { ApolloServerContext } from "./servers";
 
 export async function getKeycloakClient() {
   const keycloakIssuer = await Issuer.discover(props.keycloak_server_uri);
@@ -14,7 +15,11 @@ export async function getKeycloakClient() {
   });
 }
 
-export function checkAuthentication(req: any, res: any, next: any) {
+export function checkAuthentication(
+  req: ApolloServerContext["req"],
+  res: any,
+  next: any
+) {
   // Check if `req.user` is defined
   if (req.isAuthenticated()) {
     return next();
@@ -42,7 +47,11 @@ interface SessionConfig {
  *
  * @param next to include if function is used as middleware
  */
-export function updateActiveUserSessions(req: any, _?: any, next?: any) {
+export function updateActiveUserSessions(
+  req: ApolloServerContext["req"],
+  _?: any,
+  next?: any
+) {
   const keycloakUserId = req.user?.sub;
 
   const { activeUserSessions, sessionIdleTimeout } = req.app
