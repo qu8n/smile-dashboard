@@ -159,7 +159,6 @@ export default function PatientsPage({
               return result.data?.allAnchorSeqDateByPatientId;
             },
             disabled: !phiEnabled,
-            // TODO: fix styling of the tooltip icon
             tooltip:
               "You must enable PHI and log in to export anchor sequencing dates",
           },

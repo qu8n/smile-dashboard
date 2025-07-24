@@ -128,7 +128,7 @@ export function Toolbar({
                   Export as TSV
                 </Dropdown.Item>
                 {exportDropdownItems.map((item) => (
-                  <div className="d-flex align-items-center">
+                  <div key={item.label} className="d-flex align-items-center">
                     <Dropdown.Item
                       as="button"
                       onClick={() => {
@@ -136,7 +136,6 @@ export function Toolbar({
                         if (setSelectedExportItem) setSelectedExportItem(item);
                         onDownload();
                       }}
-                      key={item.label}
                       disabled={item.disabled}
                     >
                       {item.label}
@@ -144,7 +143,14 @@ export function Toolbar({
                     {item.tooltip && (
                       <CustomTooltip
                         icon={
-                          <InfoIcon style={{ fontSize: 15, color: "grey" }} />
+                          <InfoIcon
+                            style={{
+                              fontSize: 15,
+                              color: "grey",
+                              marginRight: 10,
+                              marginLeft: 5,
+                            }}
+                          />
                         }
                       >
                         {item.tooltip}

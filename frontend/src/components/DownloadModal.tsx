@@ -29,7 +29,10 @@ export function DownloadModal({
     <Modal show={true} size={"sm"}>
       <Modal.Body>
         <div className="d-flex flex-column align-items-center">
-          <p>Preparing to download data...</p>
+          <p>
+            Downloading the latest version of your data request and converting
+            it to TSV format. This may take up to 30s.
+          </p>
           <Spinner fadeIn={"none"} color={"lightblue"} name="ball-grid-pulse" />
         </div>
       </Modal.Body>
