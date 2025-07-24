@@ -7,6 +7,7 @@ import { Dispatch, SetStateAction } from "react";
 import { CustomTooltip } from "./CustomToolTip";
 import { ColDef } from "ag-grid-community";
 import InfoIcon from "@material-ui/icons/InfoOutlined";
+import { IExportDropdownItem } from "../../components/RecordsList";
 
 export function LoadingSpinner() {
   return (
@@ -33,11 +34,9 @@ interface IToolbarProps {
   onDownload: () => void;
   customUILeft?: JSX.Element;
   customUIRight?: JSX.Element;
-  exportDropdownItems?: Array<{
-    label: string;
-    columnDefs: ColDef[];
-  }>;
+  exportDropdownItems?: IExportDropdownItem[];
   setColumnDefsForExport?: Dispatch<SetStateAction<ColDef[]>>;
+  setSelectedExportItem?: Dispatch<SetStateAction<IExportDropdownItem | null>>;
 }
 
 export function Toolbar({
@@ -51,6 +50,7 @@ export function Toolbar({
   customUIRight,
   exportDropdownItems,
   setColumnDefsForExport,
+  setSelectedExportItem,
 }: IToolbarProps) {
   return (
     <Row className={classNames("d-flex align-items-center tableControlsRow")}>
@@ -105,14 +105,26 @@ export function Toolbar({
 
       <Col className={"text-end"}>
         <Dropdown as={ButtonGroup}>
-          <Button onClick={onDownload} size={"sm"}>
+          <Button
+            onClick={() => {
+              if (setSelectedExportItem) setSelectedExportItem(null);
+              onDownload();
+            }}
+            size={"sm"}
+          >
             Export as TSV
           </Button>
           {exportDropdownItems?.length && setColumnDefsForExport && (
             <>
               <Dropdown.Toggle size="sm" split id="dropdown-split-basic" />
               <Dropdown.Menu>
-                <Dropdown.Item as="button" onClick={onDownload}>
+                <Dropdown.Item
+                  as="button"
+                  onClick={() => {
+                    if (setSelectedExportItem) setSelectedExportItem(null);
+                    onDownload();
+                  }}
+                >
                   Export as TSV
                 </Dropdown.Item>
                 {exportDropdownItems.map((item) => (
@@ -120,8 +132,10 @@ export function Toolbar({
                     as="button"
                     onClick={() => {
                       setColumnDefsForExport(item.columnDefs);
+                      if (setSelectedExportItem) setSelectedExportItem(item);
                       onDownload();
                     }}
+                    key={item.label}
                   >
                     {item.label}
                   </Dropdown.Item>

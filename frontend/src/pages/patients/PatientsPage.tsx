@@ -1,5 +1,6 @@
 import {
   AgGridSortDirection,
+  useAllAnchorSeqDateByPatientIdLazyQuery,
   useDashboardPatientsLazyQuery,
 } from "../../generated/graphql";
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
@@ -9,8 +10,7 @@ import { AlertModal } from "../../components/AlertModal";
 import { Tooltip } from "@material-ui/core";
 import InfoIcon from "@material-ui/icons/InfoOutlined";
 import {
-  MAX_ROWS_EXPORT,
-  MAX_ROWS_EXPORT_WARNING,
+  allAnchorSeqDateColDefs,
   patientColDefs,
   sampleColDefs,
 } from "../../shared/helpers";
@@ -21,7 +21,12 @@ import RecordsList from "../../components/RecordsList";
 const PHI_WARNING = {
   title: "Warning",
   content:
-    "The information contained in this transmission from Memorial Sloan-Kettering Cancer Center is privileged, confidential and protected health information (PHI) and it is protected from disclosure under applicable law, including the Health Insurance Portability and Accountability Act of 1996, as amended (HIPAA). This transmission is intended for the sole use of approved individuals with permission and training to access this information and PHI. You are notified that your access to this transmission is logged. If you have received this transmission in error, please immediately delete this information and any attachments from any computer.",
+    "The information contained in this transmission from Memorial Sloan-Kettering Cancer Center is privileged," +
+    " confidential and protected health information (PHI) and it is protected from disclosure under applicable law," +
+    " including the Health Insurance Portability and Accountability Act of 1996, as amended (HIPAA). This" +
+    " transmission is intended for the sole use of approved individuals with permission and training to access this" +
+    " information and PHI. You are notified that your access to this transmission is logged. If you have received" +
+    " this transmission in error, please immediately delete this information and any attachments from any computer.",
 };
 
 const PHI_FIELDS = new Set(["mrn", "anchorSequencingDate"]);
@@ -36,6 +41,7 @@ export default function PatientsPage({
   setUserEmail,
 }: IPatientsPageProps) {
   const params = useParams();
+  const [queryAllSeqDates, {}] = useAllAnchorSeqDateByPatientIdLazyQuery();
 
   const [userSearchVal, setUserSearchVal] = useState<string>("");
   const [showDownloadModal, setShowDownloadModal] = useState(false);
@@ -90,13 +96,9 @@ export default function PatientsPage({
         setUserSearchVal={setUserSearchVal}
         showDownloadModal={showDownloadModal}
         setShowDownloadModal={setShowDownloadModal}
-        handleDownload={(recordCount: number) => {
-          if (recordCount && recordCount > MAX_ROWS_EXPORT) {
-            setAlertModal({ show: true, ...MAX_ROWS_EXPORT_WARNING });
-          } else {
-            if (phiEnabled) setAlertModal({ show: true, ...PHI_WARNING });
-            setShowDownloadModal(true);
-          }
+        handleDownload={() => {
+          if (phiEnabled) setAlertModal({ show: true, ...PHI_WARNING });
+          setShowDownloadModal(true);
         }}
         samplesColDefs={sampleColDefs}
         sampleContexts={
@@ -146,6 +148,16 @@ export default function PatientsPage({
             </Col>
           </>
         }
+        exportDropdownItems={[
+          {
+            label: "Export all anchor dates for clinical cohort",
+            columnDefs: allAnchorSeqDateColDefs,
+            customLoader: async () => {
+              const result = await queryAllSeqDates();
+              return result.data?.allAnchorSeqDateByPatientId;
+            },
+          },
+        ]}
       />
 
       <AlertModal

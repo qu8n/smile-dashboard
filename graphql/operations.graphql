@@ -238,3 +238,11 @@ mutation UpdateDashboardSamples(
     ...DashboardDbGapParts
   }
 }
+
+query AllAnchorSeqDateByPatientId {
+  allAnchorSeqDateByPatientId {
+    MRN
+    DMP_PATIENT_ID
+    ANCHOR_SEQUENCING_DATE
+  }
+}

@@ -3,12 +3,7 @@ import {
   useDashboardCohortsLazyQuery,
 } from "../../generated/graphql";
 import { Dispatch, SetStateAction, useState } from "react";
-import {
-  MAX_ROWS_EXPORT,
-  MAX_ROWS_EXPORT_WARNING,
-  wesSampleColDefs,
-  cohortColDefs,
-} from "../../shared/helpers";
+import { wesSampleColDefs, cohortColDefs } from "../../shared/helpers";
 import { useParams } from "react-router-dom";
 import RecordsList from "../../components/RecordsList";
 import { AlertModal } from "../../components/AlertModal";
@@ -50,13 +45,7 @@ export default function CohortsPage({
         setUserSearchVal={setUserSearchVal}
         showDownloadModal={showDownloadModal}
         setShowDownloadModal={setShowDownloadModal}
-        handleDownload={(recordCount: number) => {
-          if (recordCount && recordCount > MAX_ROWS_EXPORT) {
-            setAlertModal({ show: true, ...MAX_ROWS_EXPORT_WARNING });
-          } else {
-            setShowDownloadModal(true);
-          }
-        }}
+        handleDownload={() => setShowDownloadModal(true)}
         samplesColDefs={wesSampleColDefs}
         sampleContexts={
           sampleQueryParamValue

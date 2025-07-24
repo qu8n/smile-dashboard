@@ -4073,6 +4073,7 @@ export type QcCompletesConnection = {
 
 export type Query = {
   __typename?: "Query";
+  allAnchorSeqDateByPatientId: Array<AnchorSeqDateByPatientId>;
   bamCompletes: Array<BamComplete>;
   bamCompletesAggregate: BamCompleteAggregateSelection;
   bamCompletesConnection: BamCompletesConnection;
@@ -11333,6 +11334,20 @@ export type UpdateDashboardSamplesMutation = {
   } | null> | null;
 };
 
+export type AllAnchorSeqDateByPatientIdQueryVariables = Exact<{
+  [key: string]: never;
+}>;
+
+export type AllAnchorSeqDateByPatientIdQuery = {
+  __typename?: "Query";
+  allAnchorSeqDateByPatientId: Array<{
+    __typename?: "AnchorSeqDateByPatientId";
+    MRN: string;
+    DMP_PATIENT_ID: string;
+    ANCHOR_SEQUENCING_DATE: string;
+  }>;
+};
+
 export const DashboardSamplePartsFragmentDoc = gql`
   fragment DashboardSampleParts on DashboardSample {
     smileSampleId
@@ -11842,4 +11857,63 @@ export type UpdateDashboardSamplesMutationResult =
 export type UpdateDashboardSamplesMutationOptions = Apollo.BaseMutationOptions<
   UpdateDashboardSamplesMutation,
   UpdateDashboardSamplesMutationVariables
+>;
+export const AllAnchorSeqDateByPatientIdDocument = gql`
+  query AllAnchorSeqDateByPatientId {
+    allAnchorSeqDateByPatientId {
+      MRN
+      DMP_PATIENT_ID
+      ANCHOR_SEQUENCING_DATE
+    }
+  }
+`;
+
+/**
+ * __useAllAnchorSeqDateByPatientIdQuery__
+ *
+ * To run a query within a React component, call `useAllAnchorSeqDateByPatientIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useAllAnchorSeqDateByPatientIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useAllAnchorSeqDateByPatientIdQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useAllAnchorSeqDateByPatientIdQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    AllAnchorSeqDateByPatientIdQuery,
+    AllAnchorSeqDateByPatientIdQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    AllAnchorSeqDateByPatientIdQuery,
+    AllAnchorSeqDateByPatientIdQueryVariables
+  >(AllAnchorSeqDateByPatientIdDocument, options);
+}
+export function useAllAnchorSeqDateByPatientIdLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    AllAnchorSeqDateByPatientIdQuery,
+    AllAnchorSeqDateByPatientIdQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    AllAnchorSeqDateByPatientIdQuery,
+    AllAnchorSeqDateByPatientIdQueryVariables
+  >(AllAnchorSeqDateByPatientIdDocument, options);
+}
+export type AllAnchorSeqDateByPatientIdQueryHookResult = ReturnType<
+  typeof useAllAnchorSeqDateByPatientIdQuery
+>;
+export type AllAnchorSeqDateByPatientIdLazyQueryHookResult = ReturnType<
+  typeof useAllAnchorSeqDateByPatientIdLazyQuery
+>;
+export type AllAnchorSeqDateByPatientIdQueryResult = Apollo.QueryResult<
+  AllAnchorSeqDateByPatientIdQuery,
+  AllAnchorSeqDateByPatientIdQueryVariables
 >;
