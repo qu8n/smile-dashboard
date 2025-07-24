@@ -845,6 +845,10 @@ export const wesSampleColDefs: ColDef<DashboardSample>[] = [
     headerName: "dbGaP Study ID",
   },
   {
+    field: "sampleCohortIds",
+    headerName: "Sample Cohort IDs",
+  },
+  {
     field: "initialPipelineRunDate",
     headerName: "Initial Pipeline Run Date",
     valueFormatter: (params) => formatDate(params.value) ?? "",
