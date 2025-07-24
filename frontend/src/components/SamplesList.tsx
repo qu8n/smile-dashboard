@@ -304,8 +304,9 @@ export default function SamplesList({
         <DownloadModal
           loader={async () => {
             // Using fetchMore instead of refetch to avoid overriding the cached variables
+            // TODO: fix "Error: Cannot return null for non-nullable field DashboardSample.primaryId." when trying to export everything
             const { data } = await fetchMore({
-              variables: { offset: 0 },
+              variables: { offset: 0, limit: sampleCount },
             });
             return buildTsvString(
               data.dashboardSamples,

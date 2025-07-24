@@ -128,17 +128,29 @@ export function Toolbar({
                   Export as TSV
                 </Dropdown.Item>
                 {exportDropdownItems.map((item) => (
-                  <Dropdown.Item
-                    as="button"
-                    onClick={() => {
-                      setColumnDefsForExport(item.columnDefs);
-                      if (setSelectedExportItem) setSelectedExportItem(item);
-                      onDownload();
-                    }}
-                    key={item.label}
-                  >
-                    {item.label}
-                  </Dropdown.Item>
+                  <div className="d-flex align-items-center">
+                    <Dropdown.Item
+                      as="button"
+                      onClick={() => {
+                        setColumnDefsForExport(item.columnDefs);
+                        if (setSelectedExportItem) setSelectedExportItem(item);
+                        onDownload();
+                      }}
+                      key={item.label}
+                      disabled={item.disabled}
+                    >
+                      {item.label}
+                    </Dropdown.Item>
+                    {item.tooltip && (
+                      <CustomTooltip
+                        icon={
+                          <InfoIcon style={{ fontSize: 15, color: "grey" }} />
+                        }
+                      >
+                        {item.tooltip}
+                      </CustomTooltip>
+                    )}
+                  </div>
                 ))}
               </Dropdown.Menu>
             </>

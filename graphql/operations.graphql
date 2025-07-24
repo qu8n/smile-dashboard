@@ -239,8 +239,8 @@ mutation UpdateDashboardSamples(
   }
 }
 
-query AllAnchorSeqDateByPatientId {
-  allAnchorSeqDateByPatientId {
+query AllAnchorSeqDateByPatientId($phiEnabled: Boolean = false) {
+  allAnchorSeqDateByPatientId(phiEnabled: $phiEnabled) {
     MRN
     DMP_PATIENT_ID
     ANCHOR_SEQUENCING_DATE

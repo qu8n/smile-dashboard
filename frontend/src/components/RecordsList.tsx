@@ -38,6 +38,8 @@ export interface IExportDropdownItem {
   label: string;
   columnDefs: ColDef[];
   customLoader?: () => Promise<any>;
+  disabled?: boolean;
+  tooltip?: string;
 }
 
 interface IRecordsListProps {
@@ -168,7 +170,9 @@ export default function RecordsList({
         gridRef.current?.columnApi?.getAllGridColumns()
       );
     }
-    const { data } = await fetchMore({ variables: { offset: 0 } });
+    const { data } = await fetchMore({
+      variables: { offset: 0, limit: recordCount },
+    });
     return buildTsvString(
       data[recordsQueryName],
       columnDefsForExport,

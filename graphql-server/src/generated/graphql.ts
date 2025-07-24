@@ -4127,6 +4127,10 @@ export type Query = {
   temposConnection: TemposConnection;
 };
 
+export type QueryAllAnchorSeqDateByPatientIdArgs = {
+  phiEnabled?: InputMaybe<Scalars["Boolean"]>;
+};
+
 export type QueryBamCompletesArgs = {
   options?: InputMaybe<BamCompleteOptions>;
   where?: InputMaybe<BamCompleteWhere>;
@@ -11334,7 +11338,7 @@ export type UpdateDashboardSamplesMutation = {
 };
 
 export type AllAnchorSeqDateByPatientIdQueryVariables = Exact<{
-  [key: string]: never;
+  phiEnabled?: InputMaybe<Scalars["Boolean"]>;
 }>;
 
 export type AllAnchorSeqDateByPatientIdQuery = {
@@ -11619,8 +11623,8 @@ export type UpdateDashboardSamplesMutationOptions = Apollo.BaseMutationOptions<
   UpdateDashboardSamplesMutationVariables
 >;
 export const AllAnchorSeqDateByPatientIdDocument = gql`
-  query AllAnchorSeqDateByPatientId {
-    allAnchorSeqDateByPatientId {
+  query AllAnchorSeqDateByPatientId($phiEnabled: Boolean = false) {
+    allAnchorSeqDateByPatientId(phiEnabled: $phiEnabled) {
       MRN
       DMP_PATIENT_ID
       ANCHOR_SEQUENCING_DATE

@@ -153,9 +153,15 @@ export default function PatientsPage({
             label: "Export all anchor dates for clinical cohort",
             columnDefs: allAnchorSeqDateColDefs,
             customLoader: async () => {
-              const result = await queryAllSeqDates();
+              const result = await queryAllSeqDates({
+                variables: { phiEnabled: phiEnabled },
+              });
               return result.data?.allAnchorSeqDateByPatientId;
             },
+            disabled: !phiEnabled,
+            // TODO: fix styling of the tooltip icon
+            tooltip:
+              "You must enable PHI and log in to export anchor sequencing dates",
           },
         ]}
       />

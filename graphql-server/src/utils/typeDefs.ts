@@ -217,7 +217,9 @@ const QUERY_TYPEDEFS = gql`
       offset: Int!
     ): [DashboardSample!]!
 
-    allAnchorSeqDateByPatientId: [AnchorSeqDateByPatientId!]!
+    allAnchorSeqDateByPatientId(
+      phiEnabled: Boolean
+    ): [AnchorSeqDateByPatientId!]!
   }
 `;
 
