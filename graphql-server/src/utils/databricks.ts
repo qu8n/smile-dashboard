@@ -68,7 +68,6 @@ export async function warmUpDatabricksTables() {
       );
       await queryOperation.fetchAll();
       await queryOperation.close();
-      console.info(`Warmed up Databricks table: ${table}`); // TODO: delete this after PR is approved
     }
 
     await session.close();
