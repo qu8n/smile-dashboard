@@ -74,8 +74,7 @@ export default function RecordsList({
 }: IRecordsListProps) {
   const [showClosingWarning, setShowClosingWarning] = useState(false);
   const [unsavedChanges, setUnsavedChanges] = useState(false);
-  const [columnDefsForExport, setColumnDefsForExport] =
-    useState<ColDef[]>(columnDefs);
+  const [, setColumnDefsForExport] = useState<ColDef[]>(columnDefs);
   const [selectedExportItem, setSelectedExportItem] =
     useState<IExportDropdownItem | null>(null);
 
@@ -168,7 +167,7 @@ export default function RecordsList({
     });
     return buildTsvString(
       data[recordsQueryName],
-      columnDefsForExport,
+      columnDefs,
       gridRef.current?.columnApi?.getAllGridColumns()
     );
   }
