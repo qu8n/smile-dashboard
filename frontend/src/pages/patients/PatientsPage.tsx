@@ -158,7 +158,7 @@ export default function PatientsPage({
               });
               return result.data?.allAnchorSeqDateByPatientId;
             },
-            disabled: !phiEnabled,
+            disabled: !phiEnabled || !userEmail,
             tooltip:
               "You must enable PHI and log in to export anchor sequencing dates",
           },
