@@ -31,7 +31,7 @@ export function DownloadModal({
         <div className="d-flex flex-column align-items-center">
           <p>
             Downloading the latest version of your data request and converting
-            it to TSV format. This may take up to 30s.
+            it to TSV format. This may take up to 30 seconds.
           </p>
           <Spinner fadeIn={"none"} color={"lightblue"} name="ball-grid-pulse" />
         </div>

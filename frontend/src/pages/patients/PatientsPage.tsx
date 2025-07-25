@@ -41,7 +41,7 @@ export default function PatientsPage({
   setUserEmail,
 }: IPatientsPageProps) {
   const params = useParams();
-  const [queryAllSeqDates, {}] = useAllAnchorSeqDateByPatientIdLazyQuery();
+  const [queryAllSeqDates] = useAllAnchorSeqDateByPatientIdLazyQuery();
 
   const [userSearchVal, setUserSearchVal] = useState<string>("");
   const [showDownloadModal, setShowDownloadModal] = useState(false);
