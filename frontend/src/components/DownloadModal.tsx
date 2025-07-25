@@ -30,8 +30,8 @@ export function DownloadModal({
       <Modal.Body>
         <div className="d-flex flex-column align-items-center">
           <p>
-            Downloading the latest version of your data request and converting
-            it to TSV format. This may take up to 30 seconds.
+            Downloading the most up-to-date version of your data request. Note
+            that large data requests may take up to a minute to process.
           </p>
           <Spinner fadeIn={"none"} color={"lightblue"} name="ball-grid-pulse" />
         </div>
