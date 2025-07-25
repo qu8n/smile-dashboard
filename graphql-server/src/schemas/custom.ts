@@ -15,6 +15,7 @@ import {
   buildPatientsQueryBody,
   buildPatientsQueryFinal,
   mapPhiToPatientsData,
+  queryAllAnchorSeqDateByPatientId,
   queryAnchorSeqDatesByPatientId,
   queryDashboardPatients,
   queryPatientIdsTriplets,
@@ -69,11 +70,6 @@ function canSearchPhiData({
   searchVals?: string[] | null;
   searchValsIsRequired?: boolean;
 }) {
-  console.log("canSearchPhiData called with:", {
-    phiEnabled,
-    searchVals,
-    searchValsIsRequired,
-  });
   if (searchValsIsRequired) {
     return phiEnabled && Array.isArray(searchVals) && searchVals.length > 0;
   }
@@ -233,6 +229,10 @@ export async function buildCustomSchema(ogm: OGM) {
         });
       },
 
+      async allAnchorSeqDateByPatientId() {
+        return await queryAllAnchorSeqDateByPatientId();
+      },
+
       async dashboardCohorts(
         _source: undefined,
         {
@@ -298,18 +298,6 @@ export async function buildCustomSchema(ogm: OGM) {
           samplesCypherQuery,
           oncotreeCache,
         });
-      },
-
-      async allAnchorSeqDateByPatientId() {
-        const query = `
-          SELECT
-            MRN,
-            DMP_PATIENT_ID,
-            ANCHOR_SEQUENCING_DATE
-          FROM
-            ${props.databricks_seq_dates_by_patient_table}
-        `;
-        return await queryDatabricks<AnchorSeqDateByPatientId>(query);
       },
     },
 
