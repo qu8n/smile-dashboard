@@ -27,20 +27,13 @@ import {
   CACHE_BLOCK_SIZE,
   defaultColDef,
   getColumnFilters,
+  IExportDropdownItem,
 } from "../shared/helpers";
 import { ErrorMessage, Toolbar } from "../shared/components/Toolbar";
 import { AgGridReact as AgGridReactType } from "ag-grid-react/lib/agGridReact";
 import { BreadCrumb } from "../shared/components/BreadCrumb";
 import { Title } from "../shared/components/Title";
 import { parseUserSearchVal } from "../utils/parseSearchQueries";
-
-export interface IExportDropdownItem {
-  label: string;
-  columnDefs: ColDef[];
-  customLoader?: () => Promise<any>;
-  disabled?: boolean;
-  tooltip?: string;
-}
 
 interface IRecordsListProps {
   columnDefs: ColDef[];

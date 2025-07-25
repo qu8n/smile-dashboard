@@ -14,6 +14,7 @@ import { AlertModal } from "./AlertModal";
 import { buildTsvString } from "../utils/stringBuilders";
 import {
   CACHE_BLOCK_SIZE,
+  IExportDropdownItem,
   SampleChange,
   defaultColDef,
   formatDate,
@@ -61,10 +62,7 @@ interface ISampleListProps {
   userEmail?: string | null;
   setUserEmail?: Dispatch<SetStateAction<string | null>>;
   customToolbarUI?: JSX.Element;
-  exportDropdownItems?: Array<{
-    label: string;
-    columnDefs: ColDef[];
-  }>;
+  exportDropdownItems?: IExportDropdownItem[];
 }
 
 export default function SamplesList({

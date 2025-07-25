@@ -7,7 +7,7 @@ import { Dispatch, SetStateAction } from "react";
 import { CustomTooltip } from "./CustomToolTip";
 import { ColDef } from "ag-grid-community";
 import InfoIcon from "@material-ui/icons/InfoOutlined";
-import { IExportDropdownItem } from "../../components/RecordsList";
+import { IExportDropdownItem } from "../helpers";
 
 export function LoadingSpinner() {
   return (

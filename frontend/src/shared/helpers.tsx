@@ -1234,3 +1234,11 @@ export function getColumnFilters(
 }
 
 export const CACHE_BLOCK_SIZE = 500; // number of rows to fetch at a time
+
+export interface IExportDropdownItem {
+  label: string;
+  columnDefs: ColDef[];
+  customLoader?: () => Promise<any>;
+  disabled?: boolean;
+  tooltip?: string;
+}
