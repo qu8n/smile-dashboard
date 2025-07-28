@@ -831,6 +831,29 @@ export const wesSampleColDefs: ColDef<DashboardSample>[] = [
     headerName: "CMO Sample Name",
   },
   {
+    field: "cmoPatientId",
+    headerName: "CMO Patient ID",
+    cellRenderer: (params: any) => {
+      if (params.value) {
+        return (
+          <>
+            {params.value}
+            {"   "}
+            <Link
+              to={`/patients/${params.value}`}
+              style={{ color: "black", textDecoration: "none" }}
+              target="_blank"
+            >
+              <LaunchIcon style={{ height: "16px", width: "16px" }} />
+            </Link>
+          </>
+        );
+      } else {
+        return <></>;
+      }
+    },
+  },
+  {
     field: "historicalCmoSampleNames",
     headerName: "Historical CMO Sample Names",
     maxWidth: 300,
@@ -975,8 +998,20 @@ export const wesSampleColDefs: ColDef<DashboardSample>[] = [
     headerName: "Cancer Type Detailed",
   },
   {
+    field: "tissueLocation",
+    headerName: "Tissue Location",
+  },
+  {
     field: "sampleCategory",
     headerName: "SMILE Sample Category",
+  },
+  {
+    field: "platform",
+    headerName: "PLATFORM",
+  },
+  {
+    field: "instrumentModel",
+    headerName: "INSTRUMENT_MODEL",
   },
 ];
 
