@@ -1,7 +1,9 @@
 import { makeExecutableSchema } from "@graphql-tools/schema";
 import { ApolloServerContext } from "../utils/servers";
 import {
+  AnchorSeqDateByPatientId,
   DashboardSampleInput,
+  PatientIdsTriplet,
   QueryDashboardCohortsArgs,
   QueryDashboardPatientsArgs,
   QueryDashboardRequestsArgs,
@@ -150,7 +152,22 @@ export async function buildCustomSchema(ogm: OGM) {
           phiEnabled,
         }: QueryDashboardPatientsArgs
       ) {
-        const queryBody = buildPatientsQueryBody({ searchVals, columnFilters });
+        let patientIdsTriplets: Array<PatientIdsTriplet> = [];
+        if (searchVals && canSearchPhiData({ phiEnabled, searchVals })) {
+          patientIdsTriplets = await queryPatientIdsTriplets(searchVals);
+          const mappedPatientIds = patientIdsTriplets
+            .flatMap((triplet) => [
+              triplet.DMP_PATIENT_ID,
+              triplet.CMO_PATIENT_ID,
+            ])
+            .filter((id): id is string => !!id && !searchVals.includes(id));
+          searchVals.push(...mappedPatientIds);
+        }
+
+        const queryBody = buildPatientsQueryBody({
+          searchVals,
+          columnFilters,
+        });
         const queryFinal = buildPatientsQueryFinal({
           queryBody,
           sort,
@@ -158,19 +175,18 @@ export async function buildCustomSchema(ogm: OGM) {
           offset,
         });
         const patientsDataPromise = queryDashboardPatients(queryFinal);
-        if (!searchVals || !canSearchPhiData({ phiEnabled, searchVals })) {
+
+        if (!canSearchPhiData({ phiEnabled, searchVals })) {
           return await patientsDataPromise;
         }
-        const [patientsData, patientIdsTriplets] = await Promise.all([
-          patientsDataPromise,
-          queryPatientIdsTriplets(searchVals),
-        ]);
+
         const mrnsAndDmpPatientIds = patientIdsTriplets
           .flatMap((triplet) => [triplet.MRN, triplet.DMP_PATIENT_ID])
           .filter((id): id is string => !!id);
-        const anchorSeqDatesByPatientId = await queryAnchorSeqDatesByPatientId(
-          mrnsAndDmpPatientIds
-        );
+        const [patientsData, anchorSeqDatesByPatientId] = await Promise.all([
+          patientsDataPromise,
+          queryAnchorSeqDatesByPatientId(mrnsAndDmpPatientIds),
+        ]);
         return mapPhiToPatientsData({
           patientsData,
           patientIdsTriplets,
