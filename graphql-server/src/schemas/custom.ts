@@ -16,6 +16,7 @@ import {
   buildPatientsQueryBody,
   buildPatientsQueryFinal,
   mapPhiToPatientsData,
+  queryAllAnchorSeqDateByPatientId,
   queryAnchorSeqDatesByPatientId,
   queryDashboardPatients,
   queryPatientIdsTriplets,
@@ -52,6 +53,7 @@ const KEYCLOAK_PHI_ACCESS_GROUP = "mrn-search";
 type AuthMiddleware = {
   Query: {
     dashboardPatients: IMiddlewareResolver;
+    allAnchorSeqDateByPatientId: IMiddlewareResolver;
   };
 };
 
@@ -62,23 +64,28 @@ type AuthMiddleware = {
 function canSearchPhiData({
   phiEnabled,
   searchVals,
+  searchValsIsRequired = true,
 }: {
   phiEnabled?: boolean | null;
   searchVals?: string[] | null;
+  searchValsIsRequired?: boolean;
 }) {
-  return phiEnabled && Array.isArray(searchVals) && searchVals.length > 0;
+  if (searchValsIsRequired) {
+    return phiEnabled && Array.isArray(searchVals) && searchVals.length > 0;
+  }
+  return phiEnabled;
 }
 
 export async function buildCustomSchema(ogm: OGM) {
   const authenticationMiddleware: AuthMiddleware = {
     Query: {
-      dashboardPatients: async (
+      async dashboardPatients(
         resolve,
         parent,
         args: QueryDashboardPatientsArgs,
         context: ApolloServerContext,
         info
-      ) => {
+      ) {
         if (
           canSearchPhiData({
             phiEnabled: args.phiEnabled,
@@ -92,23 +99,65 @@ export async function buildCustomSchema(ogm: OGM) {
         }
         return await resolve(parent, args, context, info);
       },
-    },
-  };
 
-  const authorizationMiddleware: AuthMiddleware = {
-    Query: {
-      dashboardPatients: async (
+      async allAnchorSeqDateByPatientId(
         resolve,
         parent,
         args: QueryDashboardPatientsArgs,
         context: ApolloServerContext,
         info
-      ) => {
+      ) {
+        if (
+          !canSearchPhiData({
+            phiEnabled: args.phiEnabled,
+            searchValsIsRequired: false,
+          }) ||
+          !context.req.isAuthenticated()
+        ) {
+          throw new AuthenticationError(
+            "You must be logged in to access this resource."
+          );
+        }
+        return await resolve(parent, args, context, info);
+      },
+    },
+  };
+
+  const authorizationMiddleware: AuthMiddleware = {
+    Query: {
+      async dashboardPatients(
+        resolve,
+        parent,
+        args: QueryDashboardPatientsArgs,
+        context: ApolloServerContext,
+        info
+      ) {
         if (
           canSearchPhiData({
             phiEnabled: args.phiEnabled,
             searchVals: args.searchVals,
           }) &&
+          !context.req.user.groups.includes(KEYCLOAK_PHI_ACCESS_GROUP)
+        ) {
+          throw new ForbiddenError(
+            "You do not have permission to access this resource. Please contact the SMILE team for assistance."
+          );
+        }
+        return await resolve(parent, args, context, info);
+      },
+
+      async allAnchorSeqDateByPatientId(
+        resolve,
+        parent,
+        args: QueryDashboardPatientsArgs,
+        context: ApolloServerContext,
+        info
+      ) {
+        if (
+          !canSearchPhiData({
+            phiEnabled: args.phiEnabled,
+            searchValsIsRequired: false,
+          }) ||
           !context.req.user.groups.includes(KEYCLOAK_PHI_ACCESS_GROUP)
         ) {
           throw new ForbiddenError(
@@ -192,6 +241,10 @@ export async function buildCustomSchema(ogm: OGM) {
           patientIdsTriplets,
           anchorSeqDatesByPatientId,
         });
+      },
+
+      async allAnchorSeqDateByPatientId() {
+        return await queryAllAnchorSeqDateByPatientId();
       },
 
       async dashboardCohorts(

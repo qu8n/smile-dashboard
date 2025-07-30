@@ -14,8 +14,7 @@ import { AlertModal } from "./AlertModal";
 import { buildTsvString } from "../utils/stringBuilders";
 import {
   CACHE_BLOCK_SIZE,
-  MAX_ROWS_EXPORT,
-  MAX_ROWS_EXPORT_WARNING,
+  IExportDropdownItem,
   SampleChange,
   defaultColDef,
   formatDate,
@@ -63,10 +62,7 @@ interface ISampleListProps {
   userEmail?: string | null;
   setUserEmail?: Dispatch<SetStateAction<string | null>>;
   customToolbarUI?: JSX.Element;
-  exportDropdownItems?: Array<{
-    label: string;
-    columnDefs: ColDef[];
-  }>;
+  addlExportDropdownItems?: IExportDropdownItem[];
 }
 
 export default function SamplesList({
@@ -77,7 +73,7 @@ export default function SamplesList({
   userEmail,
   setUserEmail,
   customToolbarUI,
-  exportDropdownItems,
+  addlExportDropdownItems,
 }: ISampleListProps) {
   const [userSearchVal, setUserSearchVal] = useState<string>("");
   const [changes, setChanges] = useState<SampleChange[]>([]);
@@ -307,10 +303,7 @@ export default function SamplesList({
           loader={async () => {
             // Using fetchMore instead of refetch to avoid overriding the cached variables
             const { data } = await fetchMore({
-              variables: {
-                offset: 0,
-                limit: MAX_ROWS_EXPORT,
-              },
+              variables: { offset: 0, limit: sampleCount },
             });
             return buildTsvString(
               data.dashboardSamples,
@@ -357,14 +350,7 @@ export default function SamplesList({
         matchingResultsCount={`${
           sampleCount !== undefined ? sampleCount?.toLocaleString() : "Loading"
         } matching samples`}
-        onDownload={() => {
-          if (sampleCount && sampleCount > MAX_ROWS_EXPORT) {
-            setAlertContent(MAX_ROWS_EXPORT_WARNING.content);
-            setColumnDefsForExport(columnDefs);
-          } else {
-            setShowDownloadModal(true);
-          }
-        }}
+        onDownload={() => setShowDownloadModal(true)}
         customUILeft={customToolbarUI}
         customUIRight={
           changes.length > 0 ? (
@@ -405,7 +391,7 @@ export default function SamplesList({
             </>
           ) : undefined
         }
-        exportDropdownItems={exportDropdownItems}
+        addlExportDropdownItems={addlExportDropdownItems}
         setColumnDefsForExport={setColumnDefsForExport}
       />
 

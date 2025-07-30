@@ -3,12 +3,7 @@ import {
   useDashboardRequestsLazyQuery,
 } from "../../generated/graphql";
 import { useState } from "react";
-import {
-  MAX_ROWS_EXPORT,
-  MAX_ROWS_EXPORT_WARNING,
-  requestColDefs,
-  sampleColDefs,
-} from "../../shared/helpers";
+import { requestColDefs, sampleColDefs } from "../../shared/helpers";
 import { useParams } from "react-router-dom";
 import RecordsList from "../../components/RecordsList";
 import { AlertModal } from "../../components/AlertModal";
@@ -42,13 +37,7 @@ export default function RequestsPage() {
         setUserSearchVal={setUserSearchVal}
         showDownloadModal={showDownloadModal}
         setShowDownloadModal={setShowDownloadModal}
-        handleDownload={(recordCount: number) => {
-          if (recordCount && recordCount > MAX_ROWS_EXPORT) {
-            setAlertModal({ show: true, ...MAX_ROWS_EXPORT_WARNING });
-          } else {
-            setShowDownloadModal(true);
-          }
-        }}
+        handleDownload={() => setShowDownloadModal(true)}
         samplesColDefs={sampleColDefs}
         sampleContexts={
           sampleQueryParamValue

@@ -290,3 +290,15 @@ export function mapPhiToPatientsData({
     };
   });
 }
+
+export async function queryAllAnchorSeqDateByPatientId() {
+  const query = `
+    SELECT
+      MRN,
+      DMP_PATIENT_ID,
+      ANCHOR_SEQUENCING_DATE
+    FROM
+      ${props.databricks_seq_dates_by_patient_table}
+  `;
+  return await queryDatabricks<AnchorSeqDateByPatientId>(query);
+}

@@ -15,6 +15,7 @@ import moment from "moment";
 import _ from "lodash";
 import { RecordValidation } from "../components/RecordValidation";
 import {
+  AnchorSeqDateByPatientId,
   DashboardCohort,
   DashboardPatient,
   DashboardRecordColumnFilter,
@@ -322,6 +323,21 @@ export const patientColDefs: ColDef<DashboardPatient>[] = [
     field: "smilePatientId",
     headerName: "SMILE Patient ID",
     hide: true,
+  },
+];
+
+export const allAnchorSeqDateColDefs: ColDef<AnchorSeqDateByPatientId>[] = [
+  {
+    field: "MRN",
+    headerName: "Patient MRN",
+  },
+  {
+    field: "DMP_PATIENT_ID",
+    headerName: "DMP Patient ID",
+  },
+  {
+    field: "ANCHOR_SEQUENCING_DATE",
+    headerName: "Anchor Sequencing Date",
   },
 ];
 
@@ -1258,11 +1274,10 @@ export function getColumnFilters(
 
 export const CACHE_BLOCK_SIZE = 500; // number of rows to fetch at a time
 
-export const MAX_ROWS_EXPORT = 10000;
-
-export const MAX_ROWS_EXPORT_WARNING = {
-  title: "Warning",
-  content:
-    "You can only download up to 10,000 rows of data at a time. Please refine your search and try again. " +
-    "If you need the full dataset, contact the SMILE team at cmosmile@mskcc.org.",
-};
+export interface IExportDropdownItem {
+  label: string;
+  columnDefs: ColDef[];
+  customLoader?: () => Promise<any>;
+  disabled?: boolean;
+  tooltip?: string;
+}

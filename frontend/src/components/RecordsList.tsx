@@ -27,7 +27,7 @@ import {
   CACHE_BLOCK_SIZE,
   defaultColDef,
   getColumnFilters,
-  MAX_ROWS_EXPORT,
+  IExportDropdownItem,
 } from "../shared/helpers";
 import { ErrorMessage, Toolbar } from "../shared/components/Toolbar";
 import { AgGridReact as AgGridReactType } from "ag-grid-react/lib/agGridReact";
@@ -45,12 +45,13 @@ interface IRecordsListProps {
   setUserSearchVal: Dispatch<SetStateAction<string>>;
   showDownloadModal: boolean;
   setShowDownloadModal: Dispatch<SetStateAction<boolean>>;
-  handleDownload: (recordCount: number) => void;
+  handleDownload: () => void;
   samplesColDefs: ColDef[];
   sampleContexts?: DashboardSamplesQueryVariables["contexts"];
   userEmail?: string | null;
   setUserEmail?: Dispatch<SetStateAction<string | null>>;
   customToolbarUI?: JSX.Element;
+  addlExportDropdownItems?: IExportDropdownItem[];
 }
 
 export default function RecordsList({
@@ -69,9 +70,13 @@ export default function RecordsList({
   userEmail,
   setUserEmail,
   customToolbarUI,
+  addlExportDropdownItems,
 }: IRecordsListProps) {
   const [showClosingWarning, setShowClosingWarning] = useState(false);
   const [unsavedChanges, setUnsavedChanges] = useState(false);
+  const [, setColumnDefsForExport] = useState<ColDef[]>(columnDefs);
+  const [selectedExportItem, setSelectedExportItem] =
+    useState<IExportDropdownItem | null>(null);
 
   const gridRef = useRef<AgGridReactType>(null);
   const navigate = useNavigate();
@@ -148,6 +153,29 @@ export default function RecordsList({
     }
   };
 
+  async function getExportLoader() {
+    if (selectedExportItem && selectedExportItem.customLoader) {
+      const data = await selectedExportItem.customLoader!();
+      return buildTsvString(
+        data,
+        selectedExportItem.columnDefs,
+        gridRef.current?.columnApi?.getAllGridColumns()
+      );
+    }
+    const { data } = await fetchMore({
+      variables: {
+        searchVals: parseUserSearchVal(userSearchVal),
+        offset: 0,
+        limit: recordCount,
+      },
+    });
+    return buildTsvString(
+      data[recordsQueryName],
+      columnDefs,
+      gridRef.current?.columnApi?.getAllGridColumns()
+    );
+  }
+
   return (
     <Container fluid>
       <BreadCrumb currPageTitle={dataName} />
@@ -155,21 +183,12 @@ export default function RecordsList({
 
       {showDownloadModal && (
         <DownloadModal
-          loader={async () => {
-            // Using fetchMore instead of refetch to avoid overriding the cached variables
-            const { data } = await fetchMore({
-              variables: {
-                offset: 0,
-                limit: MAX_ROWS_EXPORT,
-              },
-            });
-            return buildTsvString(
-              data[recordsQueryName],
-              columnDefs,
-              gridRef.current?.columnApi?.getAllGridColumns()
-            );
+          loader={getExportLoader}
+          onComplete={() => {
+            setShowDownloadModal(false);
+            setColumnDefsForExport(columnDefs);
+            setSelectedExportItem(null);
           }}
-          onComplete={() => setShowDownloadModal(false)}
           exportFileName={`${dataName}.tsv`}
         />
       )}
@@ -246,8 +265,11 @@ export default function RecordsList({
             ? `(${uniqueSampleCount.toLocaleString()} unique samples)`
             : ""
         }`}
-        onDownload={() => handleDownload(recordCount)}
+        onDownload={() => handleDownload()}
         customUIRight={customToolbarUI}
+        addlExportDropdownItems={addlExportDropdownItems}
+        setColumnDefsForExport={setColumnDefsForExport}
+        setSelectedExportItem={setSelectedExportItem}
       />
 
       <AutoSizer>

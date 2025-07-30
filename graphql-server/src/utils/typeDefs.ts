@@ -33,9 +33,9 @@ const SAMPLE_FIELDS = `
 
   # (s:Sample)-[:HAS_METADATA]->(sm:SampleMetadata)
   ## Root-level fields
-  primaryId: String!
+  primaryId: String
   cmoSampleName: String
-  importDate: String!
+  importDate: String
   cmoPatientId: String
   investigatorSampleId: String
   sampleType: String
@@ -216,6 +216,10 @@ const QUERY_TYPEDEFS = gql`
       limit: Int!
       offset: Int!
     ): [DashboardSample!]!
+
+    allAnchorSeqDateByPatientId(
+      phiEnabled: Boolean
+    ): [AnchorSeqDateByPatientId!]!
   }
 `;
 

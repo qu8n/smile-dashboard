@@ -4072,6 +4072,7 @@ export type QcCompletesConnection = {
 
 export type Query = {
   __typename?: "Query";
+  allAnchorSeqDateByPatientId: Array<AnchorSeqDateByPatientId>;
   bamCompletes: Array<BamComplete>;
   bamCompletesAggregate: BamCompleteAggregateSelection;
   bamCompletesConnection: BamCompletesConnection;
@@ -4124,6 +4125,10 @@ export type Query = {
   tempos: Array<Tempo>;
   temposAggregate: TempoAggregateSelection;
   temposConnection: TemposConnection;
+};
+
+export type QueryAllAnchorSeqDateByPatientIdArgs = {
+  phiEnabled?: InputMaybe<Scalars["Boolean"]>;
 };
 
 export type QueryBamCompletesArgs = {
@@ -11332,6 +11337,20 @@ export type UpdateDashboardSamplesMutation = {
   } | null> | null;
 };
 
+export type AllAnchorSeqDateByPatientIdQueryVariables = Exact<{
+  phiEnabled?: InputMaybe<Scalars["Boolean"]>;
+}>;
+
+export type AllAnchorSeqDateByPatientIdQuery = {
+  __typename?: "Query";
+  allAnchorSeqDateByPatientId: Array<{
+    __typename?: "AnchorSeqDateByPatientId";
+    MRN: string;
+    DMP_PATIENT_ID: string;
+    ANCHOR_SEQUENCING_DATE: string;
+  }>;
+};
+
 export const DashboardSamplePartsFragmentDoc = gql`
   fragment DashboardSampleParts on DashboardSample {
     smileSampleId
@@ -11602,4 +11621,17 @@ export type UpdateDashboardSamplesMutationResult =
 export type UpdateDashboardSamplesMutationOptions = Apollo.BaseMutationOptions<
   UpdateDashboardSamplesMutation,
   UpdateDashboardSamplesMutationVariables
+>;
+export const AllAnchorSeqDateByPatientIdDocument = gql`
+  query AllAnchorSeqDateByPatientId($phiEnabled: Boolean = false) {
+    allAnchorSeqDateByPatientId(phiEnabled: $phiEnabled) {
+      MRN
+      DMP_PATIENT_ID
+      ANCHOR_SEQUENCING_DATE
+    }
+  }
+`;
+export type AllAnchorSeqDateByPatientIdQueryResult = Apollo.QueryResult<
+  AllAnchorSeqDateByPatientIdQuery,
+  AllAnchorSeqDateByPatientIdQueryVariables
 >;

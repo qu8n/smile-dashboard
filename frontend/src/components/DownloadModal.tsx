@@ -29,7 +29,10 @@ export function DownloadModal({
     <Modal show={true} size={"sm"}>
       <Modal.Body>
         <div className="d-flex flex-column align-items-center">
-          <p>Preparing to download data...</p>
+          <p>
+            Downloading the most up-to-date version of your data request. Note
+            that large data requests may take minutes to process.
+          </p>
           <Spinner fadeIn={"none"} color={"lightblue"} name="ball-grid-pulse" />
         </div>
       </Modal.Body>

@@ -126,7 +126,7 @@ export default function SamplesPage() {
           </ButtonGroup>
         </>
       }
-      exportDropdownItems={[
+      addlExportDropdownItems={[
         {
           label: "Export in Phenotype format for dbGaP",
           columnDefs: DbGapPhenotypeColumns,
