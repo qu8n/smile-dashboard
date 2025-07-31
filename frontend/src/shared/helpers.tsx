@@ -407,6 +407,12 @@ export const sampleColDefs: ColDef<DashboardSample>[] = [
     ...getAgGridDateColFilterConfigs(),
   },
   {
+    field: "sequencingDate",
+    headerName: "Sequencing Date",
+    width: 260, // prevent truncation when being un-hidden
+    ...phiColDefProps,
+  },
+  {
     field: "cmoPatientId",
     headerName: "CMO Patient ID",
     cellRenderer: (params: any) => {
@@ -742,7 +748,7 @@ function setupEditableSampleFields(
             if (params.colDef.field in params.data) {
               return params.data[params.colDef.field];
             } else {
-              return "N/A";
+              return "";
             }
           }
         }

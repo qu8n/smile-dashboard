@@ -108,6 +108,7 @@ query DashboardSamples(
   $columnFilters: [DashboardRecordColumnFilter!]
   $limit: Int!
   $offset: Int!
+  $phiEnabled: Boolean = false
 ) {
   dashboardSamples(
     searchVals: $searchVals
@@ -116,12 +117,14 @@ query DashboardSamples(
     columnFilters: $columnFilters
     limit: $limit
     offset: $offset
+    phiEnabled: $phiEnabled
   ) {
     ...DashboardSampleParts
     ...DashboardSampleMetadataParts
     ...DashboardTempoParts
     ...DashboardDbGapParts
     ...DashboardPatientParts
+    sequencingDate
     _total
   }
 }

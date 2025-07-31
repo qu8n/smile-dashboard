@@ -98,6 +98,9 @@ const SAMPLE_FIELDS = `
   ## Custom fields
   dmpPatientAlias: String
 
+  # Databricks
+  sequencingDate: String
+
   # results total
   _total: Int
 `;
@@ -179,6 +182,11 @@ const QUERY_RESULT_TYPEDEFS = gql`
     DMP_PATIENT_ID: String!
     ANCHOR_SEQUENCING_DATE: String!
   }
+
+  type SeqDateBySampleId {
+    DMP_SAMPLE_ID: String!
+    SEQUENCING_DATE: String!
+  }
 `;
 
 const QUERY_TYPEDEFS = gql`
@@ -215,6 +223,7 @@ const QUERY_TYPEDEFS = gql`
       sort: DashboardRecordSort!
       limit: Int!
       offset: Int!
+      phiEnabled: Boolean
     ): [DashboardSample!]!
 
     allAnchorSeqDateByPatientId(

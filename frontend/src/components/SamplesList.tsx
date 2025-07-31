@@ -125,6 +125,7 @@ export default function SamplesList({
         sort: DEFAULT_SORT,
         limit: CACHE_BLOCK_SIZE,
         offset: 0,
+        phiEnabled,
       },
       pollInterval: POLLING_INTERVAL,
     });
@@ -279,7 +280,7 @@ export default function SamplesList({
     // the updated data, while AG Grid expects the datasource == the entire dataset.)
     const changesByPrimaryId = groupChangesByPrimaryId(changes);
     const optimisticSamples = samples!.map((s) => {
-      if (s.primaryId in changesByPrimaryId) {
+      if (s.primaryId != null && s.primaryId in changesByPrimaryId) {
         return {
           ...s,
           revisable: false,
@@ -291,7 +292,8 @@ export default function SamplesList({
     });
     optimisticSamples.sort((a, b) => {
       return (
-        new Date(b.importDate).getTime() - new Date(a.importDate).getTime()
+        new Date(b.importDate ?? "").getTime() -
+        new Date(a.importDate ?? "").getTime()
       );
     });
     const optimisticDatasource = {
@@ -386,7 +388,12 @@ export default function SamplesList({
         matchingResultsCount={`${
           sampleCount !== undefined ? sampleCount?.toLocaleString() : "Loading"
         } matching samples`}
-        onDownload={() => setShowDownloadModal(true)}
+        onDownload={() => {
+          if (phiEnabled) {
+            setAlertContent(PHI_WARNING.content);
+          }
+          setShowDownloadModal(true);
+        }}
         customUILeft={customToolbarUI}
         customUIRight={
           <>

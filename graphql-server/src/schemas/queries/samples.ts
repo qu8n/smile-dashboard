@@ -3,6 +3,7 @@ import {
   DashboardSample,
   InputMaybe,
   QueryDashboardSamplesArgs,
+  SeqDateBySampleId,
 } from "../../generated/graphql";
 import { OncotreeCache } from "../../utils/cache";
 import { neo4jDriver } from "../../utils/servers";
@@ -13,6 +14,8 @@ import {
   buildCypherPredicatesFromSearchVals,
   isQuotedString,
 } from "../../utils/cypher";
+import { props } from "../../utils/constants";
+import { queryDatabricks } from "../../utils/databricks";
 
 const FIELDS_TO_SEARCH = [
   "primaryId",
@@ -183,7 +186,7 @@ export function buildSamplesQueryBody({
       latestSm[0] AS latestSm,
       COLLECT {
       	MATCH (s)-[:HAS_METADATA]->(sm:SampleMetadata)
-        WITH 
+        WITH
           sm.cmoSampleName as cmoSampleName,
           apoc.coll.sort(COLLECT(sm.importDate)) as orderedImportDates
       	RETURN ({
@@ -271,7 +274,7 @@ export function buildSamplesQueryBody({
         RETURN qc ORDER BY qc.date DESC LIMIT 1
       } AS latestQC,
       COLLECT {
-        OPTIONAL MATCH (s)<-[:HAS_COHORT_SAMPLE]-(c:Cohort) 
+        OPTIONAL MATCH (s)<-[:HAS_COHORT_SAMPLE]-(c:Cohort)
         RETURN DISTINCT c.cohortId
       } AS sampleCohortIds
 
@@ -598,4 +601,41 @@ function getPlatformByInstrumentModel(
   return instrumentModel && ILLUMINA_INSTRUMENT_MODELS.has(instrumentModel)
     ? "Illumina"
     : null;
+}
+
+export async function querySeqDatesByDmpSampleId(dmpSampleIds: string[]) {
+  const dmpSampleIdsList = dmpSampleIds
+    .map((dmpSampleId) => `'${dmpSampleId}'`)
+    .join(",");
+  const query = `
+    SELECT
+      DMP_SAMPLE_ID,
+      SEQUENCING_DATE
+    FROM
+      ${props.databricks_seq_dates_by_sample_table}
+    WHERE
+      DMP_SAMPLE_ID IN (${dmpSampleIdsList})
+  `;
+  return await queryDatabricks<SeqDateBySampleId>(query);
+}
+
+export function mapPhiToSamplesData({
+  samplesData,
+  seqDatesBySampleId,
+}: {
+  samplesData: Array<DashboardSample>;
+  seqDatesBySampleId: Array<SeqDateBySampleId>;
+}): Array<DashboardSample> {
+  const seqDateBySampleIdMap: Record<string, string> = {};
+  seqDatesBySampleId.forEach((seqDate) => {
+    seqDateBySampleIdMap[seqDate.DMP_SAMPLE_ID] = seqDate.SEQUENCING_DATE;
+  });
+  return samplesData.map((sample) => {
+    return {
+      ...sample,
+      sequencingDate: sample.primaryId
+        ? seqDateBySampleIdMap[sample.primaryId]
+        : null,
+    };
+  });
 }
