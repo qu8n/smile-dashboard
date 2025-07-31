@@ -42,6 +42,9 @@ import { useParams } from "react-router-dom";
 import { DataName } from "../shared/types";
 import { parseUserSearchVal } from "../utils/parseSearchQueries";
 import { handleAgGridPaste } from "../utils/handleAgGridPaste";
+import { Form } from "react-bootstrap";
+import { Tooltip } from "@material-ui/core";
+import InfoIcon from "@material-ui/icons/InfoOutlined";
 
 const POLLING_INTERVAL = 5000; // 5s
 const POLLING_PAUSE_AFTER_UPDATE = 12000; // 12s
@@ -53,6 +56,8 @@ const DEFAULT_SORT: DashboardRecordSort = {
   colId: "importDate",
   sort: AgGridSortDirection.Desc,
 };
+
+const PHI_FIELDS = new Set(["sequencingDate"]);
 
 interface ISampleListProps {
   columnDefs: ColDef[];
@@ -78,6 +83,8 @@ export default function SamplesList({
   const [userSearchVal, setUserSearchVal] = useState<string>("");
   const [changes, setChanges] = useState<SampleChange[]>([]);
 
+  const [colDefs, setColDefs] = useState(columnDefs);
+  const [phiEnabled, setPhiEnabled] = useState(false);
   const [showDownloadModal, setShowDownloadModal] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [alertContent, setAlertContent] = useState<string | null>(null);
@@ -283,6 +290,13 @@ export default function SamplesList({
     handleDiscardChanges();
   }
 
+  const sampleColDefsWithPhiCols = columnDefs.map((col) => {
+    if (col.field && PHI_FIELDS.has(col.field)) {
+      return { ...col, hide: false };
+    }
+    return col;
+  });
+
   return (
     <>
       <Container fluid>
@@ -313,7 +327,7 @@ export default function SamplesList({
           }}
           onComplete={() => {
             setShowDownloadModal(false);
-            setColumnDefsForExport(columnDefs);
+            setColumnDefsForExport(colDefs);
           }}
           exportFileName={[
             parentDataName?.slice(0, -1),
@@ -353,43 +367,84 @@ export default function SamplesList({
         onDownload={() => setShowDownloadModal(true)}
         customUILeft={customToolbarUI}
         customUIRight={
-          changes.length > 0 ? (
-            <>
-              <Col md="auto">
-                <Button
-                  className={"btn btn-secondary"}
-                  onClick={() => {
-                    // Remove cell styles associated with having been edited
-                    gridRef.current?.api?.redrawRows({
-                      rowNodes: changes.map((c) => c.rowNode),
-                    });
-                    handleDiscardChanges();
-                  }}
-                  size={"sm"}
-                >
-                  Discard Changes
-                </Button>{" "}
-                <Button
-                  className={"btn btn-success"}
-                  onClick={() => {
-                    const hasInvalidCostCenter = changes.some(
-                      (c) =>
-                        c.fieldName === "costCenter" &&
-                        !isValidCostCenter(c.newValue)
-                    );
-                    if (hasInvalidCostCenter) {
-                      setAlertContent(COST_CENTER_VALIDATION_ALERT);
+          <>
+            <Col md="auto" className="mt-1">
+              <div className="vr"></div>
+            </Col>
+
+            <Col md="auto" className="mt-1">
+              <Form>
+                <Form.Check
+                  type="switch"
+                  id="custom-switch"
+                  label="PHI-enabled"
+                  checked={phiEnabled}
+                  onChange={(e) => {
+                    const isPhiEnabled = e.target.checked;
+                    setPhiEnabled(isPhiEnabled);
+                    if (isPhiEnabled) {
+                      setColDefs(sampleColDefsWithPhiCols);
                     } else {
-                      setShowUpdateModal(true);
+                      setColDefs(columnDefs);
                     }
                   }}
-                  size={"sm"}
-                >
-                  Confirm Updates
-                </Button>
-              </Col>
-            </>
-          ) : undefined
+                />
+              </Form>
+            </Col>
+
+            <Col md="auto" style={{ marginLeft: -15 }}>
+              <Tooltip
+                title={
+                  <span style={{ fontSize: 12 }}>
+                    Turn on this switch to return each patient's MRN and anchor
+                    sequencing date in the results. Note that this mode only
+                    returns the PHI matching specific MRN, CMO, or DMP Patient
+                    IDs entered in the search bar. When turning on this switch
+                    for the first time, you will be prompted to log in.
+                  </span>
+                }
+              >
+                <InfoIcon style={{ fontSize: 18, color: "grey" }} />
+              </Tooltip>
+            </Col>
+            {changes.length > 0 ? (
+              <>
+                <Col md="auto">
+                  <Button
+                    className={"btn btn-secondary"}
+                    onClick={() => {
+                      // Remove cell styles associated with having been edited
+                      gridRef.current?.api?.redrawRows({
+                        rowNodes: changes.map((c) => c.rowNode),
+                      });
+                      handleDiscardChanges();
+                    }}
+                    size={"sm"}
+                  >
+                    Discard Changes
+                  </Button>{" "}
+                  <Button
+                    className={"btn btn-success"}
+                    onClick={() => {
+                      const hasInvalidCostCenter = changes.some(
+                        (c) =>
+                          c.fieldName === "costCenter" &&
+                          !isValidCostCenter(c.newValue)
+                      );
+                      if (hasInvalidCostCenter) {
+                        setAlertContent(COST_CENTER_VALIDATION_ALERT);
+                      } else {
+                        setShowUpdateModal(true);
+                      }
+                    }}
+                    size={"sm"}
+                  >
+                    Confirm Updates
+                  </Button>
+                </Col>
+              </>
+            ) : undefined}
+          </>
         }
         addlExportDropdownItems={addlExportDropdownItems}
         setColumnDefsForExport={setColumnDefsForExport}
@@ -424,7 +479,7 @@ export default function SamplesList({
                 rowModelType="serverSide"
                 serverSideInfiniteScroll={true}
                 cacheBlockSize={CACHE_BLOCK_SIZE}
-                columnDefs={columnDefs}
+                columnDefs={colDefs}
                 defaultColDef={defaultColDef}
                 enableRangeSelection={true}
                 onGridReady={(params) => params.api.sizeColumnsToFit()}
