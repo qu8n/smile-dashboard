@@ -52,6 +52,7 @@ export async function warmUpDatabricksTables() {
   const databricksTablesToWarmUp = [
     props.databricks_phi_id_mapping_table,
     props.databricks_seq_dates_by_patient_table,
+    props.databricks_seq_dates_by_sample_table,
   ];
   // Open a single Databricks connection and session to execute all warmup queries concurrently.
   // This is more efficient than opening a new connection for each query using `queryDatabricks()`,
