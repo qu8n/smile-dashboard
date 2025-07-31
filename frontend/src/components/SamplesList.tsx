@@ -7,7 +7,13 @@ import {
 } from "../generated/graphql";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { Button, Col, Container } from "react-bootstrap";
-import { Dispatch, SetStateAction, useCallback, useRef } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useRef,
+} from "react";
 import { DownloadModal } from "./DownloadModal";
 import { groupChangesByPrimaryId, UpdateModal } from "./UpdateModal";
 import { AlertModal } from "./AlertModal";
@@ -45,6 +51,7 @@ import { handleAgGridPaste } from "../utils/handleAgGridPaste";
 import { Form } from "react-bootstrap";
 import { Tooltip } from "@material-ui/core";
 import InfoIcon from "@material-ui/icons/InfoOutlined";
+import { PHI_WARNING } from "../pages/patients/PatientsPage";
 
 const POLLING_INTERVAL = 5000; // 5s
 const POLLING_PAUSE_AFTER_UPDATE = 12000; // 12s
@@ -64,8 +71,8 @@ interface ISampleListProps {
   setUnsavedChanges?: (unsavedChanges: boolean) => void;
   parentDataName?: DataName;
   sampleContexts?: DashboardSamplesQueryVariables["contexts"];
-  userEmail?: string | null;
-  setUserEmail?: Dispatch<SetStateAction<string | null>>;
+  userEmail: string | null;
+  setUserEmail: Dispatch<SetStateAction<string | null>>;
   customToolbarUI?: JSX.Element;
   addlExportDropdownItems?: IExportDropdownItem[];
 }
@@ -94,6 +101,21 @@ export default function SamplesList({
   const gridRef = useRef<AgGridReactType>(null);
   const params = useParams();
   const hasParams = Object.keys(params).length > 0;
+
+  useEffect(() => {
+    async function handleLogin(event: MessageEvent) {
+      if (event.data !== "success") return;
+      setUserEmail(await getUserEmail());
+      setAlertContent(PHI_WARNING.content);
+    }
+    if (phiEnabled) {
+      window.addEventListener("message", handleLogin);
+      if (!userEmail) openLoginPopup();
+      return () => {
+        window.removeEventListener("message", handleLogin);
+      };
+    }
+  }, [phiEnabled, userEmail, setUserEmail]);
 
   const [, { error, data, fetchMore, refetch, startPolling, stopPolling }] =
     useDashboardSamplesLazyQuery({

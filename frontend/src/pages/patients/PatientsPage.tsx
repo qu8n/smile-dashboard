@@ -18,7 +18,7 @@ import { getUserEmail } from "../../utils/getUserEmail";
 import { openLoginPopup } from "../../utils/openLoginPopup";
 import RecordsList from "../../components/RecordsList";
 
-const PHI_WARNING = {
+export const PHI_WARNING = {
   title: "Warning",
   content:
     "The information contained in this transmission from Memorial Sloan-Kettering Cancer Center is privileged," +
@@ -168,6 +168,8 @@ export default function PatientsPage({
               "You must enable PHI and log in to export anchor sequencing dates",
           },
         ]}
+        userEmail={userEmail}
+        setUserEmail={setUserEmail}
       />
 
       <AlertModal
