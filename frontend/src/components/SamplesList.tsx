@@ -431,11 +431,11 @@ export default function SamplesList({
               <Tooltip
                 title={
                   <span style={{ fontSize: 12 }}>
-                    Turn on this switch to return each patient's MRN and anchor
-                    sequencing date in the results. Note that this mode only
-                    returns the PHI matching specific MRN, CMO, or DMP Patient
-                    IDs entered in the search bar. When turning on this switch
-                    for the first time, you will be prompted to log in.
+                    Turn on this switch to return each sample's sequencing date
+                    in the results. Note that this mode only returns the
+                    sequencing date matching specific DMP Sample IDs entered in
+                    the search bar. When turning on this switch for the first
+                    time, you will be prompted to log in.
                   </span>
                 }
               >
