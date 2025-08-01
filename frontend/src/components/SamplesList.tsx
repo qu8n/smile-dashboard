@@ -341,7 +341,10 @@ export default function SamplesList({
           loader={async () => {
             // Using fetchMore instead of refetch to avoid overriding the cached variables
             const { data } = await fetchMore({
-              variables: { offset: 0, limit: sampleCount },
+              variables: {
+                offset: 0,
+                limit: sampleCount,
+              },
             });
             return buildTsvString(
               data.dashboardSamples,
@@ -413,9 +416,12 @@ export default function SamplesList({
                     setPhiEnabled(isPhiEnabled);
                     if (isPhiEnabled) {
                       setColDefs(sampleColDefsWithPhiCols);
+                      setColumnDefsForExport(sampleColDefsWithPhiCols);
                     } else {
                       setColDefs(columnDefs);
+                      setColumnDefsForExport(columnDefs);
                     }
+                    refreshData(userSearchVal);
                   }}
                 />
               </Form>
