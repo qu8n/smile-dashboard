@@ -1456,7 +1456,7 @@ export type DashboardSample = {
   embargoDate?: Maybe<Scalars["String"]>;
   genePanel?: Maybe<Scalars["String"]>;
   historicalCmoSampleNames?: Maybe<Scalars["String"]>;
-  importDate: Scalars["String"];
+  importDate?: Maybe<Scalars["String"]>;
   initialPipelineRunDate?: Maybe<Scalars["String"]>;
   instrumentModel?: Maybe<Scalars["String"]>;
   investigatorSampleId?: Maybe<Scalars["String"]>;
@@ -1466,7 +1466,7 @@ export type DashboardSample = {
   oncotreeCode?: Maybe<Scalars["String"]>;
   platform?: Maybe<Scalars["String"]>;
   preservation?: Maybe<Scalars["String"]>;
-  primaryId: Scalars["String"];
+  primaryId?: Maybe<Scalars["String"]>;
   qcCompleteDate?: Maybe<Scalars["String"]>;
   qcCompleteReason?: Maybe<Scalars["String"]>;
   qcCompleteResult?: Maybe<Scalars["String"]>;
@@ -1478,6 +1478,7 @@ export type DashboardSample = {
   sampleCohortIds?: Maybe<Scalars["String"]>;
   sampleOrigin?: Maybe<Scalars["String"]>;
   sampleType?: Maybe<Scalars["String"]>;
+  sequencingDate?: Maybe<Scalars["String"]>;
   sex?: Maybe<Scalars["String"]>;
   smileSampleId: Scalars["String"];
   species?: Maybe<Scalars["String"]>;
@@ -1511,7 +1512,7 @@ export type DashboardSampleInput = {
   embargoDate?: InputMaybe<Scalars["String"]>;
   genePanel?: InputMaybe<Scalars["String"]>;
   historicalCmoSampleNames?: InputMaybe<Scalars["String"]>;
-  importDate: Scalars["String"];
+  importDate?: InputMaybe<Scalars["String"]>;
   initialPipelineRunDate?: InputMaybe<Scalars["String"]>;
   instrumentModel?: InputMaybe<Scalars["String"]>;
   investigatorSampleId?: InputMaybe<Scalars["String"]>;
@@ -1521,7 +1522,7 @@ export type DashboardSampleInput = {
   oncotreeCode?: InputMaybe<Scalars["String"]>;
   platform?: InputMaybe<Scalars["String"]>;
   preservation?: InputMaybe<Scalars["String"]>;
-  primaryId: Scalars["String"];
+  primaryId?: InputMaybe<Scalars["String"]>;
   qcCompleteDate?: InputMaybe<Scalars["String"]>;
   qcCompleteReason?: InputMaybe<Scalars["String"]>;
   qcCompleteResult?: InputMaybe<Scalars["String"]>;
@@ -1533,6 +1534,7 @@ export type DashboardSampleInput = {
   sampleCohortIds?: InputMaybe<Scalars["String"]>;
   sampleOrigin?: InputMaybe<Scalars["String"]>;
   sampleType?: InputMaybe<Scalars["String"]>;
+  sequencingDate?: InputMaybe<Scalars["String"]>;
   sex?: InputMaybe<Scalars["String"]>;
   smileSampleId: Scalars["String"];
   species?: InputMaybe<Scalars["String"]>;
@@ -4209,6 +4211,7 @@ export type QueryDashboardSamplesArgs = {
   contexts?: InputMaybe<Array<InputMaybe<DashboardRecordContext>>>;
   limit: Scalars["Int"];
   offset: Scalars["Int"];
+  phiEnabled?: InputMaybe<Scalars["Boolean"]>;
   searchVals?: InputMaybe<Array<Scalars["String"]>>;
   sort: DashboardRecordSort;
 };
@@ -9109,6 +9112,12 @@ export type SamplesConnection = {
   totalCount: Scalars["Int"];
 };
 
+export type SeqDateBySampleId = {
+  __typename?: "SeqDateBySampleId";
+  DMP_SAMPLE_ID: Scalars["String"];
+  SEQUENCING_DATE: Scalars["String"];
+};
+
 /** An enum for sorting in either ascending or descending order. */
 export enum SortDirection {
   /** Sort by field values in ascending order. */
@@ -11125,19 +11134,21 @@ export type DashboardSamplesQueryVariables = Exact<{
   >;
   limit: Scalars["Int"];
   offset: Scalars["Int"];
+  phiEnabled?: InputMaybe<Scalars["Boolean"]>;
 }>;
 
 export type DashboardSamplesQuery = {
   __typename?: "Query";
   dashboardSamples: Array<{
     __typename?: "DashboardSample";
+    sequencingDate?: string | null;
     _total?: number | null;
     smileSampleId: string;
     revisable?: boolean | null;
     sampleCategory: string;
-    primaryId: string;
+    primaryId?: string | null;
     cmoSampleName?: string | null;
-    importDate: string;
+    importDate?: string | null;
     cmoPatientId?: string | null;
     investigatorSampleId?: string | null;
     sampleType?: string | null;
@@ -11194,9 +11205,9 @@ export type DashboardSamplePartsFragment = {
 
 export type DashboardSampleMetadataPartsFragment = {
   __typename?: "DashboardSample";
-  primaryId: string;
+  primaryId?: string | null;
   cmoSampleName?: string | null;
-  importDate: string;
+  importDate?: string | null;
   cmoPatientId?: string | null;
   investigatorSampleId?: string | null;
   sampleType?: string | null;
@@ -11288,9 +11299,9 @@ export type UpdateDashboardSamplesMutation = {
     smileSampleId: string;
     revisable?: boolean | null;
     sampleCategory: string;
-    primaryId: string;
+    primaryId?: string | null;
     cmoSampleName?: string | null;
-    importDate: string;
+    importDate?: string | null;
     cmoPatientId?: string | null;
     investigatorSampleId?: string | null;
     sampleType?: string | null;
@@ -11569,6 +11580,7 @@ export const DashboardSamplesDocument = gql`
     $columnFilters: [DashboardRecordColumnFilter!]
     $limit: Int!
     $offset: Int!
+    $phiEnabled: Boolean = false
   ) {
     dashboardSamples(
       searchVals: $searchVals
@@ -11577,12 +11589,14 @@ export const DashboardSamplesDocument = gql`
       columnFilters: $columnFilters
       limit: $limit
       offset: $offset
+      phiEnabled: $phiEnabled
     ) {
       ...DashboardSampleParts
       ...DashboardSampleMetadataParts
       ...DashboardTempoParts
       ...DashboardDbGapParts
       ...DashboardPatientParts
+      sequencingDate
       _total
     }
   }

@@ -5,7 +5,7 @@ import {
   readOnlyWesSampleColDefs,
   combinedSampleColDefs,
 } from "../../shared/helpers";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { Button, ButtonGroup } from "react-bootstrap";
 import { CustomTooltip } from "../../shared/components/CustomToolTip";
 import InfoIcon from "@material-ui/icons/InfoOutlined";
@@ -93,7 +93,15 @@ const tabSettings = new Map<
   ],
 ]);
 
-export default function SamplesPage() {
+interface ISamplesPageProps {
+  userEmail: string | null;
+  setUserEmail: Dispatch<SetStateAction<string | null>>;
+}
+
+export default function SamplesPage({
+  userEmail,
+  setUserEmail,
+}: ISamplesPageProps) {
   const [filteredTabKey, setFilteredTabKey] = useState("All");
 
   return (
@@ -132,6 +140,8 @@ export default function SamplesPage() {
           columnDefs: DbGapPhenotypeColumns,
         },
       ]}
+      userEmail={userEmail}
+      setUserEmail={setUserEmail}
     />
   );
 }

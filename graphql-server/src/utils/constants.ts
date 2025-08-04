@@ -47,6 +47,9 @@ export const props = {
   databricks_seq_dates_by_patient_table: properties.get(
     "databricks.databricks_seq_dates_by_patient_table"
   ),
+  databricks_seq_dates_by_sample_table: properties.get(
+    "databricks.databricks_seq_dates_by_sample_table"
+  ),
 };
 
 export const REACT_APP_EXPRESS_SERVER_ORIGIN =

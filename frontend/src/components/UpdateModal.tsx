@@ -53,7 +53,7 @@ export function UpdateModal({
 
     let newDashboardSamples: DashboardSampleInput[] = [];
     samples.forEach((s) => {
-      if (s.primaryId in changesByPrimaryId) {
+      if (s.primaryId && s.primaryId in changesByPrimaryId) {
         const newDashboardSample = {
           ...s,
           revisable: false,

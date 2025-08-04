@@ -7,7 +7,13 @@ import {
 } from "../generated/graphql";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { Button, Col, Container } from "react-bootstrap";
-import { Dispatch, SetStateAction, useCallback, useRef } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useRef,
+} from "react";
 import { DownloadModal } from "./DownloadModal";
 import { groupChangesByPrimaryId, UpdateModal } from "./UpdateModal";
 import { AlertModal } from "./AlertModal";
@@ -42,6 +48,10 @@ import { useParams } from "react-router-dom";
 import { DataName } from "../shared/types";
 import { parseUserSearchVal } from "../utils/parseSearchQueries";
 import { handleAgGridPaste } from "../utils/handleAgGridPaste";
+import { Form } from "react-bootstrap";
+import { Tooltip } from "@material-ui/core";
+import InfoIcon from "@material-ui/icons/InfoOutlined";
+import { PHI_WARNING } from "../pages/patients/PatientsPage";
 
 const POLLING_INTERVAL = 5000; // 5s
 const POLLING_PAUSE_AFTER_UPDATE = 12000; // 12s
@@ -54,13 +64,15 @@ const DEFAULT_SORT: DashboardRecordSort = {
   sort: AgGridSortDirection.Desc,
 };
 
+const PHI_FIELDS = new Set(["sequencingDate"]);
+
 interface ISampleListProps {
   columnDefs: ColDef[];
   setUnsavedChanges?: (unsavedChanges: boolean) => void;
   parentDataName?: DataName;
   sampleContexts?: DashboardSamplesQueryVariables["contexts"];
-  userEmail?: string | null;
-  setUserEmail?: Dispatch<SetStateAction<string | null>>;
+  userEmail: string | null;
+  setUserEmail: Dispatch<SetStateAction<string | null>>;
   customToolbarUI?: JSX.Element;
   addlExportDropdownItems?: IExportDropdownItem[];
 }
@@ -78,6 +90,8 @@ export default function SamplesList({
   const [userSearchVal, setUserSearchVal] = useState<string>("");
   const [changes, setChanges] = useState<SampleChange[]>([]);
 
+  const [colDefs, setColDefs] = useState(columnDefs);
+  const [phiEnabled, setPhiEnabled] = useState(false);
   const [showDownloadModal, setShowDownloadModal] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [alertContent, setAlertContent] = useState<string | null>(null);
@@ -88,6 +102,21 @@ export default function SamplesList({
   const params = useParams();
   const hasParams = Object.keys(params).length > 0;
 
+  useEffect(() => {
+    async function handleLogin(event: MessageEvent) {
+      if (event.data !== "success") return;
+      setUserEmail(await getUserEmail());
+      setAlertContent(PHI_WARNING.content);
+    }
+    if (phiEnabled) {
+      window.addEventListener("message", handleLogin);
+      if (!userEmail) openLoginPopup();
+      return () => {
+        window.removeEventListener("message", handleLogin);
+      };
+    }
+  }, [phiEnabled, userEmail, setUserEmail]);
+
   const [, { error, data, fetchMore, refetch, startPolling, stopPolling }] =
     useDashboardSamplesLazyQuery({
       variables: {
@@ -96,6 +125,7 @@ export default function SamplesList({
         sort: DEFAULT_SORT,
         limit: CACHE_BLOCK_SIZE,
         offset: 0,
+        phiEnabled,
       },
       pollInterval: POLLING_INTERVAL,
     });
@@ -250,7 +280,7 @@ export default function SamplesList({
     // the updated data, while AG Grid expects the datasource == the entire dataset.)
     const changesByPrimaryId = groupChangesByPrimaryId(changes);
     const optimisticSamples = samples!.map((s) => {
-      if (s.primaryId in changesByPrimaryId) {
+      if (s.primaryId != null && s.primaryId in changesByPrimaryId) {
         return {
           ...s,
           revisable: false,
@@ -262,7 +292,8 @@ export default function SamplesList({
     });
     optimisticSamples.sort((a, b) => {
       return (
-        new Date(b.importDate).getTime() - new Date(a.importDate).getTime()
+        new Date(b.importDate ?? "").getTime() -
+        new Date(a.importDate ?? "").getTime()
       );
     });
     const optimisticDatasource = {
@@ -282,6 +313,13 @@ export default function SamplesList({
 
     handleDiscardChanges();
   }
+
+  const sampleColDefsWithPhiCols = columnDefs.map((col) => {
+    if (col.field && PHI_FIELDS.has(col.field)) {
+      return { ...col, hide: false };
+    }
+    return col;
+  });
 
   return (
     <>
@@ -303,7 +341,10 @@ export default function SamplesList({
           loader={async () => {
             // Using fetchMore instead of refetch to avoid overriding the cached variables
             const { data } = await fetchMore({
-              variables: { offset: 0, limit: sampleCount },
+              variables: {
+                offset: 0,
+                limit: sampleCount,
+              },
             });
             return buildTsvString(
               data.dashboardSamples,
@@ -313,7 +354,7 @@ export default function SamplesList({
           }}
           onComplete={() => {
             setShowDownloadModal(false);
-            setColumnDefsForExport(columnDefs);
+            setColumnDefsForExport(colDefs);
           }}
           exportFileName={[
             parentDataName?.slice(0, -1),
@@ -350,46 +391,95 @@ export default function SamplesList({
         matchingResultsCount={`${
           sampleCount !== undefined ? sampleCount?.toLocaleString() : "Loading"
         } matching samples`}
-        onDownload={() => setShowDownloadModal(true)}
+        onDownload={() => {
+          if (phiEnabled) {
+            setAlertContent(PHI_WARNING.content);
+          }
+          setShowDownloadModal(true);
+        }}
         customUILeft={customToolbarUI}
         customUIRight={
-          changes.length > 0 ? (
-            <>
-              <Col md="auto">
-                <Button
-                  className={"btn btn-secondary"}
-                  onClick={() => {
-                    // Remove cell styles associated with having been edited
-                    gridRef.current?.api?.redrawRows({
-                      rowNodes: changes.map((c) => c.rowNode),
-                    });
-                    handleDiscardChanges();
-                  }}
-                  size={"sm"}
-                >
-                  Discard Changes
-                </Button>{" "}
-                <Button
-                  className={"btn btn-success"}
-                  onClick={() => {
-                    const hasInvalidCostCenter = changes.some(
-                      (c) =>
-                        c.fieldName === "costCenter" &&
-                        !isValidCostCenter(c.newValue)
-                    );
-                    if (hasInvalidCostCenter) {
-                      setAlertContent(COST_CENTER_VALIDATION_ALERT);
+          <>
+            <Col md="auto" className="mt-1">
+              <div className="vr"></div>
+            </Col>
+
+            <Col md="auto" className="mt-1">
+              <Form>
+                <Form.Check
+                  type="switch"
+                  id="custom-switch"
+                  label="PHI-enabled"
+                  checked={phiEnabled}
+                  onChange={(e) => {
+                    const isPhiEnabled = e.target.checked;
+                    setPhiEnabled(isPhiEnabled);
+                    if (isPhiEnabled) {
+                      setColDefs(sampleColDefsWithPhiCols);
+                      setColumnDefsForExport(sampleColDefsWithPhiCols);
                     } else {
-                      setShowUpdateModal(true);
+                      setColDefs(columnDefs);
+                      setColumnDefsForExport(columnDefs);
                     }
+                    refreshData(userSearchVal);
                   }}
-                  size={"sm"}
-                >
-                  Confirm Updates
-                </Button>
-              </Col>
-            </>
-          ) : undefined
+                />
+              </Form>
+            </Col>
+
+            <Col md="auto" style={{ marginLeft: -15 }}>
+              <Tooltip
+                title={
+                  <span style={{ fontSize: 12 }}>
+                    Turn on this switch to return each sample's sequencing date
+                    in the results. Note that this mode only returns the
+                    sequencing date matching specific DMP Sample IDs entered in
+                    the search bar. When turning on this switch for the first
+                    time, you will be prompted to log in.
+                  </span>
+                }
+              >
+                <InfoIcon style={{ fontSize: 18, color: "grey" }} />
+              </Tooltip>
+            </Col>
+            {changes.length > 0 ? (
+              <>
+                <Col md="auto">
+                  <Button
+                    className={"btn btn-secondary"}
+                    onClick={() => {
+                      // Remove cell styles associated with having been edited
+                      gridRef.current?.api?.redrawRows({
+                        rowNodes: changes.map((c) => c.rowNode),
+                      });
+                      handleDiscardChanges();
+                    }}
+                    size={"sm"}
+                  >
+                    Discard Changes
+                  </Button>{" "}
+                  <Button
+                    className={"btn btn-success"}
+                    onClick={() => {
+                      const hasInvalidCostCenter = changes.some(
+                        (c) =>
+                          c.fieldName === "costCenter" &&
+                          !isValidCostCenter(c.newValue)
+                      );
+                      if (hasInvalidCostCenter) {
+                        setAlertContent(COST_CENTER_VALIDATION_ALERT);
+                      } else {
+                        setShowUpdateModal(true);
+                      }
+                    }}
+                    size={"sm"}
+                  >
+                    Confirm Updates
+                  </Button>
+                </Col>
+              </>
+            ) : undefined}
+          </>
         }
         addlExportDropdownItems={addlExportDropdownItems}
         setColumnDefsForExport={setColumnDefsForExport}
@@ -424,7 +514,7 @@ export default function SamplesList({
                 rowModelType="serverSide"
                 serverSideInfiniteScroll={true}
                 cacheBlockSize={CACHE_BLOCK_SIZE}
-                columnDefs={columnDefs}
+                columnDefs={colDefs}
                 defaultColDef={defaultColDef}
                 enableRangeSelection={true}
                 onGridReady={(params) => params.api.sizeColumnsToFit()}

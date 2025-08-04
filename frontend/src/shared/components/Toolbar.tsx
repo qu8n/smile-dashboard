@@ -97,9 +97,8 @@ export function Toolbar({
         >
           Search
         </Button>
+        <span style={{ marginLeft: 10 }}>{matchingResultsCount}</span>
       </Col>
-
-      <Col md="auto">{matchingResultsCount}</Col>
 
       {customUIRight}
 

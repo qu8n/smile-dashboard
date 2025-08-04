@@ -252,7 +252,7 @@ export async function updateCacheWithNewSampleUpdates(
   // Create a map out of newDashboardSamples for quick lookup by primaryId
   const newSamplesByPrimaryId = newDashboardSamples.reduce(
     (accumulator, newDashboardSample) => {
-      accumulator[newDashboardSample.primaryId] = newDashboardSample;
+      accumulator[newDashboardSample.primaryId!] = newDashboardSample;
       return accumulator;
     },
     {} as Record<string, DashboardSampleInput> // key = primaryId
@@ -291,9 +291,9 @@ export async function updateCacheWithNewSampleUpdates(
   }
 
   for (const sample of cachedSamples) {
-    if (newSamplesByPrimaryId.hasOwnProperty(sample.primaryId)) {
+    if (newSamplesByPrimaryId.hasOwnProperty(sample.primaryId!)) {
       // Update the fields of any samples in cache that were changed in newDashboardSamples
-      const newDashboardSample = newSamplesByPrimaryId[sample.primaryId];
+      const newDashboardSample = newSamplesByPrimaryId[sample.primaryId!];
       for (const field of newDashboardSample.changedFieldNames) {
         if (field in sample && field in newDashboardSample) {
           (sample as any)[field] =
@@ -301,7 +301,7 @@ export async function updateCacheWithNewSampleUpdates(
         }
       }
       // Update select fields of samples in cache with the latest data from Neo4j
-      const latestSampleData = sampleDataForCacheUpdate[sample.primaryId];
+      const latestSampleData = sampleDataForCacheUpdate[sample.primaryId!];
       for (const [field, value] of Object.entries(latestSampleData)) {
         (sample as any)[field] = value;
       }
@@ -312,7 +312,7 @@ export async function updateCacheWithNewSampleUpdates(
   Object.keys(samplesCache).forEach((cachedSamplesQuery) => {
     samplesCache[cachedSamplesQuery].sort((a, b) => {
       return (
-        new Date(b.importDate).getTime() - new Date(a.importDate).getTime()
+        new Date(b.importDate!).getTime() - new Date(a.importDate!).getTime()
       );
     });
   });

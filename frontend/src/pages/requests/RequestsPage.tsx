@@ -2,13 +2,21 @@ import {
   AgGridSortDirection,
   useDashboardRequestsLazyQuery,
 } from "../../generated/graphql";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { requestColDefs, sampleColDefs } from "../../shared/helpers";
 import { useParams } from "react-router-dom";
 import RecordsList from "../../components/RecordsList";
 import { AlertModal } from "../../components/AlertModal";
 
-export default function RequestsPage() {
+interface IRequestsPageProps {
+  userEmail: string | null;
+  setUserEmail: Dispatch<SetStateAction<string | null>>;
+}
+
+export default function RequestsPage({
+  userEmail,
+  setUserEmail,
+}: IRequestsPageProps) {
   const params = useParams();
   const [userSearchVal, setUserSearchVal] = useState<string>("");
   const [showDownloadModal, setShowDownloadModal] = useState(false);
@@ -49,6 +57,8 @@ export default function RequestsPage() {
               ]
             : undefined
         }
+        userEmail={userEmail}
+        setUserEmail={setUserEmail}
       />
 
       <AlertModal

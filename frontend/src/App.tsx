@@ -24,10 +24,20 @@ export default function App() {
       <SmileNavBar userEmail={userEmail} setUserEmail={setUserEmail} />
       <Routes>
         <>
-          <Route path="/" element={<RequestsPage />}>
+          <Route
+            path="/"
+            element={
+              <RequestsPage userEmail={userEmail} setUserEmail={setUserEmail} />
+            }
+          >
             <Route path=":igoRequestId" />
           </Route>
-          <Route path="/requests/" element={<RequestsPage />}>
+          <Route
+            path="/requests/"
+            element={
+              <RequestsPage userEmail={userEmail} setUserEmail={setUserEmail} />
+            }
+          >
             <Route path=":igoRequestId" />
           </Route>
           <Route
@@ -38,7 +48,12 @@ export default function App() {
           >
             <Route path=":patientId" />
           </Route>
-          <Route path="/samples" element={<SamplesPage />} />
+          <Route
+            path="/samples"
+            element={
+              <SamplesPage userEmail={userEmail} setUserEmail={setUserEmail} />
+            }
+          />
           <Route
             path="/cohorts/"
             element={
