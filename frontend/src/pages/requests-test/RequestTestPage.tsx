@@ -6,8 +6,12 @@ import { sampleColDefs } from "../../shared/helpers";
 import { useFetchData } from "../../hooks/useFetchData";
 import { useDashboardSamplesLazyQuery } from "../../generated/graphql";
 import { Heading } from "../../shared/components/Heading";
+import { Toolbarr } from "../../shared/components/Toolbarr";
+import { SearchBar } from "../../shared/components/SearchBar";
 
 const POLLING_INTERVAL = 5000; // 5s
+const queryName = "dashboardSamples";
+const initialSortFieldName = "importDate";
 
 // PLAN: re-create the samples page, then modify it to fit the requests page
 export default function SamplesTestPage() {
@@ -15,15 +19,22 @@ export default function SamplesTestPage() {
   const [alertContent, setAlertContent] = useState<string | null>(null);
 
   const gridRef = useRef<AgGridReactType>(null);
-  const { refreshData, error, data, fetchMore, startPolling, stopPolling } =
-    useFetchData({
-      useRecordsLazyQuery: useDashboardSamplesLazyQuery,
-      initialSortFieldName: "importDate",
-      queryName: "dashboardSamples",
-      gridRef,
-      pollInterval: POLLING_INTERVAL,
-      userSearchVal,
-    });
+  const {
+    refreshData,
+    recordCount,
+    error,
+    data,
+    fetchMore,
+    startPolling,
+    stopPolling,
+  } = useFetchData({
+    useRecordsLazyQuery: useDashboardSamplesLazyQuery,
+    queryName,
+    initialSortFieldName,
+    gridRef,
+    pollInterval: POLLING_INTERVAL,
+    userSearchVal,
+  });
 
   // const params = useParams();
   // const hasParams = Object.keys(params).length > 0;
@@ -43,6 +54,14 @@ export default function SamplesTestPage() {
   return (
     <>
       <Heading>Samples</Heading>
+      <Toolbarr>
+        <SearchBar
+          userSearchVal={userSearchVal}
+          setUserSearchVal={setUserSearchVal}
+          handleSearch={refreshData}
+          recordCount={recordCount}
+        />
+      </Toolbarr>
       <DataGrid
         gridRef={gridRef}
         setAlertContent={setAlertContent}

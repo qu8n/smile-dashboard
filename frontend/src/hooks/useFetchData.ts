@@ -77,6 +77,8 @@ export function useFetchData({
       pollInterval,
     });
 
+  const recordCount = data?.[queryName][0]._total || 0;
+
   const buildServerSideDatasource = useCallback(
     (userSearchVal) => {
       return {
@@ -122,6 +124,7 @@ export function useFetchData({
 
   return {
     refreshData,
+    recordCount,
     error,
     data,
     fetchMore,

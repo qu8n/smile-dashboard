@@ -53,7 +53,7 @@ export function Toolbar({
   setSelectedExportItem,
 }: IToolbarProps) {
   return (
-    <Row className={classNames("d-flex align-items-center tableControlsRow")}>
+    <Row className="d-flex align-items-center tableControlsRow">
       <Col>{customUILeft}</Col>
 
       <Col md="auto">
