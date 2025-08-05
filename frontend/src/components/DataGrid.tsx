@@ -25,19 +25,21 @@ const COST_CENTER_VALIDATION_ALERT =
   "Please update your Cost Center/Fund Number input as #####/##### " +
   "(5 digits, a forward slash, then 5 digits). For example: 12345/12345.";
 
-interface DataTableProps {
+interface DataGridProps {
   gridRef: RefObject<AgGridReact>;
   hasParams?: boolean;
   setAlertContent: Dispatch<SetStateAction<string | null>>;
   columnDefs: ColDef[];
+  handleGridColumnsChanged: () => void;
 }
 
-export function DataTable({
+export function DataGrid({
   gridRef,
   hasParams = false,
   setAlertContent,
   columnDefs,
-}: DataTableProps) {
+  handleGridColumnsChanged,
+}: DataGridProps) {
   const { userEmail, setUserEmail } = useContext(UserEmailContext);
   const [changes, setChanges] = useState<SampleChange[]>([]);
 
@@ -55,6 +57,7 @@ export function DataTable({
           (c) => !(c.primaryId === primaryId && c.fieldName === fieldName)
         );
         // TODO: test that this is ok
+        //
         // if (updatedChanges.length === 0) setUnsavedChanges?.(false);
         return updatedChanges;
       });
@@ -126,6 +129,7 @@ export function DataTable({
     }
 
     // TODO: wherever setUnsavedChanges is used, change the logic to check changes array length
+    //
     // setUnsavedChanges?.(true);
     gridRef.current?.api?.redrawRows({ rowNodes: [rowNode] });
   }
@@ -165,9 +169,12 @@ export function DataTable({
               onFirstDataRendered={(params) =>
                 params.columnApi.autoSizeAllColumns()
               }
-              // TODO: test that this is ok. Samples tabs change cols but we fetch all data at once
+              // TODO: test that we can remove. Samples tabs change cols but we fetch all data at once
               // Why should we refresh data on column change?
-              // onGridColumnsChanged={() => refreshData(userSearchVal)}
+              // Currently used for the initial data fetch when columns are set programmatically
+              // and Samples page "tab" changes
+              //
+              onGridColumnsChanged={handleGridColumnsChanged}
               context={{
                 getChanges: () => changes,
               }}

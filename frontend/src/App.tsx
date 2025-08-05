@@ -13,6 +13,7 @@ import CohortsPage from "./pages/cohorts/CohortsPage";
 import LoginSuccessPage from "./pages/auth/LoginSuccessPage";
 import SmileNavBar from "./shared/components/SmileNavBar";
 import { getUserEmail } from "./utils/getUserEmail";
+import RequestTestPage from "./pages/requests-test/RequestTestPage";
 
 // TODO: create a provider component and move the state logic there
 // and wrap the <UserEmailContext.Provider> around <App> in index.tsx
@@ -42,12 +43,30 @@ export default function App() {
         <SmileNavBar userEmail={userEmail} setUserEmail={setUserEmail} />
         <Routes>
           <>
-            <Route path="/" element={<RequestsPage />}>
+            <Route
+              path="/"
+              element={
+                <RequestsPage
+                  userEmail={userEmail}
+                  setUserEmail={setUserEmail}
+                />
+              }
+            >
               <Route path=":igoRequestId" />
             </Route>
-            <Route path="/requests/" element={<RequestsPage />}>
+            <Route
+              path="/requests/"
+              element={
+                <RequestsPage
+                  userEmail={userEmail}
+                  setUserEmail={setUserEmail}
+                />
+              }
+            >
               <Route path=":igoRequestId" />
             </Route>
+            {/** TODO: Remove this after testing */}
+            <Route path="/test/" element={<RequestTestPage />} />
             <Route
               path="/patients/"
               element={
@@ -59,7 +78,15 @@ export default function App() {
             >
               <Route path=":patientId" />
             </Route>
-            <Route path="/samples" element={<SamplesPage />} />
+            <Route
+              path="/samples"
+              element={
+                <SamplesPage
+                  userEmail={userEmail}
+                  setUserEmail={setUserEmail}
+                />
+              }
+            />
             <Route
               path="/cohorts/"
               element={
