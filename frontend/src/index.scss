@@ -23,6 +23,9 @@ $standardMargin: 10px;
 
 .main {
   padding: 15px !important;
+  display: flex;
+  flex-direction: column;
+  gap: $standardMargin;
 }
 
 .modal-90w {
