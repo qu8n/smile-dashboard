@@ -98,6 +98,12 @@ export default function SamplesList({
   const [columnDefsForExport, setColumnDefsForExport] =
     useState<ColDef[]>(columnDefs);
 
+  // Keep displayed and exported column definitions in sync with the filter tabs
+  useEffect(() => {
+    setColDefs(columnDefs);
+    setColumnDefsForExport(columnDefs);
+  }, [columnDefs]);
+
   const gridRef = useRef<AgGridReactType>(null);
   const params = useParams();
   const hasParams = Object.keys(params).length > 0;
