@@ -8,8 +8,10 @@ import { useDashboardSamplesLazyQuery } from "../../generated/graphql";
 import { Heading } from "../../shared/components/Heading";
 import { Toolbarr } from "../../shared/components/Toolbarr";
 import { SearchBar } from "../../shared/components/SearchBar";
+import { Col } from "react-bootstrap";
 
 const POLLING_INTERVAL = 5000; // 5s
+const recordName = "samples";
 const queryName = "dashboardSamples";
 const initialSortFieldName = "importDate";
 
@@ -55,12 +57,15 @@ export default function SamplesTestPage() {
     <>
       <Heading>Samples</Heading>
       <Toolbarr>
-        <SearchBar
-          userSearchVal={userSearchVal}
-          setUserSearchVal={setUserSearchVal}
-          handleSearch={refreshData}
-          recordCount={recordCount}
-        />
+        <Col className="mx-auto">
+          <SearchBar
+            recordName={recordName}
+            userSearchVal={userSearchVal}
+            setUserSearchVal={setUserSearchVal}
+            handleSearch={refreshData}
+            recordCount={recordCount}
+          />
+        </Col>
       </Toolbarr>
       <DataGrid
         gridRef={gridRef}

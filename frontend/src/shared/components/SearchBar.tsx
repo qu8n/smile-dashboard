@@ -1,9 +1,10 @@
-import { Button, Col, Form } from "react-bootstrap";
+import { Button, Form } from "react-bootstrap";
 import { CustomTooltip } from "./CustomToolTip";
 import InfoIcon from "@material-ui/icons/InfoOutlined";
 import { Dispatch, SetStateAction } from "react";
 
 interface SearchBarProps {
+  recordName: string;
   userSearchVal: string;
   setUserSearchVal: Dispatch<SetStateAction<string>>;
   handleSearch: () => void;
@@ -11,13 +12,14 @@ interface SearchBarProps {
 }
 
 export function SearchBar({
+  recordName,
   userSearchVal,
   setUserSearchVal,
   handleSearch,
   recordCount,
 }: SearchBarProps) {
   return (
-    <Col md="auto">
+    <div className="d-flex align-items-center justify-content-center gap-2">
       <CustomTooltip
         icon={
           <InfoIcon style={{ fontSize: 18, color: "grey", marginRight: 5 }} />
@@ -31,10 +33,10 @@ export function SearchBar({
       </CustomTooltip>
 
       <Form.Control
-        className={"d-inline-block"}
+        className="d-inline-block"
         style={{ width: "300px" }}
         type="search"
-        placeholder={"Search"}
+        placeholder={`Search ${recordName}`}
         aria-label="Search"
         value={userSearchVal}
         onKeyDown={(e) => {
@@ -45,14 +47,13 @@ export function SearchBar({
         onChange={(e) => setUserSearchVal(e.currentTarget.value)}
       />
 
-      <Button
-        onClick={handleSearch}
-        className={"btn btn-secondary"}
-        size={"sm"}
-      >
+      <Button onClick={handleSearch} className="btn btn-secondary" size={"sm"}>
         Search
       </Button>
-      <span style={{ marginLeft: 10 }}>{recordCount} matches</span>
-    </Col>
+
+      <span className="ms-2">
+        {Number(recordCount).toLocaleString()} {recordName}
+      </span>
+    </div>
   );
 }
