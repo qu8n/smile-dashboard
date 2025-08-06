@@ -3,7 +3,10 @@ import { DataGrid } from "../../components/DataGrid";
 import { AgGridReact as AgGridReactType } from "ag-grid-react/lib/agGridReact";
 import { AlertModal } from "../../components/AlertModal";
 import { useFetchData } from "../../hooks/useFetchData";
-import { useDashboardSamplesLazyQuery } from "../../generated/graphql";
+import {
+  DashboardSample,
+  useDashboardSamplesLazyQuery,
+} from "../../generated/graphql";
 import { Heading } from "../../shared/components/Heading";
 import { Toolbarr } from "../../shared/components/Toolbarr";
 import { SearchBar } from "../../shared/components/SearchBar";
@@ -38,17 +41,17 @@ export function SamplesPage2() {
     userSearchVal,
   });
 
-  const { isDownloading, handleDownload } = useDownload({
-    gridRef,
-    recordName: RECORD_NAME,
-  });
+  const { isDownloading, handleDownload, getRenderedData } =
+    useDownload<DashboardSample>({
+      gridRef,
+      recordName: RECORD_NAME,
+      fetchMore,
+      userSearchVal,
+      recordCount,
+      queryName: QUERY_NAME,
+    });
 
-  const downloadOptions = buildDownloadOptions({
-    fetchMore,
-    userSearchVal,
-    recordCount,
-    queryName: QUERY_NAME,
-  });
+  const downloadOptions = buildDownloadOptions(getRenderedData);
 
   if (error) {
     return <ErrorMessage error={error} />;

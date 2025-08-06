@@ -619,7 +619,7 @@ export const sampleColDefs: ColDef<DashboardSample>[] = [
   },
 ];
 
-export const DbGapPhenotypeColumns: ColDef<DashboardSample>[] = [
+export const dbGapPhenotypeColumns: ColDef<DashboardSample>[] = [
   {
     field: "cmoPatientId",
     headerName: "SUBJECT_ID",

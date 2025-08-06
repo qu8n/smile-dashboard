@@ -1,12 +1,16 @@
 import {
   combinedSampleColDefs,
+  dbGapPhenotypeColumns,
   readOnlyAccessSampleColDefs,
   readOnlyWesSampleColDefs,
 } from "../../shared/helpers";
 import { FilterOptionProps } from "../../components/FilterButtons";
 import { parseUserSearchVal } from "../../utils/parseSearchQueries";
 import { QueryResult } from "@apollo/client";
-import { DashboardRecordContext } from "../../generated/graphql";
+import {
+  DashboardRecordContext,
+  DashboardSample,
+} from "../../generated/graphql";
 
 export const WES_SAMPLE_CONTEXT: Array<DashboardRecordContext> = [
   {
@@ -83,33 +87,20 @@ export const filterButtonOptions = new Map<string, FilterOptionProps>([
   ],
 ]);
 
-interface BuildDownloadOptionsParams {
-  fetchMore: QueryResult["fetchMore"];
-  userSearchVal: string;
-  recordCount: number;
-  queryName: string;
-}
-
-export function buildDownloadOptions({
-  fetchMore,
-  userSearchVal,
-  recordCount,
-  queryName,
-}: BuildDownloadOptionsParams) {
+export function buildDownloadOptions(
+  getRenderedData: () => Promise<Array<DashboardSample>>
+) {
   return [
     {
       label: "Download as TSV",
+      // FIX: this should reflect the tab selection, right now always "All"
       columnDefs: combinedSampleColDefs,
-      dataGetter: async () => {
-        const { data } = await fetchMore({
-          variables: {
-            searchVals: parseUserSearchVal(userSearchVal),
-            offset: 0,
-            limit: recordCount,
-          },
-        });
-        return data[queryName];
-      },
+      dataGetter: getRenderedData,
+    },
+    {
+      label: "Export in Phenotype format for dbGaP",
+      columnDefs: dbGapPhenotypeColumns,
+      dataGetter: getRenderedData,
     },
   ];
 }

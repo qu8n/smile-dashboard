@@ -1,6 +1,6 @@
 import SamplesList from "../../components/SamplesList";
 import {
-  DbGapPhenotypeColumns,
+  dbGapPhenotypeColumns,
   readOnlyAccessSampleColDefs,
   readOnlyWesSampleColDefs,
   combinedSampleColDefs,
@@ -137,7 +137,7 @@ export default function SamplesPage({
       addlExportDropdownItems={[
         {
           label: "Export in Phenotype format for dbGaP",
-          columnDefs: DbGapPhenotypeColumns,
+          columnDefs: dbGapPhenotypeColumns,
         },
       ]}
       userEmail={userEmail}
