@@ -4,26 +4,24 @@ import InfoIcon from "@material-ui/icons/InfoOutlined";
 import { Dispatch, SetStateAction } from "react";
 
 interface SearchBarProps {
-  recordName: string;
   userSearchVal: string;
   setUserSearchVal: Dispatch<SetStateAction<string>>;
   handleSearch: () => void;
-  recordCount: number;
+  recordCount: number | null;
+  loading: boolean;
 }
 
 export function SearchBar({
-  recordName,
   userSearchVal,
   setUserSearchVal,
   handleSearch,
   recordCount,
+  loading,
 }: SearchBarProps) {
   return (
     <div className="d-flex align-items-center justify-content-center gap-2">
       <CustomTooltip
-        icon={
-          <InfoIcon style={{ fontSize: 18, color: "grey", marginRight: 5 }} />
-        }
+        icon={<InfoIcon style={{ fontSize: 18, color: "grey" }} />}
       >
         Click on "Search" or press "Enter" to start searching. To bulk search,
         input a list of values separated by spaces or commas (example:{" "}
@@ -35,24 +33,22 @@ export function SearchBar({
       <Form.Control
         className="d-inline-block"
         style={{ width: "300px" }}
-        type="search"
-        placeholder={`Search ${recordName}`}
+        size="sm"
+        placeholder={`Search...`}
         aria-label="Search"
         value={userSearchVal}
         onKeyDown={(e) => {
-          if (e.key === "Enter") {
-            handleSearch();
-          }
+          if (e.key === "Enter") handleSearch();
         }}
         onChange={(e) => setUserSearchVal(e.currentTarget.value)}
       />
 
-      <Button onClick={handleSearch} className="btn btn-secondary" size={"sm"}>
+      <Button onClick={handleSearch} className="btn btn-secondary" size="sm">
         Search
       </Button>
 
-      <span className="ms-2">
-        {Number(recordCount).toLocaleString()} {recordName}
+      <span>
+        {loading ? "Loading" : Number(recordCount).toLocaleString()} matches
       </span>
     </div>
   );

@@ -13,7 +13,7 @@ import CohortsPage from "./pages/cohorts/CohortsPage";
 import LoginSuccessPage from "./pages/auth/LoginSuccessPage";
 import SmileNavBar from "./shared/components/SmileNavBar";
 import { getUserEmail } from "./utils/getUserEmail";
-import RequestTestPage from "./pages/requests-test/RequestTestPage";
+import { SamplesPage2 } from "./pages/samples/SamplesPage2";
 
 // TODO: create a provider component and move the state logic there
 // and wrap the <UserEmailContext.Provider> around <App> in index.tsx
@@ -66,7 +66,7 @@ export default function App() {
               <Route path=":igoRequestId" />
             </Route>
             {/** TODO: Remove this after testing */}
-            <Route path="/test/" element={<RequestTestPage />} />
+            <Route path="/test/" element={<SamplesPage2 />} />
             <Route
               path="/patients/"
               element={

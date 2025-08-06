@@ -1,4 +1,4 @@
-import { RefObject, useCallback, useMemo } from "react";
+import { RefObject, useCallback, useMemo, useState } from "react";
 import {
   AgGridSortDirection,
   DashboardSamplesQueryVariables,
@@ -7,7 +7,7 @@ import { useHookLazyGeneric } from "../shared/types";
 import { parseUserSearchVal } from "../utils/parseSearchQueries";
 import { getColumnFilters } from "../shared/helpers";
 import { IServerSideGetRowsParams } from "ag-grid-community";
-import { AgGridReact } from "ag-grid-react";
+import { AgGridReact as AgGridReactType } from "ag-grid-react/lib/agGridReact";
 
 export const CACHE_BLOCK_SIZE = 500; // number of rows to fetch at a time
 
@@ -40,7 +40,7 @@ interface UseFetchDataProps {
    * A reference to the AgGridReact component.
    * Used to set the server-side datasource for the grid.
    */
-  gridRef: RefObject<AgGridReact>;
+  gridRef: RefObject<AgGridReactType>;
   /**
    * The current user search value from the search box.
    * Used to re-fetch data when the user performs a new search.
@@ -57,6 +57,10 @@ export function useFetchData({
   gridRef,
   userSearchVal,
 }: UseFetchDataProps) {
+  // Manage our own loading state becase the lazy query's provided `loading` state
+  // does not toggle to `true` as `setServerSideDatasource` is running
+  const [loading, isLoading] = useState(false);
+
   const defaultSort = useMemo(
     () => ({
       colId: initialSortFieldName,
@@ -77,12 +81,14 @@ export function useFetchData({
       pollInterval,
     });
 
-  const recordCount = data?.[queryName][0]._total || 0;
+  const recordCount: number = data?.[queryName][0]?._total || 0;
 
   const buildServerSideDatasource = useCallback(
     (userSearchVal) => {
       return {
         getRows: async (params: IServerSideGetRowsParams) => {
+          isLoading(true);
+
           const queryVariables = {
             searchVals: parseUserSearchVal(userSearchVal),
             contexts,
@@ -109,6 +115,9 @@ export function useFetchData({
             .catch((error) => {
               console.error(error);
               params.fail();
+            })
+            .finally(() => {
+              isLoading(false);
             });
         },
       };
@@ -125,6 +134,7 @@ export function useFetchData({
   return {
     refreshData,
     recordCount,
+    loading,
     error,
     data,
     fetchMore,

@@ -7,10 +7,13 @@ import { useDashboardSamplesLazyQuery } from "../../generated/graphql";
 import { Heading } from "../../shared/components/Heading";
 import { Toolbarr } from "../../shared/components/Toolbarr";
 import { SearchBar } from "../../shared/components/SearchBar";
-import { filterButtonOptions } from "./config";
+import { buildDownloadOptions, filterButtonOptions } from "./config";
 import { Col } from "react-bootstrap";
 import { FilterButtons } from "../../components/FilterButtons";
 import { ErrorMessage } from "../../components/ErrorMessage";
+import { DownloadButton } from "../../shared/components/DownloadButton";
+import { DownloadModal2 } from "../../components/DownloadModal2";
+import { useDownload } from "../../hooks/useDownload";
 
 const POLLING_INTERVAL = 5000; // 5s
 const RECORD_NAME = "samples";
@@ -18,13 +21,14 @@ const QUERY_NAME = "dashboardSamples";
 const INITIAL_SORT_FIELD_NAME = "importDate";
 
 // PLAN: re-create the samples page, then modify it to fit the requests page
-export default function SamplesTestPage() {
+export function SamplesPage2() {
   const [userSearchVal, setUserSearchVal] = useState<string>("");
   const [alertContent, setAlertContent] = useState<string | null>(null);
   const [filterButton, setFilterButton] = useState("All");
 
   const gridRef = useRef<AgGridReactType>(null);
-  const { refreshData, recordCount, error } = useFetchData({
+
+  const { refreshData, recordCount, loading, error, fetchMore } = useFetchData({
     useRecordsLazyQuery: useDashboardSamplesLazyQuery,
     contexts: filterButtonOptions.get(filterButton)?.contexts,
     queryName: QUERY_NAME,
@@ -32,6 +36,18 @@ export default function SamplesTestPage() {
     gridRef,
     pollInterval: POLLING_INTERVAL,
     userSearchVal,
+  });
+
+  const { isDownloading, handleDownload } = useDownload({
+    gridRef,
+    recordName: RECORD_NAME,
+  });
+
+  const downloadOptions = buildDownloadOptions({
+    fetchMore,
+    userSearchVal,
+    recordCount,
+    queryName: QUERY_NAME,
   });
 
   if (error) {
@@ -54,13 +70,20 @@ export default function SamplesTestPage() {
           </FilterButtons>
         </Col>
 
-        <Col className="mx-auto">
+        <Col md="auto" className="mx-auto">
           <SearchBar
-            recordName={RECORD_NAME}
             userSearchVal={userSearchVal}
             setUserSearchVal={setUserSearchVal}
             handleSearch={refreshData}
             recordCount={recordCount}
+            loading={loading}
+          />
+        </Col>
+
+        <Col className="text-end">
+          <DownloadButton
+            downloadOptions={downloadOptions}
+            handleDownload={handleDownload}
           />
         </Col>
       </Toolbarr>
@@ -78,6 +101,8 @@ export default function SamplesTestPage() {
         title={"Warning"}
         content={alertContent}
       />
+
+      <DownloadModal2 show={isDownloading} />
     </>
   );
 }

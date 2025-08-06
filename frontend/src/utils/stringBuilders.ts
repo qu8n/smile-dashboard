@@ -1,5 +1,7 @@
 import { ColDef, Column } from "ag-grid-community";
 
+// TODO: make args an obj
+// TODO: if not used elsewhere, move inside useDownload hook
 export function buildTsvString(
   rows: any[],
   colDefs: ColDef[],
