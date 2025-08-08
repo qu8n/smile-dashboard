@@ -8,7 +8,7 @@ interface SearchBarProps {
   setUserSearchVal: Dispatch<SetStateAction<string>>;
   onSearch: () => void;
   recordCount: number | null;
-  loading: boolean;
+  isLoading: boolean;
 }
 
 export function SearchBar({
@@ -16,7 +16,7 @@ export function SearchBar({
   setUserSearchVal,
   onSearch,
   recordCount,
-  loading,
+  isLoading,
 }: SearchBarProps) {
   return (
     <div className="d-flex align-items-center justify-content-center gap-2">
@@ -48,7 +48,7 @@ export function SearchBar({
       </Button>
 
       <span>
-        {loading ? "Loading" : Number(recordCount).toLocaleString()} matches
+        {isLoading ? "Loading" : Number(recordCount).toLocaleString()} matches
       </span>
     </div>
   );

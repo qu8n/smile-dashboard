@@ -53,15 +53,16 @@ export function SamplesPage2() {
     phiFields: PHI_FIELDS,
   });
 
-  const { refreshData, recordCount, loading, error, fetchMore } = useFetchData({
-    useRecordsLazyQuery: useDashboardSamplesLazyQuery,
-    contexts,
-    queryName: QUERY_NAME,
-    initialSortFieldName: INITIAL_SORT_FIELD_NAME,
-    gridRef,
-    pollInterval: POLLING_INTERVAL,
-    userSearchVal,
-  });
+  const { refreshData, recordCount, isLoading, error, fetchMore } =
+    useFetchData({
+      useRecordsLazyQuery: useDashboardSamplesLazyQuery,
+      contexts,
+      queryName: QUERY_NAME,
+      initialSortFieldName: INITIAL_SORT_FIELD_NAME,
+      gridRef,
+      pollInterval: POLLING_INTERVAL,
+      userSearchVal,
+    });
 
   const { isDownloading, handleDownload, getRenderedData } =
     useDownload<DashboardSample>({
@@ -115,7 +116,7 @@ export function SamplesPage2() {
             setUserSearchVal={setUserSearchVal}
             onSearch={handleSearch}
             recordCount={recordCount}
-            loading={loading}
+            isLoading={isLoading}
           />
 
           <div className="vr" />

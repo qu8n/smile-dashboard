@@ -54,14 +54,14 @@ export function useFetchData({
   useRecordsLazyQuery,
   initialSortFieldName,
   contexts = [],
-  pollInterval = 0, // no polling
+  pollInterval = 0, // 0 means no polling
   queryName,
   gridRef,
   userSearchVal,
 }: UseFetchDataProps) {
   // Manage our own loading state becase the lazy query's provided `loading` state
   // does not toggle to `true` as `setServerSideDatasource` is running
-  const [loading, isLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const { phiEnabled } = usePhiEnabled();
 
   const defaultSort: DashboardRecordSort = useMemo(
@@ -85,14 +85,14 @@ export function useFetchData({
       pollInterval,
     });
 
+  // TODO next: implement data editing!
+
   const recordCount: number = data?.[queryName][0]?._total || 0;
 
   const buildServerSideDatasource = useCallback(
     (userSearchVal) => {
       return {
         getRows: async (params: IServerSideGetRowsParams) => {
-          isLoading(true);
-
           const queryVariables = {
             searchVals: parseUserSearchVal(userSearchVal),
             contexts,
@@ -119,9 +119,6 @@ export function useFetchData({
             .catch((error) => {
               console.error(error);
               params.fail();
-            })
-            .finally(() => {
-              isLoading(false);
             });
         },
       };
@@ -130,20 +127,19 @@ export function useFetchData({
   );
 
   async function refreshData() {
+    stopPolling();
+    setIsLoading(true);
     const newDatasource = buildServerSideDatasource(userSearchVal);
-    // Update the grid with new data
     gridRef.current?.api.setServerSideDatasource(newDatasource);
+    setIsLoading(false);
+    startPolling(pollInterval);
   }
 
   return {
     refreshData,
     recordCount,
-    loading,
+    isLoading,
     error,
-    data,
     fetchMore,
-    refetch,
-    startPolling,
-    stopPolling,
   };
 }
