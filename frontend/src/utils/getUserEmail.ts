@@ -15,5 +15,5 @@ export async function getUserEmail() {
     console.error(error);
   }
 
-  return null;
+  return undefined;
 }

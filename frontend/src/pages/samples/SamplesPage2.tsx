@@ -11,12 +11,16 @@ import { Heading } from "../../shared/components/Heading";
 import { Toolbarr } from "../../shared/components/Toolbarr";
 import { SearchBar } from "../../shared/components/SearchBar";
 import { buildDownloadOptions, filterButtonOptions } from "./config";
-import { Col } from "react-bootstrap";
+import { Col, Form } from "react-bootstrap";
+// TODO: use react bootsrap components instead of Material UI
+// OverlayTrigger
+import { Tooltip } from "@material-ui/core";
 import { FilterButtons } from "../../components/FilterButtons";
 import { ErrorMessage } from "../../components/ErrorMessage";
 import { DownloadButton } from "../../shared/components/DownloadButton";
 import { DownloadModal2 } from "../../components/DownloadModal2";
 import { useDownload } from "../../hooks/useDownload";
+import InfoIcon from "@material-ui/icons/InfoOutlined";
 
 const POLLING_INTERVAL = 5000; // 5s
 const RECORD_NAME = "samples";
@@ -76,7 +80,7 @@ export function SamplesPage2() {
           </FilterButtons>
         </Col>
 
-        <Col md="auto" className="mx-auto">
+        <Col md="auto" className="d-flex mx-auto gap-2">
           <SearchBar
             userSearchVal={userSearchVal}
             setUserSearchVal={setUserSearchVal}
@@ -84,6 +88,44 @@ export function SamplesPage2() {
             recordCount={recordCount}
             loading={loading}
           />
+
+          <div className="vr" />
+
+          {/* <Form> */}
+          {/*   <Form.Check */}
+          {/*     type="switch" */}
+          {/*     id="custom-switch" */}
+          {/*     label="PHI-enabled" */}
+          {/*     checked={phiEnabled} */}
+          {/*     onChange={(e) => { */}
+          {/*       const isPhiEnabled = e.target.checked; */}
+          {/*       setPhiEnabled(isPhiEnabled); */}
+          {/*       if (isPhiEnabled) { */}
+          {/*         setColDefs(sampleColDefsWithPhiCols); */}
+          {/*         setColumnDefsForExport(sampleColDefsWithPhiCols); */}
+          {/*       } else { */}
+          {/*         setColDefs(columnDefs); */}
+          {/*         setColumnDefsForExport(columnDefs); */}
+          {/*       } */}
+          {/*       refreshData(userSearchVal); */}
+          {/*     }} */}
+          {/*   /> */}
+          {/* </Form> */}
+          {/**/}
+          {/* <Tooltip */}
+          {/*   title={ */}
+          {/*     <span style={{ fontSize: 12 }}> */}
+          {/*       Turn on this switch to return each sample's sequencing date */}
+          {/*       in the results. Note that this mode only returns the */}
+          {/*       sequencing date matching specific DMP Sample IDs entered in */}
+          {/*       the search bar. When turning on this switch for the first */}
+          {/*       time, you will be prompted to log in. */}
+          {/*     </span> */}
+          {/*   } */}
+          {/* > */}
+          {/*   <InfoIcon style={{ fontSize: 18, color: "grey" }} /> */}
+          {/* </Tooltip> */}
+          {/**/}
         </Col>
 
         <Col className="text-end">

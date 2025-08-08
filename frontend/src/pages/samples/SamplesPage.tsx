@@ -5,12 +5,13 @@ import {
   readOnlyWesSampleColDefs,
   combinedSampleColDefs,
 } from "../../shared/helpers";
-import { Dispatch, SetStateAction, useState } from "react";
+import { useState } from "react";
 import { Button, ButtonGroup } from "react-bootstrap";
 import { CustomTooltip } from "../../shared/components/CustomToolTip";
 import InfoIcon from "@material-ui/icons/InfoOutlined";
 import { ColDef } from "ag-grid-community";
 import { DashboardRecordContext } from "../../generated/graphql";
+import { useUserEmail } from "../../contexts/UserEmailContext";
 
 const WES_SAMPLE_CONTEXT = [
   {
@@ -93,15 +94,8 @@ const tabSettings = new Map<
   ],
 ]);
 
-interface ISamplesPageProps {
-  userEmail: string | null;
-  setUserEmail: Dispatch<SetStateAction<string | null>>;
-}
-
-export default function SamplesPage({
-  userEmail,
-  setUserEmail,
-}: ISamplesPageProps) {
+export default function SamplesPage() {
+  const { userEmail, setUserEmail } = useUserEmail();
   const [filteredTabKey, setFilteredTabKey] = useState("All");
 
   return (

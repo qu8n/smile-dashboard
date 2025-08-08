@@ -48,8 +48,8 @@ interface IRecordsListProps {
   handleDownload: () => void;
   samplesColDefs: ColDef[];
   sampleContexts?: DashboardSamplesQueryVariables["contexts"];
-  userEmail: string | null;
-  setUserEmail: Dispatch<SetStateAction<string | null>>;
+  userEmail: string | undefined;
+  setUserEmail: Dispatch<SetStateAction<string | undefined>>;
   customToolbarUI?: JSX.Element;
   addlExportDropdownItems?: IExportDropdownItem[];
 }

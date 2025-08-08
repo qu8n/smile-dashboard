@@ -7,16 +7,11 @@ import { requestColDefs, sampleColDefs } from "../../shared/helpers";
 import { useParams } from "react-router-dom";
 import RecordsList from "../../components/RecordsList";
 import { AlertModal } from "../../components/AlertModal";
+import { useUserEmail } from "../../contexts/UserEmailContext";
 
-interface IRequestsPageProps {
-  userEmail: string | null;
-  setUserEmail: Dispatch<SetStateAction<string | null>>;
-}
+export default function RequestsPage() {
+  const { userEmail, setUserEmail } = useUserEmail();
 
-export default function RequestsPage({
-  userEmail,
-  setUserEmail,
-}: IRequestsPageProps) {
   const params = useParams();
   const [userSearchVal, setUserSearchVal] = useState<string>("");
   const [showDownloadModal, setShowDownloadModal] = useState(false);

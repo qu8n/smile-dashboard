@@ -7,7 +7,6 @@ import {
   RefObject,
   ClipboardEvent,
   useState,
-  useContext,
   Dispatch,
   SetStateAction,
 } from "react";
@@ -18,9 +17,9 @@ import {
   isValidCostCenter,
   SampleChange,
 } from "../shared/helpers";
-import { UserEmailContext } from "../App";
 import { getUserEmail } from "../utils/getUserEmail";
 import { openLoginPopup } from "../utils/openLoginPopup";
+import { useUserEmail } from "../contexts/UserEmailContext";
 
 const COST_CENTER_VALIDATION_ALERT =
   "Please update your Cost Center/Fund Number input as #####/##### " +
@@ -41,7 +40,7 @@ export function DataGrid({
   columnDefs,
   handleGridColumnsChanged,
 }: DataGridProps) {
-  const { userEmail, setUserEmail } = useContext(UserEmailContext);
+  const { userEmail, setUserEmail } = useUserEmail();
   const [changes, setChanges] = useState<SampleChange[]>([]);
 
   async function handleCellEditRequest(params: CellEditRequestEvent) {
@@ -71,7 +70,7 @@ export function DataGrid({
       let currUserEmail = userEmail;
 
       if (!currUserEmail) {
-        currUserEmail = await new Promise<string | null>((resolve) => {
+        currUserEmail = await new Promise<string | undefined>((resolve) => {
           window.addEventListener("message", handleLogin);
 
           function handleLogin(event: MessageEvent) {

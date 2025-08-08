@@ -1,20 +1,17 @@
 import { Nav, NavLink } from "react-bootstrap";
 import { Dispatch, SetStateAction } from "react";
+import { useUserEmail } from "../../contexts/UserEmailContext";
 
-export default function SmileNavBar({
-  userEmail,
-  setUserEmail,
-}: {
-  userEmail: string | null;
-  setUserEmail: Dispatch<SetStateAction<string | null>>;
-}) {
+export default function SmileNavBar() {
+  const { userEmail, setUserEmail } = useUserEmail();
+
   function handleLogout() {
     fetch(`${process.env.REACT_APP_EXPRESS_SERVER_ORIGIN}/auth/logout`, {
       method: "POST",
       credentials: "include",
       mode: "no-cors",
     });
-    setUserEmail(null);
+    setUserEmail(undefined);
   }
 
   return (

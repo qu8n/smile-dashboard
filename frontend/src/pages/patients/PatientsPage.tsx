@@ -3,7 +3,7 @@ import {
   useAllAnchorSeqDateDataLazyQuery,
   useDashboardPatientsLazyQuery,
 } from "../../generated/graphql";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Col, Form } from "react-bootstrap";
 import { AlertModal } from "../../components/AlertModal";
@@ -17,6 +17,7 @@ import {
 import { getUserEmail } from "../../utils/getUserEmail";
 import { openLoginPopup } from "../../utils/openLoginPopup";
 import RecordsList from "../../components/RecordsList";
+import { useUserEmail } from "../../contexts/UserEmailContext";
 
 export const PHI_WARNING = {
   title: "Warning",
@@ -42,15 +43,9 @@ const patientColDefsWithPhiCols = patientColDefs.map((col) => {
   return col;
 });
 
-interface IPatientsPageProps {
-  userEmail: string | null;
-  setUserEmail: Dispatch<SetStateAction<string | null>>;
-}
+export default function PatientsPage() {
+  const { userEmail, setUserEmail } = useUserEmail();
 
-export default function PatientsPage({
-  userEmail,
-  setUserEmail,
-}: IPatientsPageProps) {
   const params = useParams();
   const [queryAllSeqDates] = useAllAnchorSeqDateDataLazyQuery();
 

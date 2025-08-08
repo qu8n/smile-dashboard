@@ -1,3 +1,5 @@
+// TODO: break these up into separate config files to Requests and Samples pages
+
 /**
  * Row-level data type for the validation report modal of a Sample/Request.
  */

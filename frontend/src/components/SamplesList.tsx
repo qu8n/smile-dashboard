@@ -71,8 +71,8 @@ interface ISampleListProps {
   setUnsavedChanges?: (unsavedChanges: boolean) => void;
   parentDataName?: DataName;
   sampleContexts?: DashboardSamplesQueryVariables["contexts"];
-  userEmail: string | null;
-  setUserEmail: Dispatch<SetStateAction<string | null>>;
+  userEmail: string | undefined;
+  setUserEmail: Dispatch<SetStateAction<string | undefined>>;
   customToolbarUI?: JSX.Element;
   addlExportDropdownItems?: IExportDropdownItem[];
 }
@@ -211,7 +211,7 @@ export default function SamplesList({
       let currUserEmail = userEmail;
 
       if (!currUserEmail) {
-        currUserEmail = await new Promise<string | null>((resolve) => {
+        currUserEmail = await new Promise<string | undefined>((resolve) => {
           window.addEventListener("message", handleLogin);
 
           function handleLogin(event: MessageEvent) {
