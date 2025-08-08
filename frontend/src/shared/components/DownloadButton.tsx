@@ -5,10 +5,30 @@ import InfoIcon from "@material-ui/icons/InfoOutlined";
 import { ReactNode } from "react";
 
 export interface DownloadOption {
+  /**
+   * Label for the download option button.
+   */
   label: string;
+  /**
+   * Column definitions for the data to be downloaded.
+   * Typically, this will be the same column definitions used in the current table.
+   */
   columnDefs: Array<ColDef>;
-  dataGetter: () => Promise<any>;
+  /**
+   * Async function that fetches the data to be downloaded.
+   * Usage: pass in `getRenderedData` from the `useDownload` hook to fetch the
+   * current search results on the page, or create your own function to fetch
+   * data for other purposes.
+   */
+  dataGetter: () => Promise<Array<any>>;
+  /**
+   * Optional content of a tooltip to display next to the download label
+   * in the dropdown menu.
+   */
   tooltip?: string;
+  /**
+   * Optionally disable a download option in the dropdown menu.
+   */
   disabled?: boolean;
 }
 

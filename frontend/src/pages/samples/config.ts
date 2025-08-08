@@ -11,6 +11,8 @@ import {
   DashboardRecordContext,
   DashboardSample,
 } from "../../generated/graphql";
+import { ColDef } from "ag-grid-community";
+import { DownloadOption } from "../../shared/components/DownloadButton";
 
 export const WES_SAMPLE_CONTEXT: Array<DashboardRecordContext> = [
   {
@@ -87,14 +89,17 @@ export const filterButtonOptions = new Map<string, FilterOptionProps>([
   ],
 ]);
 
-export function buildDownloadOptions(
-  getRenderedData: () => Promise<Array<DashboardSample>>
-) {
+export function buildDownloadOptions({
+  getRenderedData,
+  currentColumnDefs,
+}: {
+  getRenderedData: () => Promise<Array<DashboardSample>>;
+  currentColumnDefs: Array<ColDef>;
+}): Array<DownloadOption> {
   return [
     {
       label: "Download as TSV",
-      // FIX: this should reflect the tab selection, right now always "All"
-      columnDefs: combinedSampleColDefs,
+      columnDefs: currentColumnDefs,
       dataGetter: getRenderedData,
     },
     {

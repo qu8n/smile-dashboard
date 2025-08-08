@@ -1,4 +1,5 @@
 import { AgGridReact } from "ag-grid-react";
+import { AgGridReact as AgGridReactType } from "ag-grid-react/lib/agGridReact";
 import AutoSizer from "react-virtualized-auto-sizer";
 import styles from "./records.module.scss";
 import { handleAgGridPaste } from "../utils/handleAgGridPaste";
@@ -26,10 +27,10 @@ const COST_CENTER_VALIDATION_ALERT =
   "(5 digits, a forward slash, then 5 digits). For example: 12345/12345.";
 
 interface DataGridProps {
-  gridRef: RefObject<AgGridReact>;
+  gridRef: RefObject<AgGridReactType<any>>;
   hasParams?: boolean;
   setAlertContent: Dispatch<SetStateAction<string | null>>;
-  columnDefs: ColDef[];
+  columnDefs: ColDef<any>[];
   handleGridColumnsChanged: () => void;
 }
 

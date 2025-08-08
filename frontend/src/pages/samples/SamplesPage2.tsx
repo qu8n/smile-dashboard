@@ -23,13 +23,13 @@ const RECORD_NAME = "samples";
 const QUERY_NAME = "dashboardSamples";
 const INITIAL_SORT_FIELD_NAME = "importDate";
 
-// PLAN: re-create the samples page, then modify it to fit the requests page
+// TODO: re-create the samples page, then modify it to fit the requests page
 export function SamplesPage2() {
   const [userSearchVal, setUserSearchVal] = useState<string>("");
   const [alertContent, setAlertContent] = useState<string | null>(null);
   const [filterButton, setFilterButton] = useState("All");
 
-  const gridRef = useRef<AgGridReactType>(null);
+  const gridRef = useRef<AgGridReactType<DashboardSample>>(null);
 
   const { refreshData, recordCount, loading, error, fetchMore } = useFetchData({
     useRecordsLazyQuery: useDashboardSamplesLazyQuery,
@@ -51,7 +51,10 @@ export function SamplesPage2() {
       queryName: QUERY_NAME,
     });
 
-  const downloadOptions = buildDownloadOptions(getRenderedData);
+  const downloadOptions = buildDownloadOptions({
+    getRenderedData,
+    currentColumnDefs: filterButtonOptions.get(filterButton)!.columnDefs,
+  });
 
   if (error) {
     return <ErrorMessage error={error} />;

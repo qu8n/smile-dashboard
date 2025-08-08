@@ -49,7 +49,7 @@ export function useDownload<T>({
    * current search value
    */
   async function getRenderedData(): Promise<Array<T>> {
-    const { data } = await fetchMore({
+    const { data } = await fetchMore<Record<string, Array<T>>>({
       variables: {
         searchVals: parseUserSearchVal(userSearchVal),
         offset: 0,
