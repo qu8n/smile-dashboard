@@ -4,40 +4,58 @@ import { AgGridReact as AgGridReactType } from "ag-grid-react/lib/agGridReact";
 import { AlertModal } from "../../components/AlertModal";
 import { useFetchData } from "../../hooks/useFetchData";
 import {
+  DashboardRecordContext,
   DashboardSample,
   useDashboardSamplesLazyQuery,
 } from "../../generated/graphql";
 import { Heading } from "../../shared/components/Heading";
 import { Toolbarr } from "../../shared/components/Toolbarr";
 import { SearchBar } from "../../shared/components/SearchBar";
-import { buildDownloadOptions, filterButtonOptions } from "./config";
-import { Col, Form } from "react-bootstrap";
+import {
+  buildDownloadOptions,
+  filterButtonOptions,
+  filterButtonsTooltipContent,
+  phiModeSwitchTooltipContent,
+} from "./config";
+import { Col } from "react-bootstrap";
 // TODO: use react bootsrap components instead of Material UI
 // OverlayTrigger
-import { Tooltip } from "@material-ui/core";
 import { FilterButtons } from "../../components/FilterButtons";
 import { ErrorMessage } from "../../components/ErrorMessage";
 import { DownloadButton } from "../../shared/components/DownloadButton";
 import { DownloadModal2 } from "../../components/DownloadModal2";
 import { useDownload } from "../../hooks/useDownload";
-import InfoIcon from "@material-ui/icons/InfoOutlined";
+import { usePhiEnabled } from "../../contexts/PhiEnabledContext";
+import { ColDef } from "ag-grid-community";
+import { PhiModeSwitch } from "../../components/PhiModeSwitch";
+import { useTogglePhiColumns } from "../../hooks/useTogglePhiColumns";
 
 const POLLING_INTERVAL = 5000; // 5s
 const RECORD_NAME = "samples";
 const QUERY_NAME = "dashboardSamples";
 const INITIAL_SORT_FIELD_NAME = "importDate";
+const PHI_FIELDS = new Set(["sequencingDate"]);
 
 // TODO: re-create the samples page, then modify it to fit the requests page
 export function SamplesPage2() {
   const [userSearchVal, setUserSearchVal] = useState<string>("");
   const [alertContent, setAlertContent] = useState<string | null>(null);
-  const [filterButton, setFilterButton] = useState("All");
+  const [columnDefs, setColumnDefs] = useState<Array<ColDef>>(
+    filterButtonOptions[0].columnDefs
+  );
+  const [contexts, setContexts] = useState<
+    Array<DashboardRecordContext> | undefined
+  >(filterButtonOptions[0].contexts);
 
   const gridRef = useRef<AgGridReactType<DashboardSample>>(null);
+  const { handleTogglingPhiColumns } = useTogglePhiColumns({
+    setColumnDefs,
+    phiFields: PHI_FIELDS,
+  });
 
   const { refreshData, recordCount, loading, error, fetchMore } = useFetchData({
     useRecordsLazyQuery: useDashboardSamplesLazyQuery,
-    contexts: filterButtonOptions.get(filterButton)?.contexts,
+    contexts,
     queryName: QUERY_NAME,
     initialSortFieldName: INITIAL_SORT_FIELD_NAME,
     gridRef,
@@ -57,8 +75,22 @@ export function SamplesPage2() {
 
   const downloadOptions = buildDownloadOptions({
     getRenderedData,
-    currentColumnDefs: filterButtonOptions.get(filterButton)!.columnDefs,
+    columnDefs,
   });
+
+  function handleFilterButtonClick(filterButtonLabel: string) {
+    const selectedFilterButtonOption = filterButtonOptions.find(
+      (option) => option.label === filterButtonLabel
+    );
+    setColumnDefs(selectedFilterButtonOption!.columnDefs);
+    setContexts(selectedFilterButtonOption!.contexts);
+    refreshData();
+  }
+
+  function handleSearch() {
+    handleTogglingPhiColumns();
+    refreshData();
+  }
 
   if (error) {
     return <ErrorMessage error={error} />;
@@ -70,62 +102,25 @@ export function SamplesPage2() {
       <Toolbarr>
         <Col>
           <FilterButtons
-            filterButton={filterButton}
-            setFilterButton={setFilterButton}
-            filterButtonOptions={filterButtonOptions}
+            buttonOptions={filterButtonOptions}
+            onButtonClick={handleFilterButtonClick}
           >
-            These tabs filter the data and relevant columns displayed in the
-            table. "All" shows all samples, whereas "WES" and "ACCESS/CMO-CH"
-            show only whole exome and MSK-ACCESS/CMO-CH samples, respectively.
+            {filterButtonsTooltipContent}
           </FilterButtons>
         </Col>
 
-        <Col md="auto" className="d-flex mx-auto gap-2">
+        <Col md="auto" className="d-flex gap-3 align-items-center">
           <SearchBar
             userSearchVal={userSearchVal}
             setUserSearchVal={setUserSearchVal}
-            handleSearch={refreshData}
+            onSearch={handleSearch}
             recordCount={recordCount}
             loading={loading}
           />
 
           <div className="vr" />
 
-          {/* <Form> */}
-          {/*   <Form.Check */}
-          {/*     type="switch" */}
-          {/*     id="custom-switch" */}
-          {/*     label="PHI-enabled" */}
-          {/*     checked={phiEnabled} */}
-          {/*     onChange={(e) => { */}
-          {/*       const isPhiEnabled = e.target.checked; */}
-          {/*       setPhiEnabled(isPhiEnabled); */}
-          {/*       if (isPhiEnabled) { */}
-          {/*         setColDefs(sampleColDefsWithPhiCols); */}
-          {/*         setColumnDefsForExport(sampleColDefsWithPhiCols); */}
-          {/*       } else { */}
-          {/*         setColDefs(columnDefs); */}
-          {/*         setColumnDefsForExport(columnDefs); */}
-          {/*       } */}
-          {/*       refreshData(userSearchVal); */}
-          {/*     }} */}
-          {/*   /> */}
-          {/* </Form> */}
-          {/**/}
-          {/* <Tooltip */}
-          {/*   title={ */}
-          {/*     <span style={{ fontSize: 12 }}> */}
-          {/*       Turn on this switch to return each sample's sequencing date */}
-          {/*       in the results. Note that this mode only returns the */}
-          {/*       sequencing date matching specific DMP Sample IDs entered in */}
-          {/*       the search bar. When turning on this switch for the first */}
-          {/*       time, you will be prompted to log in. */}
-          {/*     </span> */}
-          {/*   } */}
-          {/* > */}
-          {/*   <InfoIcon style={{ fontSize: 18, color: "grey" }} /> */}
-          {/* </Tooltip> */}
-          {/**/}
+          <PhiModeSwitch>{phiModeSwitchTooltipContent}</PhiModeSwitch>
         </Col>
 
         <Col className="text-end">
@@ -139,7 +134,7 @@ export function SamplesPage2() {
       <DataGrid
         gridRef={gridRef}
         setAlertContent={setAlertContent}
-        columnDefs={filterButtonOptions.get(filterButton)!.columnDefs}
+        columnDefs={columnDefs}
         handleGridColumnsChanged={refreshData}
       />
 

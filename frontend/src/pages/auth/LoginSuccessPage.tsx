@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-export default function LoginSuccessPage() {
+export function LoginSuccessPage() {
   useEffect(() => {
     if (window.opener) {
       window.opener.postMessage(

@@ -3,18 +3,18 @@ import RequestsPage from "./pages/requests/RequestsPage";
 import PatientsPage from "./pages/patients/PatientsPage";
 import SamplesPage from "./pages/samples/SamplesPage";
 import CohortsPage from "./pages/cohorts/CohortsPage";
-import LoginSuccessPage from "./pages/auth/LoginSuccessPage";
-import SmileNavBar from "./shared/components/SmileNavBar";
+import { LoginSuccessPage } from "./pages/auth/LoginSuccessPage";
 import { SamplesPage2 } from "./pages/samples/SamplesPage2";
 import { UserEmailProvider } from "./contexts/UserEmailContext";
 import { PhiEnabledProvider } from "./contexts/PhiEnabledContext";
+import { NavBar } from "./shared/components/NavBar";
 
 export default function App() {
   return (
     <main id="main" className="main">
       <UserEmailProvider>
         <PhiEnabledProvider>
-          <SmileNavBar />
+          <NavBar />
           <Routes>
             <Route path="/" element={<RequestsPage />}>
               <Route path=":igoRequestId" />

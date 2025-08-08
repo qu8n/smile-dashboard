@@ -2,40 +2,46 @@ import { Button, ButtonGroup } from "react-bootstrap";
 import { ColDef } from "ag-grid-community";
 import InfoIcon from "@material-ui/icons/InfoOutlined";
 import { CustomTooltip } from "../shared/components/CustomToolTip";
-import { Dispatch, ReactNode, SetStateAction } from "react";
+import { Dispatch, ReactNode, SetStateAction, useState } from "react";
 import { DashboardRecordContext } from "../generated/graphql";
 
-export type FilterOptionProps = {
+export type FilterButtonOption = {
+  label: string;
   columnDefs: ColDef[];
   contexts?: DashboardRecordContext[];
 };
 
 interface FilterButtonsProps {
   /**
-   * The currently selected filter button state
-   */
-  filterButton: string;
-  /**
-   * Function to update the filter button state
-   */
-  setFilterButton: Dispatch<SetStateAction<string>>;
-  /**
    * A map of filter button options, where the key is the button label and the
-   * value contains column definitions and optional contexts
+   * value contains column definitions and optional contexts.
    */
-  filterButtonOptions: Map<string, FilterOptionProps>;
+  buttonOptions: Array<FilterButtonOption>;
   /**
-   * Content to be displayed inside the tooltip
+   * Callback function to run additional logic when a filter button is clicked,
+   * like updating the column definitions.
+   */
+  onButtonClick: (filterButtonLabel: string) => void;
+  /**
+   * Content to be displayed inside the tooltip.
    */
   children: ReactNode;
 }
 
 export function FilterButtons({
-  filterButton,
-  setFilterButton,
-  filterButtonOptions,
+  buttonOptions,
+  onButtonClick,
   children,
 }: FilterButtonsProps) {
+  const [activeButtonLabel, setActiveButtonLabel] = useState<string>(
+    buttonOptions[0].label
+  );
+
+  function handleButtonClick(filterButtonLabel: string) {
+    setActiveButtonLabel(filterButtonLabel);
+    onButtonClick(filterButtonLabel);
+  }
+
   return (
     <>
       <CustomTooltip
@@ -44,15 +50,15 @@ export function FilterButtons({
         {children}
       </CustomTooltip>{" "}
       <ButtonGroup>
-        {Array.from(filterButtonOptions.keys()).map((filterButtonKey) => (
+        {buttonOptions.map((buttonOption) => (
           <Button
-            key={filterButtonKey}
-            onClick={() => setFilterButton(filterButtonKey)}
+            key={buttonOption.label}
+            onClick={() => handleButtonClick(buttonOption.label)}
             size="sm"
             variant="outline-secondary"
-            active={filterButton === filterButtonKey}
+            active={buttonOption.label === activeButtonLabel}
           >
-            {filterButtonKey}
+            {buttonOption.label}
           </Button>
         ))}
       </ButtonGroup>

@@ -1,6 +1,7 @@
 import { RefObject, useCallback, useMemo, useState } from "react";
 import {
   AgGridSortDirection,
+  DashboardRecordSort,
   DashboardSamplesQueryVariables,
 } from "../generated/graphql";
 import { useHookLazyGeneric } from "../shared/types";
@@ -8,6 +9,7 @@ import { parseUserSearchVal } from "../utils/parseSearchQueries";
 import { getColumnFilters } from "../shared/helpers";
 import { IServerSideGetRowsParams } from "ag-grid-community";
 import { AgGridReact as AgGridReactType } from "ag-grid-react/lib/agGridReact";
+import { usePhiEnabled } from "../contexts/PhiEnabledContext";
 
 export const CACHE_BLOCK_SIZE = 500; // number of rows to fetch at a time
 
@@ -60,8 +62,9 @@ export function useFetchData({
   // Manage our own loading state becase the lazy query's provided `loading` state
   // does not toggle to `true` as `setServerSideDatasource` is running
   const [loading, isLoading] = useState(false);
+  const { phiEnabled } = usePhiEnabled();
 
-  const defaultSort = useMemo(
+  const defaultSort: DashboardRecordSort = useMemo(
     () => ({
       colId: initialSortFieldName,
       sort: AgGridSortDirection.Desc,
@@ -77,6 +80,7 @@ export function useFetchData({
         sort: defaultSort,
         limit: CACHE_BLOCK_SIZE,
         offset: 0,
+        phiEnabled,
       },
       pollInterval,
     });

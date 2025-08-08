@@ -6,7 +6,7 @@ import { Dispatch, SetStateAction } from "react";
 interface SearchBarProps {
   userSearchVal: string;
   setUserSearchVal: Dispatch<SetStateAction<string>>;
-  handleSearch: () => void;
+  onSearch: () => void;
   recordCount: number | null;
   loading: boolean;
 }
@@ -14,7 +14,7 @@ interface SearchBarProps {
 export function SearchBar({
   userSearchVal,
   setUserSearchVal,
-  handleSearch,
+  onSearch,
   recordCount,
   loading,
 }: SearchBarProps) {
@@ -38,12 +38,12 @@ export function SearchBar({
         aria-label="Search"
         value={userSearchVal}
         onKeyDown={(e) => {
-          if (e.key === "Enter") handleSearch();
+          if (e.key === "Enter") onSearch();
         }}
         onChange={(e) => setUserSearchVal(e.currentTarget.value)}
       />
 
-      <Button onClick={handleSearch} className="btn btn-secondary" size="sm">
+      <Button onClick={onSearch} className="btn btn-secondary" size="sm">
         Search
       </Button>
 

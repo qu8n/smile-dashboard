@@ -46,7 +46,7 @@ export function useDownload<T>({
 
   /**
    * Used by DownloadOption.dataGetter to fetch all data for the
-   * current search value
+   * current search value.
    */
   async function getRenderedData(): Promise<Array<T>> {
     const { data } = await fetchMore<Record<string, Array<T>>>({

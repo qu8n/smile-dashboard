@@ -4,9 +4,7 @@ import {
   readOnlyAccessSampleColDefs,
   readOnlyWesSampleColDefs,
 } from "../../shared/helpers";
-import { FilterOptionProps } from "../../components/FilterButtons";
-import { parseUserSearchVal } from "../../utils/parseSearchQueries";
-import { QueryResult } from "@apollo/client";
+import { FilterButtonOption } from "../../components/FilterButtons";
 import {
   DashboardRecordContext,
   DashboardSample,
@@ -65,41 +63,49 @@ export const ACCESS_SAMPLE_CONTEXT: Array<DashboardRecordContext> = [
   },
 ];
 
-export const filterButtonOptions = new Map<string, FilterOptionProps>([
-  [
-    "All",
-    {
-      columnDefs: combinedSampleColDefs,
-      contexts: undefined,
-    },
-  ],
-  [
-    "WES",
-    {
-      columnDefs: readOnlyWesSampleColDefs,
-      contexts: WES_SAMPLE_CONTEXT,
-    },
-  ],
-  [
-    "ACCESS/CMO-CH",
-    {
-      columnDefs: readOnlyAccessSampleColDefs,
-      contexts: ACCESS_SAMPLE_CONTEXT,
-    },
-  ],
-]);
+export const filterButtonOptions: Array<FilterButtonOption> = [
+  {
+    label: "All",
+    columnDefs: combinedSampleColDefs,
+    contexts: undefined,
+  },
+  {
+    label: "WES",
+    columnDefs: readOnlyWesSampleColDefs,
+    contexts: WES_SAMPLE_CONTEXT,
+  },
+  {
+    label: "ACCESS/CMO-CH",
+    columnDefs: readOnlyAccessSampleColDefs,
+    contexts: ACCESS_SAMPLE_CONTEXT,
+  },
+];
+
+export const filterButtonsTooltipContent =
+  "These tabs filter the data and relevant columns displayed in the table." +
+  '"All" shows all samples, whereas "WES" and "ACCESS/CMO-CH" show only' +
+  "whole exome and MSK-ACCESS/CMO-CH samples, respectively.";
+
+interface BuildDownloadOptionsParams {
+  /**
+   * Callback function provided by the useDownload hook to fetch all data for the
+   * current search value.
+   */
+  getRenderedData: () => Promise<Array<DashboardSample>>;
+  /**
+   * The current column definitions state of the table.
+   */
+  columnDefs: Array<ColDef>;
+}
 
 export function buildDownloadOptions({
   getRenderedData,
-  currentColumnDefs,
-}: {
-  getRenderedData: () => Promise<Array<DashboardSample>>;
-  currentColumnDefs: Array<ColDef>;
-}): Array<DownloadOption> {
+  columnDefs,
+}: BuildDownloadOptionsParams): Array<DownloadOption> {
   return [
     {
       label: "Download as TSV",
-      columnDefs: currentColumnDefs,
+      columnDefs: columnDefs,
       dataGetter: getRenderedData,
     },
     {
@@ -109,3 +115,9 @@ export function buildDownloadOptions({
     },
   ];
 }
+
+export const phiModeSwitchTooltipContent =
+  "Turn on this switch to return each sample's sequencing date in the results." +
+  "Note that this mode only returns the sequencing date matching specific" +
+  "DMP Sample IDs entered in the search bar. When turning on this switch for" +
+  "the first time, you will be prompted to log in.";

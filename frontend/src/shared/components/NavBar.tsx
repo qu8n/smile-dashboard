@@ -1,8 +1,8 @@
-import { Nav, NavLink } from "react-bootstrap";
-import { Dispatch, SetStateAction } from "react";
+import { Nav } from "react-bootstrap";
+import { Link } from "react-router-dom";
 import { useUserEmail } from "../../contexts/UserEmailContext";
 
-export default function SmileNavBar() {
+export function NavBar() {
   const { userEmail, setUserEmail } = useUserEmail();
 
   function handleLogout() {
@@ -21,15 +21,26 @@ export default function SmileNavBar() {
         className="header fixed-top d-flex align-items-center"
       >
         <div>
-          <a href="/" className="logo">
+          <Link to="/" className="logo">
             <img src="/img/logo_with_text.png" alt="Navbar logo" />
-          </a>
+          </Link>
         </div>
         <Nav>
-          <NavLink href="/requests">Requests</NavLink>
-          <NavLink href="/patients">Patients</NavLink>
-          <NavLink href="/samples">Samples</NavLink>
-          <NavLink href="/cohorts">Cohorts</NavLink>
+          <Link className="nav-link" to="/requests">
+            Requests
+          </Link>
+          <Link className="nav-link" to="/patients">
+            Patients
+          </Link>
+          <Link className="nav-link" to="/samples">
+            Samples
+          </Link>
+          <Link className="nav-link" to="/cohorts">
+            Cohorts
+          </Link>
+          <Link className="nav-link" to="/test">
+            Test
+          </Link>
         </Nav>
         {userEmail && (
           <div className="ms-auto d-none d-md-flex">

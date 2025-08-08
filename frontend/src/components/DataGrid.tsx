@@ -29,7 +29,7 @@ interface DataGridProps {
   gridRef: RefObject<AgGridReactType<any>>;
   hasParams?: boolean;
   setAlertContent: Dispatch<SetStateAction<string | null>>;
-  columnDefs: ColDef<any>[];
+  columnDefs: Array<ColDef<any>>;
   handleGridColumnsChanged: () => void;
 }
 
