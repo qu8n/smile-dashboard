@@ -85,8 +85,6 @@ export function useFetchData({
       pollInterval,
     });
 
-  // TODO next: implement data editing!
-
   const recordCount: number = data?.[queryName][0]?._total || 0;
 
   const buildServerSideDatasource = useCallback(

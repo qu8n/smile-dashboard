@@ -10,6 +10,7 @@ import {
 import { getUserEmail } from "../utils/getUserEmail";
 import { useUserEmail } from "./UserEmailContext";
 import { openLoginPopup } from "../utils/openLoginPopup";
+import { useWarningModal } from "./WarningContext";
 
 const PHI_WARNING =
   "The information contained in this transmission from Memorial Sloan-Kettering" +
@@ -35,13 +36,13 @@ const PhiEnabledContext = createContext<PhiEnabledContextType | undefined>(
 export function PhiEnabledProvider({ children }: { children: ReactNode }) {
   const [phiEnabled, setPhiEnabled] = useState<boolean>(false);
   const { userEmail, setUserEmail } = useUserEmail();
+  const { setWarningModalContent } = useWarningModal();
 
   useEffect(() => {
     async function handleLogin(event: MessageEvent) {
       if (event.data !== "success") return;
       setUserEmail(await getUserEmail());
-      // TODO: make this a global state?
-      // setAlertContent(PHI_WARNING.content);
+      setWarningModalContent(PHI_WARNING);
     }
     if (phiEnabled) {
       window.addEventListener("message", handleLogin);
@@ -50,7 +51,7 @@ export function PhiEnabledProvider({ children }: { children: ReactNode }) {
         window.removeEventListener("message", handleLogin);
       };
     }
-  }, [phiEnabled, userEmail, setUserEmail]);
+  }, [phiEnabled, userEmail, setUserEmail, setWarningModalContent]);
 
   return (
     <PhiEnabledContext.Provider value={{ phiEnabled, setPhiEnabled }}>

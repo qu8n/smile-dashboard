@@ -29,6 +29,7 @@ import { usePhiEnabled } from "../../contexts/PhiEnabledContext";
 import { ColDef } from "ag-grid-community";
 import { PhiModeSwitch } from "../../components/PhiModeSwitch";
 import { useTogglePhiColumns } from "../../hooks/useTogglePhiColumns";
+import { useWarningModal } from "../../contexts/WarningContext";
 
 const POLLING_INTERVAL = 5000; // 5s
 const RECORD_NAME = "samples";
@@ -39,7 +40,6 @@ const PHI_FIELDS = new Set(["sequencingDate"]);
 // TODO: re-create the samples page, then modify it to fit the requests page
 export function SamplesPage2() {
   const [userSearchVal, setUserSearchVal] = useState<string>("");
-  const [alertContent, setAlertContent] = useState<string | null>(null);
   const [columnDefs, setColumnDefs] = useState<Array<ColDef>>(
     filterButtonOptions[0].columnDefs
   );
@@ -134,16 +134,8 @@ export function SamplesPage2() {
 
       <DataGrid
         gridRef={gridRef}
-        setAlertContent={setAlertContent}
         columnDefs={columnDefs}
         handleGridColumnsChanged={refreshData}
-      />
-
-      <AlertModal
-        show={!!alertContent}
-        onHide={() => setAlertContent(null)}
-        title={"Warning"}
-        content={alertContent}
       />
 
       <DownloadModal2 show={isDownloading} />

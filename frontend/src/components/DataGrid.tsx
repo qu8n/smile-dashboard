@@ -3,13 +3,7 @@ import { AgGridReact as AgGridReactType } from "ag-grid-react/lib/agGridReact";
 import AutoSizer from "react-virtualized-auto-sizer";
 import styles from "./records.module.scss";
 import { handleAgGridPaste } from "../utils/handleAgGridPaste";
-import {
-  RefObject,
-  ClipboardEvent,
-  useState,
-  Dispatch,
-  SetStateAction,
-} from "react";
+import { RefObject, ClipboardEvent, useState } from "react";
 import { CellEditRequestEvent, ColDef } from "ag-grid-community";
 import {
   CACHE_BLOCK_SIZE,
@@ -20,27 +14,40 @@ import {
 import { getUserEmail } from "../utils/getUserEmail";
 import { openLoginPopup } from "../utils/openLoginPopup";
 import { useUserEmail } from "../contexts/UserEmailContext";
+import { useWarningModal } from "../contexts/WarningContext";
 
-const COST_CENTER_VALIDATION_ALERT =
+const INVALID_COST_CENTER_WARNING =
   "Please update your Cost Center/Fund Number input as #####/##### " +
   "(5 digits, a forward slash, then 5 digits). For example: 12345/12345.";
 
 interface DataGridProps {
+  /**
+   * Reference to the AgGridReact component. Used to access the grid API
+   * and perform actions like updating the grid with new data.
+   */
   gridRef: RefObject<AgGridReactType<any>>;
-  hasParams?: boolean;
-  setAlertContent: Dispatch<SetStateAction<string | null>>;
+  /**
+   * Indicates whether there is an active URL path. If so, adjust
+   * the grid height to fit the popup view. For example, the Request Samples
+   * view has the URL path `<requestId>` in the URL `/requests/<requestId>`
+   */
+  hasUrlPath?: boolean;
+  /**
+   * Column definitions for the grid. This is an array of column definitions
+   * that define how the grid should display data.
+   */
   columnDefs: Array<ColDef<any>>;
   handleGridColumnsChanged: () => void;
 }
 
 export function DataGrid({
   gridRef,
-  hasParams = false,
-  setAlertContent,
+  hasUrlPath = false,
   columnDefs,
   handleGridColumnsChanged,
 }: DataGridProps) {
   const { userEmail, setUserEmail } = useUserEmail();
+  const { setWarningModalContent } = useWarningModal();
   const [changes, setChanges] = useState<SampleChange[]>([]);
 
   async function handleCellEditRequest(params: CellEditRequestEvent) {
@@ -125,7 +132,7 @@ export function DataGrid({
 
     // Validate Cost Center inputs
     if (fieldName === "costCenter" && !isValidCostCenter(newValue)) {
-      setAlertContent(COST_CENTER_VALIDATION_ALERT);
+      setWarningModalContent(INVALID_COST_CENTER_WARNING);
     }
 
     // TODO: wherever setUnsavedChanges is used, change the logic to check changes array length
@@ -139,7 +146,7 @@ export function DataGrid({
       await handleAgGridPaste({ e, gridRef, handleCellEditRequest });
     } catch (error) {
       if (error instanceof Error) {
-        setAlertContent(error.message);
+        setWarningModalContent(error.message);
       } else {
         console.error("Unexpected error during paste:", error);
       }
@@ -152,7 +159,7 @@ export function DataGrid({
         return (
           <div
             className={`ag-theme-alpine ${
-              hasParams ? styles.popupTableHeight : styles.tableHeight
+              hasUrlPath ? styles.popupTableHeight : styles.tableHeight
             }`}
             style={{ width }}
             onPaste={handlePaste}
