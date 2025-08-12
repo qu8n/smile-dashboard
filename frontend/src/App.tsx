@@ -14,9 +14,8 @@ export default function App() {
   return (
     <main id="main" className="main">
       <Providers>
-        <NavBar />
-
         <BrowserRouter>
+          <NavBar />
           <Routes>
             <Route path="/" element={<RequestsPage />}>
               <Route path=":igoRequestId" />

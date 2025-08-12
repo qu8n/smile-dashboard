@@ -1,7 +1,6 @@
 import { useRef, useState } from "react";
 import { DataGrid } from "../../components/DataGrid";
 import { AgGridReact as AgGridReactType } from "ag-grid-react/lib/agGridReact";
-import { AlertModal } from "../../components/AlertModal";
 import { useFetchData } from "../../hooks/useFetchData";
 import {
   DashboardRecordContext,
@@ -25,13 +24,13 @@ import { ErrorMessage } from "../../components/ErrorMessage";
 import { DownloadButton } from "../../shared/components/DownloadButton";
 import { DownloadModal2 } from "../../components/DownloadModal2";
 import { useDownload } from "../../hooks/useDownload";
-import { usePhiEnabled } from "../../contexts/PhiEnabledContext";
 import { ColDef } from "ag-grid-community";
 import { PhiModeSwitch } from "../../components/PhiModeSwitch";
 import { useTogglePhiColumns } from "../../hooks/useTogglePhiColumns";
-import { useWarningModal } from "../../contexts/WarningContext";
+import { POLLING_INTERVAL } from "../../shared/helpers";
+import { useCellChanges } from "../../hooks/useCellChanges";
+import { CellChangesConfirmation } from "../../components/CellChangesConfirmation";
 
-const POLLING_INTERVAL = 5000; // 5s
 const RECORD_NAME = "samples";
 const QUERY_NAME = "dashboardSamples";
 const INITIAL_SORT_FIELD_NAME = "importDate";
@@ -52,17 +51,40 @@ export function SamplesPage2() {
     setColumnDefs,
     phiFields: PHI_FIELDS,
   });
+  const {
+    refreshData,
+    recordCount,
+    isLoading,
+    error,
+    data,
+    fetchMore,
+    startPolling,
+    stopPolling,
+  } = useFetchData({
+    useRecordsLazyQuery: useDashboardSamplesLazyQuery,
+    contexts,
+    queryName: QUERY_NAME,
+    initialSortFieldName: INITIAL_SORT_FIELD_NAME,
+    gridRef,
+    pollInterval: POLLING_INTERVAL,
+    userSearchVal,
+  });
 
-  const { refreshData, recordCount, isLoading, error, fetchMore } =
-    useFetchData({
-      useRecordsLazyQuery: useDashboardSamplesLazyQuery,
-      contexts,
-      queryName: QUERY_NAME,
-      initialSortFieldName: INITIAL_SORT_FIELD_NAME,
-      gridRef,
-      pollInterval: POLLING_INTERVAL,
-      userSearchVal,
-    });
+  const {
+    changes,
+    handleCellEditRequest,
+    handleDiscardChanges,
+    handleConfirmUpdates,
+    showUpdateModal,
+    setShowUpdateModal,
+    handleSubmitUpdates,
+  } = useCellChanges({
+    gridRef,
+    startPolling,
+    stopPolling,
+    samples: data?.[QUERY_NAME],
+    refreshData,
+  });
 
   const { isDownloading, handleDownload, getRenderedData } =
     useDownload<DashboardSample>({
@@ -122,6 +144,17 @@ export function SamplesPage2() {
           <div className="vr" />
 
           <PhiModeSwitch>{phiModeSwitchTooltipContent}</PhiModeSwitch>
+
+          {changes.length > 0 && (
+            <CellChangesConfirmation
+              changes={changes}
+              onDiscardChanges={handleDiscardChanges}
+              onConfirmUpdates={handleConfirmUpdates}
+              onSubmitUpdates={handleSubmitUpdates}
+              onUpdateModalHide={() => setShowUpdateModal(false)}
+              showUpdateModal={showUpdateModal}
+            />
+          )}
         </Col>
 
         <Col className="text-end">
@@ -136,6 +169,8 @@ export function SamplesPage2() {
         gridRef={gridRef}
         columnDefs={columnDefs}
         handleGridColumnsChanged={refreshData}
+        changes={changes}
+        handleCellEditRequest={handleCellEditRequest}
       />
 
       <DownloadModal2 show={isDownloading} />

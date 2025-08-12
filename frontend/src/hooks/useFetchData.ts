@@ -7,7 +7,10 @@ import {
 import { useHookLazyGeneric } from "../shared/types";
 import { parseUserSearchVal } from "../utils/parseSearchQueries";
 import { getColumnFilters } from "../shared/helpers";
-import { IServerSideGetRowsParams } from "ag-grid-community";
+import {
+  IServerSideDatasource,
+  IServerSideGetRowsParams,
+} from "ag-grid-community";
 import { AgGridReact as AgGridReactType } from "ag-grid-react/lib/agGridReact";
 import { usePhiEnabled } from "../contexts/PhiEnabledContext";
 
@@ -72,18 +75,25 @@ export function useFetchData({
     [initialSortFieldName]
   );
 
-  const [, { error, data, fetchMore, refetch, startPolling, stopPolling }] =
-    useRecordsLazyQuery({
-      variables: {
-        searchVals: [],
-        contexts,
-        sort: defaultSort,
-        limit: CACHE_BLOCK_SIZE,
-        offset: 0,
-        phiEnabled,
-      },
-      pollInterval,
-    });
+  const [
+    ,
+    { error, data, fetchMore, refetch, startPolling: poll, stopPolling },
+  ] = useRecordsLazyQuery({
+    variables: {
+      searchVals: [],
+      contexts,
+      sort: defaultSort,
+      limit: CACHE_BLOCK_SIZE,
+      offset: 0,
+      phiEnabled,
+    },
+    pollInterval,
+  });
+
+  // Start poll using the same interval throughout the page
+  function startPolling() {
+    poll(pollInterval);
+  }
 
   const recordCount: number = data?.[queryName][0]?._total || 0;
 
@@ -91,7 +101,7 @@ export function useFetchData({
     (userSearchVal) => {
       return {
         getRows: async (params: IServerSideGetRowsParams) => {
-          const queryVariables = {
+          const variables = {
             searchVals: parseUserSearchVal(userSearchVal),
             contexts,
             sort: params.request.sortModel[0] || defaultSort,
@@ -102,10 +112,8 @@ export function useFetchData({
 
           const thisFetch =
             params.request.startRow === 0
-              ? refetch(queryVariables)
-              : fetchMore({
-                  variables: queryVariables,
-                });
+              ? refetch(variables)
+              : fetchMore({ variables });
 
           return thisFetch
             .then((result) => {
@@ -119,18 +127,18 @@ export function useFetchData({
               params.fail();
             });
         },
-      };
+      } as IServerSideDatasource;
     },
     [refetch, fetchMore, defaultSort, queryName, contexts]
   );
 
-  async function refreshData() {
+  function refreshData() {
     stopPolling();
     setIsLoading(true);
     const newDatasource = buildServerSideDatasource(userSearchVal);
     gridRef.current?.api.setServerSideDatasource(newDatasource);
     setIsLoading(false);
-    startPolling(pollInterval);
+    startPolling();
   }
 
   return {
@@ -138,6 +146,9 @@ export function useFetchData({
     recordCount,
     isLoading,
     error,
+    data,
     fetchMore,
+    startPolling,
+    stopPolling,
   };
 }

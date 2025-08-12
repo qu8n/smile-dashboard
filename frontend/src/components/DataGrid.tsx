@@ -8,17 +8,9 @@ import { CellEditRequestEvent, ColDef } from "ag-grid-community";
 import {
   CACHE_BLOCK_SIZE,
   defaultColDef,
-  isValidCostCenter,
   SampleChange,
 } from "../shared/helpers";
-import { getUserEmail } from "../utils/getUserEmail";
-import { openLoginPopup } from "../utils/openLoginPopup";
-import { useUserEmail } from "../contexts/UserEmailContext";
 import { useWarningModal } from "../contexts/WarningContext";
-
-const INVALID_COST_CENTER_WARNING =
-  "Please update your Cost Center/Fund Number input as #####/##### " +
-  "(5 digits, a forward slash, then 5 digits). For example: 12345/12345.";
 
 interface DataGridProps {
   /**
@@ -38,6 +30,8 @@ interface DataGridProps {
    */
   columnDefs: Array<ColDef<any>>;
   handleGridColumnsChanged: () => void;
+  changes: Array<SampleChange>;
+  handleCellEditRequest: (params: CellEditRequestEvent) => Promise<void>;
 }
 
 export function DataGrid({
@@ -45,101 +39,10 @@ export function DataGrid({
   hasUrlPath = false,
   columnDefs,
   handleGridColumnsChanged,
+  changes,
+  handleCellEditRequest,
 }: DataGridProps) {
-  const { userEmail, setUserEmail } = useUserEmail();
   const { setWarningModalContent } = useWarningModal();
-  const [changes, setChanges] = useState<SampleChange[]>([]);
-
-  async function handleCellEditRequest(params: CellEditRequestEvent) {
-    const primaryId = params.data.primaryId;
-    const fieldName = params.colDef.field!;
-    const { oldValue, newValue, node: rowNode } = params;
-
-    // Prevent registering a change if no actual changes are made
-    const noChangeInVal = rowNode.data[fieldName] === newValue;
-    const noChangeInEmptyCell = !rowNode.data[fieldName] && !newValue;
-    if (noChangeInVal || noChangeInEmptyCell) {
-      setChanges((prevChanges) => {
-        const updatedChanges = prevChanges.filter(
-          (c) => !(c.primaryId === primaryId && c.fieldName === fieldName)
-        );
-        // TODO: test that this is ok
-        //
-        // if (updatedChanges.length === 0) setUnsavedChanges?.(false);
-        return updatedChanges;
-      });
-      gridRef.current?.api?.redrawRows({ rowNodes: [rowNode] });
-      return;
-    }
-
-    // Add/update the billedBy cell to/in the changes array
-    if (fieldName === "billed" && setUserEmail) {
-      let currUserEmail = userEmail;
-
-      if (!currUserEmail) {
-        currUserEmail = await new Promise<string | undefined>((resolve) => {
-          window.addEventListener("message", handleLogin);
-
-          function handleLogin(event: MessageEvent) {
-            if (event.data === "success") {
-              getUserEmail().then((email) => {
-                window.removeEventListener("message", handleLogin);
-                resolve(email);
-              });
-            }
-          }
-
-          openLoginPopup();
-        });
-
-        if (!currUserEmail) return;
-        setUserEmail(currUserEmail);
-      }
-
-      const currUsername = currUserEmail.split("@")[0];
-
-      setChanges((changes) => {
-        const billedBy = changes.find(
-          (c) => c.primaryId === primaryId && c.fieldName === "billedBy"
-        );
-        if (billedBy) {
-          billedBy.newValue = currUsername;
-        } else {
-          changes.push({
-            primaryId,
-            fieldName: "billedBy",
-            oldValue: "",
-            newValue: currUsername,
-            rowNode,
-          });
-        }
-        return [...changes];
-      });
-    }
-
-    // Add/update the edited cell to/in the changes array
-    setChanges((changes) => {
-      const change = changes.find(
-        (c) => c.primaryId === primaryId && c.fieldName === fieldName
-      );
-      if (change) {
-        change.newValue = newValue;
-      } else {
-        changes.push({ primaryId, fieldName, oldValue, newValue, rowNode });
-      }
-      return [...changes];
-    });
-
-    // Validate Cost Center inputs
-    if (fieldName === "costCenter" && !isValidCostCenter(newValue)) {
-      setWarningModalContent(INVALID_COST_CENTER_WARNING);
-    }
-
-    // TODO: wherever setUnsavedChanges is used, change the logic to check changes array length
-    //
-    // setUnsavedChanges?.(true);
-    gridRef.current?.api?.redrawRows({ rowNodes: [rowNode] });
-  }
 
   async function handlePaste(e: ClipboardEvent<HTMLDivElement>) {
     try {

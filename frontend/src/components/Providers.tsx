@@ -28,11 +28,11 @@ const apolloClient = new ApolloClient({
 export function Providers({ children }: { children: ReactNode }) {
   return (
     <ApolloProvider client={apolloClient}>
-      <PhiEnabledProvider>
-        <UserEmailProvider>
-          <WarningModalProvider>{children}</WarningModalProvider>
-        </UserEmailProvider>
-      </PhiEnabledProvider>
+      <UserEmailProvider>
+        <WarningModalProvider>
+          <PhiEnabledProvider>{children}</PhiEnabledProvider>
+        </WarningModalProvider>
+      </UserEmailProvider>
     </ApolloProvider>
   );
 }

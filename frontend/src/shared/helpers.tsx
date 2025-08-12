@@ -1297,3 +1297,5 @@ export interface IExportDropdownItem {
   disabled?: boolean;
   tooltip?: string;
 }
+
+export const POLLING_INTERVAL = 5000; // 5s

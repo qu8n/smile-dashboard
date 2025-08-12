@@ -4,7 +4,6 @@ import "ag-grid-community/styles/ag-theme-alpine.css";
 import "ag-grid-enterprise";
 import {
   CellEditRequestEvent,
-  CellValueChangedEvent,
   EditableCallbackParams,
   GridApi,
 } from "ag-grid-community";
@@ -28,7 +27,7 @@ export async function handleAgGridPaste({
 }: {
   e: React.ClipboardEvent<HTMLDivElement>;
   gridRef: React.RefObject<AgGridReactType>;
-  handleCellEditRequest: (params: CellValueChangedEvent) => Promise<void>;
+  handleCellEditRequest: (params: CellEditRequestEvent) => Promise<void>;
 }) {
   e.preventDefault();
   if (!gridRef.current || !gridRef.current.api) return;
@@ -135,7 +134,7 @@ export async function updateCell({
   newValue,
 }: {
   gridApi: GridApi;
-  handleCellEditRequest: (params: CellValueChangedEvent) => Promise<void>;
+  handleCellEditRequest: (params: CellEditRequestEvent) => Promise<void>;
   rowIndex: number;
   colId: string;
   newValue: any;
