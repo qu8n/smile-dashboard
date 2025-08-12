@@ -108,6 +108,7 @@ export function useFetchData({
             limit: CACHE_BLOCK_SIZE,
             offset: params.request.startRow ?? 0,
             columnFilters: getColumnFilters(params),
+            phiEnabled,
           };
 
           const thisFetch =
@@ -129,7 +130,7 @@ export function useFetchData({
         },
       } as IServerSideDatasource;
     },
-    [refetch, fetchMore, defaultSort, queryName, contexts]
+    [refetch, fetchMore, defaultSort, queryName, contexts, phiEnabled]
   );
 
   function refreshData() {

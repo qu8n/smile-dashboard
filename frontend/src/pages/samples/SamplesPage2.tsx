@@ -26,7 +26,7 @@ import { DownloadModal2 } from "../../components/DownloadModal2";
 import { useDownload } from "../../hooks/useDownload";
 import { ColDef } from "ag-grid-community";
 import { PhiModeSwitch } from "../../components/PhiModeSwitch";
-import { useTogglePhiColumns } from "../../hooks/useTogglePhiColumns";
+import { useTogglePhiColumnsVisibility } from "../../hooks/useTogglePhiColumns";
 import { POLLING_INTERVAL } from "../../shared/helpers";
 import { useCellChanges } from "../../hooks/useCellChanges";
 import { CellChangesConfirmation } from "../../components/CellChangesConfirmation";
@@ -47,10 +47,12 @@ export function SamplesPage2() {
   >(filterButtonOptions[0].contexts);
 
   const gridRef = useRef<AgGridReactType<DashboardSample>>(null);
-  const { handleTogglingPhiColumns } = useTogglePhiColumns({
+
+  const { showPhiColumnsOnInitialPhiSearch } = useTogglePhiColumnsVisibility({
     setColumnDefs,
     phiFields: PHI_FIELDS,
   });
+
   const {
     refreshData,
     recordCount,
@@ -111,7 +113,7 @@ export function SamplesPage2() {
   }
 
   function handleSearch() {
-    handleTogglingPhiColumns();
+    showPhiColumnsOnInitialPhiSearch();
     refreshData();
   }
 

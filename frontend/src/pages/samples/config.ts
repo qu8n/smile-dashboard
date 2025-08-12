@@ -109,7 +109,7 @@ export function buildDownloadOptions({
       dataGetter: getRenderedData,
     },
     {
-      label: "Export in Phenotype format for dbGaP",
+      label: "Download in Phenotype format for dbGaP",
       columnDefs: dbGapPhenotypeColumns,
       dataGetter: getRenderedData,
     },
@@ -117,7 +117,8 @@ export function buildDownloadOptions({
 }
 
 export const phiModeSwitchTooltipContent =
-  "Turn on this switch to return each sample's sequencing date in the results." +
-  "Note that this mode only returns the sequencing date matching specific" +
-  "DMP Sample IDs entered in the search bar. When turning on this switch for" +
-  "the first time, you will be prompted to log in.";
+  "Turn on this switch to return samples' sequencing dates in the results." +
+  " The table will display sequencing dates only after you (1) have logged" +
+  " in and (2) just performed a search with specific DMP Sample IDs. Turning" +
+  " on this switch for the first time will prompt you to log in if you are" +
+  " not already.";
