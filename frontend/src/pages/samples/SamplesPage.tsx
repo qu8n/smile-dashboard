@@ -28,11 +28,12 @@ import { useTogglePhiColumnsVisibility } from "../../hooks/useTogglePhiColumns";
 import { POLLING_INTERVAL } from "../../shared/helpers";
 import { useCellChanges } from "../../hooks/useCellChanges";
 import { CellChangesConfirmation } from "../../components/CellChangesConfirmation";
+import { MainLayout } from "../../shared/components/MainLayout";
 
 const QUERY_NAME = "dashboardSamples";
 const INITIAL_SORT_FIELD_NAME = "importDate";
-const PHI_FIELDS = new Set(["sequencingDate"]);
 const DOWNLOAD_FILE_NAME = "samples";
+const PHI_FIELDS = new Set(["sequencingDate"]);
 
 export function SamplesPage() {
   const [userSearchVal, setUserSearchVal] = useState<string>("");
@@ -44,11 +45,6 @@ export function SamplesPage() {
   >(filterButtonOptions[0].contexts);
 
   const gridRef = useRef<AgGridReactType<DashboardSample>>(null);
-
-  const { showPhiColumnsOnInitialPhiSearch } = useTogglePhiColumnsVisibility({
-    setColumnDefs,
-    phiFields: PHI_FIELDS,
-  });
 
   const {
     refreshData,
@@ -110,6 +106,11 @@ export function SamplesPage() {
     refreshData();
   }
 
+  const { showPhiColumnsOnInitialPhiSearch } = useTogglePhiColumnsVisibility({
+    setColumnDefs,
+    phiFields: PHI_FIELDS,
+  });
+
   function handleSearch() {
     showPhiColumnsOnInitialPhiSearch();
     refreshData();
@@ -120,7 +121,7 @@ export function SamplesPage() {
   }
 
   return (
-    <>
+    <MainLayout>
       <Heading>Samples</Heading>
 
       <Toolbarr>
@@ -176,6 +177,6 @@ export function SamplesPage() {
       />
 
       <DownloadModal2 show={isDownloading} />
-    </>
+    </MainLayout>
   );
 }

@@ -4,7 +4,6 @@ import { AgGridReact as AgGridReactType } from "ag-grid-react/lib/agGridReact";
 import { useFetchData } from "../../hooks/useFetchData";
 import {
   DashboardRequest,
-  DashboardSample,
   useDashboardRequestsLazyQuery,
 } from "../../generated/graphql";
 import { Heading } from "../../shared/components/Heading";
@@ -17,15 +16,24 @@ import { DownloadButton } from "../../shared/components/DownloadButton";
 import { DownloadModal2 } from "../../components/DownloadModal2";
 import { useDownload } from "../../hooks/useDownload";
 import { requestColDefs } from "../../shared/helpers";
+import { useParams } from "react-router-dom";
+import { SamplesModal } from "../../components/SamplesModal";
+import { MainLayout } from "../../shared/components/MainLayout";
 
 const QUERY_NAME = "dashboardRequests";
 const INITIAL_SORT_FIELD_NAME = "importDate";
-const DOWNLOAD_FILE_NAME = "requests";
+const RECORD_NAME = "requests";
+
+const MODAL_QUERY_NAME = "dashboardSamples";
+const MODAL_INTIAL_SORT_FIELD_NAME = "importDate";
+const MODAL_PHI_FIELDS = new Set(["sequencingDate"]);
+const MODAL_CONTEXT_FIELD_NAME = "igoRequestId";
 
 export function RequestsPage() {
   const [userSearchVal, setUserSearchVal] = useState<string>("");
 
-  const gridRef = useRef<AgGridReactType<DashboardSample>>(null);
+  const gridRef = useRef<AgGridReactType<DashboardRequest>>(null);
+  const hasParams = Object.keys(useParams()).length > 0;
 
   const { refreshData, recordCount, isLoading, error, fetchMore } =
     useFetchData({
@@ -39,7 +47,7 @@ export function RequestsPage() {
   const { isDownloading, handleDownload, getRenderedData } =
     useDownload<DashboardRequest>({
       gridRef,
-      downloadFileName: DOWNLOAD_FILE_NAME,
+      downloadFileName: RECORD_NAME,
       fetchMore,
       userSearchVal,
       recordCount,
@@ -56,7 +64,7 @@ export function RequestsPage() {
   }
 
   return (
-    <>
+    <MainLayout>
       <Heading>Requests</Heading>
 
       <Toolbarr>
@@ -86,7 +94,17 @@ export function RequestsPage() {
         handleGridColumnsChanged={refreshData}
       />
 
+      {hasParams && (
+        <SamplesModal
+          queryName={MODAL_QUERY_NAME}
+          initialSortFieldName={MODAL_INTIAL_SORT_FIELD_NAME}
+          phiFields={MODAL_PHI_FIELDS}
+          contextFieldName={MODAL_CONTEXT_FIELD_NAME}
+          parentRecordName={RECORD_NAME}
+        />
+      )}
+
       <DownloadModal2 show={isDownloading} />
-    </>
+    </MainLayout>
   );
 }

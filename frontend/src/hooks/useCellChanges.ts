@@ -242,6 +242,7 @@ export function useCellChanges({
 
   return {
     changes,
+    setChanges,
     handleCellEditRequest,
     handlePaste,
     handleDiscardChanges,
