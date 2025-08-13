@@ -2,7 +2,7 @@ import { Button, ButtonGroup } from "react-bootstrap";
 import { ColDef } from "ag-grid-community";
 import InfoIcon from "@material-ui/icons/InfoOutlined";
 import { CustomTooltip } from "../shared/components/CustomToolTip";
-import { Dispatch, ReactNode, SetStateAction, useState } from "react";
+import { ReactNode, useState } from "react";
 import { DashboardRecordContext } from "../generated/graphql";
 
 export type FilterButtonOption = {

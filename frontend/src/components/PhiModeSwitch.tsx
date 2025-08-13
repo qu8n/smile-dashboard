@@ -1,8 +1,8 @@
 import { Form } from "react-bootstrap";
-import { Tooltip } from "@material-ui/core";
 import InfoIcon from "@material-ui/icons/InfoOutlined";
 import { usePhiEnabled } from "../contexts/PhiEnabledContext";
 import { ReactNode } from "react";
+import { CustomTooltip } from "../shared/components/CustomToolTip";
 
 export function PhiModeSwitch({ children }: { children: ReactNode }) {
   const { phiEnabled, setPhiEnabled } = usePhiEnabled();
@@ -22,9 +22,11 @@ export function PhiModeSwitch({ children }: { children: ReactNode }) {
           }
         }}
       />
-      <Tooltip title={<span style={{ fontSize: 12 }}>{children}</span>}>
-        <InfoIcon style={{ fontSize: 18, color: "grey" }} />
-      </Tooltip>
+      <CustomTooltip
+        icon={<InfoIcon style={{ fontSize: 18, color: "grey" }} />}
+      >
+        {children}
+      </CustomTooltip>
     </div>
   );
 }
