@@ -1,141 +1,178 @@
-import SamplesList from "../../components/SamplesList";
+import { useRef, useState } from "react";
+import { DataGrid } from "../../components/DataGrid";
+import { AgGridReact as AgGridReactType } from "ag-grid-react/lib/agGridReact";
+import { useFetchData } from "../../hooks/useFetchData";
 import {
-  dbGapPhenotypeColumns,
-  readOnlyAccessSampleColDefs,
-  readOnlyWesSampleColDefs,
-  combinedSampleColDefs,
-} from "../../shared/helpers";
-import { useState } from "react";
-import { Button, ButtonGroup } from "react-bootstrap";
-import { CustomTooltip } from "../../shared/components/CustomToolTip";
-import InfoIcon from "@material-ui/icons/InfoOutlined";
+  DashboardRecordContext,
+  DashboardSample,
+  useDashboardSamplesLazyQuery,
+} from "../../generated/graphql";
+import { Heading } from "../../shared/components/Heading";
+import { Toolbarr } from "../../shared/components/Toolbarr";
+import { SearchBar } from "../../shared/components/SearchBar";
+import {
+  buildDownloadOptions,
+  filterButtonOptions,
+  filterButtonsTooltipContent,
+  phiModeSwitchTooltipContent,
+} from "./config";
+import { Col } from "react-bootstrap";
+import { FilterButtons } from "../../components/FilterButtons";
+import { ErrorMessage } from "../../components/ErrorMessage";
+import { DownloadButton } from "../../shared/components/DownloadButton";
+import { DownloadModal2 } from "../../components/DownloadModal2";
+import { useDownload } from "../../hooks/useDownload";
 import { ColDef } from "ag-grid-community";
-import { DashboardRecordContext } from "../../generated/graphql";
-import { useUserEmail } from "../../contexts/UserEmailContext";
+import { PhiModeSwitch } from "../../components/PhiModeSwitch";
+import { useTogglePhiColumnsVisibility } from "../../hooks/useTogglePhiColumns";
+import { POLLING_INTERVAL } from "../../shared/helpers";
+import { useCellChanges } from "../../hooks/useCellChanges";
+import { CellChangesConfirmation } from "../../components/CellChangesConfirmation";
 
-const WES_SAMPLE_CONTEXT = [
-  {
-    fieldName: "genePanel",
-    values: [
-      "Agilent_51MB",
-      "Agilent_v4_51MB_Human",
-      "CustomCapture",
-      "IDT_Exome_v1_FP",
-      "IDT_Exome_V1_IMPACT468",
-      "WES_Human",
-      "WholeExomeSequencing",
-    ],
-  },
-];
+const RECORD_NAME = "samples";
+const QUERY_NAME = "dashboardSamples";
+const INITIAL_SORT_FIELD_NAME = "importDate";
+const PHI_FIELDS = new Set(["sequencingDate"]);
 
-const ACCESS_SAMPLE_CONTEXT = [
-  {
-    fieldName: "genePanel",
-    values: [
-      "ACCESS129",
-      "ACCESS146",
-      "ACCESS148",
-      "ACCESS-Heme",
-      "ACCESS-HEME-115",
-      "HC_ACCESS",
-      "HC_Custom",
-      "MSK-ACCESS_v1",
-      "MSK-ACCESS_v2",
-      "HC_CMOCH",
-      "CMO-CH",
-    ],
-  },
-  {
-    fieldName: "baitSet",
-    values: [
-      "MSK-ACCESS-v1_0-probesAllwFP",
-      "MSK-ACCESS-v1_0-probesAllwFP_GRCh38",
-      "MSK-ACCESS-v1_0-probesAllwFP_hg19_sort_BAITS",
-      "MSK-ACCESS-v1_0-probesAllwFP_hg37_sort-BAITS",
-      "MSK-ACCESS-v2_0-probesAllwFP",
-      "ACCESS_HEME_MN1",
-      "ACCESS129",
-      "ACCESS146",
-      "ACCESS148",
-      "ACCESS-HEME-115",
-      "CMO-CH",
-      "MSK-CH",
-    ],
-  },
-];
+export function SamplesPage() {
+  const [userSearchVal, setUserSearchVal] = useState<string>("");
+  const [columnDefs, setColumnDefs] = useState<Array<ColDef>>(
+    filterButtonOptions[0].columnDefs
+  );
+  const [contexts, setContexts] = useState<
+    Array<DashboardRecordContext> | undefined
+  >(filterButtonOptions[0].contexts);
 
-const tabSettings = new Map<
-  string,
-  {
-    columnDefs: ColDef[];
-    sampleContexts?: DashboardRecordContext[];
+  const gridRef = useRef<AgGridReactType<DashboardSample>>(null);
+
+  const { showPhiColumnsOnInitialPhiSearch } = useTogglePhiColumnsVisibility({
+    setColumnDefs,
+    phiFields: PHI_FIELDS,
+  });
+
+  const {
+    refreshData,
+    recordCount,
+    isLoading,
+    error,
+    data,
+    fetchMore,
+    startPolling,
+    stopPolling,
+  } = useFetchData({
+    useRecordsLazyQuery: useDashboardSamplesLazyQuery,
+    contexts,
+    queryName: QUERY_NAME,
+    initialSortFieldName: INITIAL_SORT_FIELD_NAME,
+    gridRef,
+    pollInterval: POLLING_INTERVAL,
+    userSearchVal,
+  });
+
+  const {
+    changes,
+    handleCellEditRequest,
+    handleDiscardChanges,
+    handleConfirmUpdates,
+    showUpdateModal,
+    setShowUpdateModal,
+    handleSubmitUpdates,
+  } = useCellChanges({
+    gridRef,
+    startPolling,
+    stopPolling,
+    samples: data?.[QUERY_NAME],
+    refreshData,
+  });
+
+  const { isDownloading, handleDownload, getRenderedData } =
+    useDownload<DashboardSample>({
+      gridRef,
+      recordName: RECORD_NAME,
+      fetchMore,
+      userSearchVal,
+      recordCount,
+      queryName: QUERY_NAME,
+    });
+
+  const downloadOptions = buildDownloadOptions({
+    getRenderedData,
+    columnDefs,
+  });
+
+  function handleFilterButtonClick(filterButtonLabel: string) {
+    const selectedFilterButtonOption = filterButtonOptions.find(
+      (option) => option.label === filterButtonLabel
+    );
+    setColumnDefs(selectedFilterButtonOption!.columnDefs);
+    setContexts(selectedFilterButtonOption!.contexts);
+    refreshData();
   }
->([
-  [
-    "All",
-    {
-      columnDefs: combinedSampleColDefs,
-      sampleContexts: undefined,
-    },
-  ],
-  [
-    "WES",
-    {
-      columnDefs: readOnlyWesSampleColDefs,
-      sampleContexts: WES_SAMPLE_CONTEXT,
-    },
-  ],
-  [
-    "ACCESS/CMO-CH",
-    {
-      columnDefs: readOnlyAccessSampleColDefs,
-      sampleContexts: ACCESS_SAMPLE_CONTEXT,
-    },
-  ],
-]);
 
-export default function SamplesPage() {
-  const { userEmail, setUserEmail } = useUserEmail();
-  const [filteredTabKey, setFilteredTabKey] = useState("All");
+  function handleSearch() {
+    showPhiColumnsOnInitialPhiSearch();
+    refreshData();
+  }
+
+  if (error) {
+    return <ErrorMessage error={error} />;
+  }
 
   return (
-    <SamplesList
-      columnDefs={
-        tabSettings.get(filteredTabKey)?.columnDefs ?? combinedSampleColDefs
-      }
-      sampleContexts={tabSettings.get(filteredTabKey)?.sampleContexts}
-      customToolbarUI={
-        <>
-          <CustomTooltip
-            icon={<InfoIcon style={{ fontSize: 18, color: "grey" }} />}
+    <>
+      <Heading>Samples</Heading>
+      <Toolbarr>
+        <Col>
+          <FilterButtons
+            buttonOptions={filterButtonOptions}
+            onButtonClick={handleFilterButtonClick}
           >
-            These tabs filter the data and relevant columns displayed in the
-            table. "All" shows all samples, whereas "WES" and "ACCESS/CMO-CH"
-            show only whole exome and MSK-ACCESS/CMO-CH samples, respectively.
-          </CustomTooltip>{" "}
-          <ButtonGroup>
-            {Array.from(tabSettings.keys()).map((tabKey) => (
-              <Button
-                key={tabKey}
-                onClick={() => setFilteredTabKey(tabKey)}
-                size="sm"
-                variant="outline-secondary"
-                active={filteredTabKey === tabKey}
-              >
-                {tabKey}
-              </Button>
-            ))}
-          </ButtonGroup>
-        </>
-      }
-      addlExportDropdownItems={[
-        {
-          label: "Export in Phenotype format for dbGaP",
-          columnDefs: dbGapPhenotypeColumns,
-        },
-      ]}
-      userEmail={userEmail}
-      setUserEmail={setUserEmail}
-    />
+            {filterButtonsTooltipContent}
+          </FilterButtons>
+        </Col>
+
+        <Col md="auto" className="d-flex gap-3 align-items-center">
+          <SearchBar
+            userSearchVal={userSearchVal}
+            setUserSearchVal={setUserSearchVal}
+            onSearch={handleSearch}
+            recordCount={recordCount}
+            isLoading={isLoading}
+          />
+
+          <div className="vr" />
+
+          <PhiModeSwitch>{phiModeSwitchTooltipContent}</PhiModeSwitch>
+
+          {changes.length > 0 && (
+            <CellChangesConfirmation
+              changes={changes}
+              onDiscardChanges={handleDiscardChanges}
+              onConfirmUpdates={handleConfirmUpdates}
+              onSubmitUpdates={handleSubmitUpdates}
+              onUpdateModalHide={() => setShowUpdateModal(false)}
+              showUpdateModal={showUpdateModal}
+            />
+          )}
+        </Col>
+
+        <Col className="text-end">
+          <DownloadButton
+            downloadOptions={downloadOptions}
+            handleDownload={handleDownload}
+          />
+        </Col>
+      </Toolbarr>
+
+      <DataGrid
+        gridRef={gridRef}
+        columnDefs={columnDefs}
+        handleGridColumnsChanged={refreshData}
+        changes={changes}
+        handleCellEditRequest={handleCellEditRequest}
+      />
+
+      <DownloadModal2 show={isDownloading} />
+    </>
   );
 }

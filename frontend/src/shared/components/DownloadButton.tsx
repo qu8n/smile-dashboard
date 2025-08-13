@@ -25,7 +25,7 @@ export interface DownloadOption {
    * Optional content of a tooltip to display next to the download label
    * in the dropdown menu.
    */
-  tooltip?: string;
+  tooltipContent?: string;
   /**
    * Optionally disable a download option in the dropdown menu.
    */
@@ -68,7 +68,7 @@ export function DownloadButton({
 
                 {/* Optional tooltip */}
                 <DropdownItemTooltip>
-                  {downloadOption.tooltip}
+                  {downloadOption.tooltipContent}
                 </DropdownItemTooltip>
               </div>
             ))}
