@@ -2,7 +2,7 @@ import {
   DashboardPatient,
   PatientIdsTriplet,
   QueryDashboardPatientsArgs,
-  AnchorSeqDateByPatientId,
+  AnchorSeqDateData,
 } from "../../generated/graphql";
 import { neo4jDriver } from "../../utils/servers";
 import {
@@ -205,42 +205,45 @@ export async function queryPatientIdsTriplets(searchVals: Array<string>) {
       DMP_PATIENT_ID IN (${searchValList})
       OR MRN IN (${searchValList})
       OR CMO_PATIENT_ID IN (${searchValList})
+      AND MRN NOT LIKE 'P-%'
   `;
   const patientIdsTriplets = await queryDatabricks<PatientIdsTriplet>(query);
   patientIdsTriplets.forEach((patientIdTriplet) => {
-    patientIdTriplet.CMO_PATIENT_ID = `C-${patientIdTriplet.CMO_PATIENT_ID}`;
+    if (patientIdTriplet.CMO_PATIENT_ID) {
+      patientIdTriplet.CMO_PATIENT_ID = `C-${patientIdTriplet.CMO_PATIENT_ID}`;
+    }
   });
   return patientIdsTriplets;
 }
 
-export async function queryAnchorSeqDatesByPatientId(
-  mrnsAndDmpPatientIds: Array<string>
-) {
-  const mrnsAndDmpPatientIdsList = mrnsAndDmpPatientIds
-    .map((dmpPatientId) => `'${dmpPatientId}'`)
+export async function queryAnchorSeqDateData(searchVals: Array<string>) {
+  const searchValList = searchVals
+    .map((searchVal) => `'${searchVal}'`)
     .join(",");
   const query = `
     SELECT
       MRN,
       DMP_PATIENT_ID,
-      ANCHOR_SEQUENCING_DATE
+      ANCHOR_SEQUENCING_DATE,
+      ONCOTREE_CODE AS ANCHOR_ONCOTREE_CODE
     FROM
       ${props.databricks_seq_dates_by_patient_table}
     WHERE
-      MRN IN (${mrnsAndDmpPatientIdsList})
-      OR DMP_PATIENT_ID IN (${mrnsAndDmpPatientIdsList})
+      MRN IN (${searchValList})
+      OR DMP_PATIENT_ID IN (${searchValList})
+      OR ONCOTREE_CODE IN (${searchValList})
   `;
-  return await queryDatabricks<AnchorSeqDateByPatientId>(query);
+  return await queryDatabricks<AnchorSeqDateData>(query);
 }
 
 export function mapPhiToPatientsData({
   patientsData,
   patientIdsTriplets,
-  anchorSeqDatesByPatientId,
+  anchorSeqDateData,
 }: {
   patientsData: DashboardPatient[];
   patientIdsTriplets: Array<PatientIdsTriplet>;
-  anchorSeqDatesByPatientId: Array<AnchorSeqDateByPatientId>;
+  anchorSeqDateData: Array<AnchorSeqDateData>;
 }): Array<DashboardPatient> {
   // Create maps for quick lookup of MRN by either CMO or DMP Patient ID
   const mrnByCmoPatientIdMap: Record<string, string> = {};
@@ -256,16 +259,24 @@ export function mapPhiToPatientsData({
     }
   });
   // Create a map for quick lookup of anchor sequencing date by MRN or DMP Patient ID
-  const anchorSeqDateByMrnMap: Record<string, string> = {};
-  const anchorSeqDateByDmpPatientIdMap: Record<string, string> = {};
-  anchorSeqDatesByPatientId.forEach((record) => {
+  const anchorSeqDateDataByMrnMap: Record<string, Record<string, string>> = {};
+  const anchorSeqDateDataByDmpPatientIdMap: Record<
+    string,
+    Record<string, string>
+  > = {};
+  anchorSeqDateData.forEach((record) => {
     if (record.ANCHOR_SEQUENCING_DATE) {
       if (record.MRN) {
-        anchorSeqDateByMrnMap[record.MRN] = record.ANCHOR_SEQUENCING_DATE;
+        anchorSeqDateDataByMrnMap[record.MRN] = {
+          ANCHOR_SEQUENCING_DATE: record.ANCHOR_SEQUENCING_DATE,
+          ANCHOR_ONCOTREE_CODE: record.ANCHOR_ONCOTREE_CODE,
+        };
       }
       if (record.DMP_PATIENT_ID) {
-        anchorSeqDateByDmpPatientIdMap[record.DMP_PATIENT_ID] =
-          record.ANCHOR_SEQUENCING_DATE;
+        anchorSeqDateDataByDmpPatientIdMap[record.DMP_PATIENT_ID] = {
+          ANCHOR_SEQUENCING_DATE: record.ANCHOR_SEQUENCING_DATE,
+          ANCHOR_ONCOTREE_CODE: record.ANCHOR_ONCOTREE_CODE,
+        };
       }
     }
   });
@@ -279,26 +290,33 @@ export function mapPhiToPatientsData({
       ? mrnByDmpPatientIdMap[dmpPatientId]
       : null;
     const anchorSequencingDate = mrn
-      ? anchorSeqDateByMrnMap[mrn]
+      ? anchorSeqDateDataByMrnMap[mrn].ANCHOR_SEQUENCING_DATE
       : dmpPatientId
-      ? anchorSeqDateByDmpPatientIdMap[dmpPatientId]
+      ? anchorSeqDateDataByDmpPatientIdMap[dmpPatientId].ANCHOR_SEQUENCING_DATE
+      : null;
+    const anchorOncotreeCode = mrn
+      ? anchorSeqDateDataByMrnMap[mrn].ANCHOR_ONCOTREE_CODE
+      : dmpPatientId
+      ? anchorSeqDateDataByDmpPatientIdMap[dmpPatientId].ANCHOR_ONCOTREE_CODE
       : null;
     return {
       ...patient,
       mrn,
       anchorSequencingDate,
+      anchorOncotreeCode,
     };
   });
 }
 
-export async function queryAllAnchorSeqDateByPatientId() {
+export async function queryAllAnchorSeqDateData() {
   const query = `
     SELECT
       MRN,
       DMP_PATIENT_ID,
-      ANCHOR_SEQUENCING_DATE
+      ANCHOR_SEQUENCING_DATE,
+      ONCOTREE_CODE AS ANCHOR_ONCOTREE_CODE
     FROM
       ${props.databricks_seq_dates_by_patient_table}
   `;
-  return await queryDatabricks<AnchorSeqDateByPatientId>(query);
+  return await queryDatabricks<AnchorSeqDateData>(query);
 }

@@ -148,6 +148,7 @@ const QUERY_RESULT_TYPEDEFS = gql`
     inDbGap: Boolean
     mrn: String
     anchorSequencingDate: String
+    anchorOncotreeCode: String
     _total: Int
   }
 
@@ -177,10 +178,11 @@ const QUERY_RESULT_TYPEDEFS = gql`
     MRN: String!
   }
 
-  type AnchorSeqDateByPatientId {
+  type AnchorSeqDateData {
     MRN: String!
     DMP_PATIENT_ID: String!
     ANCHOR_SEQUENCING_DATE: String!
+    ANCHOR_ONCOTREE_CODE: String!
   }
 
   type SeqDateBySampleId {
@@ -226,9 +228,7 @@ const QUERY_TYPEDEFS = gql`
       phiEnabled: Boolean
     ): [DashboardSample!]!
 
-    allAnchorSeqDateByPatientId(
-      phiEnabled: Boolean
-    ): [AnchorSeqDateByPatientId!]!
+    allAnchorSeqDateData(phiEnabled: Boolean): [AnchorSeqDateData!]!
   }
 `;
 

@@ -15,7 +15,7 @@ import moment from "moment";
 import _ from "lodash";
 import { RecordValidation } from "../components/RecordValidation";
 import {
-  AnchorSeqDateByPatientId,
+  AnchorSeqDateData,
   DashboardCohort,
   DashboardPatient,
   DashboardRecordColumnFilter,
@@ -270,6 +270,12 @@ export const patientColDefs: ColDef<DashboardPatient>[] = [
     ...phiColDefProps,
   },
   {
+    field: "anchorOncotreeCode",
+    headerName: "Anchor OncoTree Code",
+    width: 260, // prevent truncation when being un-hidden
+    ...phiColDefProps,
+  },
+  {
     field: "cmoPatientId",
     headerName: "CMO Patient ID",
   },
@@ -326,7 +332,7 @@ export const patientColDefs: ColDef<DashboardPatient>[] = [
   },
 ];
 
-export const allAnchorSeqDateColDefs: ColDef<AnchorSeqDateByPatientId>[] = [
+export const allAnchorSeqDateColDefs: ColDef<AnchorSeqDateData>[] = [
   {
     field: "MRN",
     headerName: "Patient MRN",
@@ -338,6 +344,10 @@ export const allAnchorSeqDateColDefs: ColDef<AnchorSeqDateByPatientId>[] = [
   {
     field: "ANCHOR_SEQUENCING_DATE",
     headerName: "Anchor Sequencing Date",
+  },
+  {
+    field: "ANCHOR_ONCOTREE_CODE",
+    headerName: "Anchor OncoTree Code",
   },
 ];
 

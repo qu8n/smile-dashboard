@@ -1,7 +1,7 @@
 import { makeExecutableSchema } from "@graphql-tools/schema";
 import { ApolloServerContext } from "../utils/servers";
 import {
-  AnchorSeqDateByPatientId,
+  AnchorSeqDateData,
   DashboardSampleInput,
   PatientIdsTriplet,
   QueryDashboardCohortsArgs,
@@ -16,8 +16,8 @@ import {
   buildPatientsQueryBody,
   buildPatientsQueryFinal,
   mapPhiToPatientsData,
-  queryAllAnchorSeqDateByPatientId,
-  queryAnchorSeqDatesByPatientId,
+  queryAllAnchorSeqDateData,
+  queryAnchorSeqDateData,
   queryDashboardPatients,
   queryPatientIdsTriplets,
 } from "./queries/patients";
@@ -56,7 +56,7 @@ type AuthMiddleware = {
   Query: {
     dashboardSamples: IMiddlewareResolver;
     dashboardPatients: IMiddlewareResolver;
-    allAnchorSeqDateByPatientId: IMiddlewareResolver;
+    allAnchorSeqDateData: IMiddlewareResolver;
   };
 };
 
@@ -124,7 +124,7 @@ export async function buildCustomSchema(ogm: OGM) {
         return await resolve(parent, args, context, info);
       },
 
-      async allAnchorSeqDateByPatientId(
+      async allAnchorSeqDateData(
         resolve,
         parent,
         args: QueryDashboardPatientsArgs,
@@ -191,7 +191,7 @@ export async function buildCustomSchema(ogm: OGM) {
         return await resolve(parent, args, context, info);
       },
 
-      async allAnchorSeqDateByPatientId(
+      async allAnchorSeqDateData(
         resolve,
         parent,
         args: QueryDashboardPatientsArgs,
@@ -274,22 +274,23 @@ export async function buildCustomSchema(ogm: OGM) {
           return await patientsDataPromise;
         }
 
-        const mrnsAndDmpPatientIds = patientIdsTriplets
+        const allMappedPatientIds = patientIdsTriplets
           .flatMap((triplet) => [triplet.MRN, triplet.DMP_PATIENT_ID])
           .filter((id): id is string => !!id);
-        const [patientsData, anchorSeqDatesByPatientId] = await Promise.all([
+        const [patientsData, anchorSeqDateData] = await Promise.all([
           patientsDataPromise,
-          queryAnchorSeqDatesByPatientId(mrnsAndDmpPatientIds),
+          queryAnchorSeqDateData(allMappedPatientIds),
         ]);
+
         return mapPhiToPatientsData({
           patientsData,
           patientIdsTriplets,
-          anchorSeqDatesByPatientId,
+          anchorSeqDateData,
         });
       },
 
-      async allAnchorSeqDateByPatientId() {
-        return await queryAllAnchorSeqDateByPatientId();
+      async allAnchorSeqDateData() {
+        return await queryAllAnchorSeqDateData();
       },
 
       async dashboardCohorts(

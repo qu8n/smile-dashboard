@@ -26,8 +26,9 @@ export enum AgGridSortDirection {
   Desc = "desc",
 }
 
-export type AnchorSeqDateByPatientId = {
-  __typename?: "AnchorSeqDateByPatientId";
+export type AnchorSeqDateData = {
+  __typename?: "AnchorSeqDateData";
+  ANCHOR_ONCOTREE_CODE: Scalars["String"];
   ANCHOR_SEQUENCING_DATE: Scalars["String"];
   DMP_PATIENT_ID: Scalars["String"];
   MRN: Scalars["String"];
@@ -1380,6 +1381,7 @@ export type DashboardCohort = {
 export type DashboardPatient = {
   __typename?: "DashboardPatient";
   _total?: Maybe<Scalars["Int"]>;
+  anchorOncotreeCode?: Maybe<Scalars["String"]>;
   anchorSequencingDate?: Maybe<Scalars["String"]>;
   cmoPatientId?: Maybe<Scalars["String"]>;
   cmoSampleIds?: Maybe<Scalars["String"]>;
@@ -4075,7 +4077,7 @@ export type QcCompletesConnection = {
 
 export type Query = {
   __typename?: "Query";
-  allAnchorSeqDateByPatientId: Array<AnchorSeqDateByPatientId>;
+  allAnchorSeqDateData: Array<AnchorSeqDateData>;
   bamCompletes: Array<BamComplete>;
   bamCompletesAggregate: BamCompleteAggregateSelection;
   bamCompletesConnection: BamCompletesConnection;
@@ -4130,7 +4132,7 @@ export type Query = {
   temposConnection: TemposConnection;
 };
 
-export type QueryAllAnchorSeqDateByPatientIdArgs = {
+export type QueryAllAnchorSeqDateDataArgs = {
   phiEnabled?: InputMaybe<Scalars["Boolean"]>;
 };
 
@@ -11089,6 +11091,7 @@ export type DashboardPatientsQuery = {
     inDbGap?: boolean | null;
     mrn?: string | null;
     anchorSequencingDate?: string | null;
+    anchorOncotreeCode?: string | null;
     _total?: number | null;
   }>;
 };
@@ -11349,17 +11352,18 @@ export type UpdateDashboardSamplesMutation = {
   } | null> | null;
 };
 
-export type AllAnchorSeqDateByPatientIdQueryVariables = Exact<{
+export type AllAnchorSeqDateDataQueryVariables = Exact<{
   phiEnabled?: InputMaybe<Scalars["Boolean"]>;
 }>;
 
-export type AllAnchorSeqDateByPatientIdQuery = {
+export type AllAnchorSeqDateDataQuery = {
   __typename?: "Query";
-  allAnchorSeqDateByPatientId: Array<{
-    __typename?: "AnchorSeqDateByPatientId";
+  allAnchorSeqDateData: Array<{
+    __typename?: "AnchorSeqDateData";
     MRN: string;
     DMP_PATIENT_ID: string;
     ANCHOR_SEQUENCING_DATE: string;
+    ANCHOR_ONCOTREE_CODE: string;
   }>;
 };
 
@@ -11581,6 +11585,7 @@ export const DashboardPatientsDocument = gql`
       inDbGap
       mrn
       anchorSequencingDate
+      anchorOncotreeCode
       _total
     }
   }
@@ -11877,63 +11882,64 @@ export type UpdateDashboardSamplesMutationOptions = Apollo.BaseMutationOptions<
   UpdateDashboardSamplesMutation,
   UpdateDashboardSamplesMutationVariables
 >;
-export const AllAnchorSeqDateByPatientIdDocument = gql`
-  query AllAnchorSeqDateByPatientId($phiEnabled: Boolean = false) {
-    allAnchorSeqDateByPatientId(phiEnabled: $phiEnabled) {
+export const AllAnchorSeqDateDataDocument = gql`
+  query AllAnchorSeqDateData($phiEnabled: Boolean = false) {
+    allAnchorSeqDateData(phiEnabled: $phiEnabled) {
       MRN
       DMP_PATIENT_ID
       ANCHOR_SEQUENCING_DATE
+      ANCHOR_ONCOTREE_CODE
     }
   }
 `;
 
 /**
- * __useAllAnchorSeqDateByPatientIdQuery__
+ * __useAllAnchorSeqDateDataQuery__
  *
- * To run a query within a React component, call `useAllAnchorSeqDateByPatientIdQuery` and pass it any options that fit your needs.
- * When your component renders, `useAllAnchorSeqDateByPatientIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useAllAnchorSeqDateDataQuery` and pass it any options that fit your needs.
+ * When your component renders, `useAllAnchorSeqDateDataQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useAllAnchorSeqDateByPatientIdQuery({
+ * const { data, loading, error } = useAllAnchorSeqDateDataQuery({
  *   variables: {
  *      phiEnabled: // value for 'phiEnabled'
  *   },
  * });
  */
-export function useAllAnchorSeqDateByPatientIdQuery(
+export function useAllAnchorSeqDateDataQuery(
   baseOptions?: Apollo.QueryHookOptions<
-    AllAnchorSeqDateByPatientIdQuery,
-    AllAnchorSeqDateByPatientIdQueryVariables
+    AllAnchorSeqDateDataQuery,
+    AllAnchorSeqDateDataQueryVariables
   >
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useQuery<
-    AllAnchorSeqDateByPatientIdQuery,
-    AllAnchorSeqDateByPatientIdQueryVariables
-  >(AllAnchorSeqDateByPatientIdDocument, options);
+    AllAnchorSeqDateDataQuery,
+    AllAnchorSeqDateDataQueryVariables
+  >(AllAnchorSeqDateDataDocument, options);
 }
-export function useAllAnchorSeqDateByPatientIdLazyQuery(
+export function useAllAnchorSeqDateDataLazyQuery(
   baseOptions?: Apollo.LazyQueryHookOptions<
-    AllAnchorSeqDateByPatientIdQuery,
-    AllAnchorSeqDateByPatientIdQueryVariables
+    AllAnchorSeqDateDataQuery,
+    AllAnchorSeqDateDataQueryVariables
   >
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useLazyQuery<
-    AllAnchorSeqDateByPatientIdQuery,
-    AllAnchorSeqDateByPatientIdQueryVariables
-  >(AllAnchorSeqDateByPatientIdDocument, options);
+    AllAnchorSeqDateDataQuery,
+    AllAnchorSeqDateDataQueryVariables
+  >(AllAnchorSeqDateDataDocument, options);
 }
-export type AllAnchorSeqDateByPatientIdQueryHookResult = ReturnType<
-  typeof useAllAnchorSeqDateByPatientIdQuery
+export type AllAnchorSeqDateDataQueryHookResult = ReturnType<
+  typeof useAllAnchorSeqDateDataQuery
 >;
-export type AllAnchorSeqDateByPatientIdLazyQueryHookResult = ReturnType<
-  typeof useAllAnchorSeqDateByPatientIdLazyQuery
+export type AllAnchorSeqDateDataLazyQueryHookResult = ReturnType<
+  typeof useAllAnchorSeqDateDataLazyQuery
 >;
-export type AllAnchorSeqDateByPatientIdQueryResult = Apollo.QueryResult<
-  AllAnchorSeqDateByPatientIdQuery,
-  AllAnchorSeqDateByPatientIdQueryVariables
+export type AllAnchorSeqDateDataQueryResult = Apollo.QueryResult<
+  AllAnchorSeqDateDataQuery,
+  AllAnchorSeqDateDataQueryVariables
 >;

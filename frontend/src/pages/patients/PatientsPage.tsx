@@ -1,6 +1,6 @@
 import {
   AgGridSortDirection,
-  useAllAnchorSeqDateByPatientIdLazyQuery,
+  useAllAnchorSeqDateDataLazyQuery,
   useDashboardPatientsLazyQuery,
 } from "../../generated/graphql";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
@@ -29,7 +29,11 @@ export const PHI_WARNING = {
     " this transmission in error, please immediately delete this information and any attachments from any computer.",
 };
 
-const PHI_FIELDS = new Set(["mrn", "anchorSequencingDate"]);
+const PHI_FIELDS = new Set([
+  "mrn",
+  "anchorSequencingDate",
+  "anchorOncotreeCode",
+]);
 
 const patientColDefsWithPhiCols = patientColDefs.map((col) => {
   if (col.field && PHI_FIELDS.has(col.field)) {
@@ -48,7 +52,7 @@ export default function PatientsPage({
   setUserEmail,
 }: IPatientsPageProps) {
   const params = useParams();
-  const [queryAllSeqDates] = useAllAnchorSeqDateByPatientIdLazyQuery();
+  const [queryAllSeqDates] = useAllAnchorSeqDateDataLazyQuery();
 
   const [columnDefs, setColumnDefs] = useState(patientColDefs);
   const [userSearchVal, setUserSearchVal] = useState<string>("");
@@ -161,7 +165,7 @@ export default function PatientsPage({
               const result = await queryAllSeqDates({
                 variables: { phiEnabled: phiEnabled },
               });
-              return result.data?.allAnchorSeqDateByPatientId;
+              return result.data?.allAnchorSeqDateData;
             },
             disabled: !phiEnabled || !userEmail,
             tooltip:

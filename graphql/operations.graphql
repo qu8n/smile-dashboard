@@ -67,6 +67,7 @@ query DashboardPatients(
     inDbGap
     mrn
     anchorSequencingDate
+    anchorOncotreeCode
     _total
   }
 }
@@ -242,10 +243,11 @@ mutation UpdateDashboardSamples(
   }
 }
 
-query AllAnchorSeqDateByPatientId($phiEnabled: Boolean = false) {
-  allAnchorSeqDateByPatientId(phiEnabled: $phiEnabled) {
+query AllAnchorSeqDateData($phiEnabled: Boolean = false) {
+  allAnchorSeqDateData(phiEnabled: $phiEnabled) {
     MRN
     DMP_PATIENT_ID
     ANCHOR_SEQUENCING_DATE
+    ANCHOR_ONCOTREE_CODE
   }
 }

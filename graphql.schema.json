@@ -33,9 +33,25 @@
       },
       {
         "kind": "OBJECT",
-        "name": "AnchorSeqDateByPatientId",
+        "name": "AnchorSeqDateData",
         "description": null,
         "fields": [
+          {
+            "name": "ANCHOR_ONCOTREE_CODE",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
           {
             "name": "ANCHOR_SEQUENCING_DATE",
             "description": null,
@@ -12324,6 +12340,18 @@
             "type": {
               "kind": "SCALAR",
               "name": "Int",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "anchorOncotreeCode",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
               "ofType": null
             },
             "isDeprecated": false,
@@ -37800,7 +37828,7 @@
         "description": null,
         "fields": [
           {
-            "name": "allAnchorSeqDateByPatientId",
+            "name": "allAnchorSeqDateData",
             "description": null,
             "args": [
               {
@@ -37827,7 +37855,7 @@
                   "name": null,
                   "ofType": {
                     "kind": "OBJECT",
-                    "name": "AnchorSeqDateByPatientId",
+                    "name": "AnchorSeqDateData",
                     "ofType": null
                   }
                 }
