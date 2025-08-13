@@ -1,5 +1,4 @@
 import { Routes, Route } from "react-router-dom";
-import RequestsPage from "./pages/requests/RequestsPage";
 import PatientsPage from "./pages/patients/PatientsPage";
 import CohortsPage from "./pages/cohorts/CohortsPage";
 import { LoginSuccessPage } from "./pages/auth/LoginSuccessPage";
@@ -8,6 +7,7 @@ import { NavBar } from "./shared/components/NavBar";
 import { BrowserRouter } from "react-router-dom";
 import { Providers } from "./components/Providers";
 import { WarningModal } from "./components/WarningModal";
+import { RequestsPage } from "./pages/requests/RequestsPage";
 
 export default function App() {
   return (

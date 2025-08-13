@@ -29,10 +29,10 @@ import { POLLING_INTERVAL } from "../../shared/helpers";
 import { useCellChanges } from "../../hooks/useCellChanges";
 import { CellChangesConfirmation } from "../../components/CellChangesConfirmation";
 
-const RECORD_NAME = "samples";
 const QUERY_NAME = "dashboardSamples";
 const INITIAL_SORT_FIELD_NAME = "importDate";
 const PHI_FIELDS = new Set(["sequencingDate"]);
+const DOWNLOAD_FILE_NAME = "samples";
 
 export function SamplesPage() {
   const [userSearchVal, setUserSearchVal] = useState<string>("");
@@ -72,6 +72,7 @@ export function SamplesPage() {
   const {
     changes,
     handleCellEditRequest,
+    handlePaste,
     handleDiscardChanges,
     handleConfirmUpdates,
     showUpdateModal,
@@ -88,7 +89,7 @@ export function SamplesPage() {
   const { isDownloading, handleDownload, getRenderedData } =
     useDownload<DashboardSample>({
       gridRef,
-      recordName: RECORD_NAME,
+      downloadFileName: DOWNLOAD_FILE_NAME,
       fetchMore,
       userSearchVal,
       recordCount,
@@ -121,6 +122,7 @@ export function SamplesPage() {
   return (
     <>
       <Heading>Samples</Heading>
+
       <Toolbarr>
         <Col>
           <FilterButtons
@@ -170,6 +172,7 @@ export function SamplesPage() {
         handleGridColumnsChanged={refreshData}
         changes={changes}
         handleCellEditRequest={handleCellEditRequest}
+        handlePaste={handlePaste}
       />
 
       <DownloadModal2 show={isDownloading} />

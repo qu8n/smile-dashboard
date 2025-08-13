@@ -95,7 +95,7 @@ interface BuildDownloadOptionsParams {
   /**
    * The current column definitions state of the table.
    */
-  columnDefs: Array<ColDef>;
+  columnDefs: Array<ColDef<DashboardSample>>;
 }
 
 export function buildDownloadOptions({

@@ -7,15 +7,8 @@ import { QueryResult } from "@apollo/client";
 import { parseUserSearchVal } from "../utils/parseSearchQueries";
 
 interface UseDownloadProps {
-  /**
-   * A reference to the AgGridReact component.
-   * Used to set the server-side datasource for the grid.
-   */
   gridRef: RefObject<AgGridReactType>;
-  /**
-   * Used to name the downloaded file.
-   */
-  recordName: string;
+  downloadFileName: string;
   fetchMore: QueryResult["fetchMore"];
   userSearchVal: string;
   recordCount: number;
@@ -24,7 +17,7 @@ interface UseDownloadProps {
 
 export function useDownload<T>({
   gridRef,
-  recordName,
+  downloadFileName,
   fetchMore,
   userSearchVal,
   recordCount,
@@ -40,7 +33,7 @@ export function useDownload<T>({
       downloadOption.columnDefs,
       gridRef.current?.columnApi.getAllGridColumns()
     );
-    jsdownload(tsvString, `${recordName}.tsv`);
+    jsdownload(tsvString, `${downloadFileName}.tsv`);
     setIsDownloading(false);
   }
 

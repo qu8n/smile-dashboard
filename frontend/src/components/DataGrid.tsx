@@ -2,15 +2,13 @@ import { AgGridReact } from "ag-grid-react";
 import { AgGridReact as AgGridReactType } from "ag-grid-react/lib/agGridReact";
 import AutoSizer from "react-virtualized-auto-sizer";
 import styles from "./records.module.scss";
-import { handleAgGridPaste } from "../utils/handleAgGridPaste";
-import { RefObject, ClipboardEvent, useState } from "react";
+import { RefObject, ClipboardEvent } from "react";
 import { CellEditRequestEvent, ColDef } from "ag-grid-community";
 import {
   CACHE_BLOCK_SIZE,
   defaultColDef,
   SampleChange,
 } from "../shared/helpers";
-import { useWarningModal } from "../contexts/WarningContext";
 
 interface DataGridProps {
   /**
@@ -30,8 +28,10 @@ interface DataGridProps {
    */
   columnDefs: Array<ColDef<any>>;
   handleGridColumnsChanged: () => void;
-  changes: Array<SampleChange>;
-  handleCellEditRequest: (params: CellEditRequestEvent) => Promise<void>;
+  // Props for handling changes in the grid data
+  changes?: Array<SampleChange>;
+  handleCellEditRequest?: (params: CellEditRequestEvent) => Promise<void>;
+  handlePaste?: (e: ClipboardEvent<HTMLDivElement>) => void;
 }
 
 export function DataGrid({
@@ -41,21 +41,8 @@ export function DataGrid({
   handleGridColumnsChanged,
   changes,
   handleCellEditRequest,
+  handlePaste,
 }: DataGridProps) {
-  const { setWarningModalContent } = useWarningModal();
-
-  async function handlePaste(e: ClipboardEvent<HTMLDivElement>) {
-    try {
-      await handleAgGridPaste({ e, gridRef, handleCellEditRequest });
-    } catch (error) {
-      if (error instanceof Error) {
-        setWarningModalContent(error.message);
-      } else {
-        console.error("Unexpected error during paste:", error);
-      }
-    }
-  }
-
   return (
     <AutoSizer>
       {({ width }) => {

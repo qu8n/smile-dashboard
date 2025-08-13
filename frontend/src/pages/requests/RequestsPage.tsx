@@ -1,69 +1,92 @@
+import { useRef, useState } from "react";
+import { DataGrid } from "../../components/DataGrid";
+import { AgGridReact as AgGridReactType } from "ag-grid-react/lib/agGridReact";
+import { useFetchData } from "../../hooks/useFetchData";
 import {
-  AgGridSortDirection,
+  DashboardRequest,
+  DashboardSample,
   useDashboardRequestsLazyQuery,
 } from "../../generated/graphql";
-import { Dispatch, SetStateAction, useState } from "react";
-import { requestColDefs, sampleColDefs } from "../../shared/helpers";
-import { useParams } from "react-router-dom";
-import RecordsList from "../../components/RecordsList";
-import { AlertModal } from "../../components/AlertModal";
-import { useUserEmail } from "../../contexts/UserEmailContext";
+import { Heading } from "../../shared/components/Heading";
+import { Toolbarr } from "../../shared/components/Toolbarr";
+import { SearchBar } from "../../shared/components/SearchBar";
+import { buildDownloadOptions } from "./config";
+import { Col } from "react-bootstrap";
+import { ErrorMessage } from "../../components/ErrorMessage";
+import { DownloadButton } from "../../shared/components/DownloadButton";
+import { DownloadModal2 } from "../../components/DownloadModal2";
+import { useDownload } from "../../hooks/useDownload";
+import { requestColDefs } from "../../shared/helpers";
 
-export default function RequestsPage() {
-  const { userEmail, setUserEmail } = useUserEmail();
+const QUERY_NAME = "dashboardRequests";
+const INITIAL_SORT_FIELD_NAME = "importDate";
+const DOWNLOAD_FILE_NAME = "requests";
 
-  const params = useParams();
+export function RequestsPage() {
   const [userSearchVal, setUserSearchVal] = useState<string>("");
-  const [showDownloadModal, setShowDownloadModal] = useState(false);
-  const [alertModal, setAlertModal] = useState<{
-    show: boolean;
-    title: string;
-    content: string;
-  }>({ show: false, title: "", content: "" });
 
-  const dataName = "requests";
-  const sampleQueryParamFieldName = "igoRequestId";
-  const sampleQueryParamValue = params[sampleQueryParamFieldName];
-  const defaultSort = {
-    colId: "importDate",
-    sort: AgGridSortDirection.Desc,
-  };
+  const gridRef = useRef<AgGridReactType<DashboardSample>>(null);
+
+  const { refreshData, recordCount, isLoading, error, fetchMore } =
+    useFetchData({
+      useRecordsLazyQuery: useDashboardRequestsLazyQuery,
+      queryName: QUERY_NAME,
+      initialSortFieldName: INITIAL_SORT_FIELD_NAME,
+      gridRef,
+      userSearchVal,
+    });
+
+  const { isDownloading, handleDownload, getRenderedData } =
+    useDownload<DashboardRequest>({
+      gridRef,
+      downloadFileName: DOWNLOAD_FILE_NAME,
+      fetchMore,
+      userSearchVal,
+      recordCount,
+      queryName: QUERY_NAME,
+    });
+
+  const downloadOptions = buildDownloadOptions({
+    getRenderedData,
+    requestColDefs,
+  });
+
+  if (error) {
+    return <ErrorMessage error={error} />;
+  }
 
   return (
     <>
-      <RecordsList
+      <Heading>Requests</Heading>
+
+      <Toolbarr>
+        <Col />
+
+        <Col md="auto" className="d-flex gap-3 align-items-center">
+          <SearchBar
+            userSearchVal={userSearchVal}
+            setUserSearchVal={setUserSearchVal}
+            onSearch={refreshData}
+            recordCount={recordCount}
+            isLoading={isLoading}
+          />
+        </Col>
+
+        <Col className="text-end">
+          <DownloadButton
+            downloadOptions={downloadOptions}
+            handleDownload={handleDownload}
+          />
+        </Col>
+      </Toolbarr>
+
+      <DataGrid
+        gridRef={gridRef}
         columnDefs={requestColDefs}
-        dataName={dataName}
-        defaultSort={defaultSort}
-        useRecordsLazyQuery={useDashboardRequestsLazyQuery}
-        userSearchVal={userSearchVal}
-        setUserSearchVal={setUserSearchVal}
-        showDownloadModal={showDownloadModal}
-        setShowDownloadModal={setShowDownloadModal}
-        handleDownload={() => setShowDownloadModal(true)}
-        samplesColDefs={sampleColDefs}
-        sampleContexts={
-          sampleQueryParamValue
-            ? [
-                {
-                  fieldName: sampleQueryParamFieldName,
-                  values: [sampleQueryParamValue],
-                },
-              ]
-            : undefined
-        }
-        userEmail={userEmail}
-        setUserEmail={setUserEmail}
+        handleGridColumnsChanged={refreshData}
       />
 
-      <AlertModal
-        show={alertModal.show}
-        onHide={() => {
-          setAlertModal({ ...alertModal, show: false });
-        }}
-        title={alertModal.title}
-        content={alertModal.content}
-      />
+      <DownloadModal2 show={isDownloading} />
     </>
   );
 }

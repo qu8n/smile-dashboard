@@ -1,4 +1,4 @@
-import { RefObject, useState } from "react";
+import { RefObject, ClipboardEvent, useState } from "react";
 import { formatDate, SampleChange } from "../shared/helpers";
 import { useUserEmail } from "../contexts/UserEmailContext";
 import { useWarningModal } from "../contexts/WarningContext";
@@ -14,6 +14,7 @@ import {
   DashboardSampleInput,
   useUpdateDashboardSamplesMutation,
 } from "../generated/graphql";
+import { handleAgGridPaste } from "../utils/handleAgGridPaste";
 
 const POLLING_PAUSE_AFTER_UPDATE = 12000; // 12s
 export const INVALID_COST_CENTER_WARNING =
@@ -133,6 +134,19 @@ export function useCellChanges({
     gridRef.current?.api?.redrawRows({ rowNodes: [rowNode] });
   }
 
+  async function handlePaste(e: ClipboardEvent<HTMLDivElement>) {
+    if (!handleCellEditRequest) return;
+    try {
+      await handleAgGridPaste({ e, gridRef, handleCellEditRequest });
+    } catch (error) {
+      if (error instanceof Error) {
+        setWarningModalContent(error.message);
+      } else {
+        console.error("Unexpected error during paste:", error);
+      }
+    }
+  }
+
   function handleDiscardChanges() {
     // Remove cell styles associated with having been edited
     gridRef.current?.api?.redrawRows({
@@ -229,6 +243,7 @@ export function useCellChanges({
   return {
     changes,
     handleCellEditRequest,
+    handlePaste,
     handleDiscardChanges,
     handleConfirmUpdates,
     showUpdateModal,
