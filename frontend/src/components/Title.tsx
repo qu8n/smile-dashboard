@@ -1,11 +1,12 @@
 import { Col, Row } from "react-bootstrap";
-import { buildSentenceCaseString } from "../utils/stringBuilders";
 
 export function Title({ children }: { children: string }) {
+  const sentenceCaseTitle =
+    children.charAt(0).toUpperCase() + children.slice(1);
   return (
     <Row className="pagetitle">
       <Col>
-        <h1>{buildSentenceCaseString(children)}</h1>
+        <h1>{sentenceCaseTitle}</h1>
       </Col>
     </Row>
   );

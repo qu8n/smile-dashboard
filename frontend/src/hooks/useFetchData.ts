@@ -21,7 +21,7 @@ function useHookLazyGeneric(baseOptions?: LazyQueryHookOptions<any, any>) {
   return useLazyQuery<any, any>(DashboardRequestsDocument, options);
 }
 
-interface UseFetchDataProps {
+interface UseFetchDataParams {
   useRecordsLazyQuery: typeof useHookLazyGeneric;
   queryName: string;
   initialSortFieldName: string;
@@ -39,7 +39,7 @@ export function useFetchData({
   userSearchVal,
   contexts = [],
   pollInterval = 0, // 0 means no polling
-}: UseFetchDataProps) {
+}: UseFetchDataParams) {
   // Manage our own loading state becase the lazy query's provided `loading` state
   // does not toggle to `true` as `setServerSideDatasource` is running
   const [isLoading, setIsLoading] = useState(false);

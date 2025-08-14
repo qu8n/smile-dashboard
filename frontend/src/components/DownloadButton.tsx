@@ -5,25 +5,25 @@ import { DownloadOption } from "../hooks/useDownload";
 
 interface DownloadButtonProps {
   downloadOptions: Array<DownloadOption>;
-  handleDownload: (downloadOption: DownloadOption) => void;
+  onDownload: (downloadOption: DownloadOption) => void;
 }
 
 export function DownloadButton({
   downloadOptions,
-  handleDownload,
+  onDownload,
 }: DownloadButtonProps) {
   return (
     <Dropdown as={ButtonGroup}>
       {/* Main download button */}
-      <Button size={"sm"} onClick={() => handleDownload(downloadOptions[0])}>
+      <Button size={"sm"} onClick={() => onDownload(downloadOptions[0])}>
         {downloadOptions[0].buttonLabel}
       </Button>
 
+      {/* Dropdown download options if exist */}
       {downloadOptions.length > 1 && (
         <>
           <Dropdown.Toggle size="sm" split id="dropdown-split-basic" />
           <Dropdown.Menu>
-            {/* Dropdown download options */}
             {downloadOptions.map((downloadOption) => (
               <div
                 key={downloadOption.buttonLabel}
@@ -31,7 +31,7 @@ export function DownloadButton({
               >
                 <Dropdown.Item
                   as="button"
-                  onClick={() => handleDownload(downloadOption)}
+                  onClick={() => onDownload(downloadOption)}
                   disabled={downloadOption.disabled}
                 >
                   {downloadOption.buttonLabel}

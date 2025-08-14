@@ -11,18 +11,7 @@ import { getUserEmail } from "../utils/getUserEmail";
 import { useUserEmail } from "./UserEmailContext";
 import { openLoginPopup } from "../utils/openLoginPopup";
 import { useWarningModal } from "./WarningContext";
-
-const PHI_WARNING =
-  "The information contained in this transmission from Memorial Sloan-Kettering" +
-  " Cancer Center is privileged, confidential and protected health" +
-  " information (PHI) and it is protected from disclosure under applicable" +
-  " law, including the Health Insurance Portability and Accountability Act" +
-  " of 1996, as amended (HIPAA). This transmission is intended for the sole" +
-  " use of approved individuals with permission and training to access this" +
-  " information and PHI. You are notified that your access to this" +
-  " transmission is logged. If you have received this transmission in" +
-  " error, please immediately delete this information and any attachments" +
-  " from any computer.";
+import { PHI_WARNING } from "../config";
 
 type PhiEnabledContextType = {
   phiEnabled: boolean;

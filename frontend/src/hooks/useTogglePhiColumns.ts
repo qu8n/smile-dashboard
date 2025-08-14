@@ -3,13 +3,7 @@ import { usePhiEnabled } from "../contexts/PhiEnabledContext";
 import { ColDef } from "ag-grid-community";
 
 interface UseTogglePhiColumnsParams {
-  /**
-   * Function to set the active column definitions in the grid.
-   */
-  setColumnDefs: Dispatch<SetStateAction<ColDef[]>>;
-  /**
-   * Set of fields that are considered PHI to toggle visibility for.
-   */
+  setColumnDefs: Dispatch<SetStateAction<Array<ColDef>>>;
   phiFields: Set<string>;
 }
 

@@ -1,5 +1,9 @@
-import { ColDef, IFilterDef, ITooltipParams } from "ag-grid-community";
-import { allEditableFields } from "../pages/samples/config";
+import { ColDef, IFilterDef } from "ag-grid-community";
+import moment from "moment";
+
+export function formatCellDate(date: moment.MomentInput) {
+  return date ? moment(date).format("YYYY-MM-DD") : null;
+}
 
 export function getAgGridDateColFilterConfigs({
   maxValidYear = new Date().getFullYear(),

@@ -5,7 +5,7 @@ import {
   getAgGridBooleanColFilterConfigs,
   getAgGridDateColFilterConfigs,
 } from "../../utils/agGrid";
-import { formatDate } from "../../utils/dateFormatters";
+import { formatCellDate } from "../../utils/agGrid";
 import { DownloadOption } from "../../hooks/useDownload";
 import { BuildDownloadOptionsParamsBase } from "../../types";
 
@@ -64,7 +64,7 @@ export const cohortColDefs: ColDef<DashboardCohort>[] = [
   {
     field: "initialCohortDeliveryDate",
     headerName: "Initial Cohort Delivery Date",
-    valueFormatter: (params) => formatDate(params.value) ?? "",
+    valueFormatter: (params) => formatCellDate(params.value) ?? "",
     ...getAgGridDateColFilterConfigs(),
   },
   {

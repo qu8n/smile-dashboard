@@ -1,7 +1,4 @@
 import { AgGridReact as AgGridReactType } from "ag-grid-react/lib/agGridReact";
-import "ag-grid-community/styles/ag-grid.css";
-import "ag-grid-community/styles/ag-theme-alpine.css";
-import "ag-grid-enterprise";
 import {
   CellEditRequestEvent,
   EditableCallbackParams,

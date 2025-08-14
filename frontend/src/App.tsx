@@ -9,6 +9,11 @@ import { PatientsPage } from "./pages/patients/PatientsPage";
 import { CohortsPage } from "./pages/cohorts/CohortsPage";
 import { ROUTE_PARAMS } from "./config";
 
+// Required imports for AG Grid tables to render correctly
+import "ag-grid-community/styles/ag-grid.css";
+import "ag-grid-community/styles/ag-theme-alpine.css";
+import "ag-grid-enterprise";
+
 export default function App() {
   return (
     <main id="main" className="main">

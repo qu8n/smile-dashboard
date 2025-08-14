@@ -15,19 +15,13 @@ import {
 } from "../generated/graphql";
 import { handleAgGridPaste } from "../utils/handleAgGridPaste";
 import { SampleChange } from "../types";
-import { formatDate } from "../utils/dateFormatters";
-import { isInvalidCostCenter } from "../utils/agGrid";
-
-const POLLING_PAUSE_AFTER_UPDATE = 12000; // 12s
-export const INVALID_COST_CENTER_WARNING =
-  "Please update your Cost Center/Fund Number input as #####/##### " +
-  "(5 digits, a forward slash, then 5 digits). For example: 12345/12345.";
+import { formatCellDate, isInvalidCostCenter } from "../utils/agGrid";
+import {
+  INVALID_COST_CENTER_WARNING,
+  POLLING_PAUSE_AFTER_UPDATE,
+} from "../config";
 
 interface UseCellChangesParams {
-  /**
-   * Reference to the AgGridReact component. Used to access the grid API
-   * and perform actions like updating the grid with new data.
-   */
   gridRef: RefObject<AgGridReactType<any>>;
   startPolling: () => void;
   stopPolling: () => void;
@@ -211,7 +205,7 @@ export function useCellChanges({
         return {
           ...s,
           revisable: false,
-          importDate: formatDate(new Date()) as string,
+          importDate: formatCellDate(new Date()) as string,
           ...changesByPrimaryId[s.primaryId],
         };
       }
@@ -247,11 +241,13 @@ export function useCellChanges({
     setChanges,
     handleCellEditRequest,
     handlePaste,
-    handleDiscardChanges,
-    handleConfirmUpdates,
-    showUpdateModal,
-    setShowUpdateModal,
-    handleSubmitUpdates,
+    cellChangesHandlers: {
+      handleDiscardChanges,
+      handleConfirmUpdates,
+      handleSubmitUpdates,
+      showUpdateModal,
+      setShowUpdateModal,
+    },
   };
 }
 

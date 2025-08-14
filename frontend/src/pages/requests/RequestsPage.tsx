@@ -79,7 +79,7 @@ export function RequestsPage() {
         <Col className="text-end">
           <DownloadButton
             downloadOptions={downloadOptions}
-            handleDownload={handleDownload}
+            onDownload={handleDownload}
           />
         </Col>
       </Toolbar>
@@ -87,7 +87,7 @@ export function RequestsPage() {
       <DataGrid
         gridRef={gridRef}
         columnDefs={requestColDefs}
-        handleGridColumnsChanged={refreshData}
+        onGridColumnsChanged={refreshData}
       />
 
       {hasParams && (

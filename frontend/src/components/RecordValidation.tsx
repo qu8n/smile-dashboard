@@ -1,5 +1,4 @@
 import { Dispatch, SetStateAction, useState } from "react";
-import styles from "./records.module.scss";
 import { DashboardRequest } from "../generated/graphql";
 import { CustomTooltip } from "../components/CustomToolTip";
 import WarningIcon from "@material-ui/icons/Warning";
@@ -209,7 +208,7 @@ function ErrorReportModal({
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <div className={`${styles.tableHeight} ag-theme-alpine`}>
+        <div className="tableHeight ag-theme-alpine">
           <AgGridReact<StatusItem>
             groupDisplayType="groupRows"
             rowData={validationDataForAgGrid}

@@ -57,30 +57,22 @@ export function SamplesPage() {
     stopPolling,
   } = useFetchData({
     useRecordsLazyQuery: useDashboardSamplesLazyQuery,
-    contexts,
     queryName: QUERY_NAME,
     initialSortFieldName: INITIAL_SORT_FIELD_NAME,
     gridRef,
-    pollInterval: POLL_INTERVAL,
     userSearchVal,
+    contexts,
+    pollInterval: POLL_INTERVAL,
   });
 
-  const {
-    changes,
-    handleCellEditRequest,
-    handlePaste,
-    handleDiscardChanges,
-    handleConfirmUpdates,
-    showUpdateModal,
-    setShowUpdateModal,
-    handleSubmitUpdates,
-  } = useCellChanges({
-    gridRef,
-    startPolling,
-    stopPolling,
-    samples: data?.[QUERY_NAME],
-    refreshData,
-  });
+  const { changes, cellChangesHandlers, handleCellEditRequest, handlePaste } =
+    useCellChanges({
+      gridRef,
+      startPolling,
+      stopPolling,
+      samples: data?.[QUERY_NAME],
+      refreshData,
+    });
 
   const { isDownloading, handleDownload, getCurrentData } =
     useDownload<DashboardSample>({
@@ -150,11 +142,7 @@ export function SamplesPage() {
           {changes.length > 0 && (
             <CellChangesConfirmation
               changes={changes}
-              onDiscardChanges={handleDiscardChanges}
-              onConfirmUpdates={handleConfirmUpdates}
-              onSubmitUpdates={handleSubmitUpdates}
-              onUpdateModalHide={() => setShowUpdateModal(false)}
-              showUpdateModal={showUpdateModal}
+              cellChangesHandlers={cellChangesHandlers}
             />
           )}
         </Col>
@@ -162,7 +150,7 @@ export function SamplesPage() {
         <Col className="text-end">
           <DownloadButton
             downloadOptions={downloadOptions}
-            handleDownload={handleDownload}
+            onDownload={handleDownload}
           />
         </Col>
       </Toolbar>
@@ -170,7 +158,7 @@ export function SamplesPage() {
       <DataGrid
         gridRef={gridRef}
         columnDefs={columnDefs}
-        handleGridColumnsChanged={refreshData}
+        onGridColumnsChanged={refreshData}
         changes={changes}
         handleCellEditRequest={handleCellEditRequest}
         handlePaste={handlePaste}

@@ -1,6 +1,7 @@
 import { ColDef } from "ag-grid-community";
 
 export const POLL_INTERVAL = 5000; // 5s
+
 export const CACHE_BLOCK_SIZE = 500; // number of rows to fetch at a time
 
 /**
@@ -41,3 +42,21 @@ export const multiLineColDef: ColDef = {
     padding: "6px 18px",
   },
 };
+
+export const PHI_WARNING =
+  "The information contained in this transmission from Memorial Sloan-Kettering" +
+  " Cancer Center is privileged, confidential and protected health" +
+  " information (PHI) and it is protected from disclosure under applicable" +
+  " law, including the Health Insurance Portability and Accountability Act" +
+  " of 1996, as amended (HIPAA). This transmission is intended for the sole" +
+  " use of approved individuals with permission and training to access this" +
+  " information and PHI. You are notified that your access to this" +
+  " transmission is logged. If you have received this transmission in" +
+  " error, please immediately delete this information and any attachments" +
+  " from any computer.";
+
+export const POLLING_PAUSE_AFTER_UPDATE = 12000; // 12s
+
+export const INVALID_COST_CENTER_WARNING =
+  "Please update your Cost Center/Fund Number input as #####/##### " +
+  "(5 digits, a forward slash, then 5 digits). For example: 12345/12345.";

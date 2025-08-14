@@ -9,10 +9,10 @@ import {
 } from "react";
 import { getUserEmail } from "../utils/getUserEmail";
 
-type UserEmailContextType = {
+interface UserEmailContextType {
   userEmail: string | undefined;
   setUserEmail: Dispatch<SetStateAction<string | undefined>>;
-};
+}
 
 const UserEmailContext = createContext<UserEmailContextType | undefined>(
   undefined

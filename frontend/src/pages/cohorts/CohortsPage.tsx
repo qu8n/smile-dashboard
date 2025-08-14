@@ -80,7 +80,7 @@ export function CohortsPage() {
         <Col className="text-end">
           <DownloadButton
             downloadOptions={downloadOptions}
-            handleDownload={handleDownload}
+            onDownload={handleDownload}
           />
         </Col>
       </Toolbar>
@@ -88,7 +88,7 @@ export function CohortsPage() {
       <DataGrid
         gridRef={gridRef}
         columnDefs={cohortColDefs}
-        handleGridColumnsChanged={refreshData}
+        onGridColumnsChanged={refreshData}
       />
 
       {hasParams && (

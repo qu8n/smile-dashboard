@@ -23,7 +23,6 @@ import { CellChangesConfirmation } from "./CellChangesConfirmation";
 import { DownloadButton } from "../components/DownloadButton";
 import { DataGrid } from "./DataGrid";
 import { DownloadModal } from "./DownloadModal";
-import styles from "./records.module.scss";
 import { ColDef } from "ag-grid-community";
 import { POLL_INTERVAL, ROUTE_PARAMS } from "../config";
 import { SampleChange } from "../types";
@@ -59,29 +58,25 @@ export function SamplesModal({
     stopPolling,
   } = useFetchData({
     useRecordsLazyQuery: useDashboardSamplesLazyQuery,
+    queryName: QUERY_NAME,
+    initialSortFieldName: INTIAL_SORT_FIELD_NAME,
+    gridRef,
+    userSearchVal,
     contexts: [
       {
         fieldName: contextFieldName,
         values: [parentRecordId!],
       },
     ],
-    queryName: QUERY_NAME,
-    initialSortFieldName: INTIAL_SORT_FIELD_NAME,
-    gridRef,
     pollInterval: POLL_INTERVAL,
-    userSearchVal,
   });
 
   const {
     changes,
     setChanges,
+    cellChangesHandlers,
     handleCellEditRequest,
     handlePaste,
-    handleDiscardChanges,
-    handleConfirmUpdates,
-    showUpdateModal,
-    setShowUpdateModal,
-    handleSubmitUpdates,
   } = useCellChanges({
     gridRef,
     startPolling,
@@ -147,11 +142,7 @@ export function SamplesModal({
           {changes.length > 0 && (
             <CellChangesConfirmation
               changes={changes}
-              onDiscardChanges={handleDiscardChanges}
-              onConfirmUpdates={handleConfirmUpdates}
-              onSubmitUpdates={handleSubmitUpdates}
-              onUpdateModalHide={() => setShowUpdateModal(false)}
-              showUpdateModal={showUpdateModal}
+              cellChangesHandlers={cellChangesHandlers}
             />
           )}
         </Col>
@@ -159,7 +150,7 @@ export function SamplesModal({
         <Col className="text-end">
           <DownloadButton
             downloadOptions={downloadOptions}
-            handleDownload={handleDownload}
+            onDownload={handleDownload}
           />
         </Col>
       </Toolbar>
@@ -167,7 +158,7 @@ export function SamplesModal({
       <DataGrid
         gridRef={gridRef}
         columnDefs={columnDefs}
-        handleGridColumnsChanged={refreshData}
+        onGridColumnsChanged={refreshData}
         changes={changes}
         handleCellEditRequest={handleCellEditRequest}
         handlePaste={handlePaste}
@@ -224,9 +215,7 @@ function ModalContainerWithClosingWarning({
           )} ${parentRecordId}'s samples`}</Title>
         </Modal.Header>
         <Modal.Body>
-          <div className={`${styles.popupHeight} d-flex flex-column`}>
-            {children}
-          </div>
+          <div className="popupHeight d-flex flex-column">{children}</div>
         </Modal.Body>
       </Modal>
 
@@ -236,7 +225,7 @@ function ModalContainerWithClosingWarning({
           show={true}
           centered
           onHide={handleClosingWarningCancel}
-          className={styles.overlay}
+          className="overlay"
         >
           <Modal.Header closeButton>
             <Modal.Title id="contained-modal-title-vcenter">

@@ -17,7 +17,7 @@ import {
   LoadingIcon,
   lockIcon,
   toolTipIcon,
-} from "../../utils/gridFormatters";
+} from "../../configs/gridIcons";
 import { getPhiColDefProps, multiLineColDef } from "../../config";
 import {
   getAgGridBooleanColFilterConfigs,
@@ -27,7 +27,7 @@ import {
 } from "../../utils/agGrid";
 import _ from "lodash";
 import { Link } from "react-router-dom";
-import { formatDate } from "../../utils/dateFormatters";
+import { formatCellDate } from "../../utils/agGrid";
 import { BuildDownloadOptionsParamsBase, SampleChange } from "../../types";
 import { DownloadOption } from "../../hooks/useDownload";
 
@@ -454,13 +454,13 @@ export const wesSampleColDefs: Array<ColDef<DashboardSample>> = [
   {
     field: "initialPipelineRunDate",
     headerName: "Initial Pipeline Run Date",
-    valueFormatter: (params) => formatDate(params.value) ?? "",
+    valueFormatter: (params) => formatCellDate(params.value) ?? "",
     ...getAgGridDateColFilterConfigs(),
   },
   {
     field: "embargoDate",
     headerName: "Embargo Date",
-    valueFormatter: (params) => formatDate(params.value) ?? "",
+    valueFormatter: (params) => formatCellDate(params.value) ?? "",
     ...getAgGridDateColFilterConfigs({
       // embargoDate is 18 months ahead of initialPipelineRunDate
       maxValidYear: new Date().getFullYear() + 2,
@@ -515,7 +515,7 @@ export const wesSampleColDefs: Array<ColDef<DashboardSample>> = [
   {
     field: "bamCompleteDate",
     headerName: "Latest BAM Complete Date",
-    valueFormatter: (params) => formatDate(params.value) ?? "",
+    valueFormatter: (params) => formatCellDate(params.value) ?? "",
     ...getAgGridDateColFilterConfigs(),
   },
   {
@@ -525,7 +525,7 @@ export const wesSampleColDefs: Array<ColDef<DashboardSample>> = [
   {
     field: "mafCompleteDate",
     headerName: "Latest MAF Complete Date",
-    valueFormatter: (params) => formatDate(params.value) ?? "",
+    valueFormatter: (params) => formatCellDate(params.value) ?? "",
     ...getAgGridDateColFilterConfigs(),
   },
   {
@@ -539,7 +539,7 @@ export const wesSampleColDefs: Array<ColDef<DashboardSample>> = [
   {
     field: "qcCompleteDate",
     headerName: "Latest QC Complete Date",
-    valueFormatter: (params) => formatDate(params.value) ?? "",
+    valueFormatter: (params) => formatCellDate(params.value) ?? "",
     ...getAgGridDateColFilterConfigs(),
   },
   {

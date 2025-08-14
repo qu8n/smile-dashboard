@@ -7,7 +7,7 @@ import {
   ITooltipParams,
 } from "ag-grid-community";
 import { useNavigate } from "react-router-dom";
-import { createCustomHeader, lockIcon } from "../utils/gridFormatters";
+import { createCustomHeader, lockIcon } from "../configs/gridIcons";
 import { SampleChange } from "../types";
 import { CACHE_BLOCK_SIZE } from "../config";
 import { allEditableFields } from "../pages/samples/config";
@@ -59,7 +59,7 @@ interface NonEditableGridProps {
 interface DataGridPropsBase {
   gridRef: RefObject<AgGridReactType<any>>;
   columnDefs: Array<ColDef<any>>;
-  handleGridColumnsChanged: () => void;
+  onGridColumnsChanged: () => void;
 }
 
 type DataGridProps = DataGridPropsBase &
@@ -69,7 +69,7 @@ type DataGridProps = DataGridPropsBase &
 export function DataGrid({
   gridRef,
   columnDefs,
-  handleGridColumnsChanged,
+  onGridColumnsChanged,
   changes,
   handleCellEditRequest,
   handlePaste,
@@ -86,7 +86,7 @@ export function DataGrid({
         defaultColDef={defaultColDef}
         enableRangeSelection={true}
         onFirstDataRendered={(params) => params.columnApi.autoSizeAllColumns()}
-        onGridColumnsChanged={handleGridColumnsChanged}
+        onGridColumnsChanged={onGridColumnsChanged}
         context={{
           getChanges: () => changes,
           navigateFunction: navigate,

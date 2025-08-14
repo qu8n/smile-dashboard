@@ -1,10 +1,9 @@
 import { RefObject, useState } from "react";
-import { buildTsvString } from "../utils/stringBuilders";
 import jsdownload from "js-file-download";
 import { AgGridReact as AgGridReactType } from "ag-grid-react/lib/agGridReact";
 import { QueryResult } from "@apollo/client";
 import { parseUserSearchVal } from "../utils/parseSearchQueries";
-import { ColDef } from "ag-grid-community";
+import { ColDef, Column } from "ag-grid-community";
 
 export interface DownloadOption {
   buttonLabel: string;
@@ -20,7 +19,7 @@ export interface DownloadOption {
   disabled?: boolean;
 }
 
-interface UseDownloadProps {
+interface UseDownloadParams {
   gridRef: RefObject<AgGridReactType>;
   downloadFileName: string;
   fetchMore: QueryResult["fetchMore"];
@@ -36,17 +35,17 @@ export function useDownload<T>({
   userSearchVal,
   recordCount,
   queryName,
-}: UseDownloadProps) {
+}: UseDownloadParams) {
   const [isDownloading, setIsDownloading] = useState(false);
 
   async function handleDownload(downloadOption: DownloadOption) {
     setIsDownloading(true);
     const data = await downloadOption.dataGetter();
-    const tsvString = buildTsvString(
-      data,
-      downloadOption.columnDefsForDownload,
-      gridRef.current?.columnApi.getAllGridColumns()
-    );
+    const tsvString = buildTsvString({
+      rows: data,
+      colDefs: downloadOption.columnDefsForDownload,
+      columns: gridRef.current?.columnApi.getAllGridColumns() || [],
+    });
     jsdownload(tsvString, `${downloadFileName}.tsv`);
     setIsDownloading(false);
   }
@@ -71,4 +70,57 @@ export function useDownload<T>({
     handleDownload,
     getCurrentData,
   };
+}
+
+interface BuildTsvStringParams {
+  rows: Array<any>;
+  columns: Array<Column>;
+  colDefs: Array<ColDef>;
+}
+
+function buildTsvString({
+  rows,
+  columns,
+  colDefs,
+}: BuildTsvStringParams): string {
+  const fieldsHiddenByUser =
+    columns?.filter((col) => !col.isVisible()).map((col) => col.getColId()) ??
+    [];
+
+  const colDefsToExport = colDefs.filter(
+    ({ field, hide }) =>
+      field && hide !== true && !fieldsHiddenByUser.includes(field)
+  );
+
+  const colHeadersAsTsvRow = colDefsToExport
+    .map((item) => item.headerName)
+    .join("\t");
+
+  const rowsAsTsvRows = rows
+    .map((row) =>
+      colDefsToExport.map((colDef) => {
+        if (colDef.valueGetter) {
+          // @ts-ignore
+          return colDef.valueGetter({
+            colDef,
+            data: row,
+          });
+        }
+        if (colDef.field) {
+          if (colDef.valueFormatter) {
+            // @ts-ignore
+            return colDef.valueFormatter({
+              colDef,
+              data: row,
+              value: row[colDef.field],
+            });
+          }
+          return row[colDef.field];
+        }
+        return " ";
+      })
+    )
+    .map((value) => value.join("\t").replace(/(\r\n|\n|\r)/gm, ""));
+
+  return [colHeadersAsTsvRow, ...rowsAsTsvRows].join("\n");
 }

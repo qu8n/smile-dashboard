@@ -1,7 +1,7 @@
 import { Button, Modal } from "react-bootstrap";
 import { AgGridReact } from "ag-grid-react/lib/agGridReact";
-import styles from "./records.module.scss";
 import { SampleChange } from "../types";
+import { Dispatch, SetStateAction } from "react";
 
 const updateModalColumnDefs = [
   { field: "primaryId", rowGroup: true, hide: true },
@@ -17,34 +17,41 @@ const autoGroupColumnDef = {
 
 interface CellChangesConfirmationProps {
   changes: Array<SampleChange>;
-  onDiscardChanges: () => void;
-  onConfirmUpdates: () => void;
-  onSubmitUpdates: () => void;
-  onUpdateModalHide: () => void;
-  showUpdateModal: boolean;
+  cellChangesHandlers: {
+    handleDiscardChanges: () => void;
+    handleConfirmUpdates: () => void;
+    handleSubmitUpdates: () => void;
+    showUpdateModal: boolean;
+    setShowUpdateModal: Dispatch<SetStateAction<boolean>>;
+  };
 }
 
 export function CellChangesConfirmation({
   changes,
-  onDiscardChanges,
-  onConfirmUpdates,
-  onSubmitUpdates,
-  onUpdateModalHide,
-  showUpdateModal,
+  cellChangesHandlers: {
+    handleDiscardChanges,
+    handleConfirmUpdates,
+    handleSubmitUpdates,
+    showUpdateModal,
+    setShowUpdateModal,
+  },
 }: CellChangesConfirmationProps) {
+  function handleUpdateModalHide() {
+    setShowUpdateModal(false);
+  }
   return (
     <>
       <div className="d-flex align-items-center gap-1">
         <Button
           className="btn btn-secondary"
-          onClick={onDiscardChanges}
+          onClick={handleDiscardChanges}
           size="sm"
         >
           Discard Changes
         </Button>{" "}
         <Button
           className="btn btn-success"
-          onClick={onConfirmUpdates}
+          onClick={handleConfirmUpdates}
           size="sm"
         >
           Confirm Updates
@@ -56,8 +63,8 @@ export function CellChangesConfirmation({
           show={true}
           size="lg"
           centered
-          onHide={onUpdateModalHide}
-          className={styles.overlay}
+          onHide={handleUpdateModalHide}
+          className="overlay"
         >
           <Modal.Header closeButton>
             <Modal.Title id="contained-modal-title-vcenter">
@@ -78,10 +85,13 @@ export function CellChangesConfirmation({
           </Modal.Body>
 
           <Modal.Footer>
-            <Button className="btn btn-secondary" onClick={onUpdateModalHide}>
+            <Button
+              className="btn btn-secondary"
+              onClick={handleUpdateModalHide}
+            >
               Cancel
             </Button>
-            <Button className="btn btn-success" onClick={onSubmitUpdates}>
+            <Button className="btn btn-success" onClick={handleSubmitUpdates}>
               Submit Updates
             </Button>
           </Modal.Footer>

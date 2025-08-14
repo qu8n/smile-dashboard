@@ -2,10 +2,7 @@ import { useEffect, useMemo } from "react";
 import { Button } from "react-bootstrap";
 import Modal from "react-bootstrap/Modal";
 import { AgGridReact } from "ag-grid-react";
-import "ag-grid-enterprise";
 import styles from "./records.module.scss";
-import "ag-grid-community/styles/ag-grid.css";
-import "ag-grid-community/styles/ag-theme-alpine.css";
 import {
   DashboardSampleInput,
   DashboardSamplesQuery,

@@ -111,7 +111,7 @@ export function PatientsPage() {
         <Col className="text-end">
           <DownloadButton
             downloadOptions={downloadOptions}
-            handleDownload={handleDownload}
+            onDownload={handleDownload}
           />
         </Col>
       </Toolbar>
@@ -119,7 +119,7 @@ export function PatientsPage() {
       <DataGrid
         gridRef={gridRef}
         columnDefs={columnDefs}
-        handleGridColumnsChanged={refreshData}
+        onGridColumnsChanged={refreshData}
       />
 
       {hasParams && (
