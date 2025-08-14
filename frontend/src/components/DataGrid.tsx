@@ -56,11 +56,11 @@ interface NonEditableGridProps {
   handlePaste?: undefined;
 }
 
-type DataGridPropsBase = {
+interface DataGridPropsBase {
   gridRef: RefObject<AgGridReactType<any>>;
   columnDefs: Array<ColDef<any>>;
   handleGridColumnsChanged: () => void;
-};
+}
 
 type DataGridProps = DataGridPropsBase &
   // Ensure that either all editing props are used or none are

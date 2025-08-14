@@ -12,10 +12,14 @@ import {
 import { DownloadOption } from "../../hooks/useDownload";
 import { BuildDownloadOptionsParamsBase } from "../../types";
 
+type BuildDownloadOptionsParams = BuildDownloadOptionsParamsBase & {
+  // Put additional parameters here if needed
+};
+
 export function buildDownloadOptions({
   getCurrentData,
   currentColumnDefs,
-}: BuildDownloadOptionsParamsBase): Array<DownloadOption> {
+}: BuildDownloadOptionsParams): Array<DownloadOption> {
   return [
     {
       buttonLabel: "Download as TSV",

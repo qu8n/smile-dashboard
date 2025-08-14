@@ -4,6 +4,7 @@ import { AgGridReact as AgGridReactType } from "ag-grid-react/lib/agGridReact";
 import { useFetchData } from "../../hooks/useFetchData";
 import {
   DashboardPatient,
+  useAllAnchorSeqDateDataLazyQuery,
   useDashboardPatientsLazyQuery,
 } from "../../generated/graphql";
 import { Title } from "../../components/Title";
@@ -27,6 +28,8 @@ import { useParams } from "react-router-dom";
 import { SamplesModal } from "../../components/SamplesModal";
 import { ROUTE_PARAMS } from "../../config";
 import { sampleColDefs } from "../samples/config";
+import { usePhiEnabled } from "../../contexts/PhiEnabledContext";
+import { useUserEmail } from "../../contexts/UserEmailContext";
 
 const QUERY_NAME = "dashboardPatients";
 const INITIAL_SORT_FIELD_NAME = "importDate";
@@ -36,9 +39,12 @@ const PHI_FIELDS = new Set(["mrn", "anchorSequencingDate"]);
 export function PatientsPage() {
   const [userSearchVal, setUserSearchVal] = useState<string>("");
   const [columnDefs, setColumnDefs] = useState<Array<ColDef>>(patientColDefs);
+  const { phiEnabled } = usePhiEnabled();
+  const { userEmail } = useUserEmail();
 
   const gridRef = useRef<AgGridReactType<DashboardPatient>>(null);
   const hasParams = Object.keys(useParams()).length > 0;
+  const [queryAllSeqDates] = useAllAnchorSeqDateDataLazyQuery();
 
   const { refreshData, recordCount, isLoading, error, fetchMore } =
     useFetchData({
@@ -62,6 +68,9 @@ export function PatientsPage() {
   const downloadOptions = buildDownloadOptions({
     getCurrentData,
     currentColumnDefs: columnDefs,
+    queryAllSeqDates,
+    phiEnabled,
+    userEmail,
   });
 
   const { showPhiColumnsOnInitialPhiSearch } = useTogglePhiColumnsVisibility({

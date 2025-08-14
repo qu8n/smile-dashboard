@@ -1,4 +1,11 @@
-import { DashboardPatient } from "../../generated/graphql";
+import {
+  AllAnchorSeqDateByPatientIdQuery,
+  AnchorSeqDateByPatientId,
+  DashboardPatient,
+  Exact,
+  InputMaybe,
+  Scalars,
+} from "../../generated/graphql";
 import { ColDef, ICellRendererParams } from "ag-grid-community";
 import { Button } from "react-bootstrap";
 import { getPhiColDefProps } from "../../config";
@@ -8,16 +15,65 @@ import {
 } from "../../utils/agGrid";
 import { DownloadOption } from "../../hooks/useDownload";
 import { BuildDownloadOptionsParamsBase } from "../../types";
+import { LazyQueryExecFunction } from "@apollo/client";
+
+export const allAnchorSeqDateColDefs: Array<ColDef<AnchorSeqDateByPatientId>> =
+  [
+    {
+      field: "MRN",
+      headerName: "Patient MRN",
+    },
+    {
+      field: "DMP_PATIENT_ID",
+      headerName: "DMP Patient ID",
+    },
+    {
+      field: "ANCHOR_SEQUENCING_DATE",
+      headerName: "Anchor Sequencing Date",
+    },
+    {
+      field: "ANCHOR_ONCOTREE_CODE",
+      headerName: "Anchor OncoTree Code",
+    },
+  ];
+
+interface AdditionalBuildDownloadOptionsParams {
+  queryAllSeqDates: LazyQueryExecFunction<
+    AllAnchorSeqDateByPatientIdQuery,
+    Exact<{ phiEnabled?: InputMaybe<Scalars["Boolean"]> }>
+  >;
+  phiEnabled: boolean;
+  userEmail: string | undefined;
+}
+
+type BuildDownloadOptionsParams = BuildDownloadOptionsParamsBase &
+  AdditionalBuildDownloadOptionsParams;
 
 export function buildDownloadOptions({
   getCurrentData,
   currentColumnDefs,
-}: BuildDownloadOptionsParamsBase): Array<DownloadOption> {
+  queryAllSeqDates,
+  phiEnabled,
+  userEmail,
+}: BuildDownloadOptionsParams): Array<DownloadOption> {
   return [
     {
       buttonLabel: "Download as TSV",
       columnDefsForDownload: currentColumnDefs,
       dataGetter: getCurrentData,
+    },
+    {
+      buttonLabel: "Export all anchor dates for clinical cohort",
+      columnDefsForDownload: allAnchorSeqDateColDefs,
+      dataGetter: async () => {
+        const result = await queryAllSeqDates({
+          variables: { phiEnabled: phiEnabled },
+        });
+        return result.data!.allAnchorSeqDateByPatientId || [];
+      },
+      disabled: !phiEnabled || !userEmail,
+      tooltipContent:
+        "You must enable PHI and log in to export anchor sequencing dates",
     },
   ];
 }

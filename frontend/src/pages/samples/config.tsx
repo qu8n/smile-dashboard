@@ -869,10 +869,14 @@ export const filterButtonsTooltipContent =
   '"All" shows all samples, whereas "WES" and "ACCESS/CMO-CH" show only' +
   "whole exome and MSK-ACCESS/CMO-CH samples, respectively.";
 
+type BuildDownloadOptionsParams = BuildDownloadOptionsParamsBase & {
+  // Put additional parameters here if needed
+};
+
 export function buildDownloadOptions({
   getCurrentData,
   currentColumnDefs,
-}: BuildDownloadOptionsParamsBase): Array<DownloadOption> {
+}: BuildDownloadOptionsParams): Array<DownloadOption> {
   return [
     {
       buttonLabel: "Download as TSV",
