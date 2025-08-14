@@ -29,22 +29,25 @@ import { DownloadButton } from "../shared/components/DownloadButton";
 import { DataGrid } from "./DataGrid";
 import { DownloadModal2 } from "./DownloadModal2";
 import styles from "./records.module.scss";
+import { ColDef } from "ag-grid-community";
 
 const QUERY_NAME = "dashboardSamples";
 const INTIAL_SORT_FIELD_NAME = "importDate";
 const PHI_FIELDS = new Set(["sequencingDate"]);
 
 interface SamplesModalProps {
+  sampleColumnDefs: Array<ColDef>;
   contextFieldName: string;
   parentRecordName: string;
 }
 
 export function SamplesModal({
+  sampleColumnDefs,
   contextFieldName,
   parentRecordName,
 }: SamplesModalProps) {
   const [userSearchVal, setUserSearchVal] = useState<string>("");
-  const [columnDefs, setColumnDefs] = useState(sampleColDefs);
+  const [columnDefs, setColumnDefs] = useState(sampleColumnDefs);
   const params = useParams();
 
   const gridRef = useRef<AgGridReactType<DashboardSample>>(null);

@@ -1,5 +1,4 @@
 import { Routes, Route } from "react-router-dom";
-import CohortsPage from "./pages/cohorts/CohortsPage";
 import { LoginSuccessPage } from "./pages/auth/LoginSuccessPage";
 import { SamplesPage } from "./pages/samples/SamplesPage";
 import { NavBar } from "./shared/components/NavBar";
@@ -8,7 +7,9 @@ import { Providers } from "./components/Providers";
 import { WarningModal } from "./components/WarningModal";
 import { RequestsPage } from "./pages/requests/RequestsPage";
 import { PatientsPage } from "./pages/patients/PatientsPage";
+import { CohortsPage } from "./pages/cohorts/CohortsPage";
 
+// TODO: implement type safety for the paths here vs. the contextFieldName in pages
 export default function App() {
   return (
     <main id="main" className="main">

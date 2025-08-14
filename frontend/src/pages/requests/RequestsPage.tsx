@@ -15,7 +15,7 @@ import { ErrorMessage } from "../../components/ErrorMessage";
 import { DownloadButton } from "../../shared/components/DownloadButton";
 import { DownloadModal2 } from "../../components/DownloadModal2";
 import { useDownload } from "../../hooks/useDownload";
-import { requestColDefs } from "../../shared/helpers";
+import { requestColDefs, sampleColDefs } from "../../shared/helpers";
 import { useParams } from "react-router-dom";
 import { SamplesModal } from "../../components/SamplesModal";
 import { MainLayout } from "../../shared/components/MainLayout";
@@ -92,6 +92,7 @@ export function RequestsPage() {
 
       {hasParams && (
         <SamplesModal
+          sampleColumnDefs={sampleColDefs}
           contextFieldName={MODAL_CONTEXT_FIELD_NAME}
           parentRecordName={RECORD_NAME}
         />

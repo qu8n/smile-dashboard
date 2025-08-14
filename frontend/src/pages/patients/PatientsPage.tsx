@@ -21,13 +21,13 @@ import { useTogglePhiColumnsVisibility } from "../../hooks/useTogglePhiColumns";
 import { MainLayout } from "../../shared/components/MainLayout";
 import { useParams } from "react-router-dom";
 import { SamplesModal } from "../../components/SamplesModal";
-import { patientColDefs } from "../../shared/helpers";
+import { patientColDefs, sampleColDefs } from "../../shared/helpers";
 
 const QUERY_NAME = "dashboardPatients";
 const INITIAL_SORT_FIELD_NAME = "importDate";
 const RECORD_NAME = "patients";
-const PHI_FIELDS = new Set(["mrn", "anchorSequencingDate", "anchorOncotreeCode"]);
-const MODAL_CONTEXT_FIELD_NAME = "igoRequestId";
+const PHI_FIELDS = new Set(["mrn", "anchorSequencingDate"]);
+const MODAL_CONTEXT_FIELD_NAME = "patientId";
 
 export function PatientsPage() {
   const [userSearchVal, setUserSearchVal] = useState<string>("");
@@ -111,6 +111,7 @@ export function PatientsPage() {
 
       {hasParams && (
         <SamplesModal
+          sampleColumnDefs={sampleColDefs}
           contextFieldName={MODAL_CONTEXT_FIELD_NAME}
           parentRecordName={RECORD_NAME}
         />
