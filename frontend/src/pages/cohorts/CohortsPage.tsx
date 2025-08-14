@@ -6,7 +6,6 @@ import {
   DashboardCohort,
   DashboardSample,
   useDashboardCohortsLazyQuery,
-  useDashboardPatientsLazyQuery,
 } from "../../generated/graphql";
 import { Heading } from "../../shared/components/Heading";
 import { Toolbarr } from "../../shared/components/Toolbarr";
@@ -21,11 +20,11 @@ import { MainLayout } from "../../shared/components/MainLayout";
 import { useParams } from "react-router-dom";
 import { SamplesModal } from "../../components/SamplesModal";
 import { cohortColDefs, wesSampleColDefs } from "../../shared/helpers";
+import { ROUTE_PARAMS } from "../../config";
 
 const QUERY_NAME = "dashboardCohorts";
 const INITIAL_SORT_FIELD_NAME = "initialCohortDeliveryDate";
 const RECORD_NAME = "cohorts";
-const MODAL_CONTEXT_FIELD_NAME = "cohortId";
 
 export function CohortsPage() {
   const [userSearchVal, setUserSearchVal] = useState<string>("");
@@ -95,7 +94,7 @@ export function CohortsPage() {
       {hasParams && (
         <SamplesModal
           sampleColumnDefs={wesSampleColDefs}
-          contextFieldName={MODAL_CONTEXT_FIELD_NAME}
+          contextFieldName={ROUTE_PARAMS.cohorts}
           parentRecordName={RECORD_NAME}
         />
       )}

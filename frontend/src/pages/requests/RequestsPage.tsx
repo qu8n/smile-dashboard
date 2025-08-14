@@ -19,11 +19,11 @@ import { requestColDefs, sampleColDefs } from "../../shared/helpers";
 import { useParams } from "react-router-dom";
 import { SamplesModal } from "../../components/SamplesModal";
 import { MainLayout } from "../../shared/components/MainLayout";
+import { ROUTE_PARAMS } from "../../config";
 
 const QUERY_NAME = "dashboardRequests";
 const INITIAL_SORT_FIELD_NAME = "importDate";
 const RECORD_NAME = "requests";
-const MODAL_CONTEXT_FIELD_NAME = "igoRequestId";
 
 export function RequestsPage() {
   const [userSearchVal, setUserSearchVal] = useState<string>("");
@@ -93,7 +93,7 @@ export function RequestsPage() {
       {hasParams && (
         <SamplesModal
           sampleColumnDefs={sampleColDefs}
-          contextFieldName={MODAL_CONTEXT_FIELD_NAME}
+          contextFieldName={ROUTE_PARAMS.requests}
           parentRecordName={RECORD_NAME}
         />
       )}

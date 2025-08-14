@@ -1,11 +1,7 @@
 import { Dispatch, ReactNode, SetStateAction, useRef, useState } from "react";
 import { AgGridReact as AgGridReactType } from "ag-grid-react/lib/agGridReact";
 import { useNavigate, useParams } from "react-router-dom";
-import {
-  POLLING_INTERVAL,
-  SampleChange,
-  sampleColDefs,
-} from "../shared/helpers";
+import { POLLING_INTERVAL, SampleChange } from "../shared/helpers";
 import {
   DashboardSample,
   useDashboardSamplesLazyQuery,
@@ -30,6 +26,7 @@ import { DataGrid } from "./DataGrid";
 import { DownloadModal2 } from "./DownloadModal2";
 import styles from "./records.module.scss";
 import { ColDef } from "ag-grid-community";
+import { ROUTE_PARAMS } from "../config";
 
 const QUERY_NAME = "dashboardSamples";
 const INTIAL_SORT_FIELD_NAME = "importDate";
@@ -38,7 +35,7 @@ const PHI_FIELDS = new Set(["sequencingDate"]);
 interface SamplesModalProps {
   sampleColumnDefs: Array<ColDef>;
   contextFieldName: string;
-  parentRecordName: string;
+  parentRecordName: keyof typeof ROUTE_PARAMS;
 }
 
 export function SamplesModal({
@@ -48,8 +45,7 @@ export function SamplesModal({
 }: SamplesModalProps) {
   const [userSearchVal, setUserSearchVal] = useState<string>("");
   const [columnDefs, setColumnDefs] = useState(sampleColumnDefs);
-  const params = useParams();
-
+  const parentRecordId = useParams()[ROUTE_PARAMS[parentRecordName]];
   const gridRef = useRef<AgGridReactType<DashboardSample>>(null);
 
   const {
@@ -66,7 +62,7 @@ export function SamplesModal({
     contexts: [
       {
         fieldName: contextFieldName,
-        values: [params[contextFieldName] || ""],
+        values: [parentRecordId!],
       },
     ],
     queryName: QUERY_NAME,
@@ -97,7 +93,10 @@ export function SamplesModal({
   const { isDownloading, handleDownload, getRenderedData } =
     useDownload<DashboardSample>({
       gridRef,
-      downloadFileName: `request_${Object.values(params)[0]}_samples`,
+      downloadFileName: `${parentRecordName.slice(
+        0,
+        -1
+      )}_${parentRecordId}_samples`,
       fetchMore,
       userSearchVal,
       recordCount,
@@ -124,7 +123,7 @@ export function SamplesModal({
   }
 
   return (
-    <ModalContainer
+    <ModalContainerWithClosingWarning
       changes={changes}
       setChanges={setChanges}
       parentRecordName={parentRecordName}
@@ -175,25 +174,25 @@ export function SamplesModal({
       />
 
       <DownloadModal2 show={isDownloading} />
-    </ModalContainer>
+    </ModalContainerWithClosingWarning>
   );
 }
 
 interface ModalContainerProps {
   changes: Array<SampleChange>;
   setChanges: Dispatch<SetStateAction<Array<SampleChange>>>;
-  parentRecordName: string;
+  parentRecordName: keyof typeof ROUTE_PARAMS;
   children: ReactNode;
 }
 
-function ModalContainer({
+function ModalContainerWithClosingWarning({
   changes,
   setChanges,
   parentRecordName,
   children,
 }: ModalContainerProps) {
   const navigate = useNavigate();
-  const params = useParams();
+  const parentRecordId = useParams()[ROUTE_PARAMS[parentRecordName]];
   const [showClosingWarning, setShowClosingWarning] = useState(false);
 
   function handleModalClose() {
@@ -219,9 +218,10 @@ function ModalContainer({
       {/* Modal for displaying the data grid */}
       <Modal show={true} dialogClassName="modal-90w" onHide={handleModalClose}>
         <Modal.Header closeButton>
-          <Heading>{`Viewing ${parentRecordName.slice(0, -1)} ${
-            Object.values(params)[0]
-          }'s samples`}</Heading>
+          <Heading>{`Viewing ${parentRecordName.slice(
+            0,
+            -1
+          )} ${parentRecordId}'s samples`}</Heading>
         </Modal.Header>
         <Modal.Body>
           <div className={`${styles.popupHeight} d-flex flex-column`}>
