@@ -23,10 +23,6 @@ import { MainLayout } from "../../shared/components/MainLayout";
 const QUERY_NAME = "dashboardRequests";
 const INITIAL_SORT_FIELD_NAME = "importDate";
 const RECORD_NAME = "requests";
-
-const MODAL_QUERY_NAME = "dashboardSamples";
-const MODAL_INTIAL_SORT_FIELD_NAME = "importDate";
-const MODAL_PHI_FIELDS = new Set(["sequencingDate"]);
 const MODAL_CONTEXT_FIELD_NAME = "igoRequestId";
 
 export function RequestsPage() {
@@ -65,7 +61,7 @@ export function RequestsPage() {
 
   return (
     <MainLayout>
-      <Heading>Requests</Heading>
+      <Heading>{RECORD_NAME}</Heading>
 
       <Toolbarr>
         <Col />
@@ -96,9 +92,6 @@ export function RequestsPage() {
 
       {hasParams && (
         <SamplesModal
-          queryName={MODAL_QUERY_NAME}
-          initialSortFieldName={MODAL_INTIAL_SORT_FIELD_NAME}
-          phiFields={MODAL_PHI_FIELDS}
           contextFieldName={MODAL_CONTEXT_FIELD_NAME}
           parentRecordName={RECORD_NAME}
         />

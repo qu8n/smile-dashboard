@@ -51,7 +51,7 @@ import { handleAgGridPaste } from "../utils/handleAgGridPaste";
 import { Form } from "react-bootstrap";
 import { Tooltip } from "@material-ui/core";
 import InfoIcon from "@material-ui/icons/InfoOutlined";
-import { PHI_WARNING } from "../pages/patients/PatientsPage";
+import { PHI_WARNING } from "../pages/patients/PatientsPage_old";
 
 const POLLING_INTERVAL = 5000; // 5s
 const POLLING_PAUSE_AFTER_UPDATE = 12000; // 12s

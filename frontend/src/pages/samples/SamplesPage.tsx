@@ -32,7 +32,7 @@ import { MainLayout } from "../../shared/components/MainLayout";
 
 const QUERY_NAME = "dashboardSamples";
 const INITIAL_SORT_FIELD_NAME = "importDate";
-const DOWNLOAD_FILE_NAME = "samples";
+const RECORD_NAME = "samples";
 const PHI_FIELDS = new Set(["sequencingDate"]);
 
 export function SamplesPage() {
@@ -85,7 +85,7 @@ export function SamplesPage() {
   const { isDownloading, handleDownload, getRenderedData } =
     useDownload<DashboardSample>({
       gridRef,
-      downloadFileName: DOWNLOAD_FILE_NAME,
+      downloadFileName: RECORD_NAME,
       fetchMore,
       userSearchVal,
       recordCount,
@@ -122,7 +122,7 @@ export function SamplesPage() {
 
   return (
     <MainLayout>
-      <Heading>Samples</Heading>
+      <Heading>{RECORD_NAME}</Heading>
 
       <Toolbarr>
         <Col>

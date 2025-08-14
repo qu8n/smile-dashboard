@@ -120,5 +120,5 @@ export const phiModeSwitchTooltipContent =
   "Turn on this switch to return samples' sequencing dates in the results." +
   " The table will display sequencing dates only after you (1) have logged" +
   " in and (2) just performed a search with specific DMP Sample IDs. Turning" +
-  " on this switch for the first time will prompt you to log in if you are" +
+  " on this switch for the first time will prompt you to log in if you have" +
   " not already.";

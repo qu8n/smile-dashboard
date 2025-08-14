@@ -28,6 +28,7 @@ type DataGridPropsBase = {
 };
 
 export type DataGridProps = DataGridPropsBase &
+  // Ensure that either all editing props are used or none are
   (EditableGridProps | NonEditableGridProps);
 
 export function DataGrid({
@@ -40,7 +41,7 @@ export function DataGrid({
 }: DataGridProps) {
   const navigate = useNavigate();
   return (
-    <div className={`ag-theme-alpine flex-grow-1`} onPaste={handlePaste}>
+    <div className="ag-theme-alpine flex-grow-1" onPaste={handlePaste}>
       <AgGridReact
         ref={gridRef}
         rowModelType="serverSide"
@@ -49,25 +50,16 @@ export function DataGrid({
         columnDefs={columnDefs}
         defaultColDef={defaultColDef}
         enableRangeSelection={true}
-        onGridReady={(params) => params.api.sizeColumnsToFit()}
         onFirstDataRendered={(params) => params.columnApi.autoSizeAllColumns()}
-        // TODO: test that we can remove. Samples tabs change cols but we fetch all data at once
-        // Why should we refresh data on column change?
-        // Currently used for the initial data fetch when columns are set programmatically
-        // and Samples page "tab" changes
-        //
         onGridColumnsChanged={handleGridColumnsChanged}
         context={{
           getChanges: () => changes,
           navigateFunction: navigate,
         }}
+        // TODO: put this obj somewhere more appropriate
         rowClassRules={{
-          unlocked: function (params) {
-            return params.data?.revisable === true;
-          },
-          locked: function (params) {
-            return params.data?.revisable === false;
-          },
+          unlocked: (params) => params.data?.revisable === true,
+          locked: (params) => params.data?.revisable === false,
         }}
         onCellEditRequest={handleCellEditRequest}
         readOnlyEdit={true}

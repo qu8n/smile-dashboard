@@ -30,18 +30,16 @@ import { DataGrid } from "./DataGrid";
 import { DownloadModal2 } from "./DownloadModal2";
 import styles from "./records.module.scss";
 
+const QUERY_NAME = "dashboardSamples";
+const INTIAL_SORT_FIELD_NAME = "importDate";
+const PHI_FIELDS = new Set(["sequencingDate"]);
+
 interface SamplesModalProps {
-  queryName: string;
-  initialSortFieldName: string;
-  phiFields: Set<string>;
   contextFieldName: string;
   parentRecordName: string;
 }
 
 export function SamplesModal({
-  queryName,
-  initialSortFieldName,
-  phiFields,
   contextFieldName,
   parentRecordName,
 }: SamplesModalProps) {
@@ -68,8 +66,8 @@ export function SamplesModal({
         values: [params[contextFieldName] || ""],
       },
     ],
-    queryName,
-    initialSortFieldName,
+    queryName: QUERY_NAME,
+    initialSortFieldName: INTIAL_SORT_FIELD_NAME,
     gridRef,
     pollInterval: POLLING_INTERVAL,
     userSearchVal,
@@ -89,7 +87,7 @@ export function SamplesModal({
     gridRef,
     startPolling,
     stopPolling,
-    samples: data?.[queryName],
+    samples: data?.[QUERY_NAME],
     refreshData,
   });
 
@@ -100,7 +98,7 @@ export function SamplesModal({
       fetchMore,
       userSearchVal,
       recordCount,
-      queryName,
+      queryName: QUERY_NAME,
     });
 
   const downloadOptions = buildDownloadOptions({
@@ -110,7 +108,7 @@ export function SamplesModal({
 
   const { showPhiColumnsOnInitialPhiSearch } = useTogglePhiColumnsVisibility({
     setColumnDefs,
-    phiFields,
+    phiFields: PHI_FIELDS,
   });
 
   function handleSearch() {
