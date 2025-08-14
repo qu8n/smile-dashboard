@@ -1,11 +1,16 @@
 import { Form } from "react-bootstrap";
 import InfoIcon from "@material-ui/icons/InfoOutlined";
 import { usePhiEnabled } from "../contexts/PhiEnabledContext";
-import { ReactNode } from "react";
-import { CustomTooltip } from "../shared/components/CustomToolTip";
+import { ChangeEvent } from "react";
+import { CustomTooltip } from "../components/CustomToolTip";
 
-export function PhiModeSwitch({ children }: { children: ReactNode }) {
+export function PhiModeSwitch({ children }: { children: string }) {
   const { phiEnabled, setPhiEnabled } = usePhiEnabled();
+
+  function handleChange(e: ChangeEvent<HTMLInputElement>) {
+    const isPhiEnabled = e.target.checked;
+    setPhiEnabled(isPhiEnabled);
+  }
 
   return (
     <div className="d-flex align-items-center gap-1">
@@ -14,13 +19,7 @@ export function PhiModeSwitch({ children }: { children: ReactNode }) {
         type="switch"
         label="PHI-enabled"
         checked={phiEnabled}
-        onChange={(e) => {
-          const isPhiEnabled = e.target.checked;
-          setPhiEnabled(isPhiEnabled);
-          if (isPhiEnabled) {
-          } else {
-          }
-        }}
+        onChange={handleChange}
       />
       <CustomTooltip
         icon={<InfoIcon style={{ fontSize: 18, color: "grey" }} />}

@@ -7,20 +7,20 @@ import {
   DashboardSample,
   useDashboardCohortsLazyQuery,
 } from "../../generated/graphql";
-import { Heading } from "../../shared/components/Heading";
-import { Toolbarr } from "../../shared/components/Toolbarr";
-import { SearchBar } from "../../shared/components/SearchBar";
-import { buildDownloadOptions } from "./config";
+import { Title } from "../../components/Title";
+import { Toolbar } from "../../components/Toolbar";
+import { SearchBar } from "../../components/SearchBar";
+import { buildDownloadOptions, cohortColDefs } from "./config";
 import { Col } from "react-bootstrap";
 import { ErrorMessage } from "../../components/ErrorMessage";
-import { DownloadButton } from "../../shared/components/DownloadButton";
-import { DownloadModal2 } from "../../components/DownloadModal2";
+import { DownloadButton } from "../../components/DownloadButton";
+import { DownloadModal } from "../../components/DownloadModal";
 import { useDownload } from "../../hooks/useDownload";
-import { MainLayout } from "../../shared/components/MainLayout";
+import { DataGridLayout } from "../../components/DataGridLayout";
 import { useParams } from "react-router-dom";
 import { SamplesModal } from "../../components/SamplesModal";
-import { cohortColDefs, wesSampleColDefs } from "../../shared/helpers";
 import { ROUTE_PARAMS } from "../../config";
+import { wesSampleColDefs } from "../samples/config";
 
 const QUERY_NAME = "dashboardCohorts";
 const INITIAL_SORT_FIELD_NAME = "initialCohortDeliveryDate";
@@ -41,7 +41,7 @@ export function CohortsPage() {
       userSearchVal,
     });
 
-  const { isDownloading, handleDownload, getRenderedData } =
+  const { isDownloading, handleDownload, getCurrentData } =
     useDownload<DashboardCohort>({
       gridRef,
       downloadFileName: RECORD_NAME,
@@ -52,8 +52,8 @@ export function CohortsPage() {
     });
 
   const downloadOptions = buildDownloadOptions({
-    getRenderedData,
-    columnDefs: cohortColDefs,
+    getCurrentData,
+    currentColumnDefs: cohortColDefs,
   });
 
   if (error) {
@@ -61,10 +61,10 @@ export function CohortsPage() {
   }
 
   return (
-    <MainLayout>
-      <Heading>{RECORD_NAME}</Heading>
+    <DataGridLayout>
+      <Title>{RECORD_NAME}</Title>
 
-      <Toolbarr>
+      <Toolbar>
         <Col />
 
         <Col md="auto" className="d-flex gap-3 align-items-center">
@@ -83,7 +83,7 @@ export function CohortsPage() {
             handleDownload={handleDownload}
           />
         </Col>
-      </Toolbarr>
+      </Toolbar>
 
       <DataGrid
         gridRef={gridRef}
@@ -99,7 +99,7 @@ export function CohortsPage() {
         />
       )}
 
-      <DownloadModal2 show={isDownloading} />
-    </MainLayout>
+      {isDownloading && <DownloadModal />}
+    </DataGridLayout>
   );
 }

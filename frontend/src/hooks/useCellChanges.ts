@@ -1,5 +1,4 @@
 import { RefObject, ClipboardEvent, useState } from "react";
-import { formatDate, SampleChange } from "../shared/helpers";
 import { useUserEmail } from "../contexts/UserEmailContext";
 import { useWarningModal } from "../contexts/WarningContext";
 import {
@@ -15,6 +14,9 @@ import {
   useUpdateDashboardSamplesMutation,
 } from "../generated/graphql";
 import { handleAgGridPaste } from "../utils/handleAgGridPaste";
+import { SampleChange } from "../types";
+import { formatDate } from "../utils/dateFormatters";
+import { isInvalidCostCenter } from "../utils/agGrid";
 
 const POLLING_PAUSE_AFTER_UPDATE = 12000; // 12s
 export const INVALID_COST_CENTER_WARNING =
@@ -251,13 +253,6 @@ export function useCellChanges({
     setShowUpdateModal,
     handleSubmitUpdates,
   };
-}
-
-function isInvalidCostCenter(fieldName: string, value: string) {
-  if (!value || fieldName !== "costCenter") return false;
-  if (value.length !== 11) return true;
-  const validCostCenter = new RegExp("^\\d{5}/\\d{5}$");
-  return !validCostCenter.test(value);
 }
 
 type ChangesByPrimaryId = {

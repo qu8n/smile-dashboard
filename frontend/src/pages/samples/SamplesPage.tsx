@@ -7,9 +7,9 @@ import {
   DashboardSample,
   useDashboardSamplesLazyQuery,
 } from "../../generated/graphql";
-import { Heading } from "../../shared/components/Heading";
-import { Toolbarr } from "../../shared/components/Toolbarr";
-import { SearchBar } from "../../shared/components/SearchBar";
+import { Title } from "../../components/Title";
+import { Toolbar } from "../../components/Toolbar";
+import { SearchBar } from "../../components/SearchBar";
 import {
   buildDownloadOptions,
   filterButtonOptions,
@@ -19,16 +19,16 @@ import {
 import { Col } from "react-bootstrap";
 import { FilterButtons } from "../../components/FilterButtons";
 import { ErrorMessage } from "../../components/ErrorMessage";
-import { DownloadButton } from "../../shared/components/DownloadButton";
-import { DownloadModal2 } from "../../components/DownloadModal2";
+import { DownloadButton } from "../../components/DownloadButton";
+import { DownloadModal } from "../../components/DownloadModal";
 import { useDownload } from "../../hooks/useDownload";
 import { ColDef } from "ag-grid-community";
 import { PhiModeSwitch } from "../../components/PhiModeSwitch";
 import { useTogglePhiColumnsVisibility } from "../../hooks/useTogglePhiColumns";
-import { POLLING_INTERVAL } from "../../shared/helpers";
 import { useCellChanges } from "../../hooks/useCellChanges";
 import { CellChangesConfirmation } from "../../components/CellChangesConfirmation";
-import { MainLayout } from "../../shared/components/MainLayout";
+import { DataGridLayout } from "../../components/DataGridLayout";
+import { POLL_INTERVAL } from "../../config";
 
 const QUERY_NAME = "dashboardSamples";
 const INITIAL_SORT_FIELD_NAME = "importDate";
@@ -61,7 +61,7 @@ export function SamplesPage() {
     queryName: QUERY_NAME,
     initialSortFieldName: INITIAL_SORT_FIELD_NAME,
     gridRef,
-    pollInterval: POLLING_INTERVAL,
+    pollInterval: POLL_INTERVAL,
     userSearchVal,
   });
 
@@ -82,7 +82,7 @@ export function SamplesPage() {
     refreshData,
   });
 
-  const { isDownloading, handleDownload, getRenderedData } =
+  const { isDownloading, handleDownload, getCurrentData } =
     useDownload<DashboardSample>({
       gridRef,
       downloadFileName: RECORD_NAME,
@@ -93,8 +93,8 @@ export function SamplesPage() {
     });
 
   const downloadOptions = buildDownloadOptions({
-    getRenderedData,
-    columnDefs,
+    getCurrentData,
+    currentColumnDefs: columnDefs,
   });
 
   function handleFilterButtonClick(filterButtonLabel: string) {
@@ -121,14 +121,14 @@ export function SamplesPage() {
   }
 
   return (
-    <MainLayout>
-      <Heading>{RECORD_NAME}</Heading>
+    <DataGridLayout>
+      <Title>{RECORD_NAME}</Title>
 
-      <Toolbarr>
+      <Toolbar>
         <Col>
           <FilterButtons
-            buttonOptions={filterButtonOptions}
-            onButtonClick={handleFilterButtonClick}
+            options={filterButtonOptions}
+            onClick={handleFilterButtonClick}
           >
             {filterButtonsTooltipContent}
           </FilterButtons>
@@ -165,7 +165,7 @@ export function SamplesPage() {
             handleDownload={handleDownload}
           />
         </Col>
-      </Toolbarr>
+      </Toolbar>
 
       <DataGrid
         gridRef={gridRef}
@@ -176,7 +176,7 @@ export function SamplesPage() {
         handlePaste={handlePaste}
       />
 
-      <DownloadModal2 show={isDownloading} />
-    </MainLayout>
+      {isDownloading && <DownloadModal />}
+    </DataGridLayout>
   );
 }

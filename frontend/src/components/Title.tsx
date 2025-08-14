@@ -1,8 +1,7 @@
 import { Col, Row } from "react-bootstrap";
-import { buildSentenceCaseString } from "../../utils/stringBuilders";
+import { buildSentenceCaseString } from "../utils/stringBuilders";
 
-// TODO: change this back to Title.tsx
-export function Heading({ children }: { children: string }) {
+export function Title({ children }: { children: string }) {
   return (
     <Row className="pagetitle">
       <Col>

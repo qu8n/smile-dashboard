@@ -1,10 +1,24 @@
 import { RefObject, useState } from "react";
-import { DownloadOption } from "../shared/components/DownloadButton";
 import { buildTsvString } from "../utils/stringBuilders";
 import jsdownload from "js-file-download";
 import { AgGridReact as AgGridReactType } from "ag-grid-react/lib/agGridReact";
 import { QueryResult } from "@apollo/client";
 import { parseUserSearchVal } from "../utils/parseSearchQueries";
+import { ColDef } from "ag-grid-community";
+
+export interface DownloadOption {
+  buttonLabel: string;
+  columnDefsForDownload: Array<ColDef>;
+  /**
+   * Async function that fetches the data to be downloaded.
+   * Usage: pass in `getCurrentData` from the `useDownload` hook to fetch the
+   * current search results on the page, or create your own function to fetch
+   * data for other purposes.
+   */
+  dataGetter: () => Promise<Array<any>>;
+  tooltipContent?: string;
+  disabled?: boolean;
+}
 
 interface UseDownloadProps {
   gridRef: RefObject<AgGridReactType>;
@@ -30,7 +44,7 @@ export function useDownload<T>({
     const data = await downloadOption.dataGetter();
     const tsvString = buildTsvString(
       data,
-      downloadOption.columnDefs,
+      downloadOption.columnDefsForDownload,
       gridRef.current?.columnApi.getAllGridColumns()
     );
     jsdownload(tsvString, `${downloadFileName}.tsv`);
@@ -41,7 +55,7 @@ export function useDownload<T>({
    * Used by DownloadOption.dataGetter to fetch all data for the
    * current search value.
    */
-  async function getRenderedData(): Promise<Array<T>> {
+  async function getCurrentData(): Promise<Array<T>> {
     const { data } = await fetchMore<Record<string, Array<T>>>({
       variables: {
         searchVals: parseUserSearchVal(userSearchVal),
@@ -55,6 +69,6 @@ export function useDownload<T>({
   return {
     isDownloading,
     handleDownload,
-    getRenderedData,
+    getCurrentData,
   };
 }

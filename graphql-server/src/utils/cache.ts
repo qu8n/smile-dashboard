@@ -22,7 +22,7 @@ const ONCOTREE_CACHE_TTL = 86400; // 1 day
 const SAMPLES_CACHE_TTL = 3600; // 1 hour
 
 // Variables to keep in sync with the frontend
-const CACHE_BLOCK_SIZE = 500; // from helpers.tsx
+const CACHE_BLOCK_SIZE = 500;
 const SAMPLES_DEFAULT_SORT = {
   colId: "importDate",
   sort: "desc",

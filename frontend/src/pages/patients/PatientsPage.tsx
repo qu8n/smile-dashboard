@@ -6,23 +6,27 @@ import {
   DashboardPatient,
   useDashboardPatientsLazyQuery,
 } from "../../generated/graphql";
-import { Heading } from "../../shared/components/Heading";
-import { Toolbarr } from "../../shared/components/Toolbarr";
-import { SearchBar } from "../../shared/components/SearchBar";
-import { buildDownloadOptions, phiModeSwitchTooltipContent } from "./config";
+import { Title } from "../../components/Title";
+import { Toolbar } from "../../components/Toolbar";
+import { SearchBar } from "../../components/SearchBar";
+import {
+  buildDownloadOptions,
+  patientColDefs,
+  phiModeSwitchTooltipContent,
+} from "./config";
 import { Col } from "react-bootstrap";
 import { ErrorMessage } from "../../components/ErrorMessage";
-import { DownloadButton } from "../../shared/components/DownloadButton";
-import { DownloadModal2 } from "../../components/DownloadModal2";
+import { DownloadButton } from "../../components/DownloadButton";
+import { DownloadModal } from "../../components/DownloadModal";
 import { useDownload } from "../../hooks/useDownload";
 import { ColDef } from "ag-grid-community";
 import { PhiModeSwitch } from "../../components/PhiModeSwitch";
 import { useTogglePhiColumnsVisibility } from "../../hooks/useTogglePhiColumns";
-import { MainLayout } from "../../shared/components/MainLayout";
+import { DataGridLayout } from "../../components/DataGridLayout";
 import { useParams } from "react-router-dom";
 import { SamplesModal } from "../../components/SamplesModal";
-import { patientColDefs, sampleColDefs } from "../../shared/helpers";
 import { ROUTE_PARAMS } from "../../config";
+import { sampleColDefs } from "../samples/config";
 
 const QUERY_NAME = "dashboardPatients";
 const INITIAL_SORT_FIELD_NAME = "importDate";
@@ -45,7 +49,7 @@ export function PatientsPage() {
       userSearchVal,
     });
 
-  const { isDownloading, handleDownload, getRenderedData } =
+  const { isDownloading, handleDownload, getCurrentData } =
     useDownload<DashboardPatient>({
       gridRef,
       downloadFileName: RECORD_NAME,
@@ -56,8 +60,8 @@ export function PatientsPage() {
     });
 
   const downloadOptions = buildDownloadOptions({
-    getRenderedData,
-    columnDefs,
+    getCurrentData,
+    currentColumnDefs: columnDefs,
   });
 
   const { showPhiColumnsOnInitialPhiSearch } = useTogglePhiColumnsVisibility({
@@ -75,10 +79,10 @@ export function PatientsPage() {
   }
 
   return (
-    <MainLayout>
-      <Heading>{RECORD_NAME}</Heading>
+    <DataGridLayout>
+      <Title>{RECORD_NAME}</Title>
 
-      <Toolbarr>
+      <Toolbar>
         <Col />
 
         <Col md="auto" className="d-flex gap-3 align-items-center">
@@ -101,7 +105,7 @@ export function PatientsPage() {
             handleDownload={handleDownload}
           />
         </Col>
-      </Toolbarr>
+      </Toolbar>
 
       <DataGrid
         gridRef={gridRef}
@@ -117,7 +121,7 @@ export function PatientsPage() {
         />
       )}
 
-      <DownloadModal2 show={isDownloading} />
-    </MainLayout>
+      {isDownloading && <DownloadModal />}
+    </DataGridLayout>
   );
 }

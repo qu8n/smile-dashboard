@@ -1,5 +1,3 @@
-// TODO: break these up into separate config files to Requests and Samples pages
-
 /**
  * Row-level data type for the validation report modal of a Sample/Request.
  */
@@ -24,7 +22,7 @@ export type StatusMap = {
   [key: string]: StatusItem;
 };
 
-export function getActionItemForMissingIgoField(fieldName: string): string {
+function getActionItemForMissingIgoField(fieldName: string): string {
   return (
     `PMs contact IGO to fix and redeliver, let SMILE know once ${fieldName} is updated by emailing` +
     ` them or clicking 'Mark delivery' button`

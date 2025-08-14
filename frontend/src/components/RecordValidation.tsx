@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction, useState } from "react";
 import styles from "./records.module.scss";
 import { DashboardRequest } from "../generated/graphql";
-import { CustomTooltip } from "../shared/components/CustomToolTip";
+import { CustomTooltip } from "../components/CustomToolTip";
 import WarningIcon from "@material-ui/icons/Warning";
 import { Button, Modal } from "react-bootstrap";
 import { ColDef } from "ag-grid-community";
@@ -13,7 +13,7 @@ import {
   StatusItem,
   StatusMap,
 } from "../configs/recordValidationMaps";
-import { multiLineColDef } from "../shared/helpers";
+import { multiLineColDef } from "../config";
 
 type ModalTitle = `Error report for ${string}`;
 

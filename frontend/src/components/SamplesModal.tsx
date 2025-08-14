@@ -1,7 +1,6 @@
 import { Dispatch, ReactNode, SetStateAction, useRef, useState } from "react";
 import { AgGridReact as AgGridReactType } from "ag-grid-react/lib/agGridReact";
 import { useNavigate, useParams } from "react-router-dom";
-import { POLLING_INTERVAL, SampleChange } from "../shared/helpers";
 import {
   DashboardSample,
   useDashboardSamplesLazyQuery,
@@ -15,18 +14,19 @@ import {
 } from "../pages/samples/config";
 import { useTogglePhiColumnsVisibility } from "../hooks/useTogglePhiColumns";
 import { ErrorMessage } from "./ErrorMessage";
-import { Heading } from "../shared/components/Heading";
-import { Toolbarr } from "../shared/components/Toolbarr";
+import { Title } from "../components/Title";
+import { Toolbar } from "../components/Toolbar";
 import { Button, Col, Modal } from "react-bootstrap";
-import { SearchBar } from "../shared/components/SearchBar";
+import { SearchBar } from "../components/SearchBar";
 import { PhiModeSwitch } from "./PhiModeSwitch";
 import { CellChangesConfirmation } from "./CellChangesConfirmation";
-import { DownloadButton } from "../shared/components/DownloadButton";
+import { DownloadButton } from "../components/DownloadButton";
 import { DataGrid } from "./DataGrid";
-import { DownloadModal2 } from "./DownloadModal2";
+import { DownloadModal } from "./DownloadModal";
 import styles from "./records.module.scss";
 import { ColDef } from "ag-grid-community";
-import { ROUTE_PARAMS } from "../config";
+import { POLL_INTERVAL, ROUTE_PARAMS } from "../config";
+import { SampleChange } from "../types";
 
 const QUERY_NAME = "dashboardSamples";
 const INTIAL_SORT_FIELD_NAME = "importDate";
@@ -68,7 +68,7 @@ export function SamplesModal({
     queryName: QUERY_NAME,
     initialSortFieldName: INTIAL_SORT_FIELD_NAME,
     gridRef,
-    pollInterval: POLLING_INTERVAL,
+    pollInterval: POLL_INTERVAL,
     userSearchVal,
   });
 
@@ -90,7 +90,7 @@ export function SamplesModal({
     refreshData,
   });
 
-  const { isDownloading, handleDownload, getRenderedData } =
+  const { isDownloading, handleDownload, getCurrentData } =
     useDownload<DashboardSample>({
       gridRef,
       downloadFileName: `${parentRecordName.slice(
@@ -104,8 +104,8 @@ export function SamplesModal({
     });
 
   const downloadOptions = buildDownloadOptions({
-    getRenderedData,
-    columnDefs,
+    getCurrentData,
+    currentColumnDefs: columnDefs,
   });
 
   const { showPhiColumnsOnInitialPhiSearch } = useTogglePhiColumnsVisibility({
@@ -128,7 +128,7 @@ export function SamplesModal({
       setChanges={setChanges}
       parentRecordName={parentRecordName}
     >
-      <Toolbarr>
+      <Toolbar>
         <Col />
 
         <Col md="auto" className="d-flex gap-3 align-items-center">
@@ -162,7 +162,7 @@ export function SamplesModal({
             handleDownload={handleDownload}
           />
         </Col>
-      </Toolbarr>
+      </Toolbar>
 
       <DataGrid
         gridRef={gridRef}
@@ -173,7 +173,7 @@ export function SamplesModal({
         handlePaste={handlePaste}
       />
 
-      <DownloadModal2 show={isDownloading} />
+      {isDownloading && <DownloadModal />}
     </ModalContainerWithClosingWarning>
   );
 }
@@ -218,10 +218,10 @@ function ModalContainerWithClosingWarning({
       {/* Modal for displaying the data grid */}
       <Modal show={true} dialogClassName="modal-90w" onHide={handleModalClose}>
         <Modal.Header closeButton>
-          <Heading>{`Viewing ${parentRecordName.slice(
+          <Title>{`Viewing ${parentRecordName.slice(
             0,
             -1
-          )} ${parentRecordId}'s samples`}</Heading>
+          )} ${parentRecordId}'s samples`}</Title>
         </Modal.Header>
         <Modal.Body>
           <div className={`${styles.popupHeight} d-flex flex-column`}>
@@ -240,12 +240,13 @@ function ModalContainerWithClosingWarning({
         >
           <Modal.Header closeButton>
             <Modal.Title id="contained-modal-title-vcenter">
-              Are you sure?
+              Are you sure you want to exit?
             </Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <p>
-              You have unsaved changes. Are you sure you want to exit this view?
+              Exiting this view will discard all your unsubmitted changes. Click
+              "Cancel" to remain in this samples view.
             </p>
           </Modal.Body>
           <Modal.Footer>

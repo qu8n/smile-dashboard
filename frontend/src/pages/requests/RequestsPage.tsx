@@ -6,20 +6,20 @@ import {
   DashboardRequest,
   useDashboardRequestsLazyQuery,
 } from "../../generated/graphql";
-import { Heading } from "../../shared/components/Heading";
-import { Toolbarr } from "../../shared/components/Toolbarr";
-import { SearchBar } from "../../shared/components/SearchBar";
-import { buildDownloadOptions } from "./config";
+import { Title } from "../../components/Title";
+import { Toolbar } from "../../components/Toolbar";
+import { SearchBar } from "../../components/SearchBar";
+import { buildDownloadOptions, requestColDefs } from "./config";
 import { Col } from "react-bootstrap";
 import { ErrorMessage } from "../../components/ErrorMessage";
-import { DownloadButton } from "../../shared/components/DownloadButton";
-import { DownloadModal2 } from "../../components/DownloadModal2";
+import { DownloadButton } from "../../components/DownloadButton";
+import { DownloadModal } from "../../components/DownloadModal";
 import { useDownload } from "../../hooks/useDownload";
-import { requestColDefs, sampleColDefs } from "../../shared/helpers";
 import { useParams } from "react-router-dom";
 import { SamplesModal } from "../../components/SamplesModal";
-import { MainLayout } from "../../shared/components/MainLayout";
+import { DataGridLayout } from "../../components/DataGridLayout";
 import { ROUTE_PARAMS } from "../../config";
+import { sampleColDefs } from "../samples/config";
 
 const QUERY_NAME = "dashboardRequests";
 const INITIAL_SORT_FIELD_NAME = "importDate";
@@ -40,7 +40,7 @@ export function RequestsPage() {
       userSearchVal,
     });
 
-  const { isDownloading, handleDownload, getRenderedData } =
+  const { isDownloading, handleDownload, getCurrentData } =
     useDownload<DashboardRequest>({
       gridRef,
       downloadFileName: RECORD_NAME,
@@ -51,8 +51,8 @@ export function RequestsPage() {
     });
 
   const downloadOptions = buildDownloadOptions({
-    getRenderedData,
-    requestColDefs,
+    getCurrentData,
+    currentColumnDefs: requestColDefs,
   });
 
   if (error) {
@@ -60,10 +60,10 @@ export function RequestsPage() {
   }
 
   return (
-    <MainLayout>
-      <Heading>{RECORD_NAME}</Heading>
+    <DataGridLayout>
+      <Title>{RECORD_NAME}</Title>
 
-      <Toolbarr>
+      <Toolbar>
         <Col />
 
         <Col md="auto" className="d-flex gap-3 align-items-center">
@@ -82,7 +82,7 @@ export function RequestsPage() {
             handleDownload={handleDownload}
           />
         </Col>
-      </Toolbarr>
+      </Toolbar>
 
       <DataGrid
         gridRef={gridRef}
@@ -98,7 +98,7 @@ export function RequestsPage() {
         />
       )}
 
-      <DownloadModal2 show={isDownloading} />
-    </MainLayout>
+      {isDownloading && <DownloadModal />}
+    </DataGridLayout>
   );
 }

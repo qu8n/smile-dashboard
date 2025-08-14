@@ -6,12 +6,12 @@ import "ag-grid-enterprise";
 import styles from "./records.module.scss";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
-import { SampleChange } from "../shared/helpers";
 import {
   DashboardSampleInput,
   DashboardSamplesQuery,
   useUpdateDashboardSamplesMutation,
 } from "../generated/graphql";
+import { SampleChange } from "../types";
 
 const columnDefs = [
   { field: "primaryId", rowGroup: true, hide: true },
@@ -27,7 +27,7 @@ type ChangesByPrimaryId = {
 };
 
 interface UpdateModalProps {
-  changes: SampleChange[];
+  changes: Array<SampleChange>;
   onSuccess: () => void;
   onHide: () => void;
   samples: DashboardSamplesQuery["dashboardSamples"];

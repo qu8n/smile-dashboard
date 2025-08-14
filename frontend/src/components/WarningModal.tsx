@@ -4,17 +4,14 @@ import Modal from "react-bootstrap/Modal";
 import { useWarningModal } from "../contexts/WarningContext";
 
 export function WarningModal() {
-  const {
-    warningModalContent: warningContent,
-    setWarningModalContent: setWarningContent,
-  } = useWarningModal();
+  const { warningModalContent, setWarningModalContent } = useWarningModal();
 
   const handleHide = useCallback(() => {
-    setWarningContent(undefined);
-  }, [setWarningContent]);
+    setWarningModalContent(undefined);
+  }, [setWarningModalContent]);
 
   useEffect(() => {
-    if (warningContent === undefined) return;
+    if (warningModalContent === undefined) return;
     function handleKeyDown(e: KeyboardEvent) {
       if (e.key === "Enter") {
         e.preventDefault();
@@ -25,11 +22,11 @@ export function WarningModal() {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [warningContent, handleHide]);
+  }, [warningModalContent, handleHide]);
 
   return (
     <Modal
-      show={!!warningContent}
+      show={!!warningModalContent}
       onHide={handleHide}
       aria-labelledby="contained-modal-title-vcenter"
       centered
@@ -38,7 +35,7 @@ export function WarningModal() {
         <Modal.Title id="contained-modal-title-vcenter">Warning</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <p>{warningContent}</p>
+        <p>{warningModalContent}</p>
       </Modal.Body>
       <Modal.Footer>
         <Button onClick={handleHide}>Ok</Button>

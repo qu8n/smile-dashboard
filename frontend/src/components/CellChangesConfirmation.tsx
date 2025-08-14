@@ -1,8 +1,7 @@
 import { Button, Modal } from "react-bootstrap";
-import { formatDate, isValidCostCenter, SampleChange } from "../shared/helpers";
-import { Dispatch, RefObject, SetStateAction, useMemo, useState } from "react";
 import { AgGridReact } from "ag-grid-react/lib/agGridReact";
 import styles from "./records.module.scss";
+import { SampleChange } from "../types";
 
 const updateModalColumnDefs = [
   { field: "primaryId", rowGroup: true, hide: true },
@@ -62,12 +61,11 @@ export function CellChangesConfirmation({
         >
           <Modal.Header closeButton>
             <Modal.Title id="contained-modal-title-vcenter">
-              Are you sure?
+              Confirm your changes
             </Modal.Title>
           </Modal.Header>
 
           <Modal.Body>
-            <p>Please confirm the following updates before submitting:</p>
             <div className="ag-theme-alpine" style={{ height: 350 }}>
               <AgGridReact
                 rowData={changes}
@@ -80,10 +78,10 @@ export function CellChangesConfirmation({
           </Modal.Body>
 
           <Modal.Footer>
-            <Button className={"btn btn-secondary"} onClick={onUpdateModalHide}>
+            <Button className="btn btn-secondary" onClick={onUpdateModalHide}>
               Cancel
             </Button>
-            <Button className={"btn btn-success"} onClick={onSubmitUpdates}>
+            <Button className="btn btn-success" onClick={onSubmitUpdates}>
               Submit Updates
             </Button>
           </Modal.Footer>

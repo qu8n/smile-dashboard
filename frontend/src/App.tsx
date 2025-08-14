@@ -1,7 +1,7 @@
 import { Routes, Route, BrowserRouter } from "react-router-dom";
 import { LoginSuccessPage } from "./pages/auth/LoginSuccessPage";
 import { SamplesPage } from "./pages/samples/SamplesPage";
-import { NavBar } from "./shared/components/NavBar";
+import { NavBar } from "./components/NavBar";
 import { Providers } from "./components/Providers";
 import { WarningModal } from "./components/WarningModal";
 import { RequestsPage } from "./pages/requests/RequestsPage";

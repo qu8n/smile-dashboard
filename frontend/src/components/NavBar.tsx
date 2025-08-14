@@ -1,6 +1,6 @@
 import { Nav } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { useUserEmail } from "../../contexts/UserEmailContext";
+import { useUserEmail } from "../contexts/UserEmailContext";
 
 export function NavBar() {
   const { userEmail, setUserEmail } = useUserEmail();
