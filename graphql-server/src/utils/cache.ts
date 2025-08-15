@@ -354,7 +354,7 @@ export async function updateCacheWithNewSampleUpdates(
     }
   }
 
-  // Re-sort the samples in cache to match frontend's optimistc update flow in SamplesList.tsx
+  // Re-sort the samples in cache to match frontend's optimistc update flow on Samples views
   Object.keys(samplesCache).forEach((cachedSamplesQuery) => {
     samplesCache[cachedSamplesQuery].sort((a, b) => {
       return (

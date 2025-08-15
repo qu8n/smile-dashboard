@@ -1,6 +1,6 @@
 import {
-  AllAnchorSeqDateByPatientIdQuery,
-  AnchorSeqDateByPatientId,
+  AllAnchorSeqDateDataQuery,
+  AnchorSeqDateData,
   DashboardPatient,
   Exact,
   InputMaybe,
@@ -17,29 +17,28 @@ import { DownloadOption } from "../../hooks/useDownload";
 import { BuildDownloadOptionsParamsBase } from "../../types";
 import { LazyQueryExecFunction } from "@apollo/client";
 
-export const allAnchorSeqDateColDefs: Array<ColDef<AnchorSeqDateByPatientId>> =
-  [
-    {
-      field: "MRN",
-      headerName: "Patient MRN",
-    },
-    {
-      field: "DMP_PATIENT_ID",
-      headerName: "DMP Patient ID",
-    },
-    {
-      field: "ANCHOR_SEQUENCING_DATE",
-      headerName: "Anchor Sequencing Date",
-    },
-    {
-      field: "ANCHOR_ONCOTREE_CODE",
-      headerName: "Anchor OncoTree Code",
-    },
-  ];
+export const allAnchorSeqDateColDefs: Array<ColDef<AnchorSeqDateData>> = [
+  {
+    field: "MRN",
+    headerName: "Patient MRN",
+  },
+  {
+    field: "DMP_PATIENT_ID",
+    headerName: "DMP Patient ID",
+  },
+  {
+    field: "ANCHOR_SEQUENCING_DATE",
+    headerName: "Anchor Sequencing Date",
+  },
+  {
+    field: "ANCHOR_ONCOTREE_CODE",
+    headerName: "Anchor OncoTree Code",
+  },
+];
 
 interface AdditionalBuildDownloadOptionsParams {
   queryAllSeqDates: LazyQueryExecFunction<
-    AllAnchorSeqDateByPatientIdQuery,
+    AllAnchorSeqDateDataQuery,
     Exact<{ phiEnabled?: InputMaybe<Scalars["Boolean"]> }>
   >;
   phiEnabled: boolean;
@@ -69,7 +68,7 @@ export function buildDownloadOptions({
         const result = await queryAllSeqDates({
           variables: { phiEnabled: phiEnabled },
         });
-        return result.data!.allAnchorSeqDateByPatientId || [];
+        return result.data!.allAnchorSeqDateData || [];
       },
       disabled: !phiEnabled || !userEmail,
       tooltipContent:
