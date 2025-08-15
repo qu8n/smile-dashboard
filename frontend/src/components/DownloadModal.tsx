@@ -3,7 +3,7 @@ import Spinner from "react-spinkit";
 
 export function DownloadModal() {
   return (
-    <Modal size="sm">
+    <Modal size="sm" show={true}>
       <Modal.Body>
         <div className="d-flex flex-column align-items-center">
           <p>
