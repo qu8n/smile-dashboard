@@ -79,6 +79,8 @@ export function useFetchData({
     (userSearchVal) => {
       return {
         getRows: async (params: IServerSideGetRowsParams) => {
+          setIsLoading(true);
+
           const variables = {
             searchVals: parseUserSearchVal(userSearchVal),
             contexts,
@@ -104,6 +106,9 @@ export function useFetchData({
             .catch((error) => {
               console.error(error);
               params.fail();
+            })
+            .finally(() => {
+              setIsLoading(false);
             });
         },
       } as IServerSideDatasource;
@@ -113,10 +118,8 @@ export function useFetchData({
 
   function refreshData() {
     stopPolling();
-    setIsLoading(true);
     const newDatasource = buildServerSideDatasource(userSearchVal);
     gridRef.current?.api.setServerSideDatasource(newDatasource);
-    setIsLoading(false);
     startPolling();
   }
 
