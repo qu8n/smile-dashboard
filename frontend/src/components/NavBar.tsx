@@ -1,9 +1,11 @@
 import { Nav } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { useUserEmail } from "../contexts/UserEmailContext";
+import { usePhiEnabled } from "../contexts/PhiEnabledContext";
 
 export function NavBar() {
   const { userEmail, setUserEmail } = useUserEmail();
+  const { setPhiEnabled } = usePhiEnabled();
 
   function handleLogout() {
     fetch(`${process.env.REACT_APP_EXPRESS_SERVER_ORIGIN}/auth/logout`, {
@@ -12,6 +14,7 @@ export function NavBar() {
       mode: "no-cors",
     });
     setUserEmail(undefined);
+    setPhiEnabled(false);
   }
 
   return (

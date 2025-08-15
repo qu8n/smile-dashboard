@@ -26,7 +26,7 @@ const INITIAL_SORT_FIELD_NAME = "importDate";
 const RECORD_NAME = "requests";
 
 export function RequestsPage() {
-  const [userSearchVal, setUserSearchVal] = useState<string>("");
+  const [userSearchVal, setUserSearchVal] = useState("");
   const gridRef = useRef<AgGridReactType<DashboardRequest>>(null);
   const hasParams = Object.keys(useParams()).length > 0;
 

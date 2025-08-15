@@ -27,7 +27,7 @@ const INITIAL_SORT_FIELD_NAME = "initialCohortDeliveryDate";
 const RECORD_NAME = "cohorts";
 
 export function CohortsPage() {
-  const [userSearchVal, setUserSearchVal] = useState<string>("");
+  const [userSearchVal, setUserSearchVal] = useState("");
   const gridRef = useRef<AgGridReactType<DashboardSample>>(null);
   const hasParams = Object.keys(useParams()).length > 0;
 

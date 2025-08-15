@@ -37,8 +37,8 @@ const RECORD_NAME = "patients";
 const PHI_FIELDS = new Set(["mrn", "anchorSequencingDate"]);
 
 export function PatientsPage() {
-  const [userSearchVal, setUserSearchVal] = useState<string>("");
-  const [colDefs, setColDefs] = useState<Array<ColDef>>(patientColDefs);
+  const [userSearchVal, setUserSearchVal] = useState("");
+  const [colDefs, setColDefs] = useState(patientColDefs);
   const { phiEnabled } = usePhiEnabled();
   const { userEmail } = useUserEmail();
   const gridRef = useRef<AgGridReactType<DashboardPatient>>(null);
@@ -72,13 +72,14 @@ export function PatientsPage() {
     userEmail,
   });
 
-  const { showPhiColumnsOnInitialPhiSearch } = useTogglePhiColumnsVisibility({
+  const { handlePhiColumnsVisibilityOnSearch } = useTogglePhiColumnsVisibility({
     setColDefs,
     phiFields: PHI_FIELDS,
+    userSearchVal,
   });
 
   function handleSearch() {
-    showPhiColumnsOnInitialPhiSearch();
+    handlePhiColumnsVisibilityOnSearch();
     refreshData();
   }
 

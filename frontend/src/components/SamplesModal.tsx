@@ -42,7 +42,7 @@ export function SamplesModal({
   contextFieldName,
   parentRecordName,
 }: SamplesModalProps) {
-  const [userSearchVal, setUserSearchVal] = useState<string>("");
+  const [userSearchVal, setUserSearchVal] = useState("");
   const [colDefs, setColDefs] = useState(sampleColDefs);
   const parentRecordId = useParams()[ROUTE_PARAMS[parentRecordName]];
   const gridRef = useRef<AgGridReactType<DashboardSample>>(null);
@@ -103,13 +103,14 @@ export function SamplesModal({
     currentColDefs: colDefs,
   });
 
-  const { showPhiColumnsOnInitialPhiSearch } = useTogglePhiColumnsVisibility({
+  const { handlePhiColumnsVisibilityOnSearch } = useTogglePhiColumnsVisibility({
     setColDefs,
     phiFields: PHI_FIELDS,
+    userSearchVal,
   });
 
   function handleSearch() {
-    showPhiColumnsOnInitialPhiSearch();
+    handlePhiColumnsVisibilityOnSearch();
     refreshData();
   }
 

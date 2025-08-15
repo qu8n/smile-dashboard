@@ -26,7 +26,7 @@ const CACHE_BLOCK_SIZE = 500;
 const SAMPLES_DEFAULT_SORT = {
   colId: "importDate",
   sort: "desc",
-} as DashboardRecordSort; // from SamplesList.tsx
+} as DashboardRecordSort;
 const WES_SAMPLE_CONTEXT = [
   {
     fieldName: "genePanel",
@@ -40,7 +40,7 @@ const WES_SAMPLE_CONTEXT = [
       "WholeExomeSequencing",
     ],
   },
-]; // from SamplesPage.tsx
+];
 
 const MAX_RETRIES_UPON_FALSE_SAMPLE_STATUS = 3;
 const RETRY_INTERVAL_UPON_FALSE_SAMPLE_STATUS = 3000; // 3s

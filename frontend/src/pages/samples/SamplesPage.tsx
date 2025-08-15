@@ -36,13 +36,9 @@ const RECORD_NAME = "samples";
 const PHI_FIELDS = new Set(["sequencingDate"]);
 
 export function SamplesPage() {
-  const [userSearchVal, setUserSearchVal] = useState<string>("");
-  const [colDefs, setColDefs] = useState<Array<ColDef>>(
-    filterButtonOptions[0].colDefs
-  );
-  const [contexts, setContexts] = useState<
-    Array<DashboardRecordContext> | undefined
-  >(filterButtonOptions[0].contexts);
+  const [userSearchVal, setUserSearchVal] = useState("");
+  const [colDefs, setColDefs] = useState(filterButtonOptions[0].colDefs);
+  const [contexts, setContexts] = useState(filterButtonOptions[0].contexts);
   const gridRef = useRef<AgGridReactType<DashboardSample>>(null);
 
   const {
@@ -97,13 +93,14 @@ export function SamplesPage() {
     refreshData();
   }
 
-  const { showPhiColumnsOnInitialPhiSearch } = useTogglePhiColumnsVisibility({
+  const { handlePhiColumnsVisibilityOnSearch } = useTogglePhiColumnsVisibility({
     setColDefs,
     phiFields: PHI_FIELDS,
+    userSearchVal,
   });
 
   function handleSearch() {
-    showPhiColumnsOnInitialPhiSearch();
+    handlePhiColumnsVisibilityOnSearch();
     refreshData();
   }
 
