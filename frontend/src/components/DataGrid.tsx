@@ -58,7 +58,7 @@ interface NonEditableGridProps {
 
 interface DataGridPropsBase {
   gridRef: RefObject<AgGridReactType<any>>;
-  columnDefs: Array<ColDef<any>>;
+  colDefs: Array<ColDef<any>>;
   onGridColumnsChanged: () => void;
 }
 
@@ -68,7 +68,7 @@ type DataGridProps = DataGridPropsBase &
 
 export function DataGrid({
   gridRef,
-  columnDefs,
+  colDefs,
   onGridColumnsChanged,
   changes,
   handleCellEditRequest,
@@ -82,7 +82,7 @@ export function DataGrid({
         rowModelType="serverSide"
         serverSideInfiniteScroll={true}
         cacheBlockSize={CACHE_BLOCK_SIZE}
-        columnDefs={columnDefs}
+        columnDefs={colDefs}
         defaultColDef={defaultColDef}
         enableRangeSelection={true}
         onFirstDataRendered={(params) => params.columnApi.autoSizeAllColumns()}

@@ -63,7 +63,6 @@ export function useFetchData({
       sort: defaultSort,
       limit: CACHE_BLOCK_SIZE,
       offset: 0,
-      phiEnabled,
     },
     pollInterval,
   });

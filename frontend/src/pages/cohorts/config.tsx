@@ -15,7 +15,7 @@ type BuildDownloadOptionsParams = BuildDownloadOptionsParamsBase & {
 
 export function buildDownloadOptions({
   getCurrentData,
-  currentColumnDefs,
+  currentColDefs: currentColumnDefs,
 }: BuildDownloadOptionsParams): Array<DownloadOption> {
   return [
     {

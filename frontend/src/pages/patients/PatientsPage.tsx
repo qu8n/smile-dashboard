@@ -38,10 +38,9 @@ const PHI_FIELDS = new Set(["mrn", "anchorSequencingDate"]);
 
 export function PatientsPage() {
   const [userSearchVal, setUserSearchVal] = useState<string>("");
-  const [columnDefs, setColumnDefs] = useState<Array<ColDef>>(patientColDefs);
+  const [colDefs, setColDefs] = useState<Array<ColDef>>(patientColDefs);
   const { phiEnabled } = usePhiEnabled();
   const { userEmail } = useUserEmail();
-
   const gridRef = useRef<AgGridReactType<DashboardPatient>>(null);
   const hasParams = Object.keys(useParams()).length > 0;
   const [queryAllSeqDates] = useAllAnchorSeqDateDataLazyQuery();
@@ -67,14 +66,14 @@ export function PatientsPage() {
 
   const downloadOptions = buildDownloadOptions({
     getCurrentData,
-    currentColumnDefs: columnDefs,
+    currentColDefs: colDefs,
     queryAllSeqDates,
     phiEnabled,
     userEmail,
   });
 
   const { showPhiColumnsOnInitialPhiSearch } = useTogglePhiColumnsVisibility({
-    setColumnDefs,
+    setColDefs,
     phiFields: PHI_FIELDS,
   });
 
@@ -118,13 +117,13 @@ export function PatientsPage() {
 
       <DataGrid
         gridRef={gridRef}
-        columnDefs={columnDefs}
+        colDefs={colDefs}
         onGridColumnsChanged={refreshData}
       />
 
       {hasParams && (
         <SamplesModal
-          sampleColumnDefs={sampleColDefs}
+          sampleColDefs={sampleColDefs}
           contextFieldName={ROUTE_PARAMS.patients}
           parentRecordName={RECORD_NAME}
         />

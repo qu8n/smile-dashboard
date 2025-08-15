@@ -32,18 +32,18 @@ const INTIAL_SORT_FIELD_NAME = "importDate";
 const PHI_FIELDS = new Set(["sequencingDate"]);
 
 interface SamplesModalProps {
-  sampleColumnDefs: Array<ColDef>;
+  sampleColDefs: Array<ColDef>;
   contextFieldName: string;
   parentRecordName: keyof typeof ROUTE_PARAMS;
 }
 
 export function SamplesModal({
-  sampleColumnDefs,
+  sampleColDefs,
   contextFieldName,
   parentRecordName,
 }: SamplesModalProps) {
   const [userSearchVal, setUserSearchVal] = useState<string>("");
-  const [columnDefs, setColumnDefs] = useState(sampleColumnDefs);
+  const [colDefs, setColDefs] = useState(sampleColDefs);
   const parentRecordId = useParams()[ROUTE_PARAMS[parentRecordName]];
   const gridRef = useRef<AgGridReactType<DashboardSample>>(null);
 
@@ -100,11 +100,11 @@ export function SamplesModal({
 
   const downloadOptions = buildDownloadOptions({
     getCurrentData,
-    currentColumnDefs: columnDefs,
+    currentColDefs: colDefs,
   });
 
   const { showPhiColumnsOnInitialPhiSearch } = useTogglePhiColumnsVisibility({
-    setColumnDefs,
+    setColDefs,
     phiFields: PHI_FIELDS,
   });
 
@@ -157,7 +157,7 @@ export function SamplesModal({
 
       <DataGrid
         gridRef={gridRef}
-        columnDefs={columnDefs}
+        colDefs={colDefs}
         onGridColumnsChanged={refreshData}
         changes={changes}
         handleCellEditRequest={handleCellEditRequest}

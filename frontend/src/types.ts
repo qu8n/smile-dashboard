@@ -10,5 +10,5 @@ export interface SampleChange {
 
 export interface BuildDownloadOptionsParamsBase {
   getCurrentData: () => Promise<Array<any>>;
-  currentColumnDefs: Array<ColDef<any>>;
+  currentColDefs: Array<ColDef<any>>;
 }

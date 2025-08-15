@@ -37,13 +37,12 @@ const PHI_FIELDS = new Set(["sequencingDate"]);
 
 export function SamplesPage() {
   const [userSearchVal, setUserSearchVal] = useState<string>("");
-  const [columnDefs, setColumnDefs] = useState<Array<ColDef>>(
-    filterButtonOptions[0].columnDefs
+  const [colDefs, setColDefs] = useState<Array<ColDef>>(
+    filterButtonOptions[0].colDefs
   );
   const [contexts, setContexts] = useState<
     Array<DashboardRecordContext> | undefined
   >(filterButtonOptions[0].contexts);
-
   const gridRef = useRef<AgGridReactType<DashboardSample>>(null);
 
   const {
@@ -86,20 +85,20 @@ export function SamplesPage() {
 
   const downloadOptions = buildDownloadOptions({
     getCurrentData,
-    currentColumnDefs: columnDefs,
+    currentColDefs: colDefs,
   });
 
   function handleFilterButtonClick(filterButtonLabel: string) {
     const selectedFilterButtonOption = filterButtonOptions.find(
       (option) => option.label === filterButtonLabel
     );
-    setColumnDefs(selectedFilterButtonOption!.columnDefs);
+    setColDefs(selectedFilterButtonOption!.colDefs);
     setContexts(selectedFilterButtonOption!.contexts);
     refreshData();
   }
 
   const { showPhiColumnsOnInitialPhiSearch } = useTogglePhiColumnsVisibility({
-    setColumnDefs,
+    setColDefs,
     phiFields: PHI_FIELDS,
   });
 
@@ -157,7 +156,7 @@ export function SamplesPage() {
 
       <DataGrid
         gridRef={gridRef}
-        columnDefs={columnDefs}
+        colDefs={colDefs}
         onGridColumnsChanged={refreshData}
         changes={changes}
         handleCellEditRequest={handleCellEditRequest}

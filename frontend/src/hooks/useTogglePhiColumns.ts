@@ -3,12 +3,12 @@ import { usePhiEnabled } from "../contexts/PhiEnabledContext";
 import { ColDef } from "ag-grid-community";
 
 interface UseTogglePhiColumnsParams {
-  setColumnDefs: Dispatch<SetStateAction<Array<ColDef>>>;
+  setColDefs: Dispatch<SetStateAction<Array<ColDef>>>;
   phiFields: Set<string>;
 }
 
 export function useTogglePhiColumnsVisibility({
-  setColumnDefs,
+  setColDefs,
   phiFields,
 }: UseTogglePhiColumnsParams) {
   const { phiEnabled } = usePhiEnabled();
@@ -16,8 +16,8 @@ export function useTogglePhiColumnsVisibility({
 
   function showPhiColumnsOnInitialPhiSearch() {
     if (phiEnabled && !phiColumnsVisible) {
-      setColumnDefs((prevColumnDefs) =>
-        togglePhiColumnsVisibility({ prevColumnDefs, phiFields, show: true })
+      setColDefs((prevColDefs) =>
+        togglePhiColumnsVisibility({ prevColDefs, phiFields, show: true })
       );
       setPhiColumnsVisible(true);
     }
@@ -25,28 +25,28 @@ export function useTogglePhiColumnsVisibility({
 
   useEffect(() => {
     if (!phiEnabled && phiColumnsVisible) {
-      setColumnDefs((prevColumnDefs) =>
-        togglePhiColumnsVisibility({ prevColumnDefs, phiFields, show: false })
+      setColDefs((prevColDefs) =>
+        togglePhiColumnsVisibility({ prevColDefs, phiFields, show: false })
       );
       setPhiColumnsVisible(false);
     }
-  }, [phiEnabled, phiFields, setColumnDefs, phiColumnsVisible]);
+  }, [phiEnabled, phiFields, setColDefs, phiColumnsVisible]);
 
   return { showPhiColumnsOnInitialPhiSearch };
 }
 
 interface TogglePhiColumnsParams {
-  prevColumnDefs: Array<ColDef>;
+  prevColDefs: Array<ColDef>;
   phiFields: Set<string>;
   show: boolean;
 }
 
 function togglePhiColumnsVisibility({
-  prevColumnDefs,
+  prevColDefs,
   phiFields,
   show,
 }: TogglePhiColumnsParams) {
-  return prevColumnDefs.map((colDef) =>
+  return prevColDefs.map((colDef) =>
     phiFields.has(colDef.field!) ? { ...colDef, hide: !show } : colDef
   );
 }

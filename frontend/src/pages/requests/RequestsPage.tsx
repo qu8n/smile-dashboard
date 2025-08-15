@@ -27,7 +27,6 @@ const RECORD_NAME = "requests";
 
 export function RequestsPage() {
   const [userSearchVal, setUserSearchVal] = useState<string>("");
-
   const gridRef = useRef<AgGridReactType<DashboardRequest>>(null);
   const hasParams = Object.keys(useParams()).length > 0;
 
@@ -52,7 +51,7 @@ export function RequestsPage() {
 
   const downloadOptions = buildDownloadOptions({
     getCurrentData,
-    currentColumnDefs: requestColDefs,
+    currentColDefs: requestColDefs,
   });
 
   if (error) {
@@ -86,13 +85,13 @@ export function RequestsPage() {
 
       <DataGrid
         gridRef={gridRef}
-        columnDefs={requestColDefs}
+        colDefs={requestColDefs}
         onGridColumnsChanged={refreshData}
       />
 
       {hasParams && (
         <SamplesModal
-          sampleColumnDefs={sampleColDefs}
+          sampleColDefs={sampleColDefs}
           contextFieldName={ROUTE_PARAMS.requests}
           parentRecordName={RECORD_NAME}
         />

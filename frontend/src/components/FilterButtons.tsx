@@ -7,7 +7,7 @@ import { DashboardRecordContext } from "../generated/graphql";
 
 export type FilterButtonOption = {
   label: string;
-  columnDefs: Array<ColDef>;
+  colDefs: Array<ColDef>;
   contexts?: Array<DashboardRecordContext>;
 };
 

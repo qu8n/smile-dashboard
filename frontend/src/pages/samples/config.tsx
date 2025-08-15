@@ -849,17 +849,17 @@ const combinedSampleColDefs = _.uniqBy(
 export const filterButtonOptions: Array<FilterButtonOption> = [
   {
     label: "All",
-    columnDefs: combinedSampleColDefs,
+    colDefs: combinedSampleColDefs,
     contexts: undefined,
   },
   {
     label: "WES",
-    columnDefs: readOnlyWesSampleColDefs,
+    colDefs: readOnlyWesSampleColDefs,
     contexts: WES_SAMPLE_CONTEXT,
   },
   {
     label: "ACCESS/CMO-CH",
-    columnDefs: readOnlyAccessSampleColDefs,
+    colDefs: readOnlyAccessSampleColDefs,
     contexts: ACCESS_SAMPLE_CONTEXT,
   },
 ];
@@ -875,7 +875,7 @@ type BuildDownloadOptionsParams = BuildDownloadOptionsParamsBase & {
 
 export function buildDownloadOptions({
   getCurrentData,
-  currentColumnDefs,
+  currentColDefs: currentColumnDefs,
 }: BuildDownloadOptionsParams): Array<DownloadOption> {
   return [
     {

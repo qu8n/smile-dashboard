@@ -51,7 +51,7 @@ type BuildDownloadOptionsParams = BuildDownloadOptionsParamsBase &
 
 export function buildDownloadOptions({
   getCurrentData,
-  currentColumnDefs,
+  currentColDefs: currentColumnDefs,
   queryAllSeqDates,
   phiEnabled,
   userEmail,

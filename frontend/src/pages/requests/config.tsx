@@ -18,12 +18,12 @@ type BuildDownloadOptionsParams = BuildDownloadOptionsParamsBase & {
 
 export function buildDownloadOptions({
   getCurrentData,
-  currentColumnDefs,
+  currentColDefs,
 }: BuildDownloadOptionsParams): Array<DownloadOption> {
   return [
     {
       buttonLabel: "Download as TSV",
-      columnDefsForDownload: currentColumnDefs,
+      columnDefsForDownload: currentColDefs,
       dataGetter: getCurrentData,
     },
   ];

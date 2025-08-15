@@ -28,7 +28,6 @@ const RECORD_NAME = "cohorts";
 
 export function CohortsPage() {
   const [userSearchVal, setUserSearchVal] = useState<string>("");
-
   const gridRef = useRef<AgGridReactType<DashboardSample>>(null);
   const hasParams = Object.keys(useParams()).length > 0;
 
@@ -53,7 +52,7 @@ export function CohortsPage() {
 
   const downloadOptions = buildDownloadOptions({
     getCurrentData,
-    currentColumnDefs: cohortColDefs,
+    currentColDefs: cohortColDefs,
   });
 
   if (error) {
@@ -87,13 +86,13 @@ export function CohortsPage() {
 
       <DataGrid
         gridRef={gridRef}
-        columnDefs={cohortColDefs}
+        colDefs={cohortColDefs}
         onGridColumnsChanged={refreshData}
       />
 
       {hasParams && (
         <SamplesModal
-          sampleColumnDefs={wesSampleColDefs}
+          sampleColDefs={wesSampleColDefs}
           contextFieldName={ROUTE_PARAMS.cohorts}
           parentRecordName={RECORD_NAME}
         />
