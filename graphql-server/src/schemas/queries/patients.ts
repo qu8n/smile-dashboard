@@ -290,14 +290,16 @@ export function mapPhiToPatientsData({
       ? mrnByDmpPatientIdMap[dmpPatientId]
       : null;
     const anchorSequencingDate = mrn
-      ? anchorSeqDateDataByMrnMap[mrn].ANCHOR_SEQUENCING_DATE
+      ? anchorSeqDateDataByMrnMap[mrn]?.ANCHOR_SEQUENCING_DATE ?? null
       : dmpPatientId
-      ? anchorSeqDateDataByDmpPatientIdMap[dmpPatientId].ANCHOR_SEQUENCING_DATE
+      ? anchorSeqDateDataByDmpPatientIdMap[dmpPatientId]
+          ?.ANCHOR_SEQUENCING_DATE ?? null
       : null;
     const anchorOncotreeCode = mrn
-      ? anchorSeqDateDataByMrnMap[mrn].ANCHOR_ONCOTREE_CODE
+      ? anchorSeqDateDataByMrnMap[mrn]?.ANCHOR_ONCOTREE_CODE ?? null
       : dmpPatientId
-      ? anchorSeqDateDataByDmpPatientIdMap[dmpPatientId].ANCHOR_ONCOTREE_CODE
+      ? anchorSeqDateDataByDmpPatientIdMap[dmpPatientId]
+          ?.ANCHOR_ONCOTREE_CODE ?? null
       : null;
     return {
       ...patient,
