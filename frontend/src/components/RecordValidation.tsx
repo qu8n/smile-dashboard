@@ -208,7 +208,7 @@ function ErrorReportModal({
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <div className="tableHeight ag-theme-alpine">
+        <div className="popupTableHeight ag-theme-alpine">
           <AgGridReact<StatusItem>
             groupDisplayType="groupRows"
             rowData={validationDataForAgGrid}
