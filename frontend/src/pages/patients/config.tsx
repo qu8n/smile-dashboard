@@ -115,6 +115,11 @@ export const patientColDefs: ColDef<DashboardPatient>[] = [
     ...getPhiColDefProps({ widthSize: 260 }),
   },
   {
+    field: "anchorOncotreeCode",
+    headerName: "Anchor OncoTree Code",
+    ...getPhiColDefProps({ widthSize: 260 }),
+  },
+  {
     field: "cmoPatientId",
     headerName: "CMO Patient ID",
   },

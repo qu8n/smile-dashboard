@@ -33,7 +33,11 @@ import { useUserEmail } from "../../contexts/UserEmailContext";
 const QUERY_NAME = "dashboardPatients";
 const INITIAL_SORT_FIELD_NAME = "importDate";
 const RECORD_NAME = "patients";
-const PHI_FIELDS = new Set(["mrn", "anchorSequencingDate"]);
+const PHI_FIELDS = new Set([
+  "mrn",
+  "anchorSequencingDate",
+  "anchorOncotreeCode",
+]);
 
 export function PatientsPage() {
   const [userSearchVal, setUserSearchVal] = useState("");
