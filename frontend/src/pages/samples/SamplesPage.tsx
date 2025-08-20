@@ -3,7 +3,6 @@ import { DataGrid } from "../../components/DataGrid";
 import { AgGridReact as AgGridReactType } from "ag-grid-react/lib/agGridReact";
 import { useFetchData } from "../../hooks/useFetchData";
 import {
-  DashboardRecordContext,
   DashboardSample,
   useDashboardSamplesLazyQuery,
 } from "../../generated/graphql";
@@ -22,7 +21,6 @@ import { ErrorMessage } from "../../components/ErrorMessage";
 import { DownloadButton } from "../../components/DownloadButton";
 import { DownloadModal } from "../../components/DownloadModal";
 import { useDownload } from "../../hooks/useDownload";
-import { ColDef } from "ag-grid-community";
 import { PhiModeSwitch } from "../../components/PhiModeSwitch";
 import { useTogglePhiColumnsVisibility } from "../../hooks/useTogglePhiColumns";
 import { useCellChanges } from "../../hooks/useCellChanges";

@@ -31,6 +31,7 @@ export function SearchBar({
       </CustomTooltip>
 
       <Form.Control
+        type="search"
         className="d-inline-block"
         style={{ width: "300px" }}
         size="sm"
