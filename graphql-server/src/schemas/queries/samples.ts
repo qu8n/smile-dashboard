@@ -288,7 +288,7 @@ export function buildSamplesQueryBody({
       latestBC[0] AS latestBC,
       latestMC[0] AS latestMC,
       latestQC[0] AS latestQC,
-      apoc.text.join(sampleCohortIds, ", ") AS sampleCohortIds,
+      coalesce(apoc.text.join([id IN sampleCohortIds WHERE id IS NOT NULL], ', '), '') AS sampleCohortIds,
       apoc.convert.fromJsonMap(latestSm.cmoSampleIdFields) AS cmoSampleIdFields
 
       ${bamCompleteDateColFilter && `WHERE ${bamCompleteDateColFilter}`}
