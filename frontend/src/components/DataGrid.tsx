@@ -8,8 +8,8 @@ import {
 } from "ag-grid-community";
 import { useNavigate } from "react-router-dom";
 import { createCustomHeader, lockIcon } from "../configs/gridIcons";
-import { SampleChange } from "../types";
-import { CACHE_BLOCK_SIZE } from "../config";
+import { SampleChange } from "../types/shared";
+import { CACHE_BLOCK_SIZE } from "../configs/shared";
 import { allEditableFields } from "../pages/samples/config";
 
 function getTooltipValue(params: ITooltipParams) {

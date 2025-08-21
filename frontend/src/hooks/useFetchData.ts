@@ -14,7 +14,7 @@ import {
 import { AgGridReact as AgGridReactType } from "ag-grid-react/lib/agGridReact";
 import { usePhiEnabled } from "../contexts/PhiEnabledContext";
 import { LazyQueryHookOptions, useLazyQuery } from "@apollo/client";
-import { CACHE_BLOCK_SIZE } from "../config";
+import { CACHE_BLOCK_SIZE } from "../configs/shared";
 
 function useHookLazyGeneric(baseOptions?: LazyQueryHookOptions<any, any>) {
   const options = { ...({} as const), ...baseOptions };

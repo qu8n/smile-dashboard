@@ -12,7 +12,7 @@ import {
   StatusItem,
   StatusMap,
 } from "../configs/recordValidationMaps";
-import { multiLineColDef } from "../config";
+import { multiLineColDef } from "../configs/shared";
 
 type ModalTitle = `Error report for ${string}`;
 

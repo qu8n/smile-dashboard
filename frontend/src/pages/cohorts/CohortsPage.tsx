@@ -19,7 +19,7 @@ import { useDownload } from "../../hooks/useDownload";
 import { DataGridLayout } from "../../components/DataGridLayout";
 import { useParams } from "react-router-dom";
 import { SamplesModal } from "../../components/SamplesModal";
-import { ROUTE_PARAMS } from "../../config";
+import { ROUTE_PARAMS } from "../../configs/shared";
 import { wesSampleColDefs } from "../samples/config";
 
 const QUERY_NAME = "dashboardCohorts";

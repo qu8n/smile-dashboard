@@ -18,7 +18,7 @@ import { useDownload } from "../../hooks/useDownload";
 import { useParams } from "react-router-dom";
 import { SamplesModal } from "../../components/SamplesModal";
 import { DataGridLayout } from "../../components/DataGridLayout";
-import { ROUTE_PARAMS } from "../../config";
+import { ROUTE_PARAMS } from "../../configs/shared";
 import { sampleColDefs } from "../samples/config";
 
 const QUERY_NAME = "dashboardRequests";

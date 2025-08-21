@@ -7,7 +7,7 @@ import {
 } from "../../utils/agGrid";
 import { formatCellDate } from "../../utils/agGrid";
 import { DownloadOption } from "../../hooks/useDownload";
-import { BuildDownloadOptionsParamsBase } from "../../types";
+import { BuildDownloadOptionsParamsBase } from "../../types/shared";
 
 type BuildDownloadOptionsParams = BuildDownloadOptionsParamsBase & {
   // Put additional parameters here if needed

@@ -24,8 +24,8 @@ import { DownloadButton } from "../components/DownloadButton";
 import { DataGrid } from "./DataGrid";
 import { DownloadModal } from "./DownloadModal";
 import { ColDef } from "ag-grid-community";
-import { POLL_INTERVAL, ROUTE_PARAMS } from "../config";
-import { SampleChange } from "../types";
+import { POLL_INTERVAL, ROUTE_PARAMS } from "../configs/shared";
+import { SampleChange } from "../types/shared";
 
 const QUERY_NAME = "dashboardSamples";
 const INTIAL_SORT_FIELD_NAME = "importDate";

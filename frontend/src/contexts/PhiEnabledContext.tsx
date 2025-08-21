@@ -11,7 +11,7 @@ import { getUserEmail } from "../utils/getUserEmail";
 import { useUserEmail } from "./UserEmailContext";
 import { openLoginPopup } from "../utils/openLoginPopup";
 import { useWarningModal } from "./WarningContext";
-import { PHI_WARNING } from "../config";
+import { PHI_WARNING } from "../configs/shared";
 
 type PhiEnabledContextType = {
   phiEnabled: boolean;

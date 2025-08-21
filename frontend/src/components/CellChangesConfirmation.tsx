@@ -1,6 +1,6 @@
 import { Button, Modal } from "react-bootstrap";
 import { AgGridReact } from "ag-grid-react/lib/agGridReact";
-import { SampleChange } from "../types";
+import { SampleChange } from "../types/shared";
 import { Dispatch, SetStateAction } from "react";
 
 const updateModalColumnDefs = [

@@ -18,7 +18,7 @@ import {
   lockIcon,
   toolTipIcon,
 } from "../../configs/gridIcons";
-import { getPhiColDefProps, multiLineColDef } from "../../config";
+import { getPhiColDefProps, multiLineColDef } from "../../configs/shared";
 import {
   getAgGridBooleanColFilterConfigs,
   getAgGridBooleanValueFormatter,
@@ -28,7 +28,10 @@ import {
 import _ from "lodash";
 import { Link } from "react-router-dom";
 import { formatCellDate } from "../../utils/agGrid";
-import { BuildDownloadOptionsParamsBase, SampleChange } from "../../types";
+import {
+  BuildDownloadOptionsParamsBase,
+  SampleChange,
+} from "../../types/shared";
 import { DownloadOption } from "../../hooks/useDownload";
 
 const WES_SAMPLE_CONTEXT: Array<DashboardRecordContext> = [

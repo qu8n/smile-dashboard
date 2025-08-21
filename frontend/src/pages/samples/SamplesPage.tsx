@@ -26,7 +26,7 @@ import { useTogglePhiColumnsVisibility } from "../../hooks/useTogglePhiColumns";
 import { useCellChanges } from "../../hooks/useCellChanges";
 import { CellChangesContainer } from "../../components/CellChangesConfirmation";
 import { DataGridLayout } from "../../components/DataGridLayout";
-import { POLL_INTERVAL } from "../../config";
+import { POLL_INTERVAL } from "../../configs/shared";
 
 const QUERY_NAME = "dashboardSamples";
 const INITIAL_SORT_FIELD_NAME = "importDate";

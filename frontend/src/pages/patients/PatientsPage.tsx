@@ -25,7 +25,7 @@ import { useTogglePhiColumnsVisibility } from "../../hooks/useTogglePhiColumns";
 import { DataGridLayout } from "../../components/DataGridLayout";
 import { useParams } from "react-router-dom";
 import { SamplesModal } from "../../components/SamplesModal";
-import { ROUTE_PARAMS } from "../../config";
+import { ROUTE_PARAMS } from "../../configs/shared";
 import { sampleColDefs } from "../samples/config";
 import { usePhiEnabled } from "../../contexts/PhiEnabledContext";
 import { useUserEmail } from "../../contexts/UserEmailContext";

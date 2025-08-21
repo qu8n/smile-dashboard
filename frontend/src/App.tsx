@@ -7,7 +7,7 @@ import { WarningModal } from "./components/WarningModal";
 import { RequestsPage } from "./pages/requests/RequestsPage";
 import { PatientsPage } from "./pages/patients/PatientsPage";
 import { CohortsPage } from "./pages/cohorts/CohortsPage";
-import { ROUTE_PARAMS } from "./config";
+import { ROUTE_PARAMS } from "./configs/shared";
 
 // Required imports for AG Grid tables to render correctly
 import "ag-grid-community/styles/ag-grid.css";

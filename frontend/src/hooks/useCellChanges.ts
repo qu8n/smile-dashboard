@@ -14,12 +14,12 @@ import {
   useUpdateDashboardSamplesMutation,
 } from "../generated/graphql";
 import { handleAgGridPaste } from "../utils/handleAgGridPaste";
-import { SampleChange } from "../types";
+import { SampleChange } from "../types/shared";
 import { formatCellDate, isInvalidCostCenter } from "../utils/agGrid";
 import {
   INVALID_COST_CENTER_WARNING,
   POLLING_PAUSE_AFTER_UPDATE,
-} from "../config";
+} from "../configs/shared";
 
 interface UseCellChangesParams {
   gridRef: RefObject<AgGridReactType<any>>;

@@ -8,13 +8,13 @@ import {
 } from "../../generated/graphql";
 import { ColDef, ICellRendererParams } from "ag-grid-community";
 import { Button } from "react-bootstrap";
-import { getPhiColDefProps } from "../../config";
+import { getPhiColDefProps } from "../../configs/shared";
 import {
   getAgGridBooleanColFilterConfigs,
   getAgGridBooleanValueFormatter,
 } from "../../utils/agGrid";
 import { DownloadOption } from "../../hooks/useDownload";
-import { BuildDownloadOptionsParamsBase } from "../../types";
+import { BuildDownloadOptionsParamsBase } from "../../types/shared";
 import { LazyQueryExecFunction } from "@apollo/client";
 
 export const allAnchorSeqDateColDefs: Array<ColDef<AnchorSeqDateData>> = [
