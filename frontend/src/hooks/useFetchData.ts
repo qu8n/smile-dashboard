@@ -2,9 +2,9 @@ import { RefObject, useCallback, useMemo, useState } from "react";
 import {
   AgGridSortDirection,
   DashboardRecordColumnFilter,
+  DashboardRecordContext,
   DashboardRecordSort,
   DashboardRequestsDocument,
-  DashboardSamplesQueryVariables,
 } from "../generated/graphql";
 import { parseUserSearchVal } from "../utils/parseSearchQueries";
 import {
@@ -27,7 +27,7 @@ interface UseFetchDataParams {
   initialSortFieldName: string;
   gridRef: RefObject<AgGridReactType>;
   userSearchVal: string;
-  contexts?: DashboardSamplesQueryVariables["contexts"];
+  recordContexts?: Array<DashboardRecordContext>;
   pollInterval?: number;
 }
 
@@ -37,7 +37,7 @@ export function useFetchData({
   initialSortFieldName,
   gridRef,
   userSearchVal,
-  contexts = [],
+  recordContexts = [],
   pollInterval = 0, // 0 means no polling
 }: UseFetchDataParams) {
   // Manage our own loading state becase the lazy query's provided `loading` state
@@ -59,7 +59,7 @@ export function useFetchData({
   ] = useRecordsLazyQuery({
     variables: {
       searchVals: [],
-      contexts,
+      recordContexts,
       sort: defaultSort,
       limit: CACHE_BLOCK_SIZE,
       offset: 0,
@@ -82,7 +82,7 @@ export function useFetchData({
 
           const variables = {
             searchVals: parseUserSearchVal(userSearchVal),
-            contexts,
+            recordContexts,
             sort: params.request.sortModel[0] || defaultSort,
             limit: CACHE_BLOCK_SIZE,
             offset: params.request.startRow ?? 0,
@@ -112,7 +112,7 @@ export function useFetchData({
         },
       } as IServerSideDatasource;
     },
-    [refetch, fetchMore, defaultSort, queryName, contexts, phiEnabled]
+    [refetch, fetchMore, defaultSort, queryName, recordContexts, phiEnabled]
   );
 
   /**

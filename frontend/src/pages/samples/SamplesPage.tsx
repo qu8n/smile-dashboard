@@ -36,7 +36,9 @@ const PHI_FIELDS = new Set(["sequencingDate"]);
 export function SamplesPage() {
   const [userSearchVal, setUserSearchVal] = useState("");
   const [colDefs, setColDefs] = useState(filterButtonOptions[0].colDefs);
-  const [contexts, setContexts] = useState(filterButtonOptions[0].contexts);
+  const [recordContexts, setRecordContexts] = useState(
+    filterButtonOptions[0].recordContexts
+  );
   const gridRef = useRef<AgGridReactType<DashboardSample>>(null);
 
   const {
@@ -54,7 +56,7 @@ export function SamplesPage() {
     initialSortFieldName: INITIAL_SORT_FIELD_NAME,
     gridRef,
     userSearchVal,
-    contexts,
+    recordContexts,
     pollInterval: POLL_INTERVAL,
   });
 
@@ -87,7 +89,7 @@ export function SamplesPage() {
       (option) => option.label === filterButtonLabel
     );
     setColDefs(selectedFilterButtonOption!.colDefs);
-    setContexts(selectedFilterButtonOption!.contexts);
+    setRecordContexts(selectedFilterButtonOption!.recordContexts);
     refreshData();
   }
 

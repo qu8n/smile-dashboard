@@ -193,19 +193,19 @@ async function updateSamplesCache(inMemoryCache: NodeCache) {
   // Build query bodies for all queries on Samples page
   const allSamplesQueryBody = buildSamplesQueryBody({
     searchVals: [],
-    contexts: undefined,
+    recordContexts: undefined,
     columnFilters: undefined,
     addlOncotreeCodes: [],
   });
   const wesSamplesQueryBody = buildSamplesQueryBody({
     searchVals: [],
-    contexts: WES_SAMPLE_CONTEXT,
+    recordContexts: WES_SAMPLE_CONTEXT,
     columnFilters: undefined,
     addlOncotreeCodes: [],
   });
   const accessSamplesQueryBody = buildSamplesQueryBody({
     searchVals: [],
-    contexts: ACCESS_SAMPLE_CONTEXT,
+    recordContexts: ACCESS_SAMPLE_CONTEXT,
     columnFilters: undefined,
     addlOncotreeCodes: [],
   });

@@ -316,7 +316,7 @@ export async function buildCustomSchema(ogm: OGM) {
         _source: undefined,
         {
           searchVals,
-          contexts,
+          recordContexts,
           sort,
           columnFilters,
           limit,
@@ -339,7 +339,7 @@ export async function buildCustomSchema(ogm: OGM) {
 
         const queryBody = buildSamplesQueryBody({
           searchVals,
-          contexts,
+          recordContexts,
           columnFilters,
           addlOncotreeCodes,
         });

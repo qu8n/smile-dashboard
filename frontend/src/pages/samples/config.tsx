@@ -850,17 +850,17 @@ export const filterButtonOptions: Array<FilterButtonOption> = [
   {
     label: "All",
     colDefs: combinedSampleColDefs,
-    contexts: undefined,
+    recordContexts: undefined,
   },
   {
     label: "WES",
     colDefs: readOnlyWesSampleColDefs,
-    contexts: WES_SAMPLE_CONTEXT,
+    recordContexts: WES_SAMPLE_CONTEXT,
   },
   {
     label: "ACCESS/CMO-CH",
     colDefs: readOnlyAccessSampleColDefs,
-    contexts: ACCESS_SAMPLE_CONTEXT,
+    recordContexts: ACCESS_SAMPLE_CONTEXT,
   },
 ];
 

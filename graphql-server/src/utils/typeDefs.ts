@@ -220,7 +220,7 @@ const QUERY_TYPEDEFS = gql`
 
     dashboardSamples(
       searchVals: [String!]
-      contexts: [DashboardRecordContext]
+      recordContexts: [DashboardRecordContext]
       columnFilters: [DashboardRecordColumnFilter!]
       sort: DashboardRecordSort!
       limit: Int!

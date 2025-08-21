@@ -62,7 +62,7 @@ export function SamplesModal({
     initialSortFieldName: INTIAL_SORT_FIELD_NAME,
     gridRef,
     userSearchVal,
-    contexts: [
+    recordContexts: [
       {
         fieldName: contextFieldName,
         values: [parentRecordId!],

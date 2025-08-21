@@ -59,12 +59,12 @@ const FIELDS_TO_SEARCH = [
 
 export function buildSamplesQueryBody({
   searchVals,
-  contexts,
+  recordContexts,
   columnFilters,
   addlOncotreeCodes,
 }: {
   searchVals: QueryDashboardSamplesArgs["searchVals"];
-  contexts?: QueryDashboardSamplesArgs["contexts"];
+  recordContexts?: QueryDashboardSamplesArgs["recordContexts"];
   columnFilters?: QueryDashboardSamplesArgs["columnFilters"];
   addlOncotreeCodes: string[];
 }) {
@@ -88,33 +88,33 @@ export function buildSamplesQueryBody({
 
   // Filters for WES samples on the Samples page
   const genePanelContext = buildCypherPredicateFromContext({
-    contexts,
+    recordContexts: recordContexts,
     contextField: "genePanel",
     predicateField: "latestSm.genePanel",
   });
   const baitSetContext = buildCypherPredicateFromContext({
-    contexts,
+    recordContexts: recordContexts,
     contextField: "baitSet",
     predicateField: "latestSm.baitSet",
   });
 
   // Filter for the current request in the Request Samples view
   const requestContext = buildCypherPredicateFromContext({
-    contexts,
+    recordContexts: recordContexts,
     contextField: "igoRequestId",
     predicateField: "latestSm.igoRequestId",
   });
 
   // Filter for the current patient in the Patient Samples view
   const patientContext = buildCypherPredicateFromContext({
-    contexts,
+    recordContexts: recordContexts,
     contextField: "patientId",
     predicateField: "pa.value",
   });
 
   // Filter for the current cohort in the Cohort Samples view
   const cohortContext = buildCypherPredicateFromContext({
-    contexts,
+    recordContexts: recordContexts,
     contextField: "cohortId",
     predicateField: "c.cohortId",
   });
@@ -363,16 +363,18 @@ export function buildSamplesQueryBody({
 }
 
 function buildCypherPredicateFromContext({
-  contexts,
+  recordContexts,
   contextField,
   predicateField,
 }: {
-  contexts: InputMaybe<InputMaybe<DashboardRecordContext>[]> | undefined;
+  recordContexts: InputMaybe<InputMaybe<DashboardRecordContext>[]> | undefined;
   contextField: DashboardRecordContext["fieldName"];
   /** Left-hand side of the Cypher predicate (e.g. latestSm.baitSet) */
   predicateField: string;
 }): string {
-  const contextObj = contexts?.find((ctx) => ctx?.fieldName === contextField);
+  const contextObj = recordContexts?.find(
+    (ctx) => ctx?.fieldName === contextField
+  );
   if (!contextObj || !contextObj.values || contextObj.values.length === 0)
     return "";
   if (contextObj.values.length > 1) {
