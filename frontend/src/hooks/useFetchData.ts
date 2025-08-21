@@ -73,6 +73,8 @@ export function useFetchData({
   }
 
   const recordCount: number = data?.[queryName][0]?._total || 0;
+  const uniqueSampleCount: number =
+    data?.[queryName][0]?._uniqueSampleCount || 0;
 
   const buildServerSideDatasource = useCallback(
     (userSearchVal) => {
@@ -135,6 +137,7 @@ export function useFetchData({
   return {
     refreshData,
     recordCount,
+    uniqueSampleCount,
     isLoading,
     error,
     data,

@@ -31,14 +31,20 @@ export function CohortsPage() {
   const gridRef = useRef<AgGridReactType<DashboardSample>>(null);
   const hasParams = Object.keys(useParams()).length > 0;
 
-  const { refreshData, recordCount, isLoading, error, fetchMore } =
-    useFetchData({
-      useRecordsLazyQuery: useDashboardCohortsLazyQuery,
-      queryName: QUERY_NAME,
-      initialSortFieldName: INITIAL_SORT_FIELD_NAME,
-      gridRef,
-      userSearchVal,
-    });
+  const {
+    refreshData,
+    recordCount,
+    uniqueSampleCount,
+    isLoading,
+    error,
+    fetchMore,
+  } = useFetchData({
+    useRecordsLazyQuery: useDashboardCohortsLazyQuery,
+    queryName: QUERY_NAME,
+    initialSortFieldName: INITIAL_SORT_FIELD_NAME,
+    gridRef,
+    userSearchVal,
+  });
 
   const { isDownloading, handleDownload, getCurrentData } =
     useDownload<DashboardCohort>({
@@ -72,6 +78,7 @@ export function CohortsPage() {
             setUserSearchVal={setUserSearchVal}
             onSearch={refreshData}
             recordCount={recordCount}
+            uniqueSampleCount={uniqueSampleCount}
             isLoading={isLoading}
           />
         </Col>

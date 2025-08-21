@@ -9,6 +9,7 @@ interface SearchBarProps {
   onBeforeSearch?: () => void;
   onSearch: (searchVal: string) => void;
   recordCount: number | null;
+  uniqueSampleCount?: number;
   isLoading: boolean;
 }
 
@@ -18,6 +19,7 @@ export function SearchBar({
   onBeforeSearch,
   onSearch,
   recordCount,
+  uniqueSampleCount,
   isLoading,
 }: SearchBarProps) {
   function handleSearch(userSearchVal: string) {
@@ -74,7 +76,12 @@ export function SearchBar({
       </Button>
 
       <span>
-        {isLoading ? "Loading" : Number(recordCount).toLocaleString()} matches
+        {isLoading ? "Loading" : Number(recordCount).toLocaleString()} matches{" "}
+        {isLoading
+          ? ""
+          : uniqueSampleCount !== undefined
+          ? `(${Number(uniqueSampleCount).toLocaleString()} unique samples)`
+          : ""}
       </span>
     </div>
   );
