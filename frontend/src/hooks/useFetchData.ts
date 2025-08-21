@@ -115,9 +115,19 @@ export function useFetchData({
     [refetch, fetchMore, defaultSort, queryName, contexts, phiEnabled]
   );
 
-  function refreshData() {
+  /**
+   * Call to update the data shown in the grid. It will often be used without a
+   * parameter, in which case it will use the current `userSearchVal` state.
+   *
+   * Call this function with a parameter when we need to update `userSearchVal`
+   * and refresh the grid at the same time, such as when the user clears
+   * the search bar input: we can't simply update `userSearchVal` state to ""
+   * and call refreshData() without a parameter, because the state update is
+   * asynchronous and won't be reflected in time.
+   */
+  function refreshData(searchVal: string = userSearchVal) {
     stopPolling();
-    const newDatasource = buildServerSideDatasource(userSearchVal);
+    const newDatasource = buildServerSideDatasource(searchVal);
     gridRef.current?.api.setServerSideDatasource(newDatasource);
     startPolling();
   }

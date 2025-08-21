@@ -6,7 +6,8 @@ import { Dispatch, SetStateAction } from "react";
 interface SearchBarProps {
   userSearchVal: string;
   setUserSearchVal: Dispatch<SetStateAction<string>>;
-  onSearch: () => void;
+  onBeforeSearch?: () => void;
+  onSearch: (searchVal: string) => void;
   recordCount: number | null;
   isLoading: boolean;
 }
@@ -14,10 +15,17 @@ interface SearchBarProps {
 export function SearchBar({
   userSearchVal,
   setUserSearchVal,
+  onBeforeSearch,
   onSearch,
   recordCount,
   isLoading,
 }: SearchBarProps) {
+  function handleSearch(userSearchVal: string) {
+    if (onBeforeSearch) {
+      onBeforeSearch();
+    }
+    onSearch(userSearchVal);
+  }
   return (
     <div className="d-flex align-items-center justify-content-center gap-2">
       <CustomTooltip
@@ -39,12 +47,29 @@ export function SearchBar({
         aria-label="Search"
         value={userSearchVal}
         onKeyDown={(e) => {
-          if (e.key === "Enter") onSearch();
+          if (e.key === "Enter") {
+            e.preventDefault();
+            handleSearch(userSearchVal);
+          }
         }}
-        onChange={(e) => setUserSearchVal(e.currentTarget.value)}
+        onChange={(e) => {
+          const currentValue = e.currentTarget.value;
+          // "Reset" the grid when the search input is cleared by the user
+          // to be consistent with cBioPortal
+          if (currentValue === "") {
+            setUserSearchVal("");
+            handleSearch("");
+          } else {
+            setUserSearchVal(currentValue);
+          }
+        }}
       />
 
-      <Button onClick={onSearch} className="btn btn-secondary" size="sm">
+      <Button
+        onClick={() => handleSearch(userSearchVal)}
+        className="btn btn-secondary"
+        size="sm"
+      >
         Search
       </Button>
 

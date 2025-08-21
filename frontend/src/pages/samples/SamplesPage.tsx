@@ -91,16 +91,12 @@ export function SamplesPage() {
     refreshData();
   }
 
-  const { handlePhiColumnsVisibilityOnSearch } = useTogglePhiColumnsVisibility({
-    setColDefs,
-    phiFields: PHI_FIELDS,
-    userSearchVal,
-  });
-
-  function handleSearch() {
-    handlePhiColumnsVisibilityOnSearch();
-    refreshData();
-  }
+  const { handlePhiColumnsVisibilityBeforeSearch } =
+    useTogglePhiColumnsVisibility({
+      setColDefs,
+      phiFields: PHI_FIELDS,
+      userSearchVal,
+    });
 
   if (error) {
     return <ErrorMessage error={error} />;
@@ -124,7 +120,8 @@ export function SamplesPage() {
           <SearchBar
             userSearchVal={userSearchVal}
             setUserSearchVal={setUserSearchVal}
-            onSearch={handleSearch}
+            onBeforeSearch={handlePhiColumnsVisibilityBeforeSearch}
+            onSearch={refreshData}
             recordCount={recordCount}
             isLoading={isLoading}
           />
@@ -152,7 +149,7 @@ export function SamplesPage() {
       <DataGrid
         gridRef={gridRef}
         colDefs={colDefs}
-        onGridColumnsChanged={refreshData}
+        refreshData={refreshData}
         changes={changes}
         handleCellEditRequest={handleCellEditRequest}
         handlePaste={handlePaste}

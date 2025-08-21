@@ -87,7 +87,7 @@ export function CohortsPage() {
       <DataGrid
         gridRef={gridRef}
         colDefs={cohortColDefs}
-        onGridColumnsChanged={refreshData}
+        refreshData={refreshData}
       />
 
       {hasParams && (

@@ -86,7 +86,7 @@ export function RequestsPage() {
       <DataGrid
         gridRef={gridRef}
         colDefs={requestColDefs}
-        onGridColumnsChanged={refreshData}
+        refreshData={refreshData}
       />
 
       {hasParams && (

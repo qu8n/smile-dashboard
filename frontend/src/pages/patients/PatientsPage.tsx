@@ -75,16 +75,12 @@ export function PatientsPage() {
     userEmail,
   });
 
-  const { handlePhiColumnsVisibilityOnSearch } = useTogglePhiColumnsVisibility({
-    setColDefs,
-    phiFields: PHI_FIELDS,
-    userSearchVal,
-  });
-
-  function handleSearch() {
-    handlePhiColumnsVisibilityOnSearch();
-    refreshData();
-  }
+  const { handlePhiColumnsVisibilityBeforeSearch } =
+    useTogglePhiColumnsVisibility({
+      setColDefs,
+      phiFields: PHI_FIELDS,
+      userSearchVal,
+    });
 
   if (error) {
     return <ErrorMessage error={error} />;
@@ -101,7 +97,8 @@ export function PatientsPage() {
           <SearchBar
             userSearchVal={userSearchVal}
             setUserSearchVal={setUserSearchVal}
-            onSearch={handleSearch}
+            onBeforeSearch={handlePhiColumnsVisibilityBeforeSearch}
+            onSearch={refreshData}
             recordCount={recordCount}
             isLoading={isLoading}
           />
@@ -119,11 +116,7 @@ export function PatientsPage() {
         </Col>
       </Toolbar>
 
-      <DataGrid
-        gridRef={gridRef}
-        colDefs={colDefs}
-        onGridColumnsChanged={refreshData}
-      />
+      <DataGrid gridRef={gridRef} colDefs={colDefs} refreshData={refreshData} />
 
       {hasParams && (
         <SamplesModal

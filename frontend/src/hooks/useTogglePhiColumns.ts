@@ -20,7 +20,7 @@ export function useTogglePhiColumnsVisibility({
    * specific values. Hide PHI columns when user's search is empty even if
    * PHI mode is enabled.
    */
-  function handlePhiColumnsVisibilityOnSearch() {
+  function handlePhiColumnsVisibilityBeforeSearch() {
     if (phiEnabled) {
       const showPhiColumns = Boolean(userSearchVal);
       if (phiColumnsVisible !== showPhiColumns) {
@@ -46,7 +46,7 @@ export function useTogglePhiColumnsVisibility({
     }
   }, [phiEnabled, phiFields, setColDefs, phiColumnsVisible]);
 
-  return { handlePhiColumnsVisibilityOnSearch };
+  return { handlePhiColumnsVisibilityBeforeSearch };
 }
 
 interface TogglePhiColumnsParams {
