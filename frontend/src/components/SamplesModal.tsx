@@ -19,7 +19,7 @@ import { Toolbar } from "../components/Toolbar";
 import { Button, Col, Modal } from "react-bootstrap";
 import { SearchBar } from "../components/SearchBar";
 import { PhiModeSwitch } from "./PhiModeSwitch";
-import { CellChangesConfirmation } from "./CellChangesConfirmation";
+import { CellChangesContainer } from "./CellChangesConfirmation";
 import { DownloadButton } from "../components/DownloadButton";
 import { DataGrid } from "./DataGrid";
 import { DownloadModal } from "./DownloadModal";
@@ -141,7 +141,7 @@ export function SamplesModal({
           <PhiModeSwitch>{phiModeSwitchTooltipContent}</PhiModeSwitch>
 
           {changes.length > 0 && (
-            <CellChangesConfirmation
+            <CellChangesContainer
               changes={changes}
               cellChangesHandlers={cellChangesHandlers}
             />

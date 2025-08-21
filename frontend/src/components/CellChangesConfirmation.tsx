@@ -15,7 +15,7 @@ const autoGroupColumnDef = {
   field: "primaryId",
 };
 
-interface CellChangesConfirmationProps {
+interface CellChangesContainerProps {
   changes: Array<SampleChange>;
   cellChangesHandlers: {
     handleDiscardChanges: () => void;
@@ -26,7 +26,7 @@ interface CellChangesConfirmationProps {
   };
 }
 
-export function CellChangesConfirmation({
+export function CellChangesContainer({
   changes,
   cellChangesHandlers: {
     handleDiscardChanges,
@@ -35,7 +35,7 @@ export function CellChangesConfirmation({
     showUpdateModal,
     setShowUpdateModal,
   },
-}: CellChangesConfirmationProps) {
+}: CellChangesContainerProps) {
   function handleUpdateModalHide() {
     setShowUpdateModal(false);
   }

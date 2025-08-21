@@ -24,7 +24,7 @@ import { useDownload } from "../../hooks/useDownload";
 import { PhiModeSwitch } from "../../components/PhiModeSwitch";
 import { useTogglePhiColumnsVisibility } from "../../hooks/useTogglePhiColumns";
 import { useCellChanges } from "../../hooks/useCellChanges";
-import { CellChangesConfirmation } from "../../components/CellChangesConfirmation";
+import { CellChangesContainer } from "../../components/CellChangesConfirmation";
 import { DataGridLayout } from "../../components/DataGridLayout";
 import { POLL_INTERVAL } from "../../config";
 
@@ -134,7 +134,7 @@ export function SamplesPage() {
           <PhiModeSwitch>{phiModeSwitchTooltipContent}</PhiModeSwitch>
 
           {changes.length > 0 && (
-            <CellChangesConfirmation
+            <CellChangesContainer
               changes={changes}
               cellChangesHandlers={cellChangesHandlers}
             />
