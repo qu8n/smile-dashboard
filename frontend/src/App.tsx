@@ -1,70 +1,45 @@
-import { useEffect, useState } from "react";
-import { Routes, Route } from "react-router-dom";
-import RequestsPage from "./pages/requests/RequestsPage";
-import PatientsPage from "./pages/patients/PatientsPage";
-import SamplesPage from "./pages/samples/SamplesPage";
-import CohortsPage from "./pages/cohorts/CohortsPage";
-import LoginSuccessPage from "./pages/auth/LoginSuccessPage";
-import SmileNavBar from "./shared/components/SmileNavBar";
-import { getUserEmail } from "./utils/getUserEmail";
+import { Routes, Route, BrowserRouter } from "react-router-dom";
+import { LoginSuccessPage } from "./pages/auth/LoginSuccessPage";
+import { SamplesPage } from "./pages/samples/SamplesPage";
+import { NavBar } from "./components/NavBar";
+import { Providers } from "./components/Providers";
+import { WarningModal } from "./components/WarningModal";
+import { RequestsPage } from "./pages/requests/RequestsPage";
+import { PatientsPage } from "./pages/patients/PatientsPage";
+import { CohortsPage } from "./pages/cohorts/CohortsPage";
+import { ROUTE_PARAMS } from "./configs/shared";
+
+// Required imports for AG Grid tables to render correctly
+import "ag-grid-community/styles/ag-grid.css";
+import "ag-grid-community/styles/ag-theme-alpine.css";
+import "ag-grid-enterprise";
 
 export default function App() {
-  const [userEmail, setUserEmail] = useState<string | null>(null);
-
-  useEffect(() => {
-    async function getAndSetUserEmail() {
-      const userEmail = await getUserEmail();
-      setUserEmail(userEmail);
-    }
-    getAndSetUserEmail();
-  }, []);
-
   return (
     <main id="main" className="main">
-      <SmileNavBar userEmail={userEmail} setUserEmail={setUserEmail} />
-      <Routes>
-        <>
-          <Route
-            path="/"
-            element={
-              <RequestsPage userEmail={userEmail} setUserEmail={setUserEmail} />
-            }
-          >
-            <Route path=":igoRequestId" />
-          </Route>
-          <Route
-            path="/requests/"
-            element={
-              <RequestsPage userEmail={userEmail} setUserEmail={setUserEmail} />
-            }
-          >
-            <Route path=":igoRequestId" />
-          </Route>
-          <Route
-            path="/patients/"
-            element={
-              <PatientsPage userEmail={userEmail} setUserEmail={setUserEmail} />
-            }
-          >
-            <Route path=":patientId" />
-          </Route>
-          <Route
-            path="/samples"
-            element={
-              <SamplesPage userEmail={userEmail} setUserEmail={setUserEmail} />
-            }
-          />
-          <Route
-            path="/cohorts/"
-            element={
-              <CohortsPage userEmail={userEmail} setUserEmail={setUserEmail} />
-            }
-          >
-            <Route path=":cohortId" />
-          </Route>
-          <Route path="/auth/login-success" element={<LoginSuccessPage />} />
-        </>
-      </Routes>
+      <Providers>
+        <BrowserRouter>
+          <NavBar />
+          <Routes>
+            <Route path="/" element={<RequestsPage />}>
+              <Route path={`:${ROUTE_PARAMS.requests}`} />
+            </Route>
+            <Route path="/requests/" element={<RequestsPage />}>
+              <Route path={`:${ROUTE_PARAMS.requests}`} />
+            </Route>
+            <Route path="/patients/" element={<PatientsPage />}>
+              <Route path={`:${ROUTE_PARAMS.patients}`} />
+            </Route>
+            <Route path="/samples" element={<SamplesPage />} />
+            <Route path="/cohorts/" element={<CohortsPage />}>
+              <Route path={`:${ROUTE_PARAMS.cohorts}`} />
+            </Route>
+            <Route path="/auth/login-success" element={<LoginSuccessPage />} />
+          </Routes>
+        </BrowserRouter>
+
+        <WarningModal />
+      </Providers>
     </main>
   );
 }

@@ -1,7 +1,7 @@
 /**
  * Row-level data type for the validation report modal of a Sample/Request.
  */
-export type StatusItem = {
+export interface StatusItem {
   requestLevelValidationHeader?: string; // for grouping by request-level errors
   item: string;
   description: string;
@@ -11,18 +11,18 @@ export type StatusItem = {
   igoId?: string; // for request validation only
   primaryId?: string; // sample validation rendering in request validation popup
   toleratedSampleLevelValidationHeader?: string; // sample validation rendering in request validation popup
-};
+}
 
 /**
  * @Key Concatenated string of key-value pairs from the validationReport value of Status in the database to
  * ensure unique keys for each status item in this map. For example, given "fastQs=missing,igoComplete=false",
  * we'd use "fastQs missing" and "igoComplete false" as the keys, respectively.
  */
-export type StatusMap = {
+export interface StatusMap {
   [key: string]: StatusItem;
-};
+}
 
-export function getActionItemForMissingIgoField(fieldName: string): string {
+function getActionItemForMissingIgoField(fieldName: string): string {
   return (
     `PMs contact IGO to fix and redeliver, let SMILE know once ${fieldName} is updated by emailing` +
     ` them or clicking 'Mark delivery' button`

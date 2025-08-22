@@ -1,7 +1,6 @@
 import { Dispatch, SetStateAction, useState } from "react";
-import styles from "./records.module.scss";
 import { DashboardRequest } from "../generated/graphql";
-import { CustomTooltip } from "../shared/components/CustomToolTip";
+import { CustomTooltip } from "../components/CustomToolTip";
 import WarningIcon from "@material-ui/icons/Warning";
 import { Button, Modal } from "react-bootstrap";
 import { ColDef } from "ag-grid-community";
@@ -13,7 +12,7 @@ import {
   StatusItem,
   StatusMap,
 } from "../configs/recordValidationMaps";
-import { multiLineColDef } from "../shared/helpers";
+import { multiLineColDef } from "../configs/shared";
 
 type ModalTitle = `Error report for ${string}`;
 
@@ -209,7 +208,7 @@ function ErrorReportModal({
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <div className={`${styles.tableHeight} ag-theme-alpine`}>
+        <div className="popupTableHeight ag-theme-alpine">
           <AgGridReact<StatusItem>
             groupDisplayType="groupRows"
             rowData={validationDataForAgGrid}

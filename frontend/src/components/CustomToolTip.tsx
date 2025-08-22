@@ -1,5 +1,6 @@
 import { Tooltip } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
+import { ReactNode } from "react";
 
 const StyledTooltip = withStyles({
   tooltip: {
@@ -13,11 +14,8 @@ export function CustomTooltip({
   children,
   icon,
 }: {
-  /**
-   * The content of the tooltip.
-   */
-  children: React.ReactNode;
-  icon: React.ReactNode;
+  children: ReactNode;
+  icon: ReactNode;
 }) {
   return (
     <StyledTooltip title={<span style={{ fontSize: 12 }}>{children}</span>}>

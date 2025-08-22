@@ -10,6 +10,8 @@ import {
   SampleDataForCacheUpdate,
 } from "../schemas/queries/samples";
 import {
+  AgGridSortDirection,
+  DashboardRecordContext,
   DashboardRecordSort,
   DashboardSample,
   DashboardSampleInput,
@@ -22,12 +24,12 @@ const ONCOTREE_CACHE_TTL = 86400; // 1 day
 const SAMPLES_CACHE_TTL = 3600; // 1 hour
 
 // Variables to keep in sync with the frontend
-const CACHE_BLOCK_SIZE = 500; // from helpers.tsx
-const SAMPLES_DEFAULT_SORT = {
+const CACHE_BLOCK_SIZE = 500;
+const SAMPLES_DEFAULT_SORT: DashboardRecordSort = {
   colId: "importDate",
-  sort: "desc",
-} as DashboardRecordSort; // from SamplesList.tsx
-const WES_SAMPLE_CONTEXT = [
+  sort: AgGridSortDirection.Desc,
+};
+const WES_SAMPLE_CONTEXT: Array<DashboardRecordContext> = [
   {
     fieldName: "genePanel",
     values: [
@@ -40,7 +42,42 @@ const WES_SAMPLE_CONTEXT = [
       "WholeExomeSequencing",
     ],
   },
-]; // from SamplesPage.tsx
+];
+const ACCESS_SAMPLE_CONTEXT: Array<DashboardRecordContext> = [
+  {
+    fieldName: "genePanel",
+    values: [
+      "ACCESS129",
+      "ACCESS146",
+      "ACCESS148",
+      "ACCESS-Heme",
+      "ACCESS-HEME-115",
+      "HC_ACCESS",
+      "HC_Custom",
+      "MSK-ACCESS_v1",
+      "MSK-ACCESS_v2",
+      "HC_CMOCH",
+      "CMO-CH",
+    ],
+  },
+  {
+    fieldName: "baitSet",
+    values: [
+      "MSK-ACCESS-v1_0-probesAllwFP",
+      "MSK-ACCESS-v1_0-probesAllwFP_GRCh38",
+      "MSK-ACCESS-v1_0-probesAllwFP_hg19_sort_BAITS",
+      "MSK-ACCESS-v1_0-probesAllwFP_hg37_sort-BAITS",
+      "MSK-ACCESS-v2_0-probesAllwFP",
+      "ACCESS_HEME_MN1",
+      "ACCESS129",
+      "ACCESS146",
+      "ACCESS148",
+      "ACCESS-HEME-115",
+      "CMO-CH",
+      "MSK-CH",
+    ],
+  },
+];
 
 const MAX_RETRIES_UPON_FALSE_SAMPLE_STATUS = 3;
 const RETRY_INTERVAL_UPON_FALSE_SAMPLE_STATUS = 3000; // 3s
@@ -153,18 +190,22 @@ async function getOncotreeCodesFromNeo4j() {
 }
 
 async function updateSamplesCache(inMemoryCache: NodeCache) {
-  console.info("Querying and caching select samples data...");
-
-  // Build query bodies for all samples and WES samples queries of Samples page
+  // Build query bodies for all queries on Samples page
   const allSamplesQueryBody = buildSamplesQueryBody({
     searchVals: [],
-    contexts: undefined,
+    recordContexts: undefined,
     columnFilters: undefined,
     addlOncotreeCodes: [],
   });
   const wesSamplesQueryBody = buildSamplesQueryBody({
     searchVals: [],
-    contexts: WES_SAMPLE_CONTEXT,
+    recordContexts: WES_SAMPLE_CONTEXT,
+    columnFilters: undefined,
+    addlOncotreeCodes: [],
+  });
+  const accessSamplesQueryBody = buildSamplesQueryBody({
+    searchVals: [],
+    recordContexts: ACCESS_SAMPLE_CONTEXT,
     columnFilters: undefined,
     addlOncotreeCodes: [],
   });
@@ -179,11 +220,16 @@ async function updateSamplesCache(inMemoryCache: NodeCache) {
     queryBody: wesSamplesQueryBody,
     oncotreeCache,
   });
+  const accessSamplesQueryPromises = buildSamplesQueryPromise({
+    queryBody: accessSamplesQueryBody,
+    oncotreeCache,
+  });
 
   try {
     const queryResults = await Promise.all([
       allSamplesQueryPromises,
       wesSamplesQueryPromises,
+      accessSamplesQueryPromises,
     ]);
 
     // Add all samples query results to cache
@@ -308,7 +354,7 @@ export async function updateCacheWithNewSampleUpdates(
     }
   }
 
-  // Re-sort the samples in cache to match frontend's optimistc update flow in SamplesList.tsx
+  // Re-sort the samples in cache to match frontend's optimistc update flow on Samples views
   Object.keys(samplesCache).forEach((cachedSamplesQuery) => {
     samplesCache[cachedSamplesQuery].sort((a, b) => {
       return (

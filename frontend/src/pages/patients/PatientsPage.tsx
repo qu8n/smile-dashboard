@@ -1,189 +1,133 @@
+import { useRef, useState } from "react";
+import { DataGrid } from "../../components/DataGrid";
+import { AgGridReact as AgGridReactType } from "ag-grid-react/lib/agGridReact";
+import { useFetchData } from "../../hooks/useFetchData";
 import {
-  AgGridSortDirection,
+  DashboardPatient,
   useAllAnchorSeqDateDataLazyQuery,
   useDashboardPatientsLazyQuery,
 } from "../../generated/graphql";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { Col, Form } from "react-bootstrap";
-import { AlertModal } from "../../components/AlertModal";
-import { Tooltip } from "@material-ui/core";
-import InfoIcon from "@material-ui/icons/InfoOutlined";
+import { Title } from "../../components/Title";
+import { Toolbar } from "../../components/Toolbar";
+import { SearchBar } from "../../components/SearchBar";
 import {
-  allAnchorSeqDateColDefs,
+  buildDownloadOptions,
   patientColDefs,
-  sampleColDefs,
-} from "../../shared/helpers";
-import { getUserEmail } from "../../utils/getUserEmail";
-import { openLoginPopup } from "../../utils/openLoginPopup";
-import RecordsList from "../../components/RecordsList";
+  phiModeSwitchTooltipContent,
+} from "./config";
+import { Col } from "react-bootstrap";
+import { ErrorMessage } from "../../components/ErrorMessage";
+import { DownloadButton } from "../../components/DownloadButton";
+import { DownloadModal } from "../../components/DownloadModal";
+import { useDownload } from "../../hooks/useDownload";
+import { PhiModeSwitch } from "../../components/PhiModeSwitch";
+import { useTogglePhiColumnsVisibility } from "../../hooks/useTogglePhiColumns";
+import { DataGridLayout } from "../../components/DataGridLayout";
+import { useParams } from "react-router-dom";
+import { SamplesModal } from "../../components/SamplesModal";
+import { ROUTE_PARAMS } from "../../configs/shared";
+import { sampleColDefs } from "../samples/config";
+import { usePhiEnabled } from "../../contexts/PhiEnabledContext";
+import { useUserEmail } from "../../contexts/UserEmailContext";
 
-export const PHI_WARNING = {
-  title: "Warning",
-  content:
-    "The information contained in this transmission from Memorial Sloan-Kettering Cancer Center is privileged," +
-    " confidential and protected health information (PHI) and it is protected from disclosure under applicable law," +
-    " including the Health Insurance Portability and Accountability Act of 1996, as amended (HIPAA). This" +
-    " transmission is intended for the sole use of approved individuals with permission and training to access this" +
-    " information and PHI. You are notified that your access to this transmission is logged. If you have received" +
-    " this transmission in error, please immediately delete this information and any attachments from any computer.",
-};
-
+const QUERY_NAME = "dashboardPatients";
+const INITIAL_SORT_FIELD_NAME = "importDate";
+const RECORD_NAME = "patients";
 const PHI_FIELDS = new Set([
   "mrn",
   "anchorSequencingDate",
   "anchorOncotreeCode",
 ]);
 
-const patientColDefsWithPhiCols = patientColDefs.map((col) => {
-  if (col.field && PHI_FIELDS.has(col.field)) {
-    return { ...col, hide: false };
-  }
-  return col;
-});
-
-interface IPatientsPageProps {
-  userEmail: string | null;
-  setUserEmail: Dispatch<SetStateAction<string | null>>;
-}
-
-export default function PatientsPage({
-  userEmail,
-  setUserEmail,
-}: IPatientsPageProps) {
-  const params = useParams();
+export function PatientsPage() {
+  const [userSearchVal, setUserSearchVal] = useState("");
+  const [colDefs, setColDefs] = useState(patientColDefs);
+  const { phiEnabled } = usePhiEnabled();
+  const { userEmail } = useUserEmail();
+  const gridRef = useRef<AgGridReactType<DashboardPatient>>(null);
+  const hasParams = Object.keys(useParams()).length > 0;
   const [queryAllSeqDates] = useAllAnchorSeqDateDataLazyQuery();
 
-  const [columnDefs, setColumnDefs] = useState(patientColDefs);
-  const [userSearchVal, setUserSearchVal] = useState<string>("");
-  const [showDownloadModal, setShowDownloadModal] = useState(false);
-  const [phiEnabled, setPhiEnabled] = useState(false);
-  const [alertModal, setAlertModal] = useState<{
-    show: boolean;
-    title: string;
-    content: string;
-  }>({ show: false, title: "", content: "" });
+  const { refreshData, recordCount, isLoading, error, fetchMore } =
+    useFetchData({
+      useRecordsLazyQuery: useDashboardPatientsLazyQuery,
+      queryName: QUERY_NAME,
+      initialSortFieldName: INITIAL_SORT_FIELD_NAME,
+      gridRef,
+      userSearchVal,
+    });
 
-  useEffect(() => {
-    async function handleLogin(event: MessageEvent) {
-      if (event.data !== "success") return;
-      setUserEmail(await getUserEmail());
-      setAlertModal({ show: true, ...PHI_WARNING });
-    }
-    if (phiEnabled) {
-      window.addEventListener("message", handleLogin);
-      if (!userEmail) openLoginPopup();
-      return () => {
-        window.removeEventListener("message", handleLogin);
-      };
-    }
-  }, [phiEnabled, userEmail, setUserEmail]);
+  const { isDownloading, handleDownload, getCurrentData } =
+    useDownload<DashboardPatient>({
+      gridRef,
+      downloadFileName: RECORD_NAME,
+      fetchMore,
+      userSearchVal,
+      recordCount,
+      queryName: QUERY_NAME,
+    });
 
-  const dataName = "patients";
-  const sampleQueryParamFieldName = "patientId";
-  const sampleQueryParamValue = params[sampleQueryParamFieldName];
-  const defaultSort = {
-    colId: "importDate",
-    sort: AgGridSortDirection.Desc,
-  };
+  const downloadOptions = buildDownloadOptions({
+    getCurrentData,
+    currentColDefs: colDefs,
+    queryAllSeqDates,
+    phiEnabled,
+    userEmail,
+  });
+
+  const { handlePhiColumnsVisibilityBeforeSearch } =
+    useTogglePhiColumnsVisibility({
+      setColDefs,
+      phiFields: PHI_FIELDS,
+      userSearchVal,
+    });
+
+  if (error) {
+    return <ErrorMessage error={error} />;
+  }
 
   return (
-    <>
-      <RecordsList
-        columnDefs={columnDefs}
-        dataName={dataName}
-        defaultSort={defaultSort}
-        useRecordsLazyQuery={useDashboardPatientsLazyQuery}
-        phiEnabled={phiEnabled}
-        userSearchVal={userSearchVal}
-        setUserSearchVal={setUserSearchVal}
-        showDownloadModal={showDownloadModal}
-        setShowDownloadModal={setShowDownloadModal}
-        handleDownload={() => {
-          if (phiEnabled) setAlertModal({ show: true, ...PHI_WARNING });
-          setShowDownloadModal(true);
-        }}
-        samplesColDefs={sampleColDefs}
-        sampleContexts={
-          sampleQueryParamValue
-            ? [
-                {
-                  fieldName: sampleQueryParamFieldName,
-                  values: [sampleQueryParamValue],
-                },
-              ]
-            : undefined
-        }
-        customToolbarUI={
-          <>
-            <Col md="auto" className="mt-1">
-              <div className="vr"></div>
-            </Col>
+    <DataGridLayout>
+      <Title>{RECORD_NAME}</Title>
 
-            <Col md="auto" className="mt-1">
-              <Form>
-                <Form.Check
-                  type="switch"
-                  id="custom-switch"
-                  label="PHI-enabled"
-                  checked={phiEnabled}
-                  onChange={(e) => {
-                    const isPhiEnabled = e.target.checked;
-                    setPhiEnabled(isPhiEnabled);
-                    if (isPhiEnabled) {
-                      setColumnDefs(patientColDefsWithPhiCols);
-                    } else {
-                      setColumnDefs(patientColDefs);
-                    }
-                  }}
-                />
-              </Form>
-            </Col>
+      <Toolbar>
+        <Col />
 
-            <Col md="auto" style={{ marginLeft: -15 }}>
-              <Tooltip
-                title={
-                  <span style={{ fontSize: 12 }}>
-                    Turn on this switch to return each patient's MRN and anchor
-                    sequencing date in the results. Note that this mode only
-                    returns the PHI matching specific MRN, CMO, or DMP Patient
-                    IDs entered in the search bar. When turning on this switch
-                    for the first time, you will be prompted to log in.
-                  </span>
-                }
-              >
-                <InfoIcon style={{ fontSize: 18, color: "grey" }} />
-              </Tooltip>
-            </Col>
-          </>
-        }
-        addlExportDropdownItems={[
-          {
-            label: "Export all anchor dates for clinical cohort",
-            columnDefs: allAnchorSeqDateColDefs,
-            customLoader: async () => {
-              const result = await queryAllSeqDates({
-                variables: { phiEnabled: phiEnabled },
-              });
-              return result.data?.allAnchorSeqDateData;
-            },
-            disabled: !phiEnabled || !userEmail,
-            tooltip:
-              "You must enable PHI and log in to export anchor sequencing dates",
-          },
-        ]}
-        userEmail={userEmail}
-        setUserEmail={setUserEmail}
-      />
+        <Col md="auto" className="d-flex gap-3 align-items-center">
+          <SearchBar
+            userSearchVal={userSearchVal}
+            setUserSearchVal={setUserSearchVal}
+            onBeforeSearch={handlePhiColumnsVisibilityBeforeSearch}
+            onSearch={refreshData}
+            recordCount={recordCount}
+            isLoading={isLoading}
+          />
 
-      <AlertModal
-        show={alertModal.show}
-        onHide={() => {
-          setAlertModal({ ...alertModal, show: false });
-        }}
-        title={alertModal.title}
-        content={alertModal.content}
-      />
-    </>
+          <div className="vr" />
+
+          <PhiModeSwitch>{phiModeSwitchTooltipContent}</PhiModeSwitch>
+        </Col>
+
+        <Col className="text-end">
+          <DownloadButton
+            downloadOptions={downloadOptions}
+            onDownload={handleDownload}
+          />
+        </Col>
+      </Toolbar>
+
+      <DataGrid gridRef={gridRef} colDefs={colDefs} refreshData={refreshData} />
+
+      {hasParams && (
+        <SamplesModal
+          sampleColDefs={sampleColDefs}
+          contextFieldName={ROUTE_PARAMS.patients}
+          parentRecordName={RECORD_NAME}
+          showPhiModeSwitch={true}
+        />
+      )}
+
+      {isDownloading && <DownloadModal />}
+    </DataGridLayout>
   );
 }

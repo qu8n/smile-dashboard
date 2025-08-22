@@ -23,6 +23,9 @@ $standardMargin: 10px;
 
 .main {
   padding: 15px !important;
+  display: flex;
+  flex-direction: column;
+  gap: $standardMargin;
 }
 
 .modal-90w {
@@ -34,10 +37,6 @@ $standardMargin: 10px;
   position: absolute;
   top: 50%;
   left: 50%;
-}
-
-.tableControlsRow {
-  margin-bottom: $standardMargin;
 }
 
 .locked {
@@ -131,4 +130,28 @@ $standardMargin: 10px;
   padding: 2px;
   cursor: pointer;
   border-radius: 4px;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tableHeight {
+  height: calc(100vh - 180px);
+}
+
+.popupHeight {
+  height: calc(100vh - 180px);
+}
+
+.popupTableHeight {
+  height: calc(100vh - 270px);
 }

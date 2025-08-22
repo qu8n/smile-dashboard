@@ -1,74 +1,111 @@
+import { useRef, useState } from "react";
+import { DataGrid } from "../../components/DataGrid";
+import { AgGridReact as AgGridReactType } from "ag-grid-react/lib/agGridReact";
+import { useFetchData } from "../../hooks/useFetchData";
 import {
-  AgGridSortDirection,
+  DashboardCohort,
+  DashboardSample,
   useDashboardCohortsLazyQuery,
 } from "../../generated/graphql";
-import { Dispatch, SetStateAction, useState } from "react";
-import { wesSampleColDefs, cohortColDefs } from "../../shared/helpers";
+import { Title } from "../../components/Title";
+import { Toolbar } from "../../components/Toolbar";
+import { SearchBar } from "../../components/SearchBar";
+import { buildDownloadOptions, cohortColDefs } from "./config";
+import { Col } from "react-bootstrap";
+import { ErrorMessage } from "../../components/ErrorMessage";
+import { DownloadButton } from "../../components/DownloadButton";
+import { DownloadModal } from "../../components/DownloadModal";
+import { useDownload } from "../../hooks/useDownload";
+import { DataGridLayout } from "../../components/DataGridLayout";
 import { useParams } from "react-router-dom";
-import RecordsList from "../../components/RecordsList";
-import { AlertModal } from "../../components/AlertModal";
+import { SamplesModal } from "../../components/SamplesModal";
+import { ROUTE_PARAMS } from "../../configs/shared";
+import { wesSampleColDefs } from "../samples/config";
 
-interface ICohortsPageProps {
-  userEmail: string | null;
-  setUserEmail: Dispatch<SetStateAction<string | null>>;
-}
+const QUERY_NAME = "dashboardCohorts";
+const INITIAL_SORT_FIELD_NAME = "initialCohortDeliveryDate";
+const RECORD_NAME = "cohorts";
 
-export default function CohortsPage({
-  userEmail,
-  setUserEmail,
-}: ICohortsPageProps) {
-  const params = useParams();
-  const [userSearchVal, setUserSearchVal] = useState<string>("");
-  const [showDownloadModal, setShowDownloadModal] = useState(false);
-  const [alertModal, setAlertModal] = useState<{
-    show: boolean;
-    title: string;
-    content: string;
-  }>({ show: false, title: "", content: "" });
+export function CohortsPage() {
+  const [userSearchVal, setUserSearchVal] = useState("");
+  const gridRef = useRef<AgGridReactType<DashboardSample>>(null);
+  const hasParams = Object.keys(useParams()).length > 0;
 
-  const dataName = "cohorts";
-  const sampleQueryParamFieldName = "cohortId";
-  const sampleQueryParamValue = params[sampleQueryParamFieldName];
-  const defaultSort = {
-    colId: "initialCohortDeliveryDate",
-    sort: AgGridSortDirection.Desc,
-  };
+  const {
+    refreshData,
+    recordCount,
+    uniqueSampleCount,
+    isLoading,
+    error,
+    fetchMore,
+  } = useFetchData({
+    useRecordsLazyQuery: useDashboardCohortsLazyQuery,
+    queryName: QUERY_NAME,
+    initialSortFieldName: INITIAL_SORT_FIELD_NAME,
+    gridRef,
+    userSearchVal,
+  });
+
+  const { isDownloading, handleDownload, getCurrentData } =
+    useDownload<DashboardCohort>({
+      gridRef,
+      downloadFileName: RECORD_NAME,
+      fetchMore,
+      userSearchVal,
+      recordCount,
+      queryName: QUERY_NAME,
+    });
+
+  const downloadOptions = buildDownloadOptions({
+    getCurrentData,
+    currentColDefs: cohortColDefs,
+  });
+
+  if (error) {
+    return <ErrorMessage error={error} />;
+  }
 
   return (
-    <>
-      <RecordsList
-        columnDefs={cohortColDefs}
-        dataName={dataName}
-        defaultSort={defaultSort}
-        useRecordsLazyQuery={useDashboardCohortsLazyQuery}
-        userSearchVal={userSearchVal}
-        setUserSearchVal={setUserSearchVal}
-        showDownloadModal={showDownloadModal}
-        setShowDownloadModal={setShowDownloadModal}
-        handleDownload={() => setShowDownloadModal(true)}
-        samplesColDefs={wesSampleColDefs}
-        sampleContexts={
-          sampleQueryParamValue
-            ? [
-                {
-                  fieldName: sampleQueryParamFieldName,
-                  values: [sampleQueryParamValue],
-                },
-              ]
-            : undefined
-        }
-        userEmail={userEmail}
-        setUserEmail={setUserEmail}
+    <DataGridLayout>
+      <Title>{RECORD_NAME}</Title>
+
+      <Toolbar>
+        <Col />
+
+        <Col md="auto" className="d-flex gap-3 align-items-center">
+          <SearchBar
+            userSearchVal={userSearchVal}
+            setUserSearchVal={setUserSearchVal}
+            onSearch={refreshData}
+            recordCount={recordCount}
+            uniqueSampleCount={uniqueSampleCount}
+            isLoading={isLoading}
+          />
+        </Col>
+
+        <Col className="text-end">
+          <DownloadButton
+            downloadOptions={downloadOptions}
+            onDownload={handleDownload}
+          />
+        </Col>
+      </Toolbar>
+
+      <DataGrid
+        gridRef={gridRef}
+        colDefs={cohortColDefs}
+        refreshData={refreshData}
       />
 
-      <AlertModal
-        show={alertModal.show}
-        onHide={() => {
-          setAlertModal({ ...alertModal, show: false });
-        }}
-        title={alertModal.title}
-        content={alertModal.content}
-      />
-    </>
+      {hasParams && (
+        <SamplesModal
+          sampleColDefs={wesSampleColDefs}
+          contextFieldName={ROUTE_PARAMS.cohorts}
+          parentRecordName={RECORD_NAME}
+        />
+      )}
+
+      {isDownloading && <DownloadModal />}
+    </DataGridLayout>
   );
 }
