@@ -24,7 +24,7 @@ import { useDownload } from "../../hooks/useDownload";
 import { PhiModeSwitch } from "../../components/PhiModeSwitch";
 import { useTogglePhiColumnsVisibility } from "../../hooks/useTogglePhiColumns";
 import { useCellChanges } from "../../hooks/useCellChanges";
-import { CellChangesContainer } from "../../components/CellChangesConfirmation";
+import { CellChangesContainer } from "../../components/CellChangesContainer";
 import { DataGridLayout } from "../../components/DataGridLayout";
 import { POLL_INTERVAL } from "../../configs/shared";
 

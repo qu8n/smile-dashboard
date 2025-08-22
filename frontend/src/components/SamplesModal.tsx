@@ -19,7 +19,7 @@ import { Toolbar } from "../components/Toolbar";
 import { Button, Col, Modal } from "react-bootstrap";
 import { SearchBar } from "../components/SearchBar";
 import { PhiModeSwitch } from "./PhiModeSwitch";
-import { CellChangesContainer } from "./CellChangesConfirmation";
+import { CellChangesContainer } from "./CellChangesContainer";
 import { DownloadButton } from "../components/DownloadButton";
 import { DataGrid } from "./DataGrid";
 import { DownloadModal } from "./DownloadModal";
