@@ -123,6 +123,7 @@ export function PatientsPage() {
           sampleColDefs={sampleColDefs}
           contextFieldName={ROUTE_PARAMS.patients}
           parentRecordName={RECORD_NAME}
+          showPhiModeSwitch={true}
         />
       )}
 

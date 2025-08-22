@@ -35,12 +35,14 @@ interface SamplesModalProps {
   sampleColDefs: Array<ColDef>;
   contextFieldName: string;
   parentRecordName: keyof typeof ROUTE_PARAMS;
+  showPhiModeSwitch?: boolean;
 }
 
 export function SamplesModal({
   sampleColDefs,
   contextFieldName,
   parentRecordName,
+  showPhiModeSwitch = false,
 }: SamplesModalProps) {
   const [userSearchVal, setUserSearchVal] = useState("");
   const [colDefs, setColDefs] = useState(sampleColDefs);
@@ -133,9 +135,12 @@ export function SamplesModal({
             isLoading={isLoading}
           />
 
-          <div className="vr" />
-
-          <PhiModeSwitch>{phiModeSwitchTooltipContent}</PhiModeSwitch>
+          {showPhiModeSwitch && (
+            <>
+              <div className="vr" />
+              <PhiModeSwitch>{phiModeSwitchTooltipContent}</PhiModeSwitch>
+            </>
+          )}
 
           {changes.length > 0 && (
             <CellChangesContainer

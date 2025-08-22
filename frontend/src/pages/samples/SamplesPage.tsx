@@ -128,9 +128,13 @@ export function SamplesPage() {
             isLoading={isLoading}
           />
 
-          <div className="vr" />
-
-          <PhiModeSwitch>{phiModeSwitchTooltipContent}</PhiModeSwitch>
+          {/* Only show PHI mode switch on "All" view */}
+          {recordContexts === undefined && (
+            <>
+              <div className="vr" />
+              <PhiModeSwitch>{phiModeSwitchTooltipContent}</PhiModeSwitch>
+            </>
+          )}
 
           {changes.length > 0 && (
             <CellChangesContainer
