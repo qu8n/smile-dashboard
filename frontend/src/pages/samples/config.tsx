@@ -457,12 +457,18 @@ export const wesSampleColDefs: Array<ColDef<DashboardSample>> = [
   {
     field: "initialPipelineRunDate",
     headerName: "Initial Pipeline Run Date",
+    headerTooltip:
+      "Date the sample is delivered in a cohort for the first time",
+    headerComponentParams: createCustomHeader(lockIcon + toolTipIcon),
     valueFormatter: (params) => formatCellDate(params.value) ?? "",
     ...getAgGridDateColFilterConfigs(),
+    width: 250,
   },
   {
     field: "embargoDate",
     headerName: "Embargo Date",
+    headerTooltip: "Calculated date; 18 months after Initial Pipeline Run Date",
+    headerComponentParams: createCustomHeader(lockIcon + toolTipIcon),
     valueFormatter: (params) => formatCellDate(params.value) ?? "",
     ...getAgGridDateColFilterConfigs({
       // embargoDate is 18 months ahead of initialPipelineRunDate
@@ -492,6 +498,7 @@ export const wesSampleColDefs: Array<ColDef<DashboardSample>> = [
         return isInvalidCostCenter(params.colDef.field!, params.value);
       },
     },
+    width: 250,
   },
   {
     field: "billedBy",
@@ -502,10 +509,15 @@ export const wesSampleColDefs: Array<ColDef<DashboardSample>> = [
   {
     field: "custodianInformation",
     headerName: "Data Custodian",
+    headerTooltip: "Lab Head Name from IGO Request .json OR added by PM",
+    headerComponentParams: createCustomHeader(lockIcon + toolTipIcon),
   },
   {
     field: "accessLevel",
     headerName: "Access Level",
+    headerTooltip:
+      "Indicates data availability of sample. Default is MSK Embargo for 18 months after Initial Pipeline Run Date, changes to MSK Public after.",
+    headerComponentParams: createCustomHeader(lockIcon + toolTipIcon),
   },
   {
     field: "sampleType",
@@ -518,44 +530,61 @@ export const wesSampleColDefs: Array<ColDef<DashboardSample>> = [
   {
     field: "bamCompleteDate",
     headerName: "Latest BAM Complete Date",
+    headerTooltip: "Most recent date the BAM generation tasks were run",
+    headerComponentParams: createCustomHeader(lockIcon + toolTipIcon),
     valueFormatter: (params) => formatCellDate(params.value) ?? "",
     ...getAgGridDateColFilterConfigs(),
+    width: 270,
   },
   {
     field: "bamCompleteStatus",
     headerName: "BAM Complete Status",
+    headerTooltip: "Indicates whether BAM generation was successful",
+    headerComponentParams: createCustomHeader(lockIcon + toolTipIcon),
+    width: 240,
   },
   {
     field: "mafCompleteDate",
     headerName: "Latest MAF Complete Date",
+    headerTooltip:
+      "Most recent date the MAF generation tasks were run. Valid for tumor samples only",
+    headerComponentParams: createCustomHeader(lockIcon + toolTipIcon),
     valueFormatter: (params) => formatCellDate(params.value) ?? "",
     ...getAgGridDateColFilterConfigs(),
+    width: 270,
   },
   {
     field: "mafCompleteNormalPrimaryId",
     headerName: "MAF Complete Normal Primary ID",
+    headerTooltip:
+      "Primary ID of Normal sample that tumor was paired with, for MAF generation",
+    headerComponentParams: createCustomHeader(lockIcon + toolTipIcon),
+    width: 310,
   },
   {
     field: "mafCompleteStatus",
-    headerName: "MAF Complete Status",
-  },
-  {
-    field: "qcCompleteDate",
-    headerName: "Latest QC Complete Date",
-    valueFormatter: (params) => formatCellDate(params.value) ?? "",
-    ...getAgGridDateColFilterConfigs(),
+    headerName: "MAF Complete Status \n(Data Eligible for Sharing)",
+    headerTooltip:
+      "Indicates whether MAF generation was successful. Valid for tumor samples only. For the MSK WES Repository cohort we only included samples with a MAF Complete Status of 'Pass' as well as QC Complete Result of 'Pass' or 'Warn'",
+    headerComponentParams: createCustomHeader(lockIcon + toolTipIcon),
+    width: 285,
+    wrapHeaderText: true,
   },
   {
     field: "qcCompleteResult",
     headerName: "QC Complete Result",
+    headerTooltip:
+      "Indicates whether the QC metrics passed the TEMPO pipeline thresholds",
+    headerComponentParams: createCustomHeader(lockIcon + toolTipIcon),
+    width: 230,
   },
   {
     field: "qcCompleteReason",
     headerName: "QC Complete Reason",
-  },
-  {
-    field: "qcCompleteStatus",
-    headerName: "QC Complete Status",
+    headerTooltip:
+      "For samples with a QC Complete Result of 'Fail' or 'Warn', indicates reason for that status",
+    headerComponentParams: createCustomHeader(lockIcon + toolTipIcon),
+    width: 230,
   },
   {
     field: "genePanel",
@@ -576,6 +605,7 @@ export const wesSampleColDefs: Array<ColDef<DashboardSample>> = [
   {
     field: "cancerTypeDetailed",
     headerName: "Cancer Type Detailed",
+    width: 220,
   },
   {
     field: "tissueLocation",
@@ -584,6 +614,7 @@ export const wesSampleColDefs: Array<ColDef<DashboardSample>> = [
   {
     field: "sampleCategory",
     headerName: "SMILE Sample Category",
+    width: 230,
   },
   {
     field: "platform",
@@ -592,6 +623,23 @@ export const wesSampleColDefs: Array<ColDef<DashboardSample>> = [
   {
     field: "instrumentModel",
     headerName: "INSTRUMENT_MODEL",
+    width: 220,
+  },
+  {
+    field: "qcCompleteDate",
+    headerName: "Latest QC Complete Date",
+    headerTooltip: "Most recent date the QC tasks were run",
+    headerComponentParams: createCustomHeader(lockIcon + toolTipIcon),
+    valueFormatter: (params) => formatCellDate(params.value) ?? "",
+    ...getAgGridDateColFilterConfigs(),
+    width: 260,
+  },
+  {
+    field: "qcCompleteStatus",
+    headerName: "QC Complete Status",
+    headerTooltip: "Indicates whether QC analysis tasks were completed",
+    headerComponentParams: createCustomHeader(lockIcon + toolTipIcon),
+    width: 220,
   },
 ];
 

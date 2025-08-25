@@ -55,11 +55,6 @@ $standardMargin: 10px;
   cursor: not-allowed;
 }
 
-/* Prevent overlapping with the 🚫 icon */
-.ag-tooltip {
-  transform: translate(15px, -40px);
-}
-
 .costCenter-validation-error {
   color: #fa0400 !important;
 }
@@ -105,12 +100,17 @@ $standardMargin: 10px;
   min-width: 100%;
 }
 
-.tooltip-styles {
-  background-color: #f8f8f8;
-  font-size: large;
-  padding: 12px;
-  border: 1px solid rgb(198, 197, 214);
+.ag-custom-tooltip {
+  padding: 6px;
+  background-color: white;
+  border: 1px solid lightgray;
+  max-width: 300px;
   border-radius: 4px;
+
+  span {
+    color: black;
+    font-size: 12px;
+  }
 }
 
 .ag-rich-select-list {
@@ -154,4 +154,15 @@ $standardMargin: 10px;
 
 .popupTableHeight {
   height: calc(100vh - 270px);
+}
+
+// Enable the use of new lines (`\n`) in column headers
+// https://stackoverflow.com/a/57214867
+.ag-header-cell-label .ag-header-cell-text {
+  white-space: pre-wrap !important;
+}
+
+// Prevent column header icons from shrinking when the column width is too small
+.ag-header-cell svg {
+  flex-shrink: 0;
 }
