@@ -173,7 +173,8 @@ export function useCellChanges({
 
     // Submit changes to the GraphQL server
     let newDashboardSamples: Array<DashboardSampleInput> = [];
-    samples.forEach((s) => {
+    changes.forEach((change) => {
+      const s: DashboardSample = change.rowNode.data;
       if (s.primaryId && s.primaryId in changesByPrimaryId) {
         const newDashboardSample = {
           ...s,
