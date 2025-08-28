@@ -164,34 +164,15 @@ export function useCellChanges({
   }
 
   async function handleSubmitUpdates() {
-    if (!samples || samples.length === 0) {
-      console.error("No samples available to update.");
+    if (changes.length === 0) {
+      console.error("No changes available to submit.");
       return;
     }
 
     const changesByPrimaryId = groupChangesByPrimaryId(changes);
+    const newDashboardSamples = buildNewDashboardSamples(changesByPrimaryId);
 
-    // Submit changes to the GraphQL server
-    let newDashboardSamples: Array<DashboardSampleInput> = [];
-    samples.forEach((s) => {
-      if (s.primaryId && s.primaryId in changesByPrimaryId) {
-        const newDashboardSample = {
-          ...s,
-          revisable: false,
-          changedFieldNames: Object.keys(changesByPrimaryId[s.primaryId]),
-        };
-
-        for (const [fieldName, newValue] of Object.entries(
-          changesByPrimaryId[s.primaryId]
-        )) {
-          if (fieldName in s) {
-            (newDashboardSample as any)[fieldName] = newValue;
-          }
-        }
-        delete newDashboardSample.__typename;
-        newDashboardSamples.push(newDashboardSample);
-      }
-    });
+    // Send to GraphQL server to publish
     updateDashboardSamplesMutation({
       variables: { newDashboardSamples },
     });
@@ -201,12 +182,18 @@ export function useCellChanges({
     // AG Grid's Server-Side data model. e.g. GraphQL's optimistic response only returns
     // the updated data, while AG Grid expects the datasource == the entire dataset.)
     const optimisticSamples = samples!.map((s) => {
-      if (s.primaryId != null && s.primaryId in changesByPrimaryId) {
+      const changesForSample =
+        s.primaryId != null ? changesByPrimaryId.get(s.primaryId) : undefined;
+      if (changesForSample) {
+        const changedFields = changesForSample.reduce((acc, change) => {
+          acc[change.fieldName] = change.newValue;
+          return acc;
+        }, {} as Record<string, any>);
         return {
           ...s,
+          ...changedFields,
           revisable: false,
           importDate: formatCellDate(new Date()) as string,
-          ...changesByPrimaryId[s.primaryId],
         };
       }
       return s;
@@ -251,20 +238,35 @@ export function useCellChanges({
   };
 }
 
-type ChangesByPrimaryId = {
-  [primaryId: string]: {
-    [fieldName: string]: string;
-  };
-};
-
 function groupChangesByPrimaryId(changes: SampleChange[]) {
-  const changesByPrimaryId: ChangesByPrimaryId = {};
-  for (const { primaryId, fieldName, newValue } of changes) {
-    if (changesByPrimaryId[primaryId]) {
-      changesByPrimaryId[primaryId][fieldName] = newValue;
-    } else {
-      changesByPrimaryId[primaryId] = { [fieldName]: newValue };
+  const changesByPrimaryId = new Map<string, Array<SampleChange>>();
+  for (const change of changes) {
+    if (!changesByPrimaryId.has(change.primaryId)) {
+      changesByPrimaryId.set(change.primaryId, []);
     }
+    changesByPrimaryId.get(change.primaryId)!.push(change);
   }
   return changesByPrimaryId;
+}
+
+function buildNewDashboardSamples(
+  changesByPrimaryId: Map<string, Array<SampleChange>>
+) {
+  const newDashboardSamplesByPrimaryId = new Map<
+    string,
+    DashboardSampleInput
+  >();
+  changesByPrimaryId.forEach((changes, primaryId) => {
+    const sampleData = { ...changes[0].rowNode.data };
+    for (const change of changes) {
+      (sampleData as any)[change.fieldName] = change.newValue;
+    }
+    delete sampleData.__typename;
+    newDashboardSamplesByPrimaryId.set(primaryId, {
+      ...sampleData,
+      revisable: false,
+      changedFieldNames: changes.map((c) => c.fieldName),
+    });
+  });
+  return Array.from(newDashboardSamplesByPrimaryId.values());
 }

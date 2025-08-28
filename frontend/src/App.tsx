@@ -21,19 +21,23 @@ export default function App() {
         <BrowserRouter>
           <NavBar />
           <Routes>
-            <Route path="/" element={<RequestsPage />}>
-              <Route path={`:${ROUTE_PARAMS.requests}`} />
-            </Route>
-            <Route path="/requests/" element={<RequestsPage />}>
-              <Route path={`:${ROUTE_PARAMS.requests}`} />
-            </Route>
-            <Route path="/patients/" element={<PatientsPage />}>
-              <Route path={`:${ROUTE_PARAMS.patients}`} />
-            </Route>
+            <Route path="/" element={<RequestsPage />} />
+            <Route path="/requests/" element={<RequestsPage />} />
+            <Route
+              path={`/requests/:${ROUTE_PARAMS.requests}`}
+              element={<RequestsPage />}
+            />
+            <Route path="/patients/" element={<PatientsPage />} />
+            <Route
+              path={`/patients/:${ROUTE_PARAMS.patients}`}
+              element={<PatientsPage />}
+            />
             <Route path="/samples" element={<SamplesPage />} />
-            <Route path="/cohorts/" element={<CohortsPage />}>
-              <Route path={`:${ROUTE_PARAMS.cohorts}`} />
-            </Route>
+            <Route path="/cohorts/" element={<CohortsPage />} />
+            <Route
+              path={`/cohorts/:${ROUTE_PARAMS.cohorts}`}
+              element={<CohortsPage />}
+            />
             <Route path="/auth/login-success" element={<LoginSuccessPage />} />
           </Routes>
         </BrowserRouter>
